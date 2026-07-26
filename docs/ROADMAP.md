@@ -1,5 +1,7 @@
 # Conflux Roadmap
 
+> Migration notice: roadmap ownership moved to [STATUS.md](STATUS.md).
+
 This roadmap records planned work and its current maturity. Statuses are
 `proposed`, `specified`, `in progress`, `implemented`, or `deferred`.
 

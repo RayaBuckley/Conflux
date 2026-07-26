@@ -1,5 +1,8 @@
 # ITES MVP Results Report
 
+> Migration notice: methodology and evidence ownership are now in
+> [EVALUATION.md](EVALUATION.md). This file remains a detailed results template.
+
 Status: report template pending executable run
 
 ## Configuration

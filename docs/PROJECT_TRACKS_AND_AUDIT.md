@@ -1,5 +1,8 @@
 # Conflux Project Tracks and Repository Audit
 
+> Migration notice: file ownership and risks are now in [AUDIT.md](AUDIT.md);
+> implementation priorities are in [STATUS.md](STATUS.md).
+
 Date: 2026-07-25  
 Scope: source tree, tests, documentation, paper source, and development tooling.
 

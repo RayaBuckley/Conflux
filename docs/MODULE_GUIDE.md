@@ -1,5 +1,9 @@
 # Conflux Module Guide
 
+> Migration notice: this legacy module map is retained for historical context.
+> Use [ARCHITECTURE.md](ARCHITECTURE.md), [REFERENCE.md](REFERENCE.md), and
+> [AUDIT.md](AUDIT.md) as the current sources of truth.
+
 This is the high-level public map of the repository. Individual modules may
 contain additional internal helpers that are not extension points.
 

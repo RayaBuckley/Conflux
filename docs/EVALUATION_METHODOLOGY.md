@@ -1,5 +1,8 @@
 # ITES Defence Evaluation Methodology
 
+> Migration notice: [EVALUATION.md](EVALUATION.md) is now the canonical
+> methodology entry point. This page remains as detailed historical material.
+
 The MVP evaluates the enforcement boundary, not whether a particular model
 recognises an attack. A deterministic synthetic model is therefore the primary
 security test; a real model is an optional utility and integration experiment.

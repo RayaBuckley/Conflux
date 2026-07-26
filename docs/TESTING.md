@@ -1,5 +1,8 @@
 # Testing and Validation
 
+> Migration notice: current workflow and validation ownership are in
+> [DEVELOPMENT.md](DEVELOPMENT.md). This page remains as historical detail.
+
 Tests live in `tests/` and should validate security invariants before
 implementation details. The current suite covers core artifacts and
 provenance, authorisation, operations, policies, ITES mediation/state, and

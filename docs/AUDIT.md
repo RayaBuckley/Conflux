@@ -39,6 +39,7 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/ites/mvp.py` | Minimal executable semantics harness | MVP tests | EVALUATION | compatibility | parallel model risk |
 | `src/conflux/ites/reference.py` | Legacy/reference ITES facade | ITES tests | REFERENCE | compatibility | legacy proposals |
 | `src/conflux/providers/base.py` | Provider adapter contract | imports | ARCHITECTURE | adapter | SLED dependency |
+| `src/conflux/providers/__init__.py` | Provider package ownership | imports | ARCHITECTURE | canonical | package boundary |
 | `src/conflux/providers/filesystem.py` | Filesystem provider | imports | EVALUATION | adapter | host effects |
 | `src/conflux/providers/docker.py` | Docker provider | imports | EVALUATION | adapter | optional runtime |
 | `src/conflux/sled/__init__.py` | SLED public exports | benchmark tests | EVALUATION | canonical | export drift |
@@ -61,6 +62,7 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/sled/model_benchmark.py` | Model-level reference benchmark | model tests | EVALUATION | benchmark | post-paper scope |
 | `src/conflux/sled/system_benchmark.py` | System-level benchmark | imports | EVALUATION | benchmark | task coverage |
 | `src/conflux/sled/defences/base.py` | Baseline defence contract | imports | EVALUATION | benchmark | contract clarity |
+| `src/conflux/sled/defences/__init__.py` | Defence package ownership | imports | EVALUATION | canonical | package boundary |
 | `src/conflux/sled/defences/no_defence.py` | Negative-control defence | imports | EVALUATION | benchmark | expected failures |
 | `src/conflux/sled/defences/no_read_check.py` | Read-check negative control | imports | EVALUATION | benchmark | expected failures |
 | `src/conflux/sled/defences/union_permissions.py` | Union-authority negative control | imports | EVALUATION | benchmark | security baseline |
@@ -68,6 +70,7 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/sled/defences/initiator_only.py` | Initiator-only negative control | imports | EVALUATION | benchmark | security baseline |
 | `src/conflux/sled/defences/ites_adapter.py` | ITES-to-SLED adapter | imports | EVALUATION | adapter | duplicate mediation |
 | `src/conflux/benchmarks/results.py` | Stable benchmark result schema | imports | EVALUATION | benchmark | schema versioning |
+| `src/conflux/benchmarks/__init__.py` | Benchmark package ownership | imports | EVALUATION | canonical | package boundary |
 | `src/conflux/benchmarks/native.py` | Native benchmark adapter | imports | EVALUATION | benchmark | exhaustive coupling |
 | `src/conflux/benchmarks/agentdojo.py` | AgentDojo adapter | imports | EVALUATION | adapter | optional dependency |
 | `src/conflux/benchmarks/external/base.py` | External benchmark contract | imports | EVALUATION | adapter | command assumptions |

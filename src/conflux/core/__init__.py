@@ -1,6 +1,12 @@
 """
 Core domain model.
 
+Layer: canonical security domain. This package owns immutable Principals,
+resources, permissions, provenance, artifacts, actions, consent, visibility,
+and sessions. It must not import policy, provider, benchmark, or evaluator code.
+
+See ``docs/ARCHITECTURE.md``, ``docs/REFERENCE.md``, and ``docs/AUDIT.md``.
+
 This package contains the fundamental immutable objects used throughout the
 system. These objects are deliberately independent of execution, policy and
 authorisation logic.

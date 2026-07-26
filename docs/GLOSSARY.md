@@ -1,5 +1,9 @@
 # Conflux Research Glossary
 
+Purpose: define canonical research and implementation terminology. Owner:
+repository maintainers. Use this page instead of duplicating definitions in
+feature documents; detailed semantics remain in source docstrings and tests.
+
 This glossary is the canonical vocabulary for the implementation and paper.
 
 | Term | Conflux meaning | Code locations | Avoid |

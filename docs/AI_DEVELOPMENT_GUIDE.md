@@ -1,5 +1,9 @@
 # Conflux AI Development Guide
 
+> Migration notice: this legacy guide is retained for historical context.
+> Follow [DEVELOPMENT.md](DEVELOPMENT.md), [AUDIT.md](AUDIT.md), and the
+> templates for current work.
+
 The [documentation hub](README.md), [feature specification template](templates/FEATURE_SPEC.md),
 and [change checklist](templates/CHANGE_CHECKLIST.md) are the operational entry
 points for agents.

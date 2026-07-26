@@ -1,6 +1,11 @@
 """
 ITES: the defence layer.
 
+Layer: canonical security boundary. This package owns the domain-facing ITES
+contract and exports compatibility/reference implementations explicitly.
+
+See ``docs/ARCHITECTURE.md``, ``docs/REFERENCE.md``, and ``docs/AUDIT.md``.
+
 ITES is the reference defence that takes:
 - an environment,
 - an LLM model, and

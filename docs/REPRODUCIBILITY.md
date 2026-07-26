@@ -1,5 +1,8 @@
 # Reproducibility
 
+> Migration notice: current reproducibility guidance is in
+> [EVALUATION.md](EVALUATION.md) and [DEVELOPMENT.md](DEVELOPMENT.md).
+
 Conflux targets Python 3.12 or newer. Create the repository-local `.venv` and
 install the package with development dependencies using:
 

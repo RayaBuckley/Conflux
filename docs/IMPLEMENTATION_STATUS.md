@@ -1,5 +1,7 @@
 # Implementation Status
 
+> Migration notice: [STATUS.md](STATUS.md) is the canonical status source.
+
 This document records progress separately from the stable project overview in
 the README.
 

@@ -1,5 +1,10 @@
 # Conflux Architecture
 
+Purpose: define the system boundary, dependency direction, security invariants,
+and extension points. Owner: repository maintainers. This is the architectural
+source of truth; file ownership is recorded in [AUDIT.md](AUDIT.md) and public
+API ownership in [REFERENCE.md](REFERENCE.md).
+
 Conflux is organised around a provenance-aware security model for AI-agent
 execution. ITES is the defence; SLED is the evaluation framework.
 
