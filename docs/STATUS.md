@@ -25,17 +25,17 @@ planned; architecture belongs in `ARCHITECTURE.md`.
 | Domain model | Canonical contract implemented | provenance/resource regression tests |
 | ITES mediation | Implemented with isolated reference path | named guarantee and nested-action tests |
 | SLED evaluation | One-shot/exhaustive surfaces separated | evaluator/report type checks |
-| Providers | Adapter prototypes | add boundary contract tests |
-| External benchmarks | Optional adapters | require integration fixtures and assumptions |
+| Providers | Implementations moved to `conflux.adapters.providers` | migrate legacy environment construction and add boundary contract tests |
+| External benchmarks | Optional adapters moved to `conflux.adapters.benchmarks` | require integration fixtures and assumptions |
 | Documentation audit | In progress | keep ledger synchronized with changes |
 | Clean-slate boundaries | Initial slice | migrate core/ITES/SLED callers incrementally |
 | Evaluation trace contract | Initial versioned record | connect SLED trace writers and add golden fixtures |
-| Provider-neutral environment | Initial contract | migrate provider and SLED callers from legacy environment types |
+| Provider-neutral environment | Domain contract implemented | migrate evaluation/provider callers from legacy `Data`/`Environment` types |
 | Canonical evaluation services | Initial facade | migrate SLED evaluator implementation and trace writers |
 | Application policy service | Initial implementation | compose visibility and consent ports with authorisation |
 | Benchmark imports | Migrated to evaluation facade | remove remaining direct SLED compatibility imports |
 | One-shot trace output | Initial deterministic completion record | integrate per-action and exhaustive branch events |
-| Legacy SLED source files | Transitional facades | zero-import audit before removal |
+| Legacy SLED source files | Removed | retain only historical ledger entries |
 | Legacy proposal handling | Isolated | migrate remaining reference callers, then remove |
 
 ## Post-paper extensions

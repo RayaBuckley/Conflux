@@ -42,9 +42,12 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/ites/reference.py` | Historical reference ITES module | moved to compatibility/ites.py | REFERENCE | remove | relocated after zero-caller audit |
 | `src/conflux/compatibility/ites.py` | Reference ITES compatibility implementation | compatibility tests | REFERENCE | compatibility | preserve research behavior |
 | `src/conflux/providers/base.py` | Provider adapter contract | imports | ARCHITECTURE | adapter | SLED dependency |
-| `src/conflux/providers/__init__.py` | Provider package ownership | imports | ARCHITECTURE | canonical | package boundary |
+| `src/conflux/providers/__init__.py` | Historical provider facade | moved to adapters/providers | ARCHITECTURE | remove | zero supported callers |
 | `src/conflux/providers/filesystem.py` | Filesystem provider | imports | EVALUATION | adapter | host effects |
 | `src/conflux/providers/docker.py` | Docker provider | imports | EVALUATION | adapter | optional runtime |
+| `src/conflux/adapters/providers/base.py` | Provider capability and materialisation contracts | provider imports | ARCHITECTURE | adapter | legacy environment translation pending |
+| `src/conflux/adapters/providers/filesystem.py` | Filesystem provider adapter | provider tests | EVALUATION | adapter | host effects |
+| `src/conflux/adapters/providers/docker.py` | Docker provider adapter | provider tests | EVALUATION | adapter | optional runtime |
 | `src/conflux/sled/__init__.py` | Historical SLED public exports | moved to evaluation | EVALUATION | remove | removed after graph move |
 | `src/conflux/sled/environment.py` | Historical environment module | moved to evaluation/environment.py | EVALUATION | remove | removed after graph move |
 | `src/conflux/sled/scenario.py` | Historical scenario module | moved to evaluation/scenario.py | EVALUATION | remove | removed after graph move |
@@ -73,7 +76,7 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/sled/defences/initiator_only.py` | Historical initiator-only negative control | moved to evaluation/defences/initiator_only.py | EVALUATION | remove | relocated after graph move |
 | `src/conflux/sled/defences/ites_adapter.py` | Historical ITES evaluation adapter | moved to evaluation/defences/ites_adapter.py | EVALUATION | remove | relocated after graph move |
 | `src/conflux/benchmarks/results.py` | Stable benchmark result schema | imports | EVALUATION | benchmark | schema versioning |
-| `src/conflux/benchmarks/__init__.py` | Benchmark package ownership | imports | EVALUATION | canonical | package boundary |
+| `src/conflux/benchmarks/__init__.py` | Historical benchmark facade | moved to adapters/benchmarks | EVALUATION | remove | zero supported callers |
 | `src/conflux/benchmarks/native.py` | Native benchmark adapter | imports | EVALUATION | benchmark | exhaustive coupling |
 | `src/conflux/benchmarks/agentdojo.py` | AgentDojo adapter | imports | EVALUATION | adapter | optional dependency |
 | `src/conflux/benchmarks/external/base.py` | External benchmark contract | imports | EVALUATION | adapter | command assumptions |
@@ -81,6 +84,14 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/benchmarks/external/agentdojo.py` | External AgentDojo translation | imports | EVALUATION | adapter | external drift |
 | `src/conflux/benchmarks/external/camel.py` | External CaMeL translation | imports | EVALUATION | adapter | external drift |
 | `src/conflux/benchmarks/external/dual_llm.py` | External Dual-LLM translation | imports | EVALUATION | adapter | external drift |
+| `src/conflux/adapters/benchmarks/native.py` | Native benchmark adapter | benchmark tests | EVALUATION | benchmark | legacy environment translation pending |
+| `src/conflux/adapters/benchmarks/agentdojo.py` | AgentDojo benchmark adapter | benchmark tests | EVALUATION | adapter | optional dependency |
+| `src/conflux/adapters/benchmarks/results.py` | Benchmark result schema | benchmark imports | EVALUATION | adapter | schema ownership |
+| `src/conflux/adapters/benchmarks/external/base.py` | External benchmark adapter contract | imports | EVALUATION | adapter | optional dependency |
+| `src/conflux/adapters/benchmarks/external/runner.py` | External command runner | imports | DEVELOPMENT | tooling | process assumptions |
+| `src/conflux/adapters/benchmarks/external/agentdojo.py` | AgentDojo external translation | imports | EVALUATION | adapter | external drift |
+| `src/conflux/adapters/benchmarks/external/camel.py` | CaMeL external translation | imports | EVALUATION | adapter | external drift |
+| `src/conflux/adapters/benchmarks/external/dual_llm.py` | Dual-LLM external translation | imports | EVALUATION | adapter | external drift |
 | `tests/AGENTS.md` | Local test rules | test guidance | DEVELOPMENT | tooling | keep concise |
 | `tests/test_artifacts.py` | Artifact behavior tests | pytest | DEVELOPMENT | canonical | compatibility assertions |
 | `tests/test_authorisation.py` | Authority invariant tests | pytest | DEVELOPMENT | canonical | legacy API assertions |
