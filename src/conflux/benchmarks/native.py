@@ -18,10 +18,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Iterator, Mapping
 
+from conflux.compatibility.environment import Data, Environment
+from conflux.evaluation.reporting import EvaluationSummary, summarise_branching
+from conflux.evaluation.services import ExhaustiveEvaluationResult, ExhaustiveEvaluator
 from conflux.ites import ITES
-from conflux.sled.environment import Data, Environment
-from conflux.sled.evaluator import ExhaustiveEvaluationResult, ExhaustiveEvaluator
-from conflux.sled.reporting import EvaluationSummary, summarise_branching
 
 from .results import (
     BenchmarkCaseResult,

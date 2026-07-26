@@ -14,7 +14,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
-from conflux.sled.reporting import EvaluationSummary
+from conflux.evaluation.reporting import EvaluationSummary
 
 
 @dataclass(frozen=True, slots=True)

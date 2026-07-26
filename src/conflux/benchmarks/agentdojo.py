@@ -15,10 +15,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Mapping, Protocol, runtime_checkable
 
+from conflux.compatibility.environment import Data, Environment
+from conflux.evaluation.reporting import EvaluationSummary
+from conflux.evaluation.services import ExhaustiveEvaluator
 from conflux.ites import ITES
-from conflux.sled.environment import Data, Environment
-from conflux.sled.evaluator import ExhaustiveEvaluator
-from conflux.sled.reporting import EvaluationSummary
 
 from .native import (
     NativeBenchmarkCase,
