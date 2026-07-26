@@ -45,6 +45,9 @@ translation-era compatibility APIs, not the long-term provider contract.
 
 The canonical trace boundary is `conflux.evaluation.TraceRecord`: immutable,
 sequence-numbered, detached mappings with an explicit schema version.
+One-shot evaluation emits a deterministic `evaluation.completed` record with
+guarantee and declared/blocked-action summaries. Detailed branch traces remain
+the next migration target for exhaustive evaluation.
 
 ## Results template
 

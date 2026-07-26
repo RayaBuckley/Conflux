@@ -192,3 +192,4 @@ documents have absorbed their unique evidence and all links are updated. No
 | `docs/decisions/007-legacy-code-mapping.md` | Archived implementation mapping decision | documentation review | ARCHITECTURE/REFERENCE | tooling | update as migration completes |
 | `tests/test_policy_boundary.py` | Authorisation port behavior | pytest | REFERENCE | canonical | add visibility and consent cases |
 | `tests/test_evaluation_contract.py` | Evaluator/result ownership tests | pytest | EVALUATION | canonical | add deterministic trace fixtures |
+| `tests/test_evaluation_trace.py` | One-shot deterministic trace tests | pytest | EVALUATION | canonical | add exhaustive branch traces |

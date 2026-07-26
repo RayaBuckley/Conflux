@@ -36,6 +36,7 @@ from conflux.core.actions import (
     StopAction,
 )
 from conflux.core.permissions import normalise_permission
+from conflux.evaluation.trace import TraceRecord
 from conflux.ites import ITES, Guarantee, ITESReport
 
 from .environment import Data, Environment
@@ -53,6 +54,7 @@ class EvaluationResult:
 
     report: ITESReport
     declared: list[Any] = field(default_factory=list)
+    trace: tuple[TraceRecord, ...] = field(default_factory=tuple)
 
 
 @dataclass(slots=True)
@@ -75,7 +77,19 @@ class Evaluator:
             llm_call=self.llm_call,
             declare=declare,
         )
-        return EvaluationResult(report=report, declared=declared)
+        trace = (
+            TraceRecord(
+                event="evaluation.completed",
+                run_id=f"{self.environment.name}:one-shot",
+                sequence=0,
+                payload={
+                    "declared_actions": len(declared),
+                    "blocked_actions": len(report.blocked_actions),
+                    "guarantees": {guarantee.name: guarantee.holds for guarantee in report.guarantees},
+                },
+            ),
+        )
+        return EvaluationResult(report=report, declared=declared, trace=trace)
 
 
 @dataclass(frozen=True, slots=True)

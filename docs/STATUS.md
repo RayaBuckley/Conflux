@@ -34,6 +34,7 @@ planned; architecture belongs in `ARCHITECTURE.md`.
 | Canonical evaluation services | Initial facade | migrate SLED evaluator implementation and trace writers |
 | Application policy service | Initial implementation | compose visibility and consent ports with authorisation |
 | Benchmark imports | Migrated to evaluation facade | remove remaining direct SLED compatibility imports |
+| One-shot trace output | Initial deterministic completion record | integrate per-action and exhaustive branch events |
 | Legacy proposal handling | Isolated | migrate remaining reference callers, then remove |
 
 ## Post-paper extensions
