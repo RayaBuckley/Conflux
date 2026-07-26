@@ -184,6 +184,7 @@ documents have absorbed their unique evidence and all links are updated. No
 | `src/conflux/ports/environment.py` | Environment materialisation Protocol | mypy | ARCHITECTURE | canonical | provider implementations pending |
 | `src/conflux/compatibility/__init__.py` | Explicit legacy/reference exports | import test | REFERENCE | compatibility | reference implementation remains |
 | `src/conflux/compatibility/environment.py` | Deprecated SLED environment aliases | provider imports | EVALUATION | compatibility | migrate adapters to DataItem |
+| `src/conflux/compatibility/proposals.py` | Legacy proposal translation boundary | ITES import | REFERENCE | compatibility | remove after legacy callers migrate |
 | `tests/test_environment_contract.py` | Environment boundary regression tests | pytest | EVALUATION | canonical | expand provider contracts |
 | `src/conflux/application/policy.py` | Collective authorisation service | pytest | REFERENCE | canonical | visibility/consent composition pending |
 | `src/conflux/evaluation/services.py` | Canonical evaluator exports | import test | EVALUATION | canonical | SLED implementation migration pending |

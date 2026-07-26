@@ -44,6 +44,8 @@ Legacy/reference implementations are imported from `conflux.compatibility`.
 Canonical `conflux.ites` exports only the ITES contract and canonical mediator.
 Application policy decisions are owned by `conflux.application.policy`, while
 evaluation entry points are owned by `conflux.evaluation.services`.
+Legacy raw proposal coercion is owned by `conflux.compatibility.proposals` and
+is not part of the canonical action API.
 
 `ites.mvp`, `ites.reference`, and the one-shot SLED evaluator are compatibility
 or research harnesses. They must delegate to or translate into canonical types

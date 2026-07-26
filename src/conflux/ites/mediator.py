@@ -27,7 +27,6 @@ from conflux.auth.authorisation import AuthorisationDecision, authorise_action
 from conflux.core import Artifact, Principal, Provenance
 from conflux.core.actions import (
     Action,
-    ActionVisibility,
     ClarificationRequestAction,
     DelegationAction,
     MessageUserAction,
@@ -233,43 +232,6 @@ def _bind_action_context(
     )
 
 
-def _coerce_legacy_proposal(
-    proposal: Any,
-    current_inputs: FrozenSet[Artifact[Any]],
-    influencers: FrozenSet[Principal],
-) -> Action[Any] | None:
-    """
-    Backwards-compatible conversion for legacy proposal shapes.
-
-    This supports the older `PrimitiveAction(action=...)` and
-    `LLMExecutionAction(inputs=...)` style outputs.
-    """
-    if isinstance(proposal, Action):
-        return proposal
-
-    if hasattr(proposal, "action"):
-        action_name = str(getattr(proposal, "action"))
-        return PrimitiveAction(
-            permission=Permission(action_name),
-            resource=getattr(proposal, "resource", None),
-            provider_operation=action_name,
-            inputs=current_inputs,
-            decision_principals=influencers,
-            visibility=getattr(proposal, "visibility", ActionVisibility.INTERNAL),
-        )
-
-    if hasattr(proposal, "inputs"):
-        nested_inputs = _materialise_inputs(frozenset(getattr(proposal, "inputs")))
-        return NestedExecutionAction(
-            nested_inputs=nested_inputs,
-            inputs=nested_inputs,
-            decision_principals=influencers,
-            visibility=getattr(proposal, "visibility", ActionVisibility.INTERNAL),
-        )
-
-    return None
-
-
 def _primitive_permission_for(action: PrimitiveAction) -> Permission | str:
     """
     Derive the permission to check for a primitive action.
@@ -429,7 +391,7 @@ class MediatingITES(ITES):
         consent_allowed = True
 
         for raw_proposal in proposals:
-            proposal = _coerce_legacy_proposal(raw_proposal, inputs, influencers)
+            proposal: Action[Any] | None = raw_proposal if isinstance(raw_proposal, Action) else None
             if proposal is None:
                 blocked_this_step.add(raw_proposal)
                 state = state.record_blocked(raw_proposal)
