@@ -31,6 +31,8 @@ planned; architecture belongs in `ARCHITECTURE.md`.
 | Clean-slate boundaries | Initial slice | migrate core/ITES/SLED callers incrementally |
 | Evaluation trace contract | Initial versioned record | connect SLED trace writers and add golden fixtures |
 | Provider-neutral environment | Initial contract | migrate provider and SLED callers from legacy environment types |
+| Canonical evaluation services | Initial facade | migrate SLED evaluator implementation and trace writers |
+| Application policy service | Initial implementation | compose visibility and consent ports with authorisation |
 
 ## Post-paper extensions
 

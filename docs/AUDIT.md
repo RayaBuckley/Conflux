@@ -185,3 +185,7 @@ documents have absorbed their unique evidence and all links are updated. No
 | `src/conflux/compatibility/__init__.py` | Explicit legacy/reference exports | import test | REFERENCE | compatibility | reference implementation remains |
 | `src/conflux/compatibility/environment.py` | Deprecated SLED environment aliases | provider imports | EVALUATION | compatibility | migrate adapters to DataItem |
 | `tests/test_environment_contract.py` | Environment boundary regression tests | pytest | EVALUATION | canonical | expand provider contracts |
+| `src/conflux/application/policy.py` | Collective authorisation service | pytest | REFERENCE | canonical | visibility/consent composition pending |
+| `src/conflux/evaluation/services.py` | Canonical evaluator exports | import test | EVALUATION | canonical | SLED implementation migration pending |
+| `tests/test_policy_boundary.py` | Authorisation port behavior | pytest | REFERENCE | canonical | add visibility and consent cases |
+| `tests/test_evaluation_contract.py` | Evaluator/result ownership tests | pytest | EVALUATION | canonical | add deterministic trace fixtures |

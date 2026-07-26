@@ -17,6 +17,11 @@ in versioned evidence artifacts.
 - Statistics separate security outcomes from legitimate utility.
 - Benchmark adapters translate external systems at the boundary.
 
+Canonical evaluator imports are exposed by `conflux.evaluation`: `Evaluator`
+performs one-shot execution and `ExhaustiveEvaluator` performs bounded
+combinatorial exploration. Their result types are distinct. `conflux.sled`
+remains a compatibility implementation namespace during migration.
+
 ## Evidence requirements
 
 Every reported run records the environment, attack, defence, model/configuration,
