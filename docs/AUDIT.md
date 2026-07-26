@@ -180,3 +180,8 @@ documents have absorbed their unique evidence and all links are updated. No
 | `tests/test_clean_architecture.py` | New boundary contract tests | pytest | DEVELOPMENT | canonical | expand into contract suites |
 | `src/conflux/evaluation/__init__.py` | Evaluation contract exports | import test | EVALUATION | canonical | SLED migration pending |
 | `src/conflux/evaluation/trace.py` | Versioned immutable trace record | unit test | EVALUATION | canonical | JSON schema expansion pending |
+| `src/conflux/domain/environment.py` | Provider-neutral data and snapshot values | pytest | ARCHITECTURE/EVALUATION | canonical | legacy SLED callers remain |
+| `src/conflux/ports/environment.py` | Environment materialisation Protocol | mypy | ARCHITECTURE | canonical | provider implementations pending |
+| `src/conflux/compatibility/__init__.py` | Explicit legacy/reference exports | import test | REFERENCE | compatibility | reference implementation remains |
+| `src/conflux/compatibility/environment.py` | Deprecated SLED environment aliases | provider imports | EVALUATION | compatibility | migrate adapters to DataItem |
+| `tests/test_environment_contract.py` | Environment boundary regression tests | pytest | EVALUATION | canonical | expand provider contracts |

@@ -108,13 +108,6 @@ class ITES(ABC):
 
 from .mediator import MediatingITES  # noqa: E402
 
-ReferenceITES: Any = None
-try:
-    from .reference import ReferenceITES as _ReferenceITES
-    ReferenceITES = _ReferenceITES
-except ImportError:  # pragma: no cover
-    pass
-
 __all__ = [
     "Declare",
     "EnvironmentLike",
@@ -124,5 +117,4 @@ __all__ = [
     "LLMCall",
     "MediatingITES",
     "Proposal",
-    "ReferenceITES",
 ]

@@ -15,9 +15,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, FrozenSet, Iterable, Mapping, Protocol, runtime_checkable
 
+from conflux.compatibility.environment import Data, Environment
 from conflux.core import Principal, Resource
 from conflux.core.actions import Proposal
-from conflux.sled.environment import Data, Environment
 
 
 @dataclass(frozen=True, slots=True)

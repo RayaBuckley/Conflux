@@ -21,9 +21,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
+from conflux.compatibility.environment import Data, Environment
 from conflux.core import Principal, Resource
 from conflux.core.actions import PrimitiveAction, Proposal
-from conflux.sled.environment import Data, Environment
 
 from .base import (
     BaseProviderAdapter,

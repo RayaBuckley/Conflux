@@ -44,6 +44,11 @@ translations and has no authority to redefine domain semantics.
 `conflux.evaluation` owns benchmark-independent, versioned trace values. It
 records outcomes but does not decide whether an action is secure.
 
+`conflux.domain.environment` owns `DataItem` and `EnvironmentSnapshot`.
+Provider materialisation enters through `conflux.ports.EnvironmentPort`.
+Legacy `conflux.sled.environment.Data` and `Environment` remain compatibility
+types until their callers are migrated; new provider code must not import them.
+
 ### Execution
 
 `conflux.execution` transforms artifacts while preserving provenance. It is

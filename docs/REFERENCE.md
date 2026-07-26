@@ -40,6 +40,9 @@ facades and `conflux.ports` owns Protocol interfaces. Existing `core`, `ites`,
 and `sled` exports remain supported until their callers are migrated; they are
 not permission to add new cross-layer dependencies.
 
+Legacy/reference implementations are imported from `conflux.compatibility`.
+Canonical `conflux.ites` exports only the ITES contract and canonical mediator.
+
 `ites.mvp`, `ites.reference`, and the one-shot SLED evaluator are compatibility
 or research harnesses. They must delegate to or translate into canonical types
 and must not silently redefine security semantics.

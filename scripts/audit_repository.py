@@ -28,7 +28,11 @@ CANONICAL_DOCS = {
 
 def markdown_links(path: Path) -> list[tuple[int, str]]:
     pattern = re.compile(r"\[[^]]+\]\(([^)#]+)(?:#[^)]+)?\)")
-    return [(line_no, target) for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1) for target in pattern.findall(line)]
+    return [
+        (line_no, target)
+        for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
+        for target in pattern.findall(line)
+    ]
 
 
 def check_documentation_links(errors: list[str]) -> None:
@@ -82,12 +86,28 @@ def check_terminology(errors: list[str]) -> None:
                 errors.append(f"{path.relative_to(ROOT)}:{line_no}: prefer Principal terminology")
 
 
+def check_dependency_direction(errors: list[str]) -> None:
+    """Reject imports that would make canonical boundaries depend outward."""
+    rules = {
+        SOURCE / "domain": ("conflux.sled", "conflux.providers", "conflux.benchmarks", "conflux.compatibility"),
+        SOURCE / "ports": ("conflux.adapters", "conflux.sled", "conflux.providers", "conflux.benchmarks"),
+        SOURCE / "providers": ("conflux.sled",),
+    }
+    for directory, forbidden in rules.items():
+        for path in directory.rglob("*.py"):
+            for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                for target in forbidden:
+                    if target in line and ("import " in line or "from " in line):
+                        errors.append(f"{path.relative_to(ROOT)}:{line_no}: forbidden dependency {target}")
+
+
 def main() -> int:
     errors: list[str] = []
     check_documentation_links(errors)
     check_module_docstrings(errors)
     check_audit_coverage(errors)
     check_terminology(errors)
+    check_dependency_direction(errors)
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))

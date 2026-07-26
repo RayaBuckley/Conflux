@@ -34,6 +34,13 @@ in `core` or `ites`.
 The paper is an archived research reference. New repository functionality is
 post-paper work and must be labelled as such in results and status records.
 
+Provider-neutral inputs are `conflux.domain.environment.DataItem` values in an
+`EnvironmentSnapshot`. The older SLED `Data` and `Environment` classes are
+translation-era compatibility APIs, not the long-term provider contract.
+
+The canonical trace boundary is `conflux.evaluation.TraceRecord`: immutable,
+sequence-numbered, detached mappings with an explicit schema version.
+
 ## Results template
 
 Use the claim/evidence matrix formerly maintained in `MVP_RESULTS.md` when

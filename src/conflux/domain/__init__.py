@@ -11,6 +11,7 @@ Related documentation and tests: docs/ARCHITECTURE.md, docs/REFERENCE.md.
 
 from .artifacts import Artifact
 from .decisions import Decision, DecisionCategory, MediationDecision
+from .environment import DataItem, EnvironmentSnapshot
 from .identity import Principal, PrincipalContext
 from .intents import Intent
 from .provenance import Derivation, Provenance
@@ -20,9 +21,11 @@ __all__ = [
     "Artifact",
     "Decision",
     "DecisionCategory",
+    "DataItem",
     "Derivation",
     "Intent",
     "MediationDecision",
+    "EnvironmentSnapshot",
     "Principal",
     "PrincipalContext",
     "Provenance",

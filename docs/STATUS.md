@@ -30,6 +30,7 @@ planned; architecture belongs in `ARCHITECTURE.md`.
 | Documentation audit | In progress | keep ledger synchronized with changes |
 | Clean-slate boundaries | Initial slice | migrate core/ITES/SLED callers incrementally |
 | Evaluation trace contract | Initial versioned record | connect SLED trace writers and add golden fixtures |
+| Provider-neutral environment | Initial contract | migrate provider and SLED callers from legacy environment types |
 
 ## Post-paper extensions
 

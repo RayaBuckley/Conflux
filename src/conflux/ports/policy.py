@@ -7,6 +7,7 @@ from typing import Protocol
 from conflux.core.actions import Action
 from conflux.core.session import Session
 from conflux.domain.decisions import Decision
+from conflux.domain.identity import PrincipalContext
 
 
 class PolicyPort(Protocol):
@@ -17,4 +18,12 @@ class PolicyPort(Protocol):
         ...
 
 
-__all__ = ["PolicyPort"]
+class AuthorisationPort(Protocol):
+    """Evaluate collective authorisation without owning Principal identity."""
+
+    def decide(self, action: Action[object], context: PrincipalContext) -> Decision:
+        """Return an intersection-rule authorisation decision."""
+        ...
+
+
+__all__ = ["AuthorisationPort", "PolicyPort"]
