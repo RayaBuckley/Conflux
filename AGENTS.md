@@ -1,183 +1,63 @@
-# AGENTS.md
+# Conflux repository guidance
 
-## Project Identity
+## Purpose
 
-Conflux is a research framework that implements and evaluates principal-aware
-security for AI agents.
+Conflux researches principal-aware security for AI agents. An agent may be
+influenced by multiple Principals; permissions are therefore derived from the
+current Principal Context and provenance, not static prompt trust labels.
 
-The central research hypothesis is:
+## Priorities
 
-> An AI agent should be modelled as being simultaneously influenced by multiple
-> principals. The agent's permissions should therefore be determined by its
-> current Principal Context rather than by static prompt trust labels.
+1. Security-model correctness.
+2. Faithfulness to organisational access control.
+3. Reproducibility.
+4. Extensibility.
+5. Performance.
 
-All implementation decisions should preserve this principle.
+## Repository map
 
----
+- `src/conflux/core`: immutable security-domain values and action taxonomy.
+- `src/conflux/execution`: provenance-preserving transformations.
+- `src/conflux/auth`, `policy`: authorisation and policy decisions/adapters.
+- `src/conflux/ites`: canonical security boundary and mediation.
+- `src/conflux/providers`: external resource/environment adapters.
+- `src/conflux/sled`: benchmark-independent evaluation, traces, and reports.
+- `src/conflux/benchmarks`: native and external benchmark adapters.
+- `tests`: offline unit, security, integration, and reproducibility tests.
+- `docs`: architecture, contracts, decisions, status, and workflows.
+- `paper`: archived LaTeX research artefact and post-paper reference.
 
-## Research Goals
+## Non-negotiable invariants
 
-Priority order:
+- Provenance is never silently discarded.
+- Principal Context is evaluated at action time.
+- Authorisation, visibility, and consent are separate decisions.
+- Consent never manufactures authority.
+- Core and ITES do not import benchmark-specific behavior.
+- Evaluation code measures defences and does not encode benchmark shortcuts.
 
-1. Correctness of the security model
-2. Faithfulness to realistic organisational access control
-3. Reproducibility
-4. Extensibility
-5. Performance
+## Engineering rules
 
-Never sacrifice correctness for convenience.
+Use Python 3.12+, type hints, immutable dataclasses where practical, explicit
+dependency injection, and pure functions for domain logic. Keep public APIs
+small and documented. Add regression tests for every security invariant.
 
----
+## Required workflow
 
-## Core Concepts
+Inspect the architecture and affected APIs, write a decision-complete feature
+specification, implement the smallest coherent change, run
+`scripts\validate.ps1`, update documentation and status, and review the diff.
+Use `scripts\audit_repository.py` during AI-assisted changes.
 
-### Principal
+## Terminology and paper policy
 
-...
+Use `Principal Context` and `Principal`; use `User` only for an explicitly
+human user. The paper is archived reference material. Synchronise terminology
+and record material implementation divergence as post-paper work; do not alter
+paper claims silently.
 
-### Principal Context
+## Definition of done
 
-...
-
-### Provenance
-
-...
-
-### Resources
-
-...
-
-### Delegation
-
-...
-
----
-
-## Repository Layout
-
-Describe every major directory and its purpose.
-
----
-
-## Design Principles
-
-Examples:
-
-- Prefer explicit state over implicit behaviour.
-- Avoid hidden trust assumptions.
-- Provenance is never discarded.
-- Policies are composable.
-- Evaluation code should remain benchmark-independent.
-
----
-
-## Coding Principles
-
-- Python version
-- Type hints
-- Dataclasses
-- Pure functions where practical
-- Immutable models preferred
-- Avoid global state
-
----
-
-## Documentation Requirements
-
-When implementing a new feature:
-
-- Update Architecture.md if required.
-- Update Implementation Status.
-- Add tests.
-- Document new abstractions.
-
----
-
-## Benchmark Philosophy
-
-Benchmarks measure the defence—not the benchmark.
-
-Avoid benchmark-specific logic in core modules.
-
----
-
-## Paper Synchronisation
-
-If an implementation changes the architecture:
-
-- update paper notes
-- update architecture docs
-- ensure terminology remains consistent
-
----
-
-## Terminology
-
-Always use:
-
-Principal Context
-
-not:
-
-Principal Context
-
-Always use:
-
-Principal
-
-not:
-
-User
-
-unless specifically referring to human users.
-
----
-
-## Things Never To Do
-
-Examples:
-
-- Never hard-code benchmark behaviour.
-- Never bypass provenance tracking.
-- Never remove security checks to satisfy tests.
-- Never silently broaden permissions.
-
----
-
-## Development Workflow
-
-Expected sequence:
-
-Understand architecture
-
-↓
-
-Produce technical specification
-
-↓
-
-Implement
-
-↓
-
-Run tests
-
-↓
-
-Update documentation
-
-↓
-
-Review diff
-
----
-
-## Definition of Done
-
-A feature is complete only if:
-
-- implementation finished
-- tests pass
-- documentation updated
-- terminology consistent
-- benchmark compatibility maintained
+Implementation, tests, documentation, terminology, audit checks, and relevant
+benchmark compatibility are complete. Generated caches, local environments,
+and experiment outputs are not committed.

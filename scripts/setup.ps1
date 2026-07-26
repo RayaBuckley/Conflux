@@ -64,7 +64,12 @@ function Test-VirtualEnvironmentHealthy {
     $cfg = Get-Content -LiteralPath $cfgPath -Raw
     $executableLine = $cfg -split "`r?`n" | Where-Object { $_ -match '^executable\s*=' } | Select-Object -First 1
     if ($executableLine -and $executableLine -match '^executable\s*=\s*(.+)$') {
-        if (-not (Test-Path -LiteralPath $Matches[1].Trim())) {
+        try {
+            $baseInterpreterExists = Test-Path -LiteralPath $Matches[1].Trim()
+        } catch {
+            $baseInterpreterExists = $false
+        }
+        if (-not $baseInterpreterExists) {
             return $false
         }
     }
