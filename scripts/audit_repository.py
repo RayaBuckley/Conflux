@@ -14,6 +14,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 SOURCE = ROOT / "src" / "conflux"
+CANONICAL_DOCS = {
+    "docs/README.md",
+    "docs/ARCHITECTURE.md",
+    "docs/REFERENCE.md",
+    "docs/DEVELOPMENT.md",
+    "docs/EVALUATION.md",
+    "docs/STATUS.md",
+    "docs/AUDIT.md",
+    "docs/GLOSSARY.md",
+}
 
 
 def markdown_links(path: Path) -> list[tuple[int, str]]:
@@ -22,6 +32,9 @@ def markdown_links(path: Path) -> list[tuple[int, str]]:
 
 
 def check_documentation_links(errors: list[str]) -> None:
+    for relative in CANONICAL_DOCS:
+        if not (ROOT / relative).exists():
+            errors.append(f"missing canonical document {relative}")
     for path in [ROOT / "README.md", *DOCS.rglob("*.md")]:
         for line_no, target in markdown_links(path):
             if "://" in target or target.startswith("mailto:"):
@@ -40,6 +53,19 @@ def check_module_docstrings(errors: list[str]) -> None:
             errors.append(f"{path.relative_to(ROOT)}: missing module docstring")
 
 
+def check_audit_coverage(errors: list[str]) -> None:
+    ledger = (DOCS / "AUDIT.md").read_text(encoding="utf-8")
+    documented = set(re.findall(r"`([^`]+)`", ledger))
+    for path in ROOT.rglob("*"):
+        if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts:
+            continue
+        relative = path.relative_to(ROOT).as_posix()
+        if relative.startswith((".venv/", ".pytest_cache/", "src/conflux.egg-info/")) or relative in {".coverage"}:
+            continue
+        if relative not in documented and relative not in {"docs/AUDIT.md"}:
+            errors.append(f"{relative}: missing docs/AUDIT.md ledger entry")
+
+
 def check_terminology(errors: list[str]) -> None:
     forbidden = re.compile(r"\buser(?:s)?\b", re.IGNORECASE)
     for path in [ROOT / "README.md", *DOCS.rglob("*.md")]:
@@ -54,6 +80,7 @@ def main() -> int:
     errors: list[str] = []
     check_documentation_links(errors)
     check_module_docstrings(errors)
+    check_audit_coverage(errors)
     check_terminology(errors)
     if errors:
         print("Repository audit failed:")

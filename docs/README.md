@@ -1,47 +1,38 @@
 # Conflux Documentation
 
-This is the canonical documentation index for Conflux. Start here when
-planning, implementing, evaluating, or reviewing a change.
+This is the documentation entry point. Each page has one job and links to the
+next level of detail.
 
-## Reviewer paths
+## Start here
 
-- New reviewer: [README](../README.md) → [Architecture](ARCHITECTURE.md) →
-  [Glossary](GLOSSARY.md) → [Module guide](MODULE_GUIDE.md).
-- Implementer: [AI development guide](AI_DEVELOPMENT_GUIDE.md) →
-  [Testing](TESTING.md) → [Change checklist](templates/CHANGE_CHECKLIST.md).
-- Security reviewer: [ITES semantics](ITES_MVP_SEMANTICS.md) → source package
-  docstrings → security and provenance tests.
-- Reproduction reviewer: [Reproducibility](REPRODUCIBILITY.md) →
-  [Evaluation methodology](EVALUATION_METHODOLOGY.md) → experiment outputs.
-
-## Understand the system
-
-- [Architecture](ARCHITECTURE.md) — boundaries, layers, dependencies, and security invariants.
-- [ITES MVP semantics](ITES_MVP_SEMANTICS.md) — normative operational semantics for the minimal defence core.
-- [Glossary](GLOSSARY.md) — canonical research and implementation terminology.
-- [Module guide](MODULE_GUIDE.md) — package responsibilities and extension points.
-- [Implementation status](IMPLEMENTATION_STATUS.md) — current capabilities and evidence.
+- [Architecture](ARCHITECTURE.md): system boundary, layers, dependencies, and
+  security invariants.
+- [Reference](REFERENCE.md): canonical concepts and public API ownership.
+- [Audit ledger](AUDIT.md): purpose, evidence, disposition, and risk for every
+  tracked file.
+- [Glossary](GLOSSARY.md): required Principal and Principal Context terminology.
 
 ## Build and evaluate
 
-- [Testing](TESTING.md) — test taxonomy, validation commands, and security coverage.
-- [Reproducibility](REPRODUCIBILITY.md) — environments, deterministic runs, and experiment outputs.
-- [Roadmap](ROADMAP.md) — upcoming engineering and research work.
-- [Evaluation methodology](EVALUATION_METHODOLOGY.md) — synthetic, AgentDojo-compatible, and empirical evaluation tracks.
-- [MVP results](MVP_RESULTS.md) — reproducible results template and claim/evidence matrix.
-- [Project tracks and audit](PROJECT_TRACKS_AND_AUDIT.md) — research tracks, unfinished work, and prioritised recommendations.
+- [Development](DEVELOPMENT.md): setup, validation, testing, and AI workflow.
+- [Evaluation](EVALUATION.md): SLED methodology, benchmarks, evidence, and
+  reproducibility.
+- [Status](STATUS.md): implemented, blocked, and post-paper work.
 
-## Work with AI agents
+## Decisions and templates
 
-- [AI development guide](AI_DEVELOPMENT_GUIDE.md) — repository workflow and implementation rules.
-- [Feature specification template](templates/FEATURE_SPEC.md) — decision-complete change specifications.
-- [Change checklist](templates/CHANGE_CHECKLIST.md) — implementation and review completion criteria.
+- [Architecture decisions](decisions/README.md): durable security and design
+  decisions.
+- [Feature specification](templates/FEATURE_SPEC.md): decision-complete change
+  contract.
+- [Change checklist](templates/CHANGE_CHECKLIST.md): completion and review gate.
 
-## Record decisions
+## Reading paths
 
-- [Architecture decisions](decisions/README.md) — decisions that affect security, architecture, or research claims.
-- [ADR template](decisions/000-template.md) — format for new decisions.
+- New reviewer: `README.md` → Architecture → Reference → Audit.
+- Implementer: Architecture → Audit → Development → affected module docstring.
+- Security reviewer: Reference → ITES source → provenance/authorisation tests.
+- Evaluation reviewer: Evaluation → SLED source → traces, metrics, and results.
 
-Documentation is part of the research artefact. Changes to architecture,
-security terminology, or benchmark methodology must be reflected here and, when
-appropriate, in the paper sources.
+The paper under `paper/` is an archived research artifact. New functionality
+is post-paper work and must be labelled as such in Status and Evaluation.
