@@ -9,6 +9,6 @@ provenance and cannot broaden permissions.
 Related documentation and tests: docs/REFERENCE.md, tests/test_compatibility.py.
 """
 
-from conflux.ites.reference import ReferenceITES
+from .ites import ReferenceITES
 
 __all__ = ["ReferenceITES"]

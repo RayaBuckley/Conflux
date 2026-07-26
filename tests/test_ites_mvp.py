@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from conflux.core import Principal, Provenance
 from conflux.core.permissions import Permission
-from conflux.ites.mvp import (
+from conflux.research.mvp import (
     MVPExplorer,
     MVPNested,
     MVPPrimitive,

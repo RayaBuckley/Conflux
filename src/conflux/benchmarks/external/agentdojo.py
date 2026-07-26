@@ -23,8 +23,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from ...sled.environment_suite import EnvironmentScenario
-from ...sled.trace import (
+from ...evaluation.environment_suite import EnvironmentScenario
+from ...evaluation.trace import (
     DecisionOutcome,
     ExecutionTrace,
     TraceContext,

@@ -1,14 +1,14 @@
-"""Canonical evaluation service imports over the current SLED implementation.
+"""Canonical evaluation services.
 
 Purpose
 Layer: evaluation/application boundary
-Dependencies: canonical ITES contract and the staged SLED compatibility facade.
+Dependencies: canonical ITES contract and evaluation implementations.
 Public API: one-shot and exhaustive evaluator/result classes.
 Security/data invariants: evaluation invokes mediation and never defines policy.
 Related documentation and tests: docs/EVALUATION.md, tests/test_evaluation_contract.py.
 """
 
-from conflux.sled.evaluator import (
+from .evaluator import (
     EvaluationResult,
     Evaluator,
     ExhaustiveEvaluationResult,

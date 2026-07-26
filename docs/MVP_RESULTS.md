@@ -27,7 +27,7 @@ no branch-isolation invariant fails.
 
 | Claim | Implementation | Tests | Result |
 |---|---|---|---|
-| Provenance is preserved | `conflux.ites.mvp` | MVP provenance tests | Pending run |
+| Provenance is preserved | `conflux.research.mvp` | MVP provenance tests | Pending run |
 | Authority is monotone | `MVPExplorer` + Principal permissions | MVP monotonicity tests | Pending run |
 | Primitive privilege escalation is blocked | `MVPExplorer` | MVP authorisation tests | Pending run |
 | Nested inputs require readability | `MVPExplorer` | MVP nested-input tests | Pending run |

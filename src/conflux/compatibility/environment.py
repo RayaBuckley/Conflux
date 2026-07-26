@@ -2,7 +2,7 @@
 
 Purpose
 Layer: compatibility boundary
-Dependencies: legacy ``conflux.sled.environment`` only.
+Dependencies: staged ``conflux.evaluation.environment`` implementation only.
 Public API: Data and Environment aliases for callers not yet migrated.
 Security/data invariants: no new semantics; migration preserves existing
 Principal and provenance behavior.
@@ -10,7 +10,7 @@ Related documentation and tests: docs/EVALUATION.md, docs/AUDIT.md.
 """
 
 from conflux.domain.environment import DataItem, EnvironmentSnapshot
-from conflux.sled.environment import Data, Environment
+from conflux.evaluation.environment import Data, Environment
 
 
 def data_item_from_legacy(item: Data) -> DataItem:

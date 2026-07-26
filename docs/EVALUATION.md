@@ -19,8 +19,9 @@ in versioned evidence artifacts.
 
 Canonical evaluator imports are exposed by `conflux.evaluation`: `Evaluator`
 performs one-shot execution and `ExhaustiveEvaluator` performs bounded
-combinatorial exploration. Their result types are distinct. `conflux.sled`
-remains a compatibility implementation namespace during migration.
+combinatorial exploration. Their result types are distinct. The former SLED
+implementation namespace has been moved here; canonical evaluation no longer
+requires SLED imports.
 
 ## Evidence requirements
 

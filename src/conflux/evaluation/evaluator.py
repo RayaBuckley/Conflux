@@ -39,7 +39,7 @@ from conflux.core.actions import (
     StopAction,
 )
 from conflux.core.permissions import normalise_permission
-from conflux.evaluation.trace import TraceRecord
+from conflux.evaluation.records import TraceRecord
 from conflux.ites import ITES, Guarantee, ITESReport
 
 from .environment import Data, Environment

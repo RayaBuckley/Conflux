@@ -3,7 +3,7 @@
 ## Decision
 
 `conflux.ites` owns the domain-facing ITES contract. `MediatingITES` is the
-reference implementation used by the existing execution path. `ites.mvp` is a
+reference implementation used by the existing execution path. `research.mvp` is a
 small executable semantics and exploration harness used to validate the
 research model; it must translate to the canonical model rather than create a
 parallel security contract.

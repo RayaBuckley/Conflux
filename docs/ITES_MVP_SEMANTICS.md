@@ -4,7 +4,7 @@ Status: normative for the MVP
 Semantics version: `ites-mvp-1`
 
 This document specifies the smallest ITES security boundary implemented by
-`conflux.ites.mvp`. It covers provenance, Principal Context accumulation,
+`conflux.research.mvp`. It covers provenance, Principal Context accumulation,
 nested execution, primitive authorisation, bounded exploration, immutable
 traces, and isolated branches. Consent, visibility, delegation, providers,
 legacy proposal coercion, and richer action kinds are extensions, not part of

@@ -1,9 +1,10 @@
 """
-Deprecated SLED environment compatibility model.
+Canonical evaluation environment model.
 
-Canonical replacement: ``conflux.domain.environment.DataItem`` and
-``EnvironmentSnapshot``. This module remains only for staged callers and will
-be removed after the source-import audit is empty.
+This module owns the evaluation environment used by scenarios, evaluators,
+and benchmark adapters. Provider-neutral domain values remain defined in
+``conflux.domain.environment``; the evaluation model is the compatibility
+translation boundary for existing benchmark-shaped data.
 
 SLED is the evaluation layer used to construct scenarios and measure whether a
 defence such as ITES behaves safely.

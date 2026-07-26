@@ -9,13 +9,13 @@ the native system-level SLED methodology.
 from __future__ import annotations
 
 from conflux.core import Principal
-from conflux.sled.environment import Data, Environment
-from conflux.sled.model_benchmark import (
+from conflux.evaluation.environment import Data, Environment
+from conflux.evaluation.model_benchmark import (
     ModelAttackProfile,
     ModelLevelAttack,
     build_model_reference_benchmark,
 )
-from conflux.sled.scenario import Scenario
+from conflux.evaluation.scenario import Scenario
 
 
 def _make_scenario() -> Scenario:

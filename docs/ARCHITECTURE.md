@@ -46,8 +46,9 @@ records outcomes but does not decide whether an action is secure.
 
 `conflux.domain.environment` owns `DataItem` and `EnvironmentSnapshot`.
 Provider materialisation enters through `conflux.ports.EnvironmentPort`.
-Legacy `conflux.sled.environment.Data` and `Environment` remain compatibility
-types until their callers are migrated; new provider code must not import them.
+Evaluation environments are owned by `conflux.evaluation.environment`.
+Provider-neutral domain values remain owned by `conflux.domain.environment`;
+conversion between them is an explicit evaluation boundary.
 
 ### Execution
 
@@ -67,9 +68,10 @@ authorisation, visibility, and consent.
 
 ### Evaluation
 
-`conflux.sled` constructs environments and scenarios, applies attacks and
+`conflux.evaluation` constructs environments and scenarios, applies attacks and
 defences, explores execution, records traces, classifies security and utility
-outcomes, and aggregates reports.
+outcomes, and aggregates reports. The former SLED implementation graph has
+been moved here.
 
 ### Adapters
 

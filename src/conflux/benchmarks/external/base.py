@@ -35,8 +35,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Protocol, Sequence, runtime_checkable
 
-from ...sled.environment_suite import EnvironmentScenario
-from ...sled.trace import ExecutionTrace
+from ...evaluation.environment_suite import EnvironmentScenario
+from ...evaluation.trace import ExecutionTrace
 
 
 @dataclass(frozen=True)

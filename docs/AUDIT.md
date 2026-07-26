@@ -36,39 +36,42 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/ites/mediator.py` | ITES mediation implementation | ITES/state tests | ARCHITECTURE | canonical | recursive branch evidence |
 | `src/conflux/ites/state.py` | Immutable execution state | state tests | ARCHITECTURE | canonical | guarantee ownership |
 | `src/conflux/ites/properties.py` | ITES property contracts | imports | ARCHITECTURE | canonical | abstract surface |
-| `src/conflux/ites/mvp.py` | Minimal executable semantics harness | MVP tests | EVALUATION | compatibility | parallel model risk |
-| `src/conflux/ites/reference.py` | Legacy/reference ITES facade | ITES tests | REFERENCE | compatibility | legacy proposals |
+| `src/conflux/ites/mvp.py` | Historical MVP research harness | moved to research/mvp.py | EVALUATION | remove | relocated after zero-caller audit |
+| `src/conflux/research/__init__.py` | Research namespace and artifact boundary | imports | EVALUATION | research artifact | not runtime API |
+| `src/conflux/research/mvp.py` | Executable MVP research semantics | MVP tests | EVALUATION | research artifact | not canonical runtime |
+| `src/conflux/ites/reference.py` | Historical reference ITES module | moved to compatibility/ites.py | REFERENCE | remove | relocated after zero-caller audit |
+| `src/conflux/compatibility/ites.py` | Reference ITES compatibility implementation | compatibility tests | REFERENCE | compatibility | preserve research behavior |
 | `src/conflux/providers/base.py` | Provider adapter contract | imports | ARCHITECTURE | adapter | SLED dependency |
 | `src/conflux/providers/__init__.py` | Provider package ownership | imports | ARCHITECTURE | canonical | package boundary |
 | `src/conflux/providers/filesystem.py` | Filesystem provider | imports | EVALUATION | adapter | host effects |
 | `src/conflux/providers/docker.py` | Docker provider | imports | EVALUATION | adapter | optional runtime |
-| `src/conflux/sled/__init__.py` | SLED public exports | benchmark tests | EVALUATION | canonical | export drift |
-| `src/conflux/sled/environment.py` | Deprecated evaluation data/environment facade | compatibility tests | EVALUATION | compatibility | remove after zero-import audit |
-| `src/conflux/sled/scenario.py` | Evaluation scenario | benchmark tests | EVALUATION | canonical | duplicate models |
-| `src/conflux/sled/environment_suite.py` | Environment catalogue | imports | EVALUATION | benchmark | scenario scale |
-| `src/conflux/sled/task_suite.py` | Task suite contract | benchmark tests | EVALUATION | canonical | protocol compatibility |
-| `src/conflux/sled/task_sets.py` | Representative tasks | imports | EVALUATION | benchmark | intended behavior |
-| `src/conflux/sled/attack.py` | Attack contract | imports | EVALUATION | benchmark | attack boundary |
-| `src/conflux/sled/evaluator.py` | Deprecated one-shot/exhaustive evaluator facade | compatibility tests | EVALUATION | compatibility | migrate implementation to evaluation |
-| `src/conflux/sled/benchmark_runner.py` | Suite orchestration | benchmark tests | EVALUATION | canonical | evaluator API |
-| `src/conflux/sled/trace.py` | Immutable execution traces | imports | EVALUATION | canonical | evidence completeness |
-| `src/conflux/sled/counterexample.py` | Counterexample extraction | imports | EVALUATION | canonical | trace assumptions |
-| `src/conflux/sled/task_classification.py` | Trace outcome labels | imports | EVALUATION | canonical | heuristic labels |
-| `src/conflux/sled/task_result.py` | Task result normalization | imports | EVALUATION | canonical | utility/security split |
-| `src/conflux/sled/statistics.py` | Outcome aggregation | imports | EVALUATION | canonical | metric definitions |
-| `src/conflux/sled/reporting.py` | Deprecated human/machine summary facade | compatibility imports | EVALUATION | compatibility | migrate implementation to evaluation |
-| `src/conflux/sled/evaluation.py` | End-to-end evaluation driver | imports | EVALUATION | canonical | duplicate orchestration |
-| `src/conflux/sled/defence_evaluation.py` | Defence comparison workflow | imports | EVALUATION | benchmark | overlap with evaluation.py |
-| `src/conflux/sled/model_benchmark.py` | Model-level reference benchmark | model tests | EVALUATION | benchmark | post-paper scope |
-| `src/conflux/sled/system_benchmark.py` | System-level benchmark | imports | EVALUATION | benchmark | task coverage |
-| `src/conflux/sled/defences/base.py` | Baseline defence contract | imports | EVALUATION | benchmark | contract clarity |
-| `src/conflux/sled/defences/__init__.py` | Defence package ownership | imports | EVALUATION | canonical | package boundary |
-| `src/conflux/sled/defences/no_defence.py` | Negative-control defence | imports | EVALUATION | benchmark | expected failures |
-| `src/conflux/sled/defences/no_read_check.py` | Read-check negative control | imports | EVALUATION | benchmark | expected failures |
-| `src/conflux/sled/defences/union_permissions.py` | Union-authority negative control | imports | EVALUATION | benchmark | security baseline |
-| `src/conflux/sled/defences/latest_input_only.py` | Latest-input negative control | imports | EVALUATION | benchmark | security baseline |
-| `src/conflux/sled/defences/initiator_only.py` | Initiator-only negative control | imports | EVALUATION | benchmark | security baseline |
-| `src/conflux/sled/defences/ites_adapter.py` | ITES-to-SLED adapter | imports | EVALUATION | adapter | duplicate mediation |
+| `src/conflux/sled/__init__.py` | Historical SLED public exports | moved to evaluation | EVALUATION | remove | removed after graph move |
+| `src/conflux/sled/environment.py` | Historical environment module | moved to evaluation/environment.py | EVALUATION | remove | removed after graph move |
+| `src/conflux/sled/scenario.py` | Historical scenario module | moved to evaluation/scenario.py | EVALUATION | remove | removed after graph move |
+| `src/conflux/sled/environment_suite.py` | Historical environment catalogue | moved to evaluation/environment_suite.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/task_suite.py` | Historical task suite contract | moved to evaluation/task_suite.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/task_sets.py` | Historical representative tasks | moved to evaluation/task_sets.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/attack.py` | Historical attack contract | moved to evaluation/attack.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/evaluator.py` | Historical evaluator module | moved to evaluation/evaluator.py | EVALUATION | remove | removed after graph move |
+| `src/conflux/sled/benchmark_runner.py` | Historical suite orchestration | moved to evaluation/benchmark_runner.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/trace.py` | Historical execution traces | moved to evaluation/trace.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/counterexample.py` | Historical counterexample extraction | moved to evaluation/counterexample.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/task_classification.py` | Historical trace outcome labels | moved to evaluation/task_classification.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/task_result.py` | Historical task result normalization | moved to evaluation/task_result.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/statistics.py` | Historical outcome aggregation | moved to evaluation/statistics.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/reporting.py` | Historical reporting module | moved to evaluation/reporting.py | EVALUATION | remove | removed after graph move |
+| `src/conflux/sled/evaluation.py` | Historical end-to-end evaluation driver | moved to evaluation/suite_evaluation.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defence_evaluation.py` | Historical defence comparison workflow | moved to evaluation/defence_evaluation.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/model_benchmark.py` | Historical model benchmark | moved to evaluation/model_benchmark.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/system_benchmark.py` | Historical system benchmark | moved to evaluation/system_benchmark.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/base.py` | Historical defence contract | moved to evaluation/defences/base.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/__init__.py` | Historical defence package | moved to evaluation/defences | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/no_defence.py` | Historical negative-control defence | moved to evaluation/defences/no_defence.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/no_read_check.py` | Historical read-check negative control | moved to evaluation/defences/no_read_check.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/union_permissions.py` | Historical union-authority negative control | moved to evaluation/defences/union_permissions.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/latest_input_only.py` | Historical latest-input negative control | moved to evaluation/defences/latest_input_only.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/initiator_only.py` | Historical initiator-only negative control | moved to evaluation/defences/initiator_only.py | EVALUATION | remove | relocated after graph move |
+| `src/conflux/sled/defences/ites_adapter.py` | Historical ITES evaluation adapter | moved to evaluation/defences/ites_adapter.py | EVALUATION | remove | relocated after graph move |
 | `src/conflux/benchmarks/results.py` | Stable benchmark result schema | imports | EVALUATION | benchmark | schema versioning |
 | `src/conflux/benchmarks/__init__.py` | Benchmark package ownership | imports | EVALUATION | canonical | package boundary |
 | `src/conflux/benchmarks/native.py` | Native benchmark adapter | imports | EVALUATION | benchmark | exhaustive coupling |
@@ -104,7 +107,7 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/AGENTS.md` | Package-local rules | instructions | REFERENCE | tooling | overlap |
 | `src/conflux/core/AGENTS.md` | Core security rules | instructions | ARCHITECTURE | tooling | overlap |
 | `src/conflux/ites/AGENTS.md` | ITES security rules | instructions | ARCHITECTURE | tooling | overlap |
-| `src/conflux/sled/AGENTS.md` | Evaluation rules | instructions | EVALUATION | tooling | overlap |
+| `src/conflux/sled/AGENTS.md` | Historical SLED local rules | removed with obsolete package | EVALUATION | remove | root and evaluation rules supersede it |
 | `paper/AGENTS.md` | Paper artifact rules | instructions | STATUS | research artifact | archive policy |
 | `docs/README.md` | Documentation navigation | links | README | canonical | hierarchy migration |
 | `docs/ARCHITECTURE.md` | System architecture | source/imports | ARCHITECTURE | canonical | API drift |
@@ -154,6 +157,44 @@ documents have absorbed their unique evidence and all links are updated. No
  file is removed merely because it lacks a current import.
 
 ## Clean-slate migration additions
+
+## Evaluation graph migration
+
+The former `src/conflux/sled/` implementation graph now owns the canonical
+evaluation modules under `src/conflux/evaluation/`. The old SLED package was a
+facade-only compatibility boundary and has been removed after the source and
+test import audit reached zero callers.
+
+| Path | Required purpose / owner | Evidence | Docs | Disposition | Risk |
+|---|---|---|---|---|---|
+| `src/conflux/evaluation/environment.py` | Evaluation environment model | evaluation tests | EVALUATION | canonical | domain model convergence |
+| `src/conflux/evaluation/evaluator.py` | One-shot and exhaustive evaluators | evaluator tests | EVALUATION | canonical | trace completeness |
+| `src/conflux/evaluation/reporting.py` | Evaluation reports and summaries | reporting imports | EVALUATION | canonical | schema stability |
+| `src/conflux/evaluation/trace.py` | Rich execution traces | external adapters | EVALUATION | canonical | evidence completeness |
+| `src/conflux/evaluation/records.py` | Compact versioned trace records | trace tests | EVALUATION | canonical | schema evolution |
+| `src/conflux/evaluation/defences/` | Comparison defence implementations | evaluation imports | EVALUATION | benchmark | adapter contracts |
+| `src/conflux/evaluation/attack.py` | Attack contract | evaluation tests | EVALUATION | canonical | attack boundary |
+| `src/conflux/evaluation/benchmark_runner.py` | Benchmark suite orchestration | benchmark tests | EVALUATION | canonical | evaluator contract |
+| `src/conflux/evaluation/counterexample.py` | Counterexample extraction | evaluation imports | EVALUATION | canonical | trace assumptions |
+| `src/conflux/evaluation/defence_evaluation.py` | Defence comparison workflow | evaluation imports | EVALUATION | canonical | metric overlap |
+| `src/conflux/evaluation/environment_suite.py` | Environment catalogue | evaluation imports | EVALUATION | canonical | scenario scale |
+| `src/conflux/evaluation/model_benchmark.py` | Model-level reference benchmark | model tests | EVALUATION | benchmark | post-paper scope |
+| `src/conflux/evaluation/scenario.py` | Evaluation scenario | benchmark tests | EVALUATION | canonical | data model convergence |
+| `src/conflux/evaluation/statistics.py` | Outcome aggregation | evaluation imports | EVALUATION | canonical | metric definitions |
+| `src/conflux/evaluation/suite_evaluation.py` | End-to-end suite evaluation | evaluation imports | EVALUATION | canonical | orchestration overlap |
+| `src/conflux/evaluation/system_benchmark.py` | System-level benchmark | evaluation imports | EVALUATION | benchmark | task coverage |
+| `src/conflux/evaluation/task_classification.py` | Trace outcome labels | evaluation imports | EVALUATION | canonical | heuristic labels |
+| `src/conflux/evaluation/task_result.py` | Task result normalization | evaluation imports | EVALUATION | canonical | utility/security split |
+| `src/conflux/evaluation/task_sets.py` | Representative tasks | evaluation imports | EVALUATION | benchmark | intended behavior |
+| `src/conflux/evaluation/task_suite.py` | Task suite contract | benchmark tests | EVALUATION | canonical | protocol compatibility |
+| `src/conflux/evaluation/defences/__init__.py` | Defence package exports | evaluation imports | EVALUATION | canonical | export ownership |
+| `src/conflux/evaluation/defences/base.py` | Comparison defence contract | evaluation imports | EVALUATION | canonical | decision schema |
+| `src/conflux/evaluation/defences/initiator_only.py` | Initiator-only negative control | evaluation imports | EVALUATION | benchmark | security baseline |
+| `src/conflux/evaluation/defences/ites_adapter.py` | ITES comparison adapter | evaluation imports | EVALUATION | adapter | mediation overlap |
+| `src/conflux/evaluation/defences/latest_input_only.py` | Latest-input negative control | evaluation imports | EVALUATION | benchmark | security baseline |
+| `src/conflux/evaluation/defences/no_defence.py` | Negative-control defence | evaluation imports | EVALUATION | benchmark | expected failures |
+| `src/conflux/evaluation/defences/no_read_check.py` | Read-check negative control | evaluation imports | EVALUATION | benchmark | expected failures |
+| `src/conflux/evaluation/defences/union_permissions.py` | Union-authority negative control | evaluation imports | EVALUATION | benchmark | security baseline |
 
 | Path | Required purpose / owner | Evidence | Docs | Disposition | Risk |
 |---|---|---|---|---|---|

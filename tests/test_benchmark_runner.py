@@ -10,10 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from conflux.core import Artifact, Principal
+from conflux.evaluation.benchmark_runner import BenchmarkRunner, run_suite
+from conflux.evaluation.environment import Data, Environment
+from conflux.evaluation.scenario import Scenario
+from conflux.evaluation.task_suite import BenchmarkTask, StaticTaskSuite
 from conflux.ites import ITES, Guarantee, ITESReport
-from conflux.sled import Data, Environment, Scenario, StaticTaskSuite
-from conflux.sled.benchmark_runner import BenchmarkRunner, run_suite
-from conflux.sled.task_suite import BenchmarkTask
 
 
 @dataclass(frozen=True, slots=True)

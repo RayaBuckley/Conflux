@@ -48,9 +48,8 @@ Legacy raw proposal coercion was removed after canonical ITES stopped accepting
 undocumented proposal shapes. Unsupported legacy callbacks must be adapted by
 their caller to canonical `Action` values.
 
-`ites.mvp`, `ites.reference`, and the one-shot SLED evaluator are compatibility
-or research harnesses. They must delegate to or translate into canonical types
-and must not silently redefine security semantics.
+`research.mvp` is a research harness and `compatibility.ReferenceITES` is a
+compatibility implementation. Neither is a canonical runtime import.
 
 ## Reading below this level
 

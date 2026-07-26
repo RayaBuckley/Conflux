@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .mediator import MediatingITES
+from conflux.ites.mediator import MediatingITES
 
 
 @dataclass(frozen=True, slots=True)
