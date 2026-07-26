@@ -3,6 +3,19 @@
 This is the high-level public map of the repository. Individual modules may
 contain additional internal helpers that are not extension points.
 
+## Dependency direction
+
+```text
+core → execution → auth/policy → ites → providers/benchmarks → sled reporting
+```
+
+`core` is the security-model source of truth. `sled` evaluates the model and
+may depend on it, but core and ITES must not depend on benchmark code.
+
+Every Python file has one primary responsibility. Abstract methods in adapter
+and protocol files are intentional extension points; concrete security
+behavior belongs in the canonical layers below.
+
 ## Domain and execution
 
 - `core/principals.py`, `resources.py`, and `permissions.py` define security

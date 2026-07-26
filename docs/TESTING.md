@@ -27,6 +27,7 @@ If direct execution is needed, use the venv interpreter explicitly:
 .\.venv\Scripts\python.exe -m pytest --cov=src/conflux --cov-report=term-missing --cov-report=html
 .\.venv\Scripts\python.exe -m ruff check src tests
 .\.venv\Scripts\python.exe -m mypy src
+\.\.venv\Scripts\python.exe scripts\audit_repository.py
 ```
 
 The HTML report is written to `htmlcov/` as local output. Coverage is currently
@@ -41,9 +42,9 @@ For the minimal ITES path, run only the self-contained MVP tests:
 .\.venv\Scripts\python.exe -c "from conflux.ites.mvp import MVPExplorer; print('MVP import OK')"
 ```
 
-The full suite currently includes deferred legacy SLED compatibility work and
-may fail during collection until the `Evaluator`/`EvaluationResult` facade and
-other older APIs are restored. That work is separate from MVP validation.
+The repository audit is dependency-free and checks documentation links, module
+docstrings, and Principal terminology. It runs before the test suite so
+structural drift is visible even when optional integrations are unavailable.
 
 The configured checks are defined in `pyproject.toml`: pytest discovers tests
 under `tests`, Ruff uses the project line length and import rules, and mypy runs

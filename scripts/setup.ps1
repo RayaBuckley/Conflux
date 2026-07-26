@@ -51,18 +51,34 @@ function Invoke-Python {
     }
 }
 
-if (Test-Path -LiteralPath $venvPython) {
-    $venvHealthy = $true
-    try {
-        & $venvPython --version *> $null
-        if ($LASTEXITCODE -ne 0) {
-            $venvHealthy = $false
-        }
-    } catch {
-        $venvHealthy = $false
+function Test-VirtualEnvironmentHealthy {
+    if (-not (Test-Path -LiteralPath $venvPython)) {
+        return $false
     }
 
-    if (-not $venvHealthy) {
+    $cfgPath = Join-Path $venvPath "pyvenv.cfg"
+    if (-not (Test-Path -LiteralPath $cfgPath)) {
+        return $false
+    }
+
+    $cfg = Get-Content -LiteralPath $cfgPath -Raw
+    $executableLine = $cfg -split "`r?`n" | Where-Object { $_ -match '^executable\s*=' } | Select-Object -First 1
+    if ($executableLine -and $executableLine -match '^executable\s*=\s*(.+)$') {
+        if (-not (Test-Path -LiteralPath $Matches[1].Trim())) {
+            return $false
+        }
+    }
+
+    try {
+        & $venvPython -c "import sys; assert sys.version_info >= (3, 12)" *> $null
+        return ($LASTEXITCODE -eq 0)
+    } catch {
+        return $false
+    }
+}
+
+if (Test-Path -LiteralPath $venvPath) {
+    if (-not (Test-VirtualEnvironmentHealthy)) {
         Write-Host "[setup] Existing virtual environment is unusable; recreating it"
         Remove-Item -LiteralPath $venvPath -Recurse -Force
     }

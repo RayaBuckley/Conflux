@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [switch] $CoverageOnly,
-    [switch] $NoCoverage
+    [switch] $NoCoverage,
+    [switch] $AuditOnly
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,6 +31,11 @@ function Invoke-Check {
 
 Push-Location $repoRoot
 try {
+    Invoke-Check -Name "repository audit" -Arguments @("scripts\audit_repository.py")
+    if ($AuditOnly) {
+        return
+    }
+
     $pytestArguments = @("-m", "pytest")
     if (-not $NoCoverage) {
         $pytestArguments += @("--cov=src/conflux", "--cov-report=term-missing", "--cov-report=html")

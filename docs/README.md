@@ -3,6 +3,17 @@
 This is the canonical documentation index for Conflux. Start here when
 planning, implementing, evaluating, or reviewing a change.
 
+## Reviewer paths
+
+- New reviewer: [README](../README.md) → [Architecture](ARCHITECTURE.md) →
+  [Glossary](GLOSSARY.md) → [Module guide](MODULE_GUIDE.md).
+- Implementer: [AI development guide](AI_DEVELOPMENT_GUIDE.md) →
+  [Testing](TESTING.md) → [Change checklist](templates/CHANGE_CHECKLIST.md).
+- Security reviewer: [ITES semantics](ITES_MVP_SEMANTICS.md) → source package
+  docstrings → security and provenance tests.
+- Reproduction reviewer: [Reproducibility](REPRODUCIBILITY.md) →
+  [Evaluation methodology](EVALUATION_METHODOLOGY.md) → experiment outputs.
+
 ## Understand the system
 
 - [Architecture](ARCHITECTURE.md) — boundaries, layers, dependencies, and security invariants.

@@ -14,7 +14,7 @@ This glossary is the canonical vocabulary for the implementation and paper.
 | Nested execution | Recursive agent/LLM execution represented as an explicit action. | `core/actions.py`, `ites/` | Implicit recursive calls |
 | Delegation | A controlled transfer or use of authority by one Principal for another. | `core/consent.py`, `core/actions.py` | Silent permission broadening |
 | Authorisation | A decision about whether an action may execute. | `auth/`, `policy/` | Equating authorisation with visibility |
-| Visibility | A decision about which parties may observe an action or result. | `core/chat_policy.py` | Assuming permitted means user-visible |
+| Visibility | A decision about which parties may observe an action or result. | `core/chat_policy.py` | Assuming permitted means Principal-visible |
 | Consent | Voluntary approval that may constrain execution but never broadens authority. | `core/consent.py` | Treating consent as permission |
 | Influence | The causal contribution of information or a Principal to a decision. | provenance and ITES state | Replacing Principal Context with a trust label |
 | Execution trace | Immutable record of execution events and decisions. | `sled/trace.py`, `ites/state.py` | Recording only final outcomes |
