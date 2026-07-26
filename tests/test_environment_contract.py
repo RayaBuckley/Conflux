@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from conflux.compatibility.environment import snapshot_from_legacy
+from conflux.compatibility.environment import Data, Environment, snapshot_from_legacy
 from conflux.core import Principal
 from conflux.domain.environment import DataItem, EnvironmentSnapshot
-from conflux.sled.environment import Data, Environment
 
 
 def test_data_item_separates_scenario_metadata_from_provenance() -> None:

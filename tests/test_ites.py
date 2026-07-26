@@ -8,12 +8,12 @@ but these behavioural guarantees should remain stable.
 
 from __future__ import annotations
 
+from conflux.compatibility import ReferenceITES
+from conflux.compatibility.environment import Data
 from conflux.core import Artifact, Principal, Provenance
 from conflux.core.actions import NestedExecutionAction, PrimitiveAction
 from conflux.core.permissions import Permission
 from conflux.ites import Guarantee
-from conflux.ites.reference import ReferenceITES
-from conflux.sled.environment import Data
 
 
 def _initial_inputs() -> tuple[Principal, frozenset[Artifact[Data]]]:

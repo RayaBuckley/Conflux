@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+from conflux.compatibility.environment import Data, Environment
 from conflux.core import Principal
+from conflux.evaluation.services import Evaluator
 from conflux.ites import MediatingITES
-from conflux.sled.environment import Data, Environment
-from conflux.sled.evaluator import Evaluator
 
 
 def test_one_shot_evaluator_emits_deterministic_completion_trace() -> None:
