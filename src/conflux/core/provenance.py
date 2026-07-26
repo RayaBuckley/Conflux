@@ -15,7 +15,7 @@ Chat visibility belongs to the conversation policy.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import FrozenSet, Iterable
+from typing import Any, FrozenSet, Iterable
 
 from .principals import Principal
 
@@ -38,11 +38,13 @@ class Provenance:
     principals: FrozenSet[Principal] = field(default_factory=frozenset)
     sources: FrozenSet[str] = field(default_factory=frozenset)
     tags: FrozenSet[str] = field(default_factory=frozenset)
+    resources: FrozenSet[Any] = field(default_factory=frozenset)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "principals", frozenset(self.principals))
         object.__setattr__(self, "sources", frozenset(self.sources))
         object.__setattr__(self, "tags", frozenset(self.tags))
+        object.__setattr__(self, "resources", frozenset(self.resources))
 
     @classmethod
     def empty(cls) -> "Provenance":
@@ -61,6 +63,20 @@ class Provenance:
         sources = frozenset({source}) if source is not None else frozenset()
         tags = frozenset({tag}) if tag is not None else frozenset()
         return cls(principals=frozenset({principal}), sources=sources, tags=tags)
+
+    @classmethod
+    def from_resource(cls, resource: Any) -> "Provenance":
+        """Create provenance whose source is a protected resource."""
+        return cls(resources=frozenset({resource}))
+
+    def with_operation(self, operation: str) -> "Provenance":
+        """Return a copy recording a derivation operation."""
+        return Provenance(
+            principals=self.principals,
+            sources=self.sources,
+            tags=self.tags | {operation},
+            resources=self.resources,
+        )
 
     @classmethod
     def from_principals(
@@ -123,6 +139,7 @@ class Provenance:
             principals=self.principals | other.principals,
             sources=self.sources | other.sources,
             tags=self.tags | other.tags,
+            resources=self.resources | other.resources,
         )
 
     def with_source(self, source: str) -> "Provenance":

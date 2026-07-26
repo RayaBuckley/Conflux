@@ -65,6 +65,23 @@ class Artifact(Generic[T]):
         """Return a copy with updated provenance."""
         return replace(self, provenance=provenance)
 
+    def map(self, *, value: T, operation: str) -> "Artifact[T]":
+        """Derive an immutable artifact while recording the operation."""
+        return replace(self, value=value, provenance=self.provenance.with_operation(operation))
+
+    @classmethod
+    def combine(
+        cls,
+        *artifacts: "Artifact[Any]",
+        value: T,
+        operation: str,
+    ) -> "Artifact[T]":
+        """Combine artifacts and retain all provenance and derivation data."""
+        provenance = Provenance.empty()
+        for artifact in artifacts:
+            provenance = provenance.merge(artifact.provenance)
+        return cls(value=value, provenance=provenance.with_operation(operation))
+
     def with_label(self, label: str | None) -> "Artifact[T]":
         """Return a copy with a new label."""
         return replace(self, label=label)

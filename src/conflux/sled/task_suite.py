@@ -12,9 +12,8 @@ The design is intentionally lightweight so it can support AgentDojo-style
 benchmarks as well as custom evaluation harnesses.
 """
 from __future__ import annotations
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import FrozenSet, Iterable, Iterator
+from typing import FrozenSet, Iterable, Iterator, Protocol
 from .scenario import Scenario
 @dataclass(frozen=True, slots=True)
 class BenchmarkExpectation:
@@ -45,23 +44,17 @@ class BenchmarkTask:
     name: str
     scenario: Scenario
     expectations: FrozenSet[BenchmarkExpectation] = field(default_factory=frozenset)
-class TaskSuite(ABC):
+class TaskSuite(Protocol):
     """
     Base interface for benchmark task suites.
     """
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """
-        Human-readable suite name.
-        """
-        raise NotImplementedError
-    @abstractmethod
+    name: str
+
     def tasks(self) -> Iterator[BenchmarkTask]:
         """
         Yield the benchmark tasks in this suite.
         """
-        raise NotImplementedError
+        ...
 @dataclass(frozen=True, slots=True)
 class StaticTaskSuite(TaskSuite):
     """

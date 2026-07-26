@@ -44,6 +44,41 @@ from .environment import Data, Environment
 T = TypeVar("T")
 
 
+@dataclass(slots=True)
+class EvaluationResult:
+    """Result of one bounded, non-exhaustive SLED evaluation.
+
+    This is the compatibility facade used by :mod:`benchmark_runner`. New
+    exhaustive experiments should use :class:`ExhaustiveEvaluator` directly.
+    """
+
+    report: ITESReport
+    declared: list[Any] = field(default_factory=list)
+
+
+@dataclass(slots=True)
+class Evaluator:
+    """Run one defence once for the benchmark runner compatibility path."""
+
+    environment: Environment
+    defence: ITES
+    llm_call: Callable[[frozenset[Artifact[Any]]], frozenset[Any]]
+
+    def run(self, initial_inputs: Iterable[Data]) -> EvaluationResult:
+        declared: list[Any] = []
+
+        def declare(item: Any) -> None:
+            declared.append(item)
+
+        report = self.defence.run(
+            environment=self.environment,
+            initial_inputs=frozenset(item.to_artifact() for item in initial_inputs),
+            llm_call=self.llm_call,
+            declare=declare,
+        )
+        return EvaluationResult(report=report, declared=declared)
+
+
 @dataclass(frozen=True, slots=True)
 class RepresentativeClass:
     """
@@ -509,6 +544,8 @@ class ExhaustiveEvaluator:
 
 
 __all__ = [
+    "EvaluationResult",
+    "Evaluator",
     "ExhaustiveEvaluationResult",
     "ExhaustiveEvaluator",
     "RepresentativeClass",

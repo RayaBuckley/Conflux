@@ -26,9 +26,9 @@ class Resource:
     """
 
     id: str
-    provider: str
-    resource_type: str
-    name: str
+    provider: str | Any
+    resource_type: str = "generic"
+    name: str = ""
     attributes: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -36,10 +36,14 @@ class Resource:
             raise ValueError("Resource.id must be non-empty")
         if not self.provider:
             raise ValueError("Resource.provider must be non-empty")
+        if not isinstance(self.provider, str):
+            owner = self.provider
+            object.__setattr__(self, "provider", "legacy")
+            object.__setattr__(self, "attributes", {**self.attributes, "owner": owner})
         if not self.resource_type:
             raise ValueError("Resource.resource_type must be non-empty")
         if not self.name:
-            raise ValueError("Resource.name must be non-empty")
+            object.__setattr__(self, "name", self.id)
 
     def with_attributes(self, **updates: Any) -> "Resource":
         """

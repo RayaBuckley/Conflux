@@ -119,7 +119,7 @@ class PrimitiveAction(Action[None]):
     provider_operation: str = ""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.PRIMITIVE)
         object.__setattr__(self, "permission", normalise_permission(self.permission))
         if not self.provider_operation:
@@ -149,7 +149,7 @@ class NestedExecutionAction(Action[None]):
     max_depth_hint: int | None = None
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.NESTED_EXECUTION)
         object.__setattr__(self, "nested_inputs", frozenset(self.nested_inputs))
 
@@ -178,7 +178,7 @@ class DelegationAction(Action[None]):
     delegated_permissions: FrozenSet[Permission] = field(default_factory=frozenset)
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.DELEGATION)
         object.__setattr__(self, "delegated_permissions", frozenset(self.delegated_permissions))
         if not self.scope:
@@ -208,7 +208,7 @@ class MessageUserAction(Action[str]):
     message: str = ""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.MESSAGE_USER)
         if not self.message:
             raise ValueError("MessageUserAction.message must be non-empty")
@@ -234,7 +234,7 @@ class ClarificationRequestAction(Action[str]):
     prompt: str = ""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.CLARIFICATION_REQUEST)
         if not self.prompt:
             raise ValueError("ClarificationRequestAction.prompt must be non-empty")
@@ -263,7 +263,7 @@ class RequestConsentAction(Action[None]):
     reason: str = ""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.REQUEST_CONSENT)
         object.__setattr__(self, "requested_permission", normalise_permission(self.requested_permission))
         if not self.reason:
@@ -288,7 +288,7 @@ class StopAction(Action[None]):
     reason: str = ""
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.STOP)
         if not self.reason:
             raise ValueError("StopAction.reason must be non-empty")
@@ -310,7 +310,7 @@ class NoOpAction(Action[None]):
     label: str = "noop"
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        Action.__post_init__(self)
         object.__setattr__(self, "kind", ActionKind.NO_OP)
 
     def __repr__(self) -> str:
