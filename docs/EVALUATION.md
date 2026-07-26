@@ -38,3 +38,13 @@ post-paper work and must be labelled as such in results and status records.
 
 Use the claim/evidence matrix formerly maintained in `MVP_RESULTS.md` when
 recording a result. Do not present an unexecuted template as a result.
+# Evaluation
+
+Purpose: define reproducible evaluation mechanics and evidence. Owner: the
+evaluation maintainers. This is the source of truth for methodology and trace
+formats; security semantics belong in `docs/ARCHITECTURE.md`.
+
+The clean-slate trace boundary is `conflux.evaluation.TraceRecord`. Records
+are immutable, sequence-numbered, detached mappings with an explicit schema
+version. Benchmark adapters may add payload fields, but may not reinterpret
+security decisions or omit provenance evidence.

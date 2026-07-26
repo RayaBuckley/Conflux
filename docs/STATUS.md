@@ -13,6 +13,10 @@ planned; architecture belongs in `ARCHITECTURE.md`.
 - Runtime validation passes after migrating callers to the canonical artifact,
   resource, provenance, ITES, policy, and evaluator contracts.
 - Strict mypy and Ruff validation pass for the source and test tree.
+- Clean-slate migration slice added: `conflux.domain`, `conflux.ports`,
+  `conflux.application`, and `conflux.adapters`. These currently provide typed
+  boundaries over the validated implementation; deeper caller migration is
+  intentionally staged.
 
 ## Work status
 
@@ -24,6 +28,8 @@ planned; architecture belongs in `ARCHITECTURE.md`.
 | Providers | Adapter prototypes | add boundary contract tests |
 | External benchmarks | Optional adapters | require integration fixtures and assumptions |
 | Documentation audit | In progress | keep ledger synchronized with changes |
+| Clean-slate boundaries | Initial slice | migrate core/ITES/SLED callers incrementally |
+| Evaluation trace contract | Initial versioned record | connect SLED trace writers and add golden fixtures |
 
 ## Post-paper extensions
 

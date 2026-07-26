@@ -31,6 +31,19 @@ Benchmark-specific behaviour must not be embedded in core or ITES.
 permissions, artifacts, provenance, actions, consent, visibility, and sessions.
 It must not depend on providers or benchmark implementations.
 
+The clean-slate domain entry point is `conflux.domain`. It provides
+provider-neutral `PrincipalContext`, `ResourceRef`, `Intent`, typed decisions,
+and domain-level imports for artifacts and provenance. `conflux.core` remains
+the behavioral compatibility source during migration; new domain code must
+not import SLED, providers, or benchmarks.
+
+`conflux.application` owns use cases such as mediation. `conflux.ports` owns
+typed Protocol boundaries. `conflux.adapters` is reserved for outer
+translations and has no authority to redefine domain semantics.
+
+`conflux.evaluation` owns benchmark-independent, versioned trace values. It
+records outcomes but does not decide whether an action is secure.
+
 ### Execution
 
 `conflux.execution` transforms artifacts while preserving provenance. It is
@@ -72,6 +85,17 @@ The principal interfaces are:
 - `Attack`: transforms a scenario to model an attack.
 - `TaskSuite`: supplies benchmark tasks.
 - benchmark and external protocols: translate task inputs and execution traces.
+
+The migration direction is:
+
+```text
+domain → ports → application → adapters
+                 ↓
+              evaluation
+```
+
+Compatibility modules may depend on canonical modules, but canonical domain
+modules may not import compatibility, SLED, provider, or benchmark modules.
 
 These interfaces require explicit technical contracts before new backends are
 added. See `docs/MODULE_GUIDE.md` for the current module map.

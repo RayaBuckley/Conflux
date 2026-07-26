@@ -34,6 +34,12 @@ and tests, not here.
 | Evaluation | `conflux.sled` | evaluator, traces, statistics, reporting |
 | External benchmark translation | `conflux.benchmarks` | native and external adapters |
 
+During the clean-slate migration, `conflux.domain` is the preferred import
+surface for new provider-neutral code. `conflux.application` owns use-case
+facades and `conflux.ports` owns Protocol interfaces. Existing `core`, `ites`,
+and `sled` exports remain supported until their callers are migrated; they are
+not permission to add new cross-layer dependencies.
+
 `ites.mvp`, `ites.reference`, and the one-shot SLED evaluator are compatibility
 or research harnesses. They must delegate to or translate into canonical types
 and must not silently redefine security semantics.

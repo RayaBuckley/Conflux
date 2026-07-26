@@ -151,4 +151,32 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 
 Rows marked deprecated remain as migration pointers until the canonical
 documents have absorbed their unique evidence and all links are updated. No
-file is removed merely because it lacks a current import.
+ file is removed merely because it lacks a current import.
+
+## Clean-slate migration additions
+
+| Path | Required purpose / owner | Evidence | Docs | Disposition | Risk |
+|---|---|---|---|---|---|
+| `src/conflux/domain/__init__.py` | Pure domain import surface | import test | ARCHITECTURE/REFERENCE | canonical | migration aliases remain |
+| `src/conflux/domain/identity.py` | Explicit Principal Context | unit test | REFERENCE | canonical | Principal still comes from core |
+| `src/conflux/domain/resources.py` | Provider-neutral resource identity | unit test | REFERENCE | canonical | adapters not migrated |
+| `src/conflux/domain/provenance.py` | Typed derivation boundary | import test | REFERENCE | canonical | core provenance remains source |
+| `src/conflux/domain/artifacts.py` | Domain artifact import | import test | REFERENCE | canonical | alias during migration |
+| `src/conflux/domain/intents.py` | Declarative intent model | unit test | REFERENCE | canonical | not yet wired to ITES |
+| `src/conflux/domain/decisions.py` | Independent decision values | unit test | REFERENCE | canonical | policy adapters not migrated |
+| `src/conflux/ports/__init__.py` | Port export surface | import test | ARCHITECTURE | canonical | ports are initial contracts |
+| `src/conflux/ports/model.py` | Model proposal Protocol | mypy | ARCHITECTURE | canonical | action generic migration pending |
+| `src/conflux/ports/policy.py` | Policy decision Protocol | mypy | ARCHITECTURE | canonical | existing policy not adapted |
+| `src/conflux/ports/resources.py` | Resource execution Protocol | mypy | ARCHITECTURE | canonical | provider boundary pending |
+| `src/conflux/ports/tracing.py` | Append-only trace Protocol | mypy | EVALUATION | canonical | trace schema pending |
+| `src/conflux/application/__init__.py` | Application use-case exports | import test | ARCHITECTURE | canonical | thin facade initially |
+| `src/conflux/application/mediate.py` | Application mediation facade | integration test | ARCHITECTURE | canonical | delegates to current ITES |
+| `src/conflux/adapters/__init__.py` | Adapter namespace | import test | ARCHITECTURE | canonical | implementations remain legacy paths |
+| `src/conflux/adapters/providers/__init__.py` | Provider adapter namespace | import test | ARCHITECTURE | adapter | migration pending |
+| `src/conflux/adapters/policy/__init__.py` | Policy adapter namespace | import test | ARCHITECTURE | adapter | migration pending |
+| `src/conflux/adapters/models/__init__.py` | Model adapter namespace | import test | ARCHITECTURE | adapter | migration pending |
+| `src/conflux/adapters/benchmarks/__init__.py` | Benchmark adapter namespace | import test | EVALUATION | benchmark | migration pending |
+| `src/conflux/py.typed` | Type-checker package marker | package metadata | DEVELOPMENT | tooling | packaging validation pending |
+| `tests/test_clean_architecture.py` | New boundary contract tests | pytest | DEVELOPMENT | canonical | expand into contract suites |
+| `src/conflux/evaluation/__init__.py` | Evaluation contract exports | import test | EVALUATION | canonical | SLED migration pending |
+| `src/conflux/evaluation/trace.py` | Versioned immutable trace record | unit test | EVALUATION | canonical | JSON schema expansion pending |
