@@ -103,7 +103,8 @@ Compatibility modules may depend on canonical modules, but canonical domain
 modules may not import compatibility, SLED, provider, or benchmark modules.
 
 These interfaces require explicit technical contracts before new backends are
-added. See `docs/MODULE_GUIDE.md` for the current module map.
+added. See `docs/AUDIT.md` for the file-purpose ledger and `docs/REFERENCE.md`
+for public API ownership.
 
 ## Security invariants
 
@@ -116,6 +117,6 @@ added. See `docs/MODULE_GUIDE.md` for the current module map.
 
 ## Repository structure
 
-See `docs/MODULE_GUIDE.md` for file responsibilities. Architectural changes
-should be recorded as decision records under `docs/decisions/` and synchronised
+See `docs/AUDIT.md` for file responsibilities. Architectural changes should be
+recorded as decision records under `docs/decisions/` and synchronised
 with the paper terminology and diagrams.

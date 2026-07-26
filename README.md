@@ -71,8 +71,8 @@ paper/                     Tracked LaTeX source, diagrams, and final PDF
 ## Documentation
 
 Use the [documentation hub](docs/README.md) as the canonical index for
-architecture, terminology, testing, reproducibility, agent development,
-implementation status, roadmap, and architecture decisions.
+architecture, terminology, development, evaluation, status, auditability, and
+architecture decisions.
 
 ## Development
 
@@ -90,7 +90,7 @@ Run the complete validation workflow with:
 ```
 
 The environment is stored in `.venv/`, is ignored by Git, and should not be
-committed. See [Testing](docs/TESTING.md) and [Reproducibility](docs/REPRODUCIBILITY.md)
-for direct fallback commands and paper instructions. Detailed interface
-contracts are maintained as the architecture is refined; the current public
-extension points are described in the module guide.
+committed. See [Development](docs/DEVELOPMENT.md) for validation commands and
+contribution workflow, [Evaluation](docs/EVALUATION.md) for reproducibility and
+benchmark boundaries, and [Reference](docs/REFERENCE.md) for public API
+ownership.

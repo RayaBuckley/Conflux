@@ -4,7 +4,7 @@ Purpose: describe how SLED evaluates ITES and comparison defences, including
 metrics, benchmark boundaries, reproducibility, and evidence reporting.
 
 Owner: evaluation maintainers. This is the source of truth for methodology;
-implementation details belong in `conflux.sled` docstrings and results belong
+implementation details belong in `conflux.evaluation` docstrings and results belong
 in versioned evidence artifacts.
 
 ## Evaluation layers

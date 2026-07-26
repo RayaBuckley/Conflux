@@ -126,15 +126,15 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `docs/decisions/006-canonical-ites-contract.md` | ITES ownership decision | ITES modules | REFERENCE | tooling | compatibility drift |
 | `docs/templates/FEATURE_SPEC.md` | Feature specification | workflow | DEVELOPMENT | tooling | required fields |
 | `docs/templates/CHANGE_CHECKLIST.md` | Change completion checklist | workflow | DEVELOPMENT | tooling | checklist drift |
-| `docs/AI_DEVELOPMENT_GUIDE.md` | Legacy workflow source | migrated to DEVELOPMENT | DEVELOPMENT | deprecated | consolidate |
-| `docs/MODULE_GUIDE.md` | Legacy module map | migrated to ARCHITECTURE/REFERENCE | REFERENCE | deprecated | consolidate |
-| `docs/TESTING.md` | Legacy test guide | migrated to DEVELOPMENT | DEVELOPMENT | deprecated | consolidate |
-| `docs/REPRODUCIBILITY.md` | Legacy reproduction guide | migrated to EVALUATION/DEVELOPMENT | EVALUATION | deprecated | consolidate |
+| `docs/AI_DEVELOPMENT_GUIDE.md` | Legacy workflow source | removed; migrated to DEVELOPMENT | DEVELOPMENT | deprecated | removed in cleanup commit |
+| `docs/MODULE_GUIDE.md` | Legacy module map | removed; migrated to ARCHITECTURE/REFERENCE/AUDIT | REFERENCE | deprecated | removed in cleanup commit |
+| `docs/TESTING.md` | Legacy test guide | removed; migrated to DEVELOPMENT | DEVELOPMENT | deprecated | removed in cleanup commit |
+| `docs/REPRODUCIBILITY.md` | Legacy reproduction guide | removed; migrated to EVALUATION/DEVELOPMENT | EVALUATION | deprecated | removed in cleanup commit |
 | `docs/EVALUATION_METHODOLOGY.md` | Legacy methodology | migrated to EVALUATION | EVALUATION | deprecated | consolidate |
 | `docs/MVP_RESULTS.md` | Legacy results template | migrated to EVALUATION | EVALUATION | deprecated | evidence status |
-| `docs/IMPLEMENTATION_STATUS.md` | Legacy status | migrated to STATUS | STATUS | deprecated | stale claims |
-| `docs/ROADMAP.md` | Legacy roadmap | migrated to STATUS | STATUS | deprecated | priority drift |
-| `docs/PROJECT_TRACKS_AND_AUDIT.md` | Legacy audit/tracks | migrated to AUDIT/STATUS | AUDIT | deprecated | duplicate queue |
+| `docs/IMPLEMENTATION_STATUS.md` | Legacy status | removed; migrated to STATUS | STATUS | deprecated | removed in cleanup commit |
+| `docs/ROADMAP.md` | Legacy roadmap | removed; migrated to STATUS | STATUS | deprecated | removed in cleanup commit |
+| `docs/PROJECT_TRACKS_AND_AUDIT.md` | Legacy audit/tracks | removed; migrated to AUDIT/STATUS | AUDIT | deprecated | removed in cleanup commit |
 | `paper/iclr2026_conference.tex` | Archived paper source | LaTeX artifact | STATUS | research artifact | claim synchronization |
 | `paper/iclr2026_conference.pdf` | Archived paper output | PDF artifact | STATUS | research artifact | binary review |
 | `paper/iclr2026_conference.sty` | Paper style dependency | LaTeX source | STATUS | research artifact | upstream provenance |

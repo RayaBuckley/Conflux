@@ -25,13 +25,13 @@ and tests, not here.
 
 | API area | Owning package | Detail |
 |---|---|---|
-| Domain values | `conflux.core` | `docs/ARCHITECTURE.md` and module docstrings |
+| Domain values | `conflux.domain` and `conflux.core` during migration | `docs/ARCHITECTURE.md` and module docstrings |
 | Provenance-preserving derivation | `conflux.execution` | `execution/operations.py` |
 | Authority and action decisions | `conflux.auth` | `auth/authorisation.py` |
 | Policy translation | `conflux.policy` | `policy/base.py` and adapters |
 | Defence mediation | `conflux.ites` | `ites/__init__.py`, `mediator.py` |
 | Provider translation | `conflux.providers` | provider interfaces and implementations |
-| Evaluation | `conflux.sled` | evaluator, traces, statistics, reporting |
+| Evaluation | `conflux.evaluation` | evaluator, traces, statistics, reporting |
 | External benchmark translation | `conflux.benchmarks` | native and external adapters |
 
 During the clean-slate migration, `conflux.domain` is the preferred import
