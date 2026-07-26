@@ -63,6 +63,31 @@ def principals_for_provenance(provenance: Provenance) -> frozenset[Principal]:
     return provenance.principals
 
 
+def effective_authority(provenance: Provenance) -> frozenset[Principal]:
+    """Return the Principal Context represented by provenance."""
+    return frozenset(provenance.principals)
+
+
+def can_access(
+    provenance: Provenance,
+    resource: object,
+    permission: Permission | str,
+) -> bool:
+    """Return whether provenance permits an operation on a resource.
+
+    Supports the historical owner-shaped resource API and the current model's
+    optional ``attributes['owner']`` representation. Missing ownership is
+    denied conservatively.
+    """
+    owner = getattr(resource, "owner", None)
+    if owner is None:
+        attributes = getattr(resource, "attributes", {})
+        owner = attributes.get("owner") if hasattr(attributes, "get") else None
+    if not isinstance(owner, Principal) or owner not in provenance.principals:
+        return False
+    return all_principals_authorised(provenance.principals, permission)
+
+
 def influencers_for_artifacts(
     artifacts: Iterable[Artifact[object]],
 ) -> frozenset[Principal]:
@@ -586,11 +611,13 @@ __all__ = [
     "all_principals_authorised",
     "any_principal_authorised",
     "authorise_action",
+    "can_access",
     "chat_visibility_allows",
     "clarification_request_authorisation",
     "consent_allows_action",
     "delegation_authorisation",
     "decision_principals_for_action",
+    "effective_authority",
     "influencers_for_artifacts",
     "message_authorisation",
     "nested_execution_authorisation",

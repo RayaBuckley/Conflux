@@ -1,13 +1,22 @@
 # Reproducibility
 
-Conflux targets Python 3.12 or newer. Create an isolated environment, install
-the package with development dependencies, and run tests before experiments:
+Conflux targets Python 3.12 or newer. Create the repository-local `.venv` and
+install the package with development dependencies using:
 
-```text
-python -m venv .venv
-python -m pip install -e ".[dev]"
-python -m pytest
+```powershell
+.\scripts\setup.ps1
 ```
+
+Before experiments, run the complete validation workflow:
+
+```powershell
+.\scripts\validate.ps1
+```
+
+For direct, non-activated execution, use
+`.\.venv\Scripts\python.exe -m <tool>`. Rerunning the setup script refreshes
+the editable installation and dependencies. The `.venv/` directory is ignored
+and must not be committed.
 
 Experiments should record the scenario, attack, defence, model configuration,
 provider configuration, random seed, and produced trace/metrics. Generated

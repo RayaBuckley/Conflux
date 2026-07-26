@@ -1,5 +1,9 @@
 # Conflux AI Development Guide
 
+The [documentation hub](README.md), [feature specification template](templates/FEATURE_SPEC.md),
+and [change checklist](templates/CHANGE_CHECKLIST.md) are the operational entry
+points for agents.
+
 > Canonical instructions for AI-assisted development of Conflux.
 >
 > This document defines the project's development workflow, architectural principles,
@@ -58,7 +62,15 @@ Prefer composition over inheritance where appropriate.
 
 ---
 
-# 3. Development Phases
+# 3. Development Workflow
+
+For every change: inspect the relevant `AGENTS.md`, architecture, module guide,
+tests, and ADRs; specify interfaces and security impact; implement; run focused
+and complete validation; update documentation and roadmap; then review the
+diff with the change checklist. Do not leave security or interface decisions
+implicit.
+
+## Development phases
 
 Development proceeds in distinct phases.
 

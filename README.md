@@ -70,25 +70,27 @@ paper/                     Tracked LaTeX source, diagrams, and final PDF
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Glossary](docs/GLOSSARY.md)
-- [Module guide](docs/MODULE_GUIDE.md)
-- [Testing](docs/TESTING.md)
-- [Reproducibility](docs/REPRODUCIBILITY.md)
-- [AI development guide](docs/AI_DEVELOPMENT_GUIDE.md)
-- [Implementation status](docs/IMPLEMENTATION_STATUS.md)
+Use the [documentation hub](docs/README.md) as the canonical index for
+architecture, terminology, testing, reproducibility, agent development,
+implementation status, roadmap, and architecture decisions.
 
 ## Development
 
-The project targets Python 3.12 or newer. Install the development extras and
-run the test suite with:
+The project targets Python 3.12 or newer. Create or refresh the local virtual
+environment and install the development extras with:
 
-```text
-python -m pip install -e ".[dev]"
-python -m pytest
+```powershell
+.\scripts\setup.ps1
 ```
 
-See [Reproducibility](docs/REPRODUCIBILITY.md) for experiment and paper
-instructions. Detailed interface contracts are maintained as the architecture
-is refined; the current public extension points are described in the module
-guide.
+Run the complete validation workflow with:
+
+```powershell
+.\scripts\validate.ps1
+```
+
+The environment is stored in `.venv/`, is ignored by Git, and should not be
+committed. See [Testing](docs/TESTING.md) and [Reproducibility](docs/REPRODUCIBILITY.md)
+for direct fallback commands and paper instructions. Detailed interface
+contracts are maintained as the architecture is refined; the current public
+extension points are described in the module guide.
