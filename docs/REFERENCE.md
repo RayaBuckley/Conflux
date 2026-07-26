@@ -30,9 +30,9 @@ and tests, not here.
 | Authority and action decisions | `conflux.auth` | `auth/authorisation.py` |
 | Policy translation | `conflux.policy` | `policy/base.py` and adapters |
 | Defence mediation | `conflux.ites` | `ites/__init__.py`, `mediator.py` |
-| Provider translation | `conflux.providers` | provider interfaces and implementations |
+| Provider translation | `conflux.adapters.providers` | provider interfaces and implementations |
 | Evaluation | `conflux.evaluation` | evaluator, traces, statistics, reporting |
-| External benchmark translation | `conflux.benchmarks` | native and external adapters |
+| External benchmark translation | `conflux.adapters.benchmarks` | native and external adapters |
 
 During the clean-slate migration, `conflux.domain` is the preferred import
 surface for new provider-neutral code. `conflux.application` owns use-case

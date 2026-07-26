@@ -75,8 +75,8 @@ been moved here.
 
 ### Adapters
 
-`conflux.providers` materialises filesystem and Docker environments.
-`conflux.benchmarks` connects native and external benchmark systems. Adapters
+`conflux.adapters.providers` materialises filesystem and Docker environments.
+`conflux.adapters.benchmarks` connects native and external benchmark systems. Adapters
 translate external representations into Conflux models and must not weaken
 provenance or authorisation checks.
 

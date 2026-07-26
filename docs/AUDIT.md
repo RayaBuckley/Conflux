@@ -230,7 +230,7 @@ test import audit reached zero callers.
 | `src/conflux/adapters/benchmarks/__init__.py` | Benchmark adapter namespace | import test | EVALUATION | benchmark | migration pending |
 | `src/conflux/py.typed` | Type-checker package marker | package metadata | DEVELOPMENT | tooling | packaging validation pending |
 | `tests/test_clean_architecture.py` | New boundary contract tests | pytest | DEVELOPMENT | canonical | expand into contract suites |
-| `src/conflux/evaluation/__init__.py` | Evaluation contract exports | import test | EVALUATION | canonical | SLED migration pending |
+| `src/conflux/evaluation/__init__.py` | Evaluation contract exports | import test | EVALUATION | canonical | environment model convergence pending |
 | `src/conflux/evaluation/trace.py` | Versioned immutable trace record | unit test | EVALUATION | canonical | JSON schema expansion pending |
 | `src/conflux/domain/environment.py` | Provider-neutral data and snapshot values | pytest | ARCHITECTURE/EVALUATION | canonical | legacy SLED callers remain |
 | `src/conflux/ports/environment.py` | Environment materialisation Protocol | mypy | ARCHITECTURE | canonical | provider implementations pending |
@@ -239,8 +239,8 @@ test import audit reached zero callers.
 | `src/conflux/compatibility/proposals.py` | Legacy proposal translation boundary | no supported callers | REFERENCE | remove | removed after canonical ITES migration |
 | `tests/test_environment_contract.py` | Environment boundary regression tests | pytest | EVALUATION | canonical | expand provider contracts |
 | `src/conflux/application/policy.py` | Collective authorisation service | pytest | REFERENCE | canonical | visibility/consent composition pending |
-| `src/conflux/evaluation/services.py` | Canonical evaluator exports | import test | EVALUATION | canonical | SLED implementation migration pending |
-| `src/conflux/evaluation/reporting.py` | Canonical reporting exports | import test | EVALUATION | canonical | SLED reporting migration pending |
+| `src/conflux/evaluation/services.py` | Canonical evaluator exports | import test | EVALUATION | canonical | stable |
+| `src/conflux/evaluation/reporting.py` | Canonical reporting exports | import test | EVALUATION | canonical | stable |
 | `docs/decisions/007-legacy-code-mapping.md` | Archived implementation mapping decision | documentation review | ARCHITECTURE/REFERENCE | tooling | update as migration completes |
 | `tests/test_policy_boundary.py` | Authorisation port behavior | pytest | REFERENCE | canonical | add visibility and consent cases |
 | `tests/test_evaluation_contract.py` | Evaluator/result ownership tests | pytest | EVALUATION | canonical | add deterministic trace fixtures |
