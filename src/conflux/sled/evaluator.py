@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from itertools import combinations
-from typing import Any, Callable, Iterable, Sequence, TypeVar
+from typing import Any, Callable, Iterable, Iterator, Sequence, TypeVar
 
 from conflux.core import Artifact, Principal
 from conflux.core.actions import (
@@ -36,10 +36,9 @@ from conflux.core.actions import (
     StopAction,
 )
 from conflux.core.permissions import normalise_permission
-from conflux.ites import Declare, Guarantee, ITES, ITESReport, LLMCall
+from conflux.ites import ITES, Guarantee, ITESReport
 
 from .environment import Data, Environment
-
 
 T = TypeVar("T")
 
@@ -141,7 +140,7 @@ def _powerset(
     *,
     min_size: int = 0,
     max_size: int | None = None,
-):
+) -> Iterator[tuple[T, ...]]:
     """Yield subsets of items in increasing size order."""
     n = len(items)
     if max_size is None:

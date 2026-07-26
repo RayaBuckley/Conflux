@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from conflux.core import Artifact, Principal, Provenance
-from conflux.ites import Guarantee, ITES, ITESReport
+from conflux.core import Artifact, Principal
+from conflux.ites import ITES, Guarantee, ITESReport
 from conflux.sled import Data, Environment, Scenario, StaticTaskSuite
 from conflux.sled.benchmark_runner import BenchmarkRunner, run_suite
 from conflux.sled.task_suite import BenchmarkTask
@@ -120,9 +120,9 @@ def test_benchmark_runner_calls_defence_with_environment_and_inputs() -> None:
     assert len(defence.seen_calls[0]) == 1
     artifact = next(iter(defence.seen_calls[0]))
     assert artifact.value == seed
-    assert artifact.provenance == Provenance.from_principal(Principal("alice", "Alice")).with_operation(
-        "sled_input"
-    )
+    assert artifact.provenance.principals == frozenset({Principal("alice", "Alice")})
+    assert artifact.provenance.operations == frozenset({"sled_input"})
+    assert artifact.provenance.tags == frozenset({"seed"})
 
 
 def test_benchmark_runner_reports_passed_cases() -> None:

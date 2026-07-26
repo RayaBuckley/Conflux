@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .base import Defence, DecisionRecord, allow
+from .base import DecisionRecord, Defence, allow
 
 
 @dataclass

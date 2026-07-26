@@ -34,7 +34,6 @@ from conflux.core.actions import (
     NestedExecutionAction,
     NoOpAction,
     PrimitiveAction,
-    Proposal,
     RequestConsentAction,
     StopAction,
 )
@@ -42,9 +41,9 @@ from conflux.core.chat_policy import ChatPolicy
 from conflux.core.consent import ConsentProfile
 from conflux.core.permissions import Permission, normalise_permission
 from conflux.core.session import Session
-from . import Declare, Guarantee, ITES, ITESReport, LLMCall
-from .state import ExecutionState, ExecutionStep
 
+from . import ITES, Declare, Guarantee, ITESReport, LLMCall
+from .state import ExecutionState, ExecutionStep
 
 PrimitiveAuthoriser = Callable[[str, FrozenSet[Principal]], bool]
 NestedAuthoriser = Callable[[Any, FrozenSet[Principal], FrozenSet[Any]], bool]
@@ -77,7 +76,8 @@ def _default_nested_authoriser(
     _ = environment
 
     for item in inputs:
-        readers = frozenset(getattr(item, "readers", frozenset()))
+        value = item.value if isinstance(item, Artifact) else item
+        readers = frozenset(getattr(value, "readers", frozenset()))
         if not all(principal in readers for principal in influencers):
             return False
 
@@ -186,7 +186,7 @@ def _bind_action_context(
         nested_inputs = frozenset(nested_inputs)
         return replace(
             action,
-            inputs=nested_inputs,
+            inputs=action.inputs or current_inputs,
             nested_inputs=nested_inputs,
             decision_principals=influencers,
         )

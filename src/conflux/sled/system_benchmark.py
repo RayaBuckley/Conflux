@@ -20,9 +20,10 @@ without changing the benchmark runner.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from typing import FrozenSet, Iterable
+from typing import Iterable
 
-from conflux.core import Artifact
+from conflux.core import Principal
+
 from .attack import Attack, AttackMetadata
 from .environment import Data, Environment
 from .scenario import Scenario
@@ -169,7 +170,7 @@ def build_system_benchmark(
     return StaticTaskSuite.from_iterable(name, tasks)
 
 
-def _attacker_principal(environment: Environment):
+def _attacker_principal(environment: Environment) -> Principal:
     """
     Construct a synthetic attacker principal for benchmark injection.
 

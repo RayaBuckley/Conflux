@@ -8,14 +8,17 @@ Rule:
   contributing principals for that request
 """
 from __future__ import annotations
-from conflux.core import Principal
+
 from .base import Policy, PolicyDecision, PolicyRequest
+
+
 class OwnerPolicy(Policy):
     """
     Policy that grants access only to the resource owner.
     """
     def evaluate(self, request: PolicyRequest) -> PolicyDecision:
-        if request.resource.owner in request.principals:
+        owner = request.resource.owner
+        if owner is not None and owner in request.principals:
             return PolicyDecision(
                 allowed=True,
                 reason="resource owner is present in contributing principals",

@@ -23,7 +23,6 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from conflux.core import Principal, Resource
 from conflux.core.actions import PrimitiveAction, Proposal
-from conflux.core.permissions import DELETE, READ, WRITE, normalise_permission
 from conflux.sled.environment import Data, Environment
 
 from .base import (
@@ -308,9 +307,11 @@ class DockerProviderAdapter(BaseProviderAdapter):
                 if proposal.inputs:
                     first = next(iter(proposal.inputs))
                     payload = str(first.value)
-                command = ["exec", "-i", target, "sh", "-c", f"cat > {json.dumps(file_path)}"]
+                docker_command: list[str] = [
+                    "exec", "-i", target, "sh", "-c", f"cat > {json.dumps(file_path)}"
+                ]
                 proc = subprocess.run(
-                    ["docker", *command],
+                    ["docker", *docker_command],
                     input=payload,
                     check=False,
                     capture_output=True,

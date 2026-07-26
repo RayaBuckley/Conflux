@@ -9,8 +9,8 @@ planner/executor split, so execution units should be lightweight and composable.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, replace
-from typing import Any, Callable, Generic, TypeVar
+from dataclasses import dataclass
+from typing import Callable, Generic, TypeVar
 
 from conflux.core.artifacts import Artifact
 from conflux.core.provenance import Provenance
@@ -150,7 +150,7 @@ class MapOperation(Operation[T, U]):
     projections, normalisations, or formatting changes.
     """
 
-    transform: Callable[[T], U] = lambda value: value  # type: ignore[assignment]
+    transform: Callable[[T], U]
 
     def run(self, artifact: Artifact[T]) -> Artifact[U]:
         return self.derive(

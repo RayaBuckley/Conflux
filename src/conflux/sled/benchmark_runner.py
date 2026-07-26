@@ -15,13 +15,14 @@ This is the layer that benchmark scripts should call.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Iterator
+from typing import Any, Iterator
 
 from conflux.ites import ITES
+
 from .attack import Attack
 from .evaluator import EvaluationResult, Evaluator
 from .scenario import Scenario
-from .task_suite import BenchmarkTask, TaskSuite
+from .task_suite import TaskSuite
 
 
 @dataclass(frozen=True, slots=True)

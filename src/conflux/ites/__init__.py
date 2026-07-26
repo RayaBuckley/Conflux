@@ -106,12 +106,14 @@ class ITES(ABC):
         raise NotImplementedError
 
 
-from .mediator import MediatingITES
+from .mediator import MediatingITES  # noqa: E402
 
+ReferenceITES: Any = None
 try:
-    from .reference import ReferenceITES
+    from .reference import ReferenceITES as _ReferenceITES
+    ReferenceITES = _ReferenceITES
 except ImportError:  # pragma: no cover
-    ReferenceITES = None  # type: ignore[assignment]
+    pass
 
 __all__ = [
     "Declare",

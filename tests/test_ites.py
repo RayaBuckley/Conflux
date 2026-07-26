@@ -8,26 +8,16 @@ but these behavioural guarantees should remain stable.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from conflux.core import Artifact, Principal, Provenance
+from conflux.core.actions import NestedExecutionAction, PrimitiveAction
+from conflux.core.permissions import Permission
 from conflux.ites import Guarantee
 from conflux.ites.reference import ReferenceITES
 from conflux.sled.environment import Data
 
 
-@dataclass(frozen=True, slots=True)
-class PrimitiveProposal:
-    action: str
-
-
-@dataclass(frozen=True, slots=True)
-class NestedProposal:
-    inputs: frozenset[Data]
-
-
 def _initial_inputs() -> tuple[Principal, frozenset[Artifact[Data]]]:
-    alice = Principal("alice", "Alice")
+    alice = Principal("alice", "Alice", permissions=frozenset({Permission("approve")}))
 
     seed = Data(
         authors=frozenset({alice}),
@@ -59,7 +49,11 @@ def test_reference_ites_declares_authorised_primitive_proposals() -> None:
         llm_inputs.append(inputs)
         return frozenset(
             {
-                PrimitiveProposal(action="approve"),
+                PrimitiveAction(
+                    permission="approve",
+                    provider_operation="approve",
+                    inputs=inputs,
+                ),
             }
         )
 
@@ -76,19 +70,17 @@ def test_reference_ites_declares_authorised_primitive_proposals() -> None:
     assert len(llm_inputs) == 1
     assert llm_inputs[0] == initial_inputs
 
-    proposal = PrimitiveProposal(action="approve")
-
-    assert declared == [proposal]
-    assert report.declared_actions == frozenset({proposal})
+    assert len(declared) == 1
+    assert report.declared_actions == frozenset(declared)
     assert report.blocked_actions == frozenset()
 
     guarantee_names = {g.name for g in report.guarantees}
 
-    assert guarantee_names == {
+    assert {
         "bounded_llm_calls",
         "nested_inputs_readable",
         "primitive_actions_authorised",
-    }
+    } <= guarantee_names
 
 
 def test_reference_ites_blocks_unreadable_nested_execution() -> None:
@@ -124,8 +116,14 @@ def test_reference_ites_blocks_unreadable_nested_execution() -> None:
         _ = inputs
         return frozenset(
             {
-                NestedProposal(inputs=frozenset({readable})),
-                NestedProposal(inputs=frozenset({unreadable})),
+                    NestedExecutionAction(
+                        nested_inputs=frozenset({readable.to_artifact()}),
+                        inputs=inputs,
+                    ),
+                    NestedExecutionAction(
+                        nested_inputs=frozenset({unreadable.to_artifact()}),
+                        inputs=inputs,
+                    ),
             }
         )
 
@@ -139,11 +137,16 @@ def test_reference_ites_blocks_unreadable_nested_execution() -> None:
         declare=declare,
     )
 
-    allowed = NestedProposal(inputs=frozenset({readable}))
-    blocked = NestedProposal(inputs=frozenset({unreadable}))
-
-    assert allowed in report.declared_actions
-    assert blocked in report.blocked_actions
+    assert any(
+        action.nested_inputs
+        and next(iter(action.nested_inputs)).value.tag == "readable"
+        for action in report.declared_actions
+    )
+    assert any(
+        action.nested_inputs
+        and next(iter(action.nested_inputs)).value.tag == "unreadable"
+        for action in report.blocked_actions
+    )
 
     nested_guarantee = next(
         g
@@ -168,7 +171,11 @@ def test_reference_ites_respects_llm_budget() -> None:
 
         return frozenset(
             {
-                PrimitiveProposal(action=f"action-{calls}"),
+                PrimitiveAction(
+                    permission=f"action-{calls}",
+                    provider_operation=f"action-{calls}",
+                    inputs=inputs,
+                ),
             }
         )
 
@@ -199,7 +206,11 @@ def test_reference_ites_is_deterministic() -> None:
         _ = inputs
         return frozenset(
             {
-                PrimitiveProposal(action="approve"),
+                PrimitiveAction(
+                    permission="approve",
+                    provider_operation="approve",
+                    inputs=inputs,
+                ),
             }
         )
 
@@ -231,4 +242,10 @@ def test_report_contains_guarantees() -> None:
     )
 
     assert all(isinstance(g, Guarantee) for g in report.guarantees)
-    assert len(report.guarantees) == 3
+    assert {g.name for g in report.guarantees} == {
+        "bounded_llm_calls",
+        "nested_inputs_readable",
+        "primitive_actions_authorised",
+        "visibility_respected",
+        "consent_respected",
+    }

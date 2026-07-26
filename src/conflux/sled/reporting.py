@@ -13,11 +13,43 @@ evaluation semantics stay isolated from presentation and aggregation logic.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable, Mapping
 
 from conflux.core.actions import Action
 from conflux.ites import Guarantee, ITESReport
+
+from .statistics import EnvironmentStatistics, SuiteStatistics
+
+
+@dataclass(frozen=True, slots=True)
+class EnvironmentReport:
+    """Serializable report wrapper for one environment's statistics."""
+
+    statistics: EnvironmentStatistics
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self.statistics)
+
+
+@dataclass(frozen=True, slots=True)
+class SuiteReport:
+    """Serializable report wrapper for a suite's statistics."""
+
+    statistics: SuiteStatistics
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self.statistics)
+
+
+def environment_report_from_statistics(statistics: EnvironmentStatistics) -> EnvironmentReport:
+    """Build the canonical report wrapper for environment statistics."""
+    return EnvironmentReport(statistics=statistics)
+
+
+def suite_report_from_statistics(statistics: SuiteStatistics) -> SuiteReport:
+    """Build the canonical report wrapper for suite statistics."""
+    return SuiteReport(statistics=statistics)
 
 
 @dataclass(frozen=True, slots=True)

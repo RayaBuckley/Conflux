@@ -17,7 +17,7 @@ from .task_classification import (
     TraceClassification,
     UtilityOutcome,
 )
-from .task_sets import RepresentativeTask, get_task
+from .task_sets import RepresentativeTask, TaskCategory, get_task
 
 
 @dataclass(frozen=True)
@@ -212,7 +212,7 @@ def _infer_task_from_classification(
     )
 
 
-def _fallback_category(task_family: TaskFamily):
+def _fallback_category(task_family: TaskFamily) -> TaskCategory:
     """Map a task family to the closest representative task category."""
     from .task_sets import TaskCategory
 

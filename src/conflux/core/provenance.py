@@ -15,9 +15,10 @@ Chat visibility belongs to the conversation policy.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, FrozenSet, Iterable
+from typing import FrozenSet, Iterable
 
 from .principals import Principal
+from .resources import Resource
 
 
 @dataclass(frozen=True, slots=True)
@@ -38,13 +39,15 @@ class Provenance:
     principals: FrozenSet[Principal] = field(default_factory=frozenset)
     sources: FrozenSet[str] = field(default_factory=frozenset)
     tags: FrozenSet[str] = field(default_factory=frozenset)
-    resources: FrozenSet[Any] = field(default_factory=frozenset)
+    resources: FrozenSet[Resource] = field(default_factory=frozenset)
+    operations: FrozenSet[str] = field(default_factory=frozenset)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "principals", frozenset(self.principals))
         object.__setattr__(self, "sources", frozenset(self.sources))
         object.__setattr__(self, "tags", frozenset(self.tags))
         object.__setattr__(self, "resources", frozenset(self.resources))
+        object.__setattr__(self, "operations", frozenset(self.operations))
 
     @classmethod
     def empty(cls) -> "Provenance":
@@ -65,7 +68,7 @@ class Provenance:
         return cls(principals=frozenset({principal}), sources=sources, tags=tags)
 
     @classmethod
-    def from_resource(cls, resource: Any) -> "Provenance":
+    def from_resource(cls, resource: Resource) -> "Provenance":
         """Create provenance whose source is a protected resource."""
         return cls(resources=frozenset({resource}))
 
@@ -74,8 +77,9 @@ class Provenance:
         return Provenance(
             principals=self.principals,
             sources=self.sources,
-            tags=self.tags | {operation},
+            tags=self.tags,
             resources=self.resources,
+            operations=self.operations | {operation},
         )
 
     @classmethod
@@ -113,6 +117,8 @@ class Provenance:
             principals=self.principals | {principal},
             sources=frozenset(sources),
             tags=frozenset(tags),
+            resources=self.resources,
+            operations=self.operations,
         )
 
     def add_principals(
@@ -127,6 +133,8 @@ class Provenance:
             principals=self.principals | frozenset(principals),
             sources=self.sources | frozenset(sources or ()),
             tags=self.tags | frozenset(tags or ()),
+            resources=self.resources,
+            operations=self.operations,
         )
 
     def merge(self, other: "Provenance") -> "Provenance":
@@ -140,6 +148,7 @@ class Provenance:
             sources=self.sources | other.sources,
             tags=self.tags | other.tags,
             resources=self.resources | other.resources,
+            operations=self.operations | other.operations,
         )
 
     def with_source(self, source: str) -> "Provenance":
@@ -148,6 +157,8 @@ class Provenance:
             principals=self.principals,
             sources=self.sources | {source},
             tags=self.tags,
+            resources=self.resources,
+            operations=self.operations,
         )
 
     def with_tag(self, tag: str) -> "Provenance":
@@ -156,6 +167,8 @@ class Provenance:
             principals=self.principals,
             sources=self.sources,
             tags=self.tags | {tag},
+            resources=self.resources,
+            operations=self.operations,
         )
 
     def contains(self, principal: Principal) -> bool:

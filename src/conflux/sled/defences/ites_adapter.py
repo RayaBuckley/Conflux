@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
 
-from .base import Defence, Decision, DecisionRecord, abstain, allow, deny
+from .base import Decision, DecisionRecord, Defence, abstain, allow, deny
 
 
 @runtime_checkable
@@ -79,7 +79,7 @@ class ITESAdapter(Defence):
                     mapped = Decision.ABSTAIN
 
             reason = getattr(result, "reason", fallback_reason) or fallback_reason
-            labels = getattr(result, "labels", frozenset()) or frozenset()
+            labels: frozenset[str] = frozenset(getattr(result, "labels", frozenset()) or frozenset())
             metadata = getattr(result, "metadata", {}) or {}
 
             return DecisionRecord(

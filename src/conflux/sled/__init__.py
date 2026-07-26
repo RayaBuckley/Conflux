@@ -12,7 +12,9 @@ SLED is the evaluation engine.
 
 from __future__ import annotations
 
-from .environment import Data, Environment, LLMExecutionAction, PrimitiveAction, Proposal
+from conflux.core.actions import PrimitiveAction
+
+from .environment import Data, Environment, LLMExecutionAction, Proposal
 from .evaluator import Evaluator
 from .scenario import Scenario
 from .task_suite import (

@@ -7,6 +7,8 @@ from conflux.core import (
     Provenance,
     Resource,
 )
+
+
 def test_merge_combines_principals():
     alice = Principal("alice", "Alice")
     bob = Principal("bob", "Bob")
@@ -16,8 +18,8 @@ def test_merge_combines_principals():
     assert merged.principals == frozenset({alice, bob})
 def test_merge_combines_resources():
     owner = Principal("owner", "Owner")
-    file_a = Resource("file_a", owner)
-    file_b = Resource("file_b", owner)
+    file_a = Resource("file_a", "test", "file", "file_a", owner=owner)
+    file_b = Resource("file_b", "test", "file", "file_b", owner=owner)
     p1 = Provenance.from_resource(file_a)
     p2 = Provenance.from_resource(file_b)
     merged = p1.merge(p2)
@@ -25,7 +27,7 @@ def test_merge_combines_resources():
 def test_merge_preserves_existing_information():
     alice = Principal("alice", "Alice")
     owner = Principal("owner", "Owner")
-    resource = Resource("document", owner)
+    resource = Resource("document", "test", "document", "document", owner=owner)
     p1 = Provenance.from_principal(alice)
     p2 = Provenance.from_resource(resource)
     merged = p1.merge(p2)

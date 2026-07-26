@@ -6,9 +6,13 @@ configuration describing how the evaluation should proceed.
 Scenarios are immutable so that evaluations are deterministic and repeatable.
 """
 from __future__ import annotations
-from dataclasses import dataclass, field
+
+from dataclasses import dataclass
 from typing import FrozenSet
+
 from .environment import Data, Environment
+
+
 @dataclass(frozen=True, slots=True)
 class Scenario:
     """

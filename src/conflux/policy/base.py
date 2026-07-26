@@ -8,10 +8,14 @@ The goal is to keep policy evaluation separate from provenance propagation and
 execution semantics.
 """
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import FrozenSet
+
 from conflux.core import Principal, Resource
+
+
 @dataclass(frozen=True, slots=True)
 class PolicyRequest:
     """

@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, FrozenSet, Iterable, Protocol, Sequence
+from typing import FrozenSet, Iterable
 
 from .state import ExecutionState
 
@@ -75,6 +75,7 @@ class BoundedLLMCalls(SecurityProperty):
     Property stating that the defence stayed within its LLM budget.
     """
 
+    @property
     def name(self) -> str:
         return "bounded_llm_calls"
 
@@ -102,6 +103,7 @@ class NoActionOverlap(SecurityProperty):
     This is a lightweight consistency property for the execution trace.
     """
 
+    @property
     def name(self) -> str:
         return "no_action_overlap"
 
@@ -125,6 +127,7 @@ class TraceRecorded(SecurityProperty):
     semantic checks are implemented.
     """
 
+    @property
     def name(self) -> str:
         return "trace_recorded"
 

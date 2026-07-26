@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .base import Defence, DecisionRecord, allow, deny
+from .base import DecisionRecord, Defence, allow, deny
 
 
 def _extract_initiator(trace_context: Any) -> Any:

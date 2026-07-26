@@ -16,19 +16,16 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Iterable, Mapping, Protocol, runtime_checkable
 
 from conflux.ites import ITES
-
-from conflux.sled.evaluator import ExhaustiveEvaluator
 from conflux.sled.environment import Data, Environment
-from conflux.sled.reporting import EvaluationSummary, summarise_branching
+from conflux.sled.evaluator import ExhaustiveEvaluator
+from conflux.sled.reporting import EvaluationSummary
 
 from .native import (
     NativeBenchmarkCase,
     NativeBenchmarkCaseOutcome,
-    NativeBenchmarkRun,
     NativeBenchmarkSuite,
     build_native_case,
     build_native_suite,
-    native_suite_to_dict,
     run_native_case,
     run_native_suite,
 )
@@ -36,7 +33,6 @@ from .results import (
     BenchmarkCaseResult,
     BenchmarkRunMetadata,
     BenchmarkRunSummary,
-    build_case_result,
     build_run_summary,
 )
 

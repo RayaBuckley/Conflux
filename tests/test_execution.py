@@ -5,9 +5,13 @@ than mutating existing ones, and that provenance is carried forward through
 operations.
 """
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from conflux.core import Artifact, Principal, Provenance
 from conflux.execution.operations import Operation
+
+
 @dataclass(frozen=True, slots=True)
 class UppercaseOperation(Operation[str, str]):
     def run(self, artifact: Artifact[str]) -> Artifact[str]:

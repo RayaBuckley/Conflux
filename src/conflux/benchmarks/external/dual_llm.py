@@ -16,9 +16,9 @@ The goal is comparison, not faithful reimplementation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import json
 import subprocess
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 

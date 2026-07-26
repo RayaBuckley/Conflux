@@ -50,10 +50,10 @@ from .consent import (
 from .permissions import (
     DELEGATE,
     DELETE,
-    Permission,
     READ,
     SHARE,
     WRITE,
+    Permission,
     normalise_permission,
     permission_names,
 )

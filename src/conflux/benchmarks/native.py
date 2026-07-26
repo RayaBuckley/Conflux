@@ -16,13 +16,12 @@ This is the baseline adapter that later benchmark integrations should follow.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Iterable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Iterator, Mapping
 
-from conflux.core import Artifact
-from conflux.ites import ITES, ITESReport
-from conflux.sled.evaluator import ExhaustiveEvaluator, ExhaustiveEvaluationResult
+from conflux.ites import ITES
 from conflux.sled.environment import Data, Environment
-from conflux.sled.reporting import BranchingSummary, EvaluationSummary, summarise_branching
+from conflux.sled.evaluator import ExhaustiveEvaluationResult, ExhaustiveEvaluator
+from conflux.sled.reporting import EvaluationSummary, summarise_branching
 
 from .results import (
     BenchmarkCaseResult,
@@ -109,7 +108,7 @@ class NativeBenchmarkSuite:
         object.__setattr__(self, "cases", tuple(self.cases))
         object.__setattr__(self, "metadata", dict(self.metadata))
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[NativeBenchmarkCase]:
         return iter(self.cases)
 
     def case_ids(self) -> tuple[str, ...]:

@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Iterable
+from typing import Any, Iterable
 
 from .actions import Action, ActionKind
 from .permissions import Permission, normalise_permission
@@ -63,7 +63,7 @@ class ConsentGrant:
     def covers_permission(self, permission: Permission) -> bool:
         return permission in self.permissions
 
-    def covers_action(self, action: Action[object]) -> bool:
+    def covers_action(self, action: Action[Any]) -> bool:
         if self.action_kinds and action.kind not in self.action_kinds:
             return False
 
@@ -104,7 +104,7 @@ class ConsentProfile:
         object.__setattr__(self, "allowed_action_kinds", frozenset(self.allowed_action_kinds))
         object.__setattr__(self, "allowed_resources", frozenset(self.allowed_resources))
 
-    def allows(self, action: Action[object]) -> bool:
+    def allows(self, action: Action[Any]) -> bool:
         """
         Return True if this profile permits the given action.
 
@@ -185,7 +185,7 @@ class ConsentDecision:
 
 
 def consent_from_profiles(
-    action: Action[object],
+    action: Action[Any],
     decision_principals: Iterable[Principal],
     profiles: Iterable[ConsentProfile],
 ) -> ConsentDecision:
@@ -248,7 +248,7 @@ def consent_from_profiles(
 
 
 def consent_allows(
-    action: Action[object],
+    action: Action[Any],
     decision_principals: Iterable[Principal],
     profiles: Iterable[ConsentProfile],
 ) -> bool:

@@ -9,6 +9,7 @@ evaluation (e.g. AWS IAM, Google Cloud IAM, Microsoft Entra PIM) will be added
 later without changing the external API.
 """
 from .authorisation import can_access, effective_authority
+
 __all__ = [
     "can_access",
     "effective_authority",

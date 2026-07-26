@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Callable, Mapping, Protocol, Sequence
+from typing import Any, Mapping, Protocol, Sequence
 
 from .counterexample import (
     Counterexample,
@@ -43,7 +43,7 @@ from .statistics import (
 from .task_classification import DEFAULT_TRACE_CLASSIFIER, TraceClassification
 from .task_result import TaskResult
 from .task_sets import RepresentativeTask
-from .trace import ExecutionTrace, TraceEvent, TraceEventKind
+from .trace import ExecutionTrace, TraceContext, TraceEvent, TraceEventKind, TraceKind
 
 
 class TraceExplorer(Protocol):
@@ -184,7 +184,7 @@ def evaluate_scenario(
     task_results: list[TaskResult] = []
     counterexamples: list[Counterexample] = []
 
-    resolved_defence_name = defence_name or getattr(defence, "name", "unknown")
+    resolved_defence_name: str = str(defence_name or getattr(defence, "name", "unknown"))
 
     for trace in traces:
         classification = classifier.classify(trace)
@@ -258,7 +258,7 @@ def evaluate_suite(
         config = DefenceEvaluationConfig(
             suite_id=suite.id,
             suite_name=suite.name,
-            defence_name=defence_name or getattr(defence, "name", "unknown"),
+            defence_name=str(defence_name or getattr(defence, "name", "unknown")),
             description=suite.description,
             labels=suite.labels,
             metadata=suite.metadata,
@@ -386,7 +386,7 @@ def evaluate_selected_scenarios(
         config=DefenceEvaluationConfig(
             suite_id=suite_id,
             suite_name=suite_name,
-            defence_name=defence_name or getattr(defence, "name", "unknown"),
+            defence_name=str(defence_name or getattr(defence, "name", "unknown")),
             description=description,
             labels=frozenset(labels or ()),
             metadata=metadata or {},
@@ -535,21 +535,19 @@ def _coerce_execution_trace(trace: Any, *, defence_name: str, result: TaskResult
         return trace
 
     trace_id = getattr(trace, "trace_id", None) or result.trace_id or f"{defence_name}:{result.task_id}"
-    kind_value = getattr(trace, "kind", None)
-    try:
-        kind = kind_value if isinstance(kind_value, type(ExecutionTrace.kind)) else ExecutionTrace.__annotations__.get("kind", None)
-    except Exception:
-        kind = None
-
     events = tuple(_coerce_events(getattr(trace, "events", None)))
     context = getattr(trace, "context", None)
-    if not isinstance(context, ExecutionTrace.__annotations__.get("context", object)):  # type: ignore[arg-type]
-        context = None
+    if not isinstance(context, TraceContext):
+        context = TraceContext()
+
+    kind = getattr(trace, "kind", TraceKind.UNKNOWN)
+    if not isinstance(kind, TraceKind):
+        kind = TraceKind.UNKNOWN
 
     return ExecutionTrace(
         trace_id=str(trace_id),
-        kind=getattr(trace, "kind", None) or ExecutionTrace.__dataclass_fields__["kind"].default,  # type: ignore[attr-defined]
-        context=context or ExecutionTrace.__dataclass_fields__["context"].default_factory(),  # type: ignore[attr-defined]
+        kind=kind,
+        context=context,
         events=events,
         task_name=getattr(trace, "task_name", None) or result.task_name,
         environment_name=getattr(trace, "environment_name", None) or result.environment_name,

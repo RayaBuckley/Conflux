@@ -12,9 +12,13 @@ The design is intentionally lightweight so it can support AgentDojo-style
 benchmarks as well as custom evaluation harnesses.
 """
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import FrozenSet, Iterable, Iterator, Protocol
+
 from .scenario import Scenario
+
+
 @dataclass(frozen=True, slots=True)
 class BenchmarkExpectation:
     """

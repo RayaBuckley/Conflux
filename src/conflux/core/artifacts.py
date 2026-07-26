@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 from typing import Any, Generic, TypeVar
 
+from .principals import Principal
 from .provenance import Provenance
 
 T = TypeVar("T")
@@ -100,7 +101,7 @@ class Artifact(Generic[T]):
         return self.confidential
 
     @property
-    def principals(self) -> frozenset:
+    def principals(self) -> frozenset[Principal]:
         """
         Compatibility accessor for the principals contributing to this artifact.
         """

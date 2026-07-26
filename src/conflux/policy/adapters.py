@@ -9,11 +9,16 @@ Keeping this layer separate prevents provider-specific logic from leaking into
 the core authorisation and ITES layers.
 """
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, FrozenSet, Protocol
+
 from conflux.core import Principal, Resource
+
 from .base import Policy, PolicyDecision, PolicyRequest
+
+
 @dataclass(frozen=True, slots=True)
 class PolicyContext:
     """

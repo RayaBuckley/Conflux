@@ -4,6 +4,8 @@ These tests verify that artefacts remain immutable and that provenance is
 propagated correctly when new derived artefacts are created.
 """
 from conflux.core import Artifact, Principal, Provenance, Resource
+
+
 def test_artifact_stores_value_and_provenance():
     alice = Principal("alice", "Alice")
     provenance = Provenance.from_principal(alice)
@@ -21,7 +23,7 @@ def test_map_preserves_provenance_and_adds_operation():
 def test_combine_merges_provenance():
     alice = Principal("alice", "Alice")
     owner = Principal("owner", "Owner")
-    resource = Resource("doc-1", owner)
+    resource = Resource("doc-1", "test", "document", "doc-1", owner=owner)
     left = Artifact(value="hello", provenance=Provenance.from_principal(alice))
     right = Artifact(value="world", provenance=Provenance.from_resource(resource))
     combined = Artifact.combine(left, right, value="hello world", operation="concat")

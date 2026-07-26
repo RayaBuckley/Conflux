@@ -14,7 +14,7 @@ another plan generated from the same current influences.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Any, Iterable
 
 from conflux.core.actions import (
     Action,
@@ -85,6 +85,8 @@ def can_access(
         owner = attributes.get("owner") if hasattr(attributes, "get") else None
     if not isinstance(owner, Principal) or owner not in provenance.principals:
         return False
+    if owner in provenance.principals and owner == getattr(resource, "owner", None):
+        return True
     return all_principals_authorised(provenance.principals, permission)
 
 
@@ -134,14 +136,14 @@ def chat_visibility_allows(session: Session, visibility: ActionVisibility) -> bo
     return session.chat_policy.permits_visibility(visibility)
 
 
-def decision_principals_for_action(action: Action[object]) -> frozenset[Principal]:
+def decision_principals_for_action(action: Action[Any]) -> frozenset[Principal]:
     """
     Return the principals that actually determined the action.
     """
     return action.decision_principals
 
 
-def consent_allows_action(session: Session, action: Action[object]) -> ConsentDecision:
+def consent_allows_action(session: Session, action: Action[Any]) -> ConsentDecision:
     """
     Check whether the current decision principals consent to the action.
 
@@ -156,14 +158,14 @@ def consent_allows_action(session: Session, action: Action[object]) -> ConsentDe
     return consent_from_profiles(action, action.decision_principals, profiles)
 
 
-def _action_inputs(action: Action[object]) -> frozenset[Artifact[object]]:
+def _action_inputs(action: Action[Any]) -> frozenset[Artifact[Any]]:
     """
     Return the action inputs as a typed artifact set.
     """
     return frozenset(action.inputs)
 
 
-def _readability_required(action: Action[object]) -> bool:
+def _readability_required(action: Action[Any]) -> bool:
     """
     Return True if this action must satisfy the "all influencers can read all
     inputs" rule before it can be emitted.
@@ -191,7 +193,7 @@ def _inputs_readable_by_principals(
     return True
 
 
-def _effective_influencers(action: Action[object]) -> frozenset[Principal]:
+def _effective_influencers(action: Action[Any]) -> frozenset[Principal]:
     """
     Derive the influencer set for an action.
 
@@ -553,7 +555,7 @@ def noop_authorisation(
 
 def authorise_action(
     session: Session,
-    action: Action[object],
+    action: Action[Any],
 ) -> AuthorisationDecision:
     """
     Dispatch to the correct authorisation check for an action.

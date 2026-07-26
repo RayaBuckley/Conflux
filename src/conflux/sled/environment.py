@@ -20,15 +20,15 @@ from typing import Any, FrozenSet, Iterable, Mapping
 from conflux.core import Artifact, Principal, Provenance
 from conflux.core.actions import (
     ActionVisibility,
-    ClarificationRequestAction,
-    DelegationAction,
     MessageUserAction,
     NestedExecutionAction,
     NoOpAction,
     PrimitiveAction,
-    Proposal as ActionProposal,
     RequestConsentAction,
     StopAction,
+)
+from conflux.core.actions import (
+    Proposal as ActionProposal,
 )
 from conflux.core.permissions import Permission, normalise_permission
 
@@ -84,7 +84,7 @@ class Data:
         """
         return Artifact(
             value=self,
-            provenance=self.provenance(),
+            provenance=self.provenance().with_operation("sled_input"),
             label=self.tag,
             confidential=self.confidential,
         )

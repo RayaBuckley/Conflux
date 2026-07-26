@@ -18,9 +18,9 @@ common environment and reporting pipeline.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import json
 import subprocess
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -34,6 +34,7 @@ from ...sled.trace import (
     TraceKind,
 )
 from .base import ExternalDefence, ExternalExecutionResult, TraceAdapter
+from .runner import extract_execution_time
 
 
 @dataclass(frozen=True)
@@ -137,7 +138,7 @@ class CaMeLExternalDefence(ExternalDefence):
             stderr=completed.stderr,
             exit_code=completed.returncode,
             model_name=artefacts.get("model_name"),
-            execution_time_seconds=_extract_execution_time(artefacts),
+            execution_time_seconds=extract_execution_time(artefacts),
             artefacts=artefacts,
             metadata={
                 **dict(self.metadata),

@@ -30,6 +30,15 @@ from typing import Any, Mapping, Sequence
 from .base import ExternalExecutionResult
 
 
+def extract_execution_time(artefacts: Mapping[str, Any]) -> float | None:
+    """Extract a common runtime field from external benchmark output."""
+    for key in ("execution_time_seconds", "runtime_seconds", "duration_seconds", "elapsed_seconds"):
+        value = artefacts.get(key)
+        if isinstance(value, (int, float)):
+            return float(value)
+    return None
+
+
 def run_external_command(
     *,
     command: Sequence[str],

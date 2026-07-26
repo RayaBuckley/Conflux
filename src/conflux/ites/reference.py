@@ -5,8 +5,12 @@ It now delegates to the core mediation algorithm, which is where the actual
 security semantics live.
 """
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from .mediator import MediatingITES
+
+
 @dataclass(frozen=True, slots=True)
 class ReferenceITES(MediatingITES):
     """

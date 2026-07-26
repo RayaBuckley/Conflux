@@ -252,7 +252,11 @@ def aggregate_environment_results(
 
         task = task_lookup.get(task_id)
         task_name = task.name if task is not None else task_results[0].task_name
-        task_family = task.task_family if hasattr(task, "task_family") else task_results[0].task_family
+        task_family = (
+            task.task_family
+            if task is not None and hasattr(task, "task_family")
+            else task_results[0].task_family
+        )
 
         task_statistics.append(
             aggregate_task_results(

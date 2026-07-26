@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Protocol, TypeAlias
+from typing import Any, Protocol, TypeAlias, cast
 
 from conflux.auth.authorisation import all_principals_authorised
 from conflux.core import Artifact, Principal, Provenance, Resource
@@ -265,7 +265,7 @@ class MVPExplorer:
                         state.influencers, proposal.permission
                     )
                     event = MVPEvent(
-                        **event_base,
+                        **cast(Any, event_base),
                         declared=allowed,
                         reason=(
                             "intersection_rule"
@@ -295,7 +295,7 @@ class MVPExplorer:
                     for principal in item.provenance.principals
                 )
                 event = MVPEvent(
-                    **event_base,
+                    **cast(Any, event_base),
                     declared=readable,
                     reason=(
                         "nested_inputs_readable"

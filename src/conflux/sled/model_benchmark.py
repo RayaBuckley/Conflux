@@ -18,6 +18,7 @@ from dataclasses import dataclass, replace
 from typing import Iterable
 
 from conflux.core import Principal
+
 from .attack import Attack, AttackMetadata
 from .environment import Data, Environment
 from .scenario import Scenario

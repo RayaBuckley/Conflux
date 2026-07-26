@@ -14,6 +14,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 from typing import Any, Mapping
 
+from .principals import Principal
+
 
 @dataclass(frozen=True, slots=True)
 class Resource:
@@ -26,24 +28,25 @@ class Resource:
     """
 
     id: str
-    provider: str | Any
-    resource_type: str = "generic"
-    name: str = ""
+    provider: str
+    resource_type: str
+    name: str
     attributes: Mapping[str, Any] = field(default_factory=dict)
+    owner: Principal | None = None
 
     def __post_init__(self) -> None:
         if not self.id:
             raise ValueError("Resource.id must be non-empty")
         if not self.provider:
             raise ValueError("Resource.provider must be non-empty")
-        if not isinstance(self.provider, str):
-            owner = self.provider
-            object.__setattr__(self, "provider", "legacy")
-            object.__setattr__(self, "attributes", {**self.attributes, "owner": owner})
         if not self.resource_type:
             raise ValueError("Resource.resource_type must be non-empty")
-        if not self.name:
-            object.__setattr__(self, "name", self.id)
+        if self.owner is not None and not isinstance(self.owner, Principal):
+            raise TypeError("Resource.owner must be a Principal or None")
+
+    def __hash__(self) -> int:
+        """Hash stable resource identity, excluding mutable provider metadata."""
+        return hash((self.id, self.provider, self.resource_type, self.name, self.owner))
 
     def with_attributes(self, **updates: Any) -> "Resource":
         """

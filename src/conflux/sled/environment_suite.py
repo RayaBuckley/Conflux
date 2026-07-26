@@ -14,9 +14,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Iterator, Mapping, Sequence
 
-from .task_sets import RepresentativeTask, ALL_TASKS, get_task
+from .task_sets import ALL_TASKS, RepresentativeTask, get_task
 
 
 class EnvironmentKind(str, Enum):
@@ -105,7 +105,7 @@ class EnvironmentSuite:
     labels: frozenset[str] = field(default_factory=frozenset)
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[EnvironmentScenario]:
         return iter(self.scenarios)
 
     def __len__(self) -> int:
