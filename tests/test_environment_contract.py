@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import pytest
 
+from conflux.compatibility.environment import snapshot_from_legacy
 from conflux.core import Principal
 from conflux.domain.environment import DataItem, EnvironmentSnapshot
+from conflux.sled.environment import Data, Environment
 
 
 def test_data_item_separates_scenario_metadata_from_provenance() -> None:
@@ -30,3 +32,13 @@ def test_environment_snapshot_is_immutable_and_provider_neutral() -> None:
     assert snapshot.contains_all({item})
     with pytest.raises(TypeError):
         snapshot.metadata["changed"] = True  # type: ignore[index]
+
+
+def test_legacy_environment_translation_keeps_scenario_metadata_separate() -> None:
+    legacy = Data(tag="task", metadata={"id": "input-1", "scenario": "case"})
+    snapshot = snapshot_from_legacy(Environment(data=frozenset({legacy}), name="fixture"))
+
+    item = next(iter(snapshot.data))
+    assert item.id == "input-1"
+    assert item.provenance().tags == frozenset()
+    assert item.metadata["scenario"] == "case"

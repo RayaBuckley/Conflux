@@ -15,9 +15,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, FrozenSet, Iterable, Mapping, Protocol, runtime_checkable
 
-from conflux.compatibility.environment import Data, Environment
+from conflux.compatibility.environment import Data, Environment, snapshot_from_legacy
 from conflux.core import Principal, Resource
 from conflux.core.actions import Proposal
+from conflux.domain.environment import EnvironmentSnapshot
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,6 +107,11 @@ class ProviderMaterialisation:
         """Return the internal resource corresponding to an external identifier."""
         return self.resource_map.get(external_id)
 
+    @property
+    def snapshot(self) -> EnvironmentSnapshot:
+        """Return this materialisation in the provider-neutral contract."""
+        return snapshot_from_legacy(self.environment)
+
 
 @runtime_checkable
 class ProviderAdapter(Protocol):
@@ -121,6 +127,10 @@ class ProviderAdapter(Protocol):
         """
         Convert the current provider state into the internal SLED environment.
         """
+        ...
+
+    def snapshot(self) -> EnvironmentSnapshot:
+        """Return the provider-neutral environment contract."""
         ...
 
     def resolve_principal(self, external_id: str) -> Principal | None:
@@ -171,6 +181,10 @@ class BaseProviderAdapter(ABC):
     """
 
     capability: ProviderCapability
+
+    def snapshot(self) -> EnvironmentSnapshot:
+        """Translate the legacy environment view to the canonical snapshot."""
+        return snapshot_from_legacy(self.describe_environment())
 
     @abstractmethod
     def materialise(self) -> ProviderMaterialisation:
