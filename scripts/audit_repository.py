@@ -60,7 +60,13 @@ def check_audit_coverage(errors: list[str]) -> None:
         if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts:
             continue
         relative = path.relative_to(ROOT).as_posix()
-        if relative.startswith((".venv/", ".pytest_cache/", "src/conflux.egg-info/")) or relative in {".coverage"}:
+        if relative.startswith((
+            ".venv/",
+            ".pytest_cache/",
+            ".mypy_cache/",
+            ".ruff_cache/",
+            "src/conflux.egg-info/",
+        )) or relative in {".coverage"}:
             continue
         if relative not in documented and relative not in {"docs/AUDIT.md"}:
             errors.append(f"{relative}: missing docs/AUDIT.md ledger entry")

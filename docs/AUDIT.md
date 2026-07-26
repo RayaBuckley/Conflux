@@ -15,7 +15,7 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/__init__.py` | Package identity/version | imports | REFERENCE | canonical | version policy |
 | `src/conflux/core/__init__.py` | Core public exports | package imports | REFERENCE | canonical | export drift |
 | `src/conflux/core/principals.py` | Principal value and permissions | authorisation tests | ARCHITECTURE | canonical | policy semantics |
-| `src/conflux/core/resources.py` | Protected resource value | policy/provenance tests | REFERENCE | canonical | legacy owner API |
+| `src/conflux/core/resources.py` | Protected resource value | policy/provenance tests | REFERENCE | canonical | provider metadata policy |
 | `src/conflux/core/permissions.py` | Permission value normalization | policy tests | REFERENCE | canonical | provider mapping |
 | `src/conflux/core/provenance.py` | Immutable causal metadata | provenance tests | ARCHITECTURE | canonical | resource/operation model |
 | `src/conflux/core/artifacts.py` | Provenance-bearing values | artifact tests | ARCHITECTURE | canonical | compatibility methods |
@@ -33,7 +33,7 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/policy/adapters.py` | Provider policy translation | imports | REFERENCE | adapter | incomplete providers |
 | `src/conflux/policy/aws.py` | AWS-style policy adapter | imports | EVALUATION | adapter | external semantics |
 | `src/conflux/ites/__init__.py` | Canonical ITES contract/exports | ITES tests | ARCHITECTURE | canonical | compatibility exports |
-| `src/conflux/ites/mediator.py` | ITES mediation implementation | ITES/state tests | ARCHITECTURE | canonical | report semantics |
+| `src/conflux/ites/mediator.py` | ITES mediation implementation | ITES/state tests | ARCHITECTURE | canonical | recursive branch evidence |
 | `src/conflux/ites/state.py` | Immutable execution state | state tests | ARCHITECTURE | canonical | guarantee ownership |
 | `src/conflux/ites/properties.py` | ITES property contracts | imports | ARCHITECTURE | canonical | abstract surface |
 | `src/conflux/ites/mvp.py` | Minimal executable semantics harness | MVP tests | EVALUATION | compatibility | parallel model risk |

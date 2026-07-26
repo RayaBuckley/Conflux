@@ -10,17 +10,17 @@ planned; architecture belongs in `ARCHITECTURE.md`.
   modules exist and are documented in the [audit ledger](AUDIT.md).
 - Repository audit and static compilation pass.
 - Python 3.12 setup is available through `scripts/setup.ps1`.
-- Runtime tests currently expose legacy API inconsistencies in artifacts,
-  resources, provenance, ITES compatibility behavior, and policy adapters.
-- Full validation is therefore not yet a passing definition of done.
+- Runtime validation passes after migrating callers to the canonical artifact,
+  resource, provenance, ITES, policy, and evaluator contracts.
+- Strict mypy and Ruff validation pass for the source and test tree.
 
 ## Work status
 
 | Area | Status | Evidence or next action |
 |---|---|---|
-| Domain model | Repair in progress | tests define missing compatibility contracts |
-| ITES mediation | Implemented with compatibility paths | reconcile report/declaration semantics |
-| SLED evaluation | Implemented with one-shot/exhaustive surfaces | document and test ownership |
+| Domain model | Canonical contract implemented | provenance/resource regression tests |
+| ITES mediation | Implemented with isolated reference path | named guarantee and nested-action tests |
+| SLED evaluation | One-shot/exhaustive surfaces separated | evaluator/report type checks |
 | Providers | Adapter prototypes | add boundary contract tests |
 | External benchmarks | Optional adapters | require integration fixtures and assumptions |
 | Documentation audit | In progress | keep ledger synchronized with changes |
