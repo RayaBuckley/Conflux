@@ -1,5 +1,8 @@
 """
-Exhaustive SLED evaluator.
+Deprecated SLED evaluator implementation facade.
+
+Canonical ownership is ``conflux.evaluation``. This implementation remains
+temporarily while callers migrate and must not gain new evaluation semantics.
 
 This module explores a bounded combinatorial search space over ITES proposal
 patterns. It compresses the environment into representative equivalence

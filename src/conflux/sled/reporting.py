@@ -1,5 +1,8 @@
 """
-Reporting utilities for SLED and ITES runs.
+Deprecated reporting compatibility implementation.
+
+Canonical ownership is ``conflux.evaluation.reporting``. Keep this module
+stable only for staged callers; new reporting APIs belong in evaluation.
 
 This module turns raw evaluation outputs into compact summaries suitable for:
 - debugging,

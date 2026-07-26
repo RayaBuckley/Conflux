@@ -43,20 +43,20 @@ Disposition values: `canonical`, `compatibility`, `adapter`, `benchmark`,
 | `src/conflux/providers/filesystem.py` | Filesystem provider | imports | EVALUATION | adapter | host effects |
 | `src/conflux/providers/docker.py` | Docker provider | imports | EVALUATION | adapter | optional runtime |
 | `src/conflux/sled/__init__.py` | SLED public exports | benchmark tests | EVALUATION | canonical | export drift |
-| `src/conflux/sled/environment.py` | Evaluation data/environment | benchmark tests | EVALUATION | canonical | core coupling |
+| `src/conflux/sled/environment.py` | Deprecated evaluation data/environment facade | compatibility tests | EVALUATION | compatibility | remove after zero-import audit |
 | `src/conflux/sled/scenario.py` | Evaluation scenario | benchmark tests | EVALUATION | canonical | duplicate models |
 | `src/conflux/sled/environment_suite.py` | Environment catalogue | imports | EVALUATION | benchmark | scenario scale |
 | `src/conflux/sled/task_suite.py` | Task suite contract | benchmark tests | EVALUATION | canonical | protocol compatibility |
 | `src/conflux/sled/task_sets.py` | Representative tasks | imports | EVALUATION | benchmark | intended behavior |
 | `src/conflux/sled/attack.py` | Attack contract | imports | EVALUATION | benchmark | attack boundary |
-| `src/conflux/sled/evaluator.py` | One-shot/exhaustive evaluators | benchmark/MVP tests | EVALUATION | canonical | facade separation |
+| `src/conflux/sled/evaluator.py` | Deprecated one-shot/exhaustive evaluator facade | compatibility tests | EVALUATION | compatibility | migrate implementation to evaluation |
 | `src/conflux/sled/benchmark_runner.py` | Suite orchestration | benchmark tests | EVALUATION | canonical | evaluator API |
 | `src/conflux/sled/trace.py` | Immutable execution traces | imports | EVALUATION | canonical | evidence completeness |
 | `src/conflux/sled/counterexample.py` | Counterexample extraction | imports | EVALUATION | canonical | trace assumptions |
 | `src/conflux/sled/task_classification.py` | Trace outcome labels | imports | EVALUATION | canonical | heuristic labels |
 | `src/conflux/sled/task_result.py` | Task result normalization | imports | EVALUATION | canonical | utility/security split |
 | `src/conflux/sled/statistics.py` | Outcome aggregation | imports | EVALUATION | canonical | metric definitions |
-| `src/conflux/sled/reporting.py` | Human/machine summaries | imports | EVALUATION | canonical | schema stability |
+| `src/conflux/sled/reporting.py` | Deprecated human/machine summary facade | compatibility imports | EVALUATION | compatibility | migrate implementation to evaluation |
 | `src/conflux/sled/evaluation.py` | End-to-end evaluation driver | imports | EVALUATION | canonical | duplicate orchestration |
 | `src/conflux/sled/defence_evaluation.py` | Defence comparison workflow | imports | EVALUATION | benchmark | overlap with evaluation.py |
 | `src/conflux/sled/model_benchmark.py` | Model-level reference benchmark | model tests | EVALUATION | benchmark | post-paper scope |
