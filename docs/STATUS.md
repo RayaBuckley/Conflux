@@ -33,6 +33,8 @@ planned; architecture belongs in `ARCHITECTURE.md`.
 | Provider-neutral environment | Initial contract | migrate provider and SLED callers from legacy environment types |
 | Canonical evaluation services | Initial facade | migrate SLED evaluator implementation and trace writers |
 | Application policy service | Initial implementation | compose visibility and consent ports with authorisation |
+| Benchmark imports | Migrated to evaluation facade | remove remaining direct SLED compatibility imports |
+| Legacy proposal handling | Isolated | migrate remaining reference callers, then remove |
 
 ## Post-paper extensions
 

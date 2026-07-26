@@ -189,5 +189,6 @@ documents have absorbed their unique evidence and all links are updated. No
 | `src/conflux/application/policy.py` | Collective authorisation service | pytest | REFERENCE | canonical | visibility/consent composition pending |
 | `src/conflux/evaluation/services.py` | Canonical evaluator exports | import test | EVALUATION | canonical | SLED implementation migration pending |
 | `src/conflux/evaluation/reporting.py` | Canonical reporting exports | import test | EVALUATION | canonical | SLED reporting migration pending |
+| `docs/decisions/007-legacy-code-mapping.md` | Archived implementation mapping decision | documentation review | ARCHITECTURE/REFERENCE | tooling | update as migration completes |
 | `tests/test_policy_boundary.py` | Authorisation port behavior | pytest | REFERENCE | canonical | add visibility and consent cases |
 | `tests/test_evaluation_contract.py` | Evaluator/result ownership tests | pytest | EVALUATION | canonical | add deterministic trace fixtures |
