@@ -1,0 +1,842 @@
+# Research landscape: evolving SLED from exhaustive testing to formal verification and secure planning
+
+I searched primary papers and official tool documentation through 27 July 2026 across four areas: agent-security benchmarks, formally enforced agent defences, model checking and software verification, and LLM-agent planning. Absolute bibliographic completeness cannot be guaranteed—one recent taxonomy alone identifies 40 behavioural agent-safety benchmarks and five adjacent evaluation artefacts—but the landscape below covers the principal benchmark families and the formal-methods techniques most applicable to SLED. [oai_citation:0‡arXiv](https://arxiv.org/html/2605.16282v1?utm_source=chatgpt.com)
+
+## 1. Where SLED currently sits
+
+The project report models the LLM as a nondeterministic black box that may propose any set of primitive actions or further executions. SLED then enumerates those choices recursively and classifies traces by privilege escalation, exfiltration and utility. Figure 4.1 of the report illustrates the central problem: every LLM call multiplies the number of defence–LLM branches. The implementation controls this with execution-depth and proposal-size bounds. At depth four, it exceeded 49 million traces without completing; the reported experiments therefore used depth three and excluded incomplete traces. Raya\_Project\_Report.pdf
+
+The later preprint reports roughly 1.46 million explored traces, with approximately 15% reaching the depth bound. It correctly describes the result as exhaustive only within the evaluated environments and bounds. Raya\_Preprint.pdf
+
+This makes current SLED a form of **bounded black-box exhaustive testing**:
+
+\[
+\text{Defence} + \text{enumerated model outputs} + \text{bounded depth}.
+\]
+
+It is stronger than sampling attacks, but weaker than formal verification because:
+
+1. it enumerates traces rather than reachable states or symbolic state sets;
+2. it does not prove that the explored abstraction faithfully represents the defence implementation;
+3. depth-bounded searches cannot establish an unbounded invariant;
+4. many traces differ syntactically while being semantically equivalent;
+5. the utility classification is reconstructed after execution rather than expressed as a reachability or controller-synthesis property.
+
+The current repository has made progress towards typed states, traces and a normative MVP, but the repository review also found overlapping semantic paths and insufficient conformance evidence between the normative model and richer mediator. Formal verification should therefore be accompanied by a consolidation onto one authoritative transition semantics. Conflux Repo Analysis.txt
+
+## 2. What existing benchmarks cover—and what they do not
+
+The benchmark landscape is large but surprisingly homogeneous methodologically. Nearly all benchmarks execute a finite collection of tasks and attacks against a model or agent, then report empirical rates. They improve realism and vulnerability discovery, but do not prove that a defence is secure against every behaviour allowed by its interface.
+
+### Indirect prompt injection and tool-use integrity
+
+AgentDojo provides an extensible tool environment for measuring utility and prompt-injection robustness. InjecAgent contains 1,054 indirect-injection cases over 17 user tools and 62 attacker tools. Agent Security Bench spans ten scenarios, more than 400 tools and nearly 90,000 attack/defence evaluations. These are the most directly relevant comparisons for ITES, but all remain finite empirical test suites. [oai_citation:4‡arXiv](https://arxiv.org/abs/2406.13352?utm_source=chatgpt.com)
+
+A 2025 re-evaluation found weak attacks, flawed success criteria and implementation problems in several public agent-security benchmarks. It also demonstrated that defences which saturate existing benchmarks may remain bypassable by adaptive attacks. This reinforces SLED’s original motivation: benchmark success is not equivalent to a security guarantee. [oai_citation:5‡arXiv](https://arxiv.org/abs/2510.05244?utm_source=chatgpt.com)
+
+### General agent safety and malicious use
+
+AgentHarm covers 110 explicitly malicious tasks and 440 augmented variants across eleven harm categories. Agent-SafetyBench contains 2,000 cases across 349 environments. R-Judge assesses whether models recognise risks in existing agent trajectories rather than enforcing security. SafeAgentBench tests safety-aware embodied planning, while OS-Harm targets computer-use agents under malicious users, prompt injection and accidental model misbehaviour. [oai_citation:6‡arXiv](https://arxiv.org/abs/2410.09024?utm_source=chatgpt.com)
+
+These benchmarks expose useful action classes and hazards that could populate SLED environment models. They do not provide defence correctness proofs because their safety definitions often depend on semantic judges, manually selected hazards or particular model trajectories.
+
+### MCP and malicious tools
+
+MCPSecBench and MCP Security Benchmark test attacks across MCP planning, tool invocation and response handling. MCPTox uses 45 live servers, 353 tools and 1,312 malicious cases. MCP-TDP focuses on poisoned tool descriptions and verifies attacks by inspecting sandbox side effects. [oai_citation:7‡arXiv](https://arxiv.org/abs/2508.13220?utm_source=chatgpt.com)
+
+These are particularly useful sources for extending SLED’s system state. Tool metadata, server identity, declared schemas, tool versions and transport/session state should become explicit model variables. At present, SLED primarily abstracts data authorship, readability and action permissions.
+
+### Persistent memory
+
+MPBench identifies four memory-write channels, nine structural vulnerabilities and six memory-poisoning classes. MemPoison, published in July 2026, contains 1,227 cases across four attacks, three injection channels and three memory substrates. The results show that individually benign records may become dangerous only when jointly retrieved or activated by later context. [oai_citation:8‡arXiv](https://arxiv.org/abs/2606.04329?utm_source=chatgpt.com)
+
+This is directly relevant to SLED because persistent memory transforms a bounded execution tree into a multi-session transition system. Memory entries need provenance, authority, validity, visibility, write conditions, retrieval conditions and revocation state. A memory entry should not acquire the authority of the future user merely because it was retrieved during that user’s session.
+
+### Policy compliance and organisational state
+
+Tau-bench evaluates tool use and policy adherence in simulated customer-service environments. Tau²-bench adds dual control, where both the user and agent mutate shared state. PhantomPolicy specifically studies violations that cannot be detected when policy-relevant organisational state is hidden from the agent or enforcement layer. [oai_citation:9‡arXiv](https://arxiv.org/abs/2406.12045?utm_source=chatgpt.com)
+
+These are not security-verification systems, but their environment models are valuable. In particular, Tau²’s dual-control setting suggests that SLED should model user and administrator actions as environment transitions interleaved with agent transitions, rather than treating the environment as static.
+
+### Planning benchmarks
+
+PlanBench evaluates classical planning competence. Agent Planning Benchmark contains 4,209 cases covering holistic plans, stepwise planning, extraneous tools, broken tools and unsolvable tasks. PlanBench-XL adds long horizons, partial tool visibility and a 1,665-tool ecosystem. [oai_citation:10‡arXiv](https://arxiv.org/abs/2206.10498?utm_source=chatgpt.com)
+
+These could measure the empirical quality of a Conflux planner. They cannot establish that its plans are secure. SLED’s contribution should be to verify plans and planning policies, not to become another planner-success benchmark.
+
+### Overall gap
+
+No major behavioural benchmark found in this search attempts all of the following:
+
+- translate a white-box system-level defence into an explicit formal transition relation;
+- prove unbounded safety properties using inductive invariants;
+- prove task reachability or synthesise a secure controller;
+- verify confidentiality as a relation between executions;
+- connect the abstract proof to the production implementation;
+- return proof artefacts or replayable minimal counterexamples.
+
+That is the clearest opening for an improved SLED.
+
+## 3. Adjacent formally enforced agent systems
+
+Several recent systems provide deterministic enforcement, but deterministic enforcement is not the same as independently verifying every possible execution of the enforcement mechanism.
+
+Progent uses a policy DSL over tool names and arguments, supports fallback behaviour, and deterministically intercepts calls. PACT performs argument-level provenance checking and tracks origins across replanning. PCAS records a causal execution graph and queries Datalog policies over the full backward slice of an action. Solver-aided tool-policy work translates policies into SMT constraints and checks calls at runtime. [oai_citation:11‡arXiv](https://arxiv.org/abs/2504.11703?utm_source=chatgpt.com)
+
+AgentRFC is especially relevant methodologically. It formalises security principles as TLA+ invariants, model-checks a protocol IR, and then replays counterexamples against live SDK implementations. AgentThread extends this pattern to protocol composition and explicitly distinguishes specification failures, implementation failures and unassigned cross-protocol responsibilities. [oai_citation:12‡arXiv](https://arxiv.org/abs/2603.23801?utm_source=chatgpt.com)
+
+The promising SLED distinction is therefore not merely “formal policies”. It is:
+
+> **A defence-independent verification framework that checks both security and achievable utility under a formal model of arbitrary LLM proposals, and links those results to executable defence code.**
+
+## 4. What a “definite proof” can legitimately mean
+
+White-box access is necessary, but it does not make arbitrary defence code automatically decidable.
+
+The general access-control safety problem is undecidable in the Harrison–Ruzzo–Ullman model. Allowing unrestricted principal creation, resource creation, policy mutation and conditional commands can therefore make questions such as “can this principal ever obtain this permission?” undecidable. [oai_citation:13‡University of Bologna Computer Science](https://www.cs.unibo.it/~babaoglu/courses/security/resources/documents/harrison-ruzzo-ullman.pdf?utm_source=chatgpt.com)
+
+Similarly, arbitrary Python can contain unbounded integers, recursion, reflection, external calls and nontermination. SLED should not claim that it can verify any white-box defence. Instead, it should define a **verifiable defence subset**.
+
+A sound result would have one of these forms:
+
+- **SAFE:** every trace of formal model \(M\) satisfies property \(P\).
+- **UNSAFE:** a concrete counterexample trace violates \(P\).
+- **SAFE UP TO \(k\):** no violation exists within \(k\) transitions.
+- **UNKNOWN:** the abstraction, timeout or unsupported code prevents a conclusive result.
+- **IMPLEMENTATION CONFORMS:** observed production transitions refine or match the verified transition semantics.
+
+The assumptions must accompany the verdict:
+
+- finite or otherwise decidable state domains;
+- exact transition semantics;
+- provenance correctness;
+- policy correctness or explicitly modelled policy behaviour;
+- environmental fairness assumptions;
+- bounded or restricted delegation;
+- definition of visible observations;
+- relationship between formal actions and actual provider effects.
+
+The best implementation strategy is not to verify arbitrary Python after it is written. It is to make the verified transition function the executable security kernel.
+
+## 5. Property classes SLED should distinguish
+
+Current SLED classifications mix several logically different claims.
+
+### 5.1 Safety
+
+Privilege escalation is naturally a safety invariant:
+
+\[
+AG\;\neg\texttt{ExecutedUnauthorisedAction}.
+\]
+
+Other safety properties include:
+
+\[
+AG\;(\texttt{Execute}(a) \Rightarrow
+      \forall p \in PC,\ \texttt{Permitted}(p,a))
+\]
+
+\[
+AG\;\neg\texttt{ReadWithoutPermission}
+\]
+
+\[
+AG\;\neg\texttt{UnapprovedDelegation}
+\]
+
+\[
+AG\;(\texttt{MemoryActivated}(m)
+      \Rightarrow \texttt{ProvenancePropagated}(m)).
+\]
+
+A runtime reference monitor can directly enforce safety properties characterised by forbidden finite prefixes. Schneider’s security-automata work provides the foundational distinction between execution-monitor-enforceable safety policies and broader properties. [oai_citation:14‡Cornell Computer Science](https://www.cs.cornell.edu/fbs/publications/EnfSecPols.pdf?utm_source=chatgpt.com)
+
+### 5.2 Confidentiality
+
+“No unreadable datum was supplied to an execution” is a per-trace safety property. It is not the same as proving that secret information cannot affect an unauthorised observer.
+
+Noninterference compares at least two executions:
+
+\[
+\text{same low inputs}
+\Rightarrow
+\text{same low-observable behaviour}.
+\]
+
+This is a hyperproperty rather than an ordinary trace invariant. Hyperproperty logics such as HyperLTL were developed precisely for properties that relate multiple runs, including information-flow security. [oai_citation:15‡ACM Digital Library](https://dl.acm.org/doi/epdf/10.1145/3610392.3610394?utm_source=chatgpt.com)
+
+SLED should therefore have two separate results:
+
+1. **access safety:** every read was authorised;
+2. **observational confidentiality:** varying secret state cannot alter observations available to an unauthorised principal, except for explicitly permitted leakage.
+
+This would also expose policy-oracle leakage from allow/deny responses, which the project report already identifies as a limitation.
+
+### 5.3 Utility
+
+Under a fully adversarial LLM model, universal task completion is impossible: the model may always return no proposal. SLED therefore cannot simultaneously assume arbitrary model behaviour and prove that every task completes without introducing another assumption or a trusted planner.
+
+Three utility notions should be reported separately:
+
+- **Possible utility:** there exists a secure trace reaching the goal.
+
+\[
+EF\;\texttt{Goal}
+\]
+
+- **Controller-achievable utility:** a planner can choose actions such that every modelled environment outcome reaches the goal.
+- **Benign-model utility:** all behaviours satisfying a stated competence contract eventually reach the goal.
+
+The second is the most interesting. It converts SLED from trace enumeration into **controller synthesis**.
+
+### 5.4 Liveness and termination
+
+“An action is never unauthorised” does not imply that the system progresses. A secure defence may block everything or retry forever.
+
+Useful properties include:
+
+\[
+AG\;(\texttt{TaskStarted}
+\Rightarrow AF(\texttt{Goal}\lor\texttt{SafeAbort}))
+\]
+
+and:
+
+\[
+AG\;(\texttt{PermissionDenied}
+\Rightarrow AF(\texttt{Stop}\lor\texttt{ApprovalRequested})).
+\]
+
+These require explicit fairness and retry assumptions.
+
+## 6. Formal methods most applicable to SLED
+
+### Explicit-state model checking
+
+The first improvement should be ordinary reachable-state exploration with memoisation, not trace enumeration. Model checking automatically determines whether finite-state systems satisfy temporal specifications and returns counterexamples when they do not. [oai_citation:16‡ACM Digital Library](https://dl.acm.org/doi/fullHtml/10.1145/1592761.1592781?utm_source=chatgpt.com)
+
+SLED currently re-executes many paths that reach equivalent states. The search key should contain only future-relevant state:
+
+```text
+Environment state
+Principal context
+Artifact/provenance state
+Policy and delegation state
+Persistent memory state
+Pending plan nodes
+Call/error budget
+Visible outputs
+```
+
+Full trace history should be retained as a predecessor relation for counterexample reconstruction, not included in state identity unless a policy is history-sensitive.
+
+This alone could remove very large numbers of duplicate traces.
+
+### Symmetry reduction
+
+Principals with identical permissions, read/write relationships and execution roles are interchangeable. So are resources with identical policy and transition effects. Symmetry reduction checks one canonical representative of states related by these permutations. Symmetry has a long history in model checking systems containing many similar components. [oai_citation:17‡ACM Digital Library](https://dl.acm.org/doi/epdf/10.1145/262004.262008?utm_source=chatgpt.com)
+
+For SLED, canonicalisation might rename principals by structural role:
+
+```text
+P0 = initial requester with {read, write}
+P1 = external author with {read}
+P2 = administrator with {all}
+```
+
+The names Alice, Bob and Charlie should not generate distinct model states where only their names differ.
+
+### Partial-order reduction
+
+Many action orderings commute. Reading two independent documents in either order may yield the same environment and principal context. Running two isolated subagents over disjoint resources may likewise commute.
+
+Dynamic partial-order reduction identifies dependent transitions and explores representatives of equivalent interleavings rather than every order. It preserves complete coverage for relevant properties while drastically reducing concurrency/interleaving explosions. [oai_citation:18‡ACM Digital Library](https://dl.acm.org/doi/epdf/10.1145/1047659.1040315?utm_source=chatgpt.com)
+
+SLED must define dependence carefully. Operations are dependent if they share resources, provenance, memory, call budgets, policy state or observable ordering. The current shared call budget means some otherwise independent branches are not actually independent.
+
+### Symbolic model checking with BDDs
+
+Symbolic model checking represents sets of states and transitions as Boolean formulae rather than enumerating them one at a time. The foundational BDD work demonstrated reachability over extremely large encoded state spaces. [oai_citation:19‡Springer Link](https://link.springer.com/chapter/10.1007/3-540-45657-0_21?utm_source=chatgpt.com)
+
+SLED’s domains are unusually suitable for bit-vector encodings:
+
+- principal context: one Boolean bit per principal;
+- permission relation: principal-by-action matrix;
+- visibility: principal-by-resource matrix;
+- action status: finite enumeration;
+- pending tasks: bit sets;
+- policy state: finite variables.
+
+A single symbolic operation could therefore process many principal-context combinations at once.
+
+### SAT/SMT bounded model checking
+
+Bounded model checking unrolls the transition relation for \(k\) steps and asks a SAT or SMT solver whether a violating trace exists. It is especially effective for finding short counterexamples, but absence of a counterexample only proves safety up to the chosen bound unless combined with induction or another completeness argument. [oai_citation:20‡Springer Link](https://link.springer.com/content/pdf/10.1023/A%3A1011276507260.pdf?utm_source=chatgpt.com)
+
+This is the easiest symbolic backend for SLED to implement. An initial Z3 encoding could represent:
+
+```text
+State_0
+Transition(State_0, Choice_0, State_1)
+...
+Transition(State_k-1, Choice_k-1, State_k)
+Violation(State_0) OR ... OR Violation(State_k)
+```
+
+The model’s proposal becomes an unconstrained symbolic choice restricted only by the defence interface.
+
+### IC3/PDR and inductive invariants
+
+Property-Directed Reachability, also called IC3, attempts to construct an inductive invariant that separates initial states from bad states. Unlike ordinary bounded checking, a successful invariant proves an unbounded safety property for the encoded transition system. It is one of the strongest candidates for producing SLED’s desired `SAFE` verdict. [oai_citation:21‡ACM Digital Library](https://dl.acm.org/doi/epdf/10.1145/3607831?utm_source=chatgpt.com)
+
+For ITES, the solver might discover or be seeded with invariants such as:
+
+```text
+executed(a) -> every active principal permits a
+child_context = parent_context union input_provenance
+effective_permissions =
+    intersection(permission[p] for p in principal_context)
+```
+
+A proof certificate should include the final inductive clauses, not only the word `SAFE`.
+
+### Counterexample-guided abstraction refinement
+
+SLED could initially abstract principals, resources and actions into classes:
+
+```text
+authorised / unauthorised principal
+public / confidential resource
+read / write / destructive action
+```
+
+If the abstract model finds a violation, SLED checks whether it corresponds to a concrete execution. Spurious counterexamples trigger refinement—for example, splitting “destructive action” into `delete_public` and `delete_private`. This is the CEGAR pattern. [oai_citation:22‡ACM Digital Library](https://dl.acm.org/doi/epdf/10.1145/1838552.1838553?utm_source=chatgpt.com)
+
+CEGAR is especially promising for real organisational policies, where modelling every ARN, file or API object individually would otherwise be infeasible.
+
+### Antichains and monotone-state subsumption
+
+ITES has a monotonic authority structure: accumulated influence grows while effective authority shrinks. Antichain algorithms exploit partial orders to avoid storing states subsumed by stronger or weaker representatives. Related methods compute fixed points over antichains rather than the full powerset. [oai_citation:23‡Springer Link](https://link.springer.com/chapter/10.1007/11817963_5?utm_source=chatgpt.com)
+
+This is potentially a distinctive SLED contribution, but it requires a proof of the simulation relation. It is not automatically valid to discard a state merely because its principal context is a subset of another: the violation predicate and future environmental effects also depend on provenance. A research task should identify the exact conditions under which one SLED state covers another.
+
+### Well-structured transition systems
+
+If principals, data or histories become unbounded, explicit finite-state model checking no longer applies. Well-structured transition systems obtain decidability for certain infinite-state coverability problems when transitions are monotone with respect to a well-quasi-order. [oai_citation:24‡ScienceDirect](https://www.sciencedirect.com/science/article/pii/S030439750000102X?utm_source=chatgpt.com)
+
+ITES’s monotonic accumulation suggests a possible connection, but dynamic permission revocation, negative tests and arbitrary deletion can destroy the necessary monotonicity. This should be investigated as a theoretical direction rather than assumed.
+
+### Compositional assume–guarantee verification
+
+A complete agent may contain:
+
+```text
+Planner
+Mediator
+Policy engine
+Memory service
+Tool adapter
+Executor
+Subagents
+```
+
+Verifying their full product creates another state explosion. Assume–guarantee methods verify components under explicit environmental assumptions and then discharge those assumptions against the other components. Counterexample-guided learning can derive assumptions automatically. [oai_citation:25‡Springer Link](https://link.springer.com/chapter/10.1007/3-540-36577-X_24?utm_source=chatgpt.com)
+
+This maps naturally onto ports and adapters in the current Conflux architecture.
+
+### Refinement and conformance verification
+
+A verified specification does not prove the implementation follows it. SLED should support:
+
+1. trace instrumentation of the production mediator;
+2. translation of observed implementation events into formal transitions;
+3. checking that every observed transition is admitted by the model;
+4. replaying formal counterexamples against the implementation;
+5. differential execution of the model and implementation from identical states.
+
+The AgentRFC/AgentThread approach and recent work validating program traces against TLA+ specifications provide useful precedents. [oai_citation:26‡arXiv](https://arxiv.org/abs/2603.23801?utm_source=chatgpt.com)
+
+## 7. Recommended SLED-V architecture
+
+The strongest redesign would turn SLED into a verification compiler with several backends.
+
+```text
+Defence implementation
+        │
+        ├── native verified transition kernel
+        │          or
+        └── white-box adapter / restricted defence DSL
+                   │
+                   ▼
+          SLED Verification IR
+                   │
+       ┌───────────┼───────────┐
+       ▼           ▼           ▼
+ Explicit-state   SMT/BMC     nuXmv/PDR
+ checker          checker      checker
+       │           │           │
+       └───────────┼───────────┘
+                   ▼
+ SAFE / UNSAFE / BOUNDED-SAFE / UNKNOWN
+ assumptions + proof artefact or counterexample
+                   │
+                   ▼
+       implementation replay/conformance
+```
+
+### Verification IR
+
+The central interface should be pure and deterministic apart from explicit nondeterminism:
+
+```python
+initial_states(parameters) -> SymbolicStateSet
+
+enabled(state) -> ActionSet
+
+step(state, action, outcome) -> StateSet
+
+observations(state, principal) -> Observation
+
+violation(state) -> bool
+
+goal(state, task) -> bool
+```
+
+The LLM should not appear as executable model code. Its output is an explicit adversarial choice over well-typed proposals.
+
+The IR should reject or conservatively abstract:
+
+- arbitrary callbacks;
+- hidden mutable state;
+- unrestricted recursion;
+- unbounded object creation;
+- arbitrary code execution;
+- unmodelled policy calls;
+- nondeterministic provider behaviour without an outcome specification.
+
+### Property language
+
+Start with a small property library rather than a completely general logic:
+
+```text
+NoPrivilegeEscalation
+NoUnauthorisedRead
+NoForbiddenObservation
+NoImplicitDelegation
+NoAuthorityAmplification
+ProvenancePreserved
+BoundedResourceUse
+TaskReachable
+StrongTaskCompletion
+SafeAbortOnFailure
+MemoryAuthorityPreserved
+```
+
+Later expose CTL/LTL/HyperLTL for advanced users.
+
+### Backends
+
+A practical tool sequence would be:
+
+- **Alloy:** rapid relational modelling and small-scope counterexamples for ACS, provenance, delegation and visibility. Alloy translates bounded relational models to SAT. [oai_citation:27‡Alloy Tools](https://alloytools.org/?utm_source=chatgpt.com)
+- **TLA+/TLC:** precise operational semantics, branch isolation, sessions, concurrency and specification-level invariants. TLC is an explicit-state checker for executable TLA+ specifications. [oai_citation:28‡GitHub](https://github.com/tlaplus/tlaplus?utm_source=chatgpt.com)
+- **nuXmv:** main symbolic backend, supporting BDD, SAT and SMT methods for finite and some infinite-state transition systems. [oai_citation:29‡nuxmv.fbk.eu](https://nuxmv.fbk.eu/?utm_source=chatgpt.com)
+- **Z3 or another SMT solver:** custom bounded checking, policy constraints and optimisation.
+- **SPIN:** useful if asynchronous subagents, queues and interleavings become central. Promela directly models interacting transition-system processes. [oai_citation:30‡spinroot.com](https://spinroot.com/spin/Man/Manual.html?utm_source=chatgpt.com)
+- **Lean/Dafny/F\* or equivalent:** eventual functional correctness proof of the small enforcement kernel, rather than the entire agent.
+
+I would begin with a native SLED IR plus Z3 and a separate TLA+ specification. Moving directly to a proof assistant would probably slow down semantic experimentation before the model has stabilised.
+
+## 8. Existing landscape for agent planning
+
+### Reactive interleaved planning
+
+ReAct alternates model reasoning, action and observation. It handles newly discovered information naturally, but every tool result enters the continuing context and may alter all subsequent decisions. That makes it a poor default for authority isolation. [oai_citation:31‡arXiv](https://arxiv.org/abs/2210.03629?utm_source=chatgpt.com)
+
+### Plan-first execution
+
+ReWOO separates an up-front plan from tool observations, reducing repeated prompts and limiting how much observations alter the planner. It also reports improved token efficiency and some tool-failure robustness. Its weakness is that the initial plan may be invalid or under-specified, and unsafe error recovery may reintroduce reactive behaviour. [oai_citation:32‡arXiv](https://arxiv.org/abs/2305.18323?utm_source=chatgpt.com)
+
+### Tree and search-based planners
+
+Tree of Thoughts searches over alternative reasoning paths. RAP uses an LLM as both agent and world model within Monte Carlo Tree Search. LATS similarly performs tree search over reasoning and acting trajectories using model-derived values and reflections. These approaches improve exploration, but their state evaluation and transition models remain probabilistic model outputs rather than trusted formal semantics. [oai_citation:33‡arXiv](https://arxiv.org/abs/2305.10601?utm_source=chatgpt.com)
+
+### Symbolic-planner hybrids
+
+LLM+P translates natural-language tasks into PDDL, invokes a classical planner, then translates the plan back. NL2Plan and related approaches pursue similar separation between language understanding and symbolic planning. This is the closest existing design pattern to what Conflux needs: the LLM proposes or constructs a formal problem, while a trusted planner verifies reachability and generates the action sequence. [oai_citation:34‡arXiv](https://arxiv.org/abs/2304.11477?utm_source=chatgpt.com)
+
+The important limitation is translation correctness. A formally valid plan for an incorrectly translated goal or action model does not solve the user’s actual task.
+
+### Formal plan verification
+
+Recent work converts natural-language plans into Kripke structures and LTL properties before model checking them. This demonstrates the general direction, although relying on LLM autoformalisation leaves the formalisation itself within the trust boundary unless independently reviewed or constrained. [oai_citation:35‡arXiv](https://arxiv.org/abs/2510.03469?utm_source=chatgpt.com)
+
+### Classical planning through model checking
+
+Formal planning research already provides the concepts Conflux needs. Symbolic model checking has been used for:
+
+- weak plans, where some outcome path reaches the goal;
+- strong plans, where every possible outcome reaches the goal;
+- strong-cyclic plans, where the goal is guaranteed under fairness assumptions;
+- conformant plans, which succeed despite uncertainty in initial state or action outcomes. [oai_citation:36‡ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0004370202003740?utm_source=chatgpt.com)
+
+This is more suitable than adopting an LLM planner architecture directly. SLED can treat planning as controller synthesis over the same transition system used for security verification.
+
+## 9. A concrete Conflux planning design
+
+### 9.1 Trusted plan representation
+
+Natural-language plans should not be executable authority. The planner should produce a typed graph or finite-state controller:
+
+```python
+PlanNode(
+    id,
+    operation,
+    arguments,
+    preconditions,
+    possible_outcomes,
+    state_effects,
+    required_reads,
+    required_permissions,
+    observation_policy,
+    success_transition,
+    error_transitions,
+    compensation_transition,
+)
+```
+
+A plan node may refer only to operations from an authenticated tool catalogue. Tool descriptions can help the LLM select candidates, but the trusted schemas, effects and required permissions must come from system metadata rather than natural-language tool text.
+
+### 9.2 Planning pipeline
+
+A suitable pipeline is:
+
+1. **Goal extraction.** Convert the user request into a typed goal candidate.
+2. **Catalogue discovery.** Give the planner metadata and opaque resource handles, not all resource contents.
+3. **Candidate generation.** Let an LLM propose one or more plan graphs.
+4. **Static validation.** Check schemas, type compatibility, resource identities and preconditions.
+5. **Authority annotation.** Calculate which principals and permissions each node may introduce.
+6. **Model checking.** Verify all success, failure and nondeterministic provider outcomes.
+7. **Optimisation.** Select the best verified plan.
+8. **Mediated execution.** Execute every node through ITES.
+9. **Restricted replanning.** Permit changes only inside a preverified envelope; otherwise restart verification or request explicit approval.
+
+The LLM is responsible for proposing useful plans. It is not trusted to establish that they are permitted or safe.
+
+### 9.3 Planning objective
+
+Security should be a hard constraint. Utility and efficiency should be optimisation objectives.
+
+A possible lexicographic objective is:
+
+\[
+\begin{aligned}
+&\text{subject to: all security properties hold},\\
+&\text{maximise: probability or guarantee of task completion},\\
+&\text{minimise: maximum authority footprint},\\
+&\text{minimise: sensitive observations},\\
+&\text{minimise: calls, tokens, latency and irreversible effects}.
+\end{aligned}
+\]
+
+Useful authority-exposure metrics include:
+
+\[
+\max_t |PC_t|,
+\]
+
+\[
+\sum_t \sum_{p\in PC_t} \texttt{riskWeight}(p),
+\]
+
+\[
+|\{\text{previously inactive principals introduced}\}|,
+\]
+
+and:
+
+\[
+\text{duration for which privileged state coexists with untrusted influence}.
+\]
+
+This directly implements the earlier idea of authority-minimising planning.
+
+## 10. Persistent contexts and lazy observation
+
+The planner should distinguish **availability** from **observation**.
+
+A tool result can be stored as:
+
+```text
+Artifact handle
+Type/schema
+Size
+Origin principal
+Sensitivity class
+Timestamp/version
+Integrity status
+```
+
+without exposing its content to the main planner. Reading the content becomes an explicit transition:
+
+```text
+Observe(handle, execution_context)
+```
+
+That transition:
+
+1. checks read policy;
+2. loads the content into one execution;
+3. adds its provenance to that execution’s Principal Context;
+4. records the observation in the trace;
+5. optionally invalidates plans that assumed a smaller context.
+
+A subagent can inspect the artifact under a narrow context and return a typed result. The parent receives only the result and its conservative provenance, not the raw document. This provides an information bottleneck without pretending that summarisation magically removes influence.
+
+A subtle point is that metadata can itself influence planning. A filename such as `URGENT_DELETE_BACKUPS.txt` is not neutral. Metadata therefore also needs provenance and explicit visibility rules.
+
+Persistent memory should be modelled with at least:
+
+```text
+writer provenance
+write-session context
+content hash
+creation time
+validity interval
+retrieval predicate
+authoritative/non-authoritative status
+revocation state
+activation history
+```
+
+The crucial transition is not `MemoryExists`; it is `MemoryActivatedIntoContext`. SLED can then verify that authority never appears merely because a later high-privilege session retrieves a low-authority memory.
+
+## 11. Error planning without privilege escalation
+
+Preplanning errors is useful because unrestricted reactive recovery allows arbitrary new tool calls after the system has already revealed failure information.
+
+Every operation should declare typed outcomes:
+
+```text
+Success
+NotFound
+PermissionDenied
+Timeout
+MalformedResponse
+TransientFailure
+PartialEffect
+Conflict
+```
+
+The plan must provide a verified transition for each outcome. For example:
+
+```text
+PermissionDenied ->
+    Stop
+    OR RequestApproval
+    OR UsePredeclaredLowerPrivilegeAlternative
+```
+
+It must not mean:
+
+```text
+PermissionDenied ->
+    search for stronger credentials
+    try another user
+    call an administrator tool
+```
+
+unless an explicit delegation transition is authorised independently.
+
+`RequestApproval` and `RequestDelegation` should be first-class actions with no immediate authority increase. An authorised principal must subsequently create a scoped capability or modify the ACS through a separate audited transition. The resulting delegation should specify:
+
+- delegator and delegate;
+- exact actions and resources;
+- purpose;
+- expiry;
+- use count;
+- whether redelegation is allowed;
+- revocation conditions;
+- provenance binding.
+
+The planner can then be synthesised as a **strong plan** if every tool outcome reaches either the goal or a defined safe terminal state. Where retries are required, a **strong-cyclic plan** can be used under an explicit fairness assumption such as “a transient provider failure eventually resolves”. Formal planning already provides these distinctions. [oai_citation:37‡ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0004370202003740?utm_source=chatgpt.com)
+
+## 12. Most promising SLED-specific research contributions
+
+### 12.1 White-box defence verification interface
+
+Define a restricted interface through which system-level defences expose:
+
+```text
+state
+transition relation
+nondeterministic inputs
+observable effects
+security properties
+task goals
+```
+
+Then provide adapters for ITES, Progent-like policies, PACT-like argument provenance and causal-history policies. This would allow genuinely comparable verification rather than only benchmark score comparisons.
+
+### 12.2 Principal-context-aware state reduction
+
+Develop and prove reductions based specifically on authority semantics:
+
+- symmetry over policy-equivalent principals;
+- canonicalisation of provenance graphs;
+- partial-order reduction over independent observations and tool calls;
+- antichain subsumption over authority states;
+- cone-of-influence reduction to principals and resources relevant to the checked action.
+
+The novel research would be the proof that each reduction preserves privilege-escalation, confidentiality and utility properties.
+
+### 12.3 Security plus controller synthesis
+
+Instead of asking only whether a defence blocks unsafe outputs, ask:
+
+> Does there exist an execution policy that completes this task while satisfying all security invariants under every modelled tool outcome?
+
+This produces a secure planner as well as a verifier. It also gives a meaningful utility result under the worst-case model assumption: the LLM proposes plans, but the trusted synthesiser selects or constructs the secure controller.
+
+### 12.4 Proof-carrying plans
+
+A plan could be accompanied by:
+
+```text
+formal initial-state assumptions
+tool and policy versions
+verified security properties
+verified goal condition
+failure/fairness assumptions
+authority-footprint bound
+solver proof or inductive invariant
+```
+
+Execution is allowed only while runtime state remains within the verified assumptions. Otherwise the plan is invalidated and must be rechecked.
+
+### 12.5 Persistent multi-session verification
+
+Extend SLED state across sessions and investigate:
+
+- memory poisoning;
+- delayed authority activation;
+- policy revocation;
+- stale plans;
+- cross-session delegation;
+- summaries and derived memory;
+- denial feedback;
+- multiple users sharing an agent.
+
+This would address a gap that recent memory benchmarks expose empirically but do not verify exhaustively.
+
+### 12.6 Parameterised verification
+
+Rather than proving properties only for exactly three principals and five resources, investigate cutoffs or symbolic proofs for arbitrary numbers of policy-equivalent principals and resources. WSTS, symmetry and inductive invariant techniques are possible foundations, but the eligible fragment would need to be characterised carefully.
+
+## 13. Recommended implementation sequence
+
+### Stage 1: formal semantic core
+
+Freeze one transition model for:
+
+- principal contexts;
+- provenance;
+- reads;
+- primitive actions;
+- nested executions;
+- branch isolation;
+- call budgets;
+- failures;
+- policy changes.
+
+Make the production mediator call this core rather than reimplementing it.
+
+### Stage 2: replace trace enumeration with state exploration
+
+Implement:
+
+- canonical immutable states;
+- visited-state memoisation;
+- predecessor-based counterexamples;
+- breadth-first minimal counterexample search;
+- state and transition statistics.
+
+Compare this directly with the current SLED implementation on the original three environments.
+
+### Stage 3: reductions
+
+Add one optimisation at a time:
+
+1. principal/resource symmetry;
+2. partial-order reduction;
+3. cone-of-influence;
+4. authority-aware subsumption.
+
+For each, prove preservation and measure the reduction in explored states, memory and runtime.
+
+### Stage 4: symbolic backend
+
+Encode finite domains as bit-vectors and implement:
+
+- SMT bounded checking for rapid bug discovery;
+- \(k\)-induction;
+- translation to nuXmv for BDD and IC3/PDR checking;
+- proof and counterexample import.
+
+The primary milestone should be an unbounded `SAFE` result for the canonical finite ITES model, not merely a deeper bound.
+
+### Stage 5: confidentiality
+
+Add self-composed two-run models and verify observational noninterference or an explicitly weakened declassification policy.
+
+### Stage 6: planning
+
+Implement the typed plan graph and synthesise:
+
+- possible plans;
+- strong plans;
+- strong-cyclic plans;
+- authority-minimal verified plans.
+
+Compare them against ReAct, ReWOO and LLM+P-style baselines on APB and PlanBench-XL task structures, while retaining SLED verification as the security layer.
+
+### Stage 7: implementation conformance
+
+Instrument the real mediator and provider adapters. Replay generated counterexamples and check traces against the formal specification. Only then should claims move from “the model is secure” to “this implementation conforms to the verified model”.
+
+## 14. Suggested experimental questions
+
+The most defensible thesis experiments would be:
+
+**RQ1.** How much do state memoisation, symmetry, partial-order reduction and antichain subsumption reduce SLED’s state space?
+
+**RQ2.** Can IC3/PDR prove the ITES privilege-escalation invariant without a recursion-depth bound?
+
+**RQ3.** Which classes of delegation and policy mutation preserve decidability?
+
+**RQ4.** Can SLED verify observational confidentiality rather than only authorised-read safety?
+
+**RQ5.** Can secure controller synthesis complete more tasks than reactive ITES execution without weakening its security invariant?
+
+**RQ6.** Does authority-minimising planning reduce unnecessary data observation, Principal Context size and false blocking?
+
+**RQ7.** Can preverified error controllers prevent denial-driven privilege escalation while retaining recovery utility?
+
+**RQ8.** How faithfully do production defence implementations conform to their verified transition models?
+
+**RQ9.** Which current system-level defences expose enough deterministic structure to be verified, and which retain model-dependent decisions that can only be benchmarked empirically?
+
+## 15. Bottom-line recommendation
+
+The best near-term direction is not to make SLED enumerate more attacks or deeper trees. It is to turn it into three connected systems:
+
+1. **SLED-MC:** a model checker for system-level defence invariants;
+2. **SLED-Synth:** a secure controller and authority-minimising planner;
+3. **SLED-Conform:** a bridge from verified semantics to executable implementations.
+
+The strongest achievable result would then be phrased as:
+
+> For every execution admitted by the stated system model, including every well-typed sequence of adversarial LLM proposals and every modelled provider failure, the implementation-refining transition system cannot execute an action violating the specified authority policy. Furthermore, SLED synthesises and verifies the set of tasks for which a secure completion strategy exists.
+
+That is materially stronger than either “no attack succeeded in a benchmark” or “1.5 million bounded traces contained no violation”, while remaining precise about the model and assumptions under which the proof holds.
