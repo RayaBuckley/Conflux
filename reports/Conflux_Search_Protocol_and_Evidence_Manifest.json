@@ -1,0 +1,159 @@
+{
+  "schema_version": "2.0",
+  "snapshot_date": "2026-07-27",
+  "scope_statement": "Cross-community research landscape for principal-provenance authority control and secure LLM agents.",
+  "inputs": [
+    {
+      "path": "Preprint.pdf",
+      "role": "current formal claims"
+    },
+    {
+      "path": "Raya_Project_Report.pdf",
+      "role": "original design and extensions"
+    },
+    {
+      "url": "https://github.com/RayaBuckley/Conflux/",
+      "role": "current implementation architecture"
+    },
+    {
+      "path": "Conflux Repo Analysis.txt",
+      "role": "prior repository audit"
+    },
+    {
+      "path": "Conflux_Comprehensive_Literature_Review.md",
+      "role": "previous synthesis, corrected and superseded"
+    }
+  ],
+  "research_streams": [
+    "model-level prompt injection",
+    "runtime policy enforcement",
+    "privilege control",
+    "information-flow control",
+    "provenance and causal tracing",
+    "program analysis",
+    "capabilities and delegation",
+    "RBAC/ABAC/ReBAC/cloud IAM",
+    "formal methods",
+    "persistent memory",
+    "multi-agent systems",
+    "human approval",
+    "agent frameworks",
+    "protocols",
+    "software supply chain",
+    "benchmarks and adaptive attacks"
+  ],
+  "inclusion_criteria": [
+    "directly constrains or evaluates agent effects, authority, provenance, information flow, memory, or policy",
+    "provides a foundational formalism or production substrate needed by Conflux",
+    "contains a benchmark or attack family that tests stated Conflux assumptions",
+    "is primary/official where available; secondary surveys used for coverage triangulation"
+  ],
+  "exclusion_or_deprioritization": [
+    "generic AI safety without tool/action relevance",
+    "pure factuality/provenance work unless it supplies reusable trace/evidence mechanisms",
+    "secondary summaries when a primary paper/specification is available",
+    "unverifiable marketing claims"
+  ],
+  "evidence_tiers": {
+    "A": "peer-reviewed or official standard/documentation/repository",
+    "B": "primary recent preprint with implementation/evaluation",
+    "C": "primary preprint/concept with limited validation",
+    "D": "secondary survey or reproduction",
+    "E": "lead only; not used to support claims"
+  },
+  "search_passes": [
+    "seed bibliography",
+    "mechanism keyword lattice",
+    "parallel community sweep",
+    "software/protocol sweep",
+    "2026 recency/adaptive negative-result sweep",
+    "backward/forward citation chasing",
+    "named-neighbour cross-check"
+  ],
+  "name_disambiguation": {
+    "FORGE/PCAS": "same arXiv lineage; title/version changed from Policy Compiler for Secure Agentic Systems to Formal Policy Enforcement for Real-World Agentic Systems",
+    "ProvenanceGuard": "action-alignment paper is distinct from source-aware factuality work using the same name",
+    "AgentSentry": "execution-provenance Agent-Sentry is distinct from temporal-causal diagnostics AgentSentry",
+    "PACT": "here means Provenance-Aware Capability Contracts / argument-level provenance, not unrelated PACT acronyms"
+  },
+  "named_neighbour_checks": {
+    "Progent": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "CaMeL": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "FIDES": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "PACT": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "FORGE": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "PCAS": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "SEAgent": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "ARGUS": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "AgentArmor": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "SecureClaw": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "RTBAS": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "Conseca": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "AgentSpec": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "TMA-NM": {
+      "in_report": true,
+      "in_matrix": true
+    },
+    "Causality Laundering": {
+      "in_report": true,
+      "in_matrix": true
+    }
+  },
+  "counts": {
+    "matrix_rows": 107,
+    "backlog_tasks": 36,
+    "report_characters": 127581
+  },
+  "limitations": [
+    "Very recent 2026 preprints may change title, author list, or claims.",
+    "Canonical identifiers and titles for very recent preprints should be revalidated before bibliography freeze.",
+    "Reported benchmark numbers are author-reported unless a backlog task explicitly reproduces them.",
+    "The public repository was not cloned and rerun as part of this literature-only update.",
+    "Coverage is broad but cannot guarantee inclusion of unpublished/proprietary work."
+  ],
+  "quality_checks": {
+    "progent_present_in_previous_artifact": "yes; dedicated section 4.8",
+    "prior_conversational_answer_correct": "no; it inferred absence without artifact inspection",
+    "all_named_neighbours_present_in_report": true,
+    "all_named_neighbours_present_in_matrix": true
+  }
+}

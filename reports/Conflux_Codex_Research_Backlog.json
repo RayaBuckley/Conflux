@@ -1,0 +1,758 @@
+{
+  "schema_version": "2.0",
+  "snapshot_date": "2026-07-27",
+  "project": "Conflux",
+  "tasks": [
+    {
+      "id": "RW-001",
+      "priority": "P0",
+      "theme": "literature",
+      "summary": "Replace related-work taxonomy with property/mechanism matrix",
+      "rationale": "Prevents broad novelty claims and makes direct comparisons precise",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Every Tier A/B direct neighbour has threat model, TCB, granularity, policy source, theorem, and evaluation fields",
+        "Progent appears in body, matrix, summary, and bibliography"
+      ],
+      "paper_changes": "Rewrite related work around model robustness, authority, IFC, provenance, policy enforcement, memory, and evaluation",
+      "code_changes": "Add docs/research_landscape.md or import this report",
+      "experiments": "No experiment",
+      "evidence_artifacts": "Landscape, matrix, source manifest",
+      "novelty_value": "High",
+      "risk": "Low"
+    },
+    {
+      "id": "FM-001",
+      "priority": "P0",
+      "theme": "formal semantics",
+      "summary": "Define parameterised effects and semantic argument roles",
+      "rationale": "Atomic action names cannot express destination, command, resource, observer, or credential authority",
+      "dependencies": [
+        "RW-001"
+      ],
+      "acceptance_criteria": [
+        "Formal syntax includes operation, resource, arguments, observers, time",
+        "Roles include target, selector, command, content, credential, control",
+        "Examples cover email, file, shell, database, and delegation"
+      ],
+      "paper_changes": "Replace A with typed effects in threat model and theorems",
+      "code_changes": "Add canonical Effect and ArgumentRole types",
+      "experiments": "Property tests for normalization and canonical serialization",
+      "evidence_artifacts": "Specification, tests, decision-certificate examples",
+      "novelty_value": "Very high",
+      "risk": "Medium"
+    },
+    {
+      "id": "FM-002",
+      "priority": "P0",
+      "theme": "formal semantics",
+      "summary": "Define role-sensitive Principal Context",
+      "rationale": "PACT shows whole-call provenance is too coarse; whole-execution union overblocks mixed-trust workflows",
+      "dependencies": [
+        "FM-001"
+      ],
+      "acceptance_criteria": [
+        "Each value and effect argument carries provenance",
+        "Role contract identifies which principals must authorize which sub-effect",
+        "Whole-execution ITES is a conservative special case"
+      ],
+      "paper_changes": "State calculus and prove reduction to original ITES",
+      "code_changes": "Add ProvenancedValue and RoleContract evaluator",
+      "experiments": "Oracle-provenance diagnostic suite reproduces PACT-style mixed-trust cases",
+      "evidence_artifacts": "Proof draft, counterexamples, benchmark fixture",
+      "novelty_value": "Very high",
+      "risk": "High"
+    },
+    {
+      "id": "FM-003",
+      "priority": "P0",
+      "theme": "authorization",
+      "summary": "Replace P subset UxA with pointwise authorization oracle",
+      "rationale": "Production IAM depends on resources, arguments, context, deny rules, and policy snapshots",
+      "dependencies": [
+        "FM-001"
+      ],
+      "acceptance_criteria": [
+        "Interface returns allow/deny, obligations, explanation, policy hash",
+        "Intersection/composition rule over relevant principals is formalized",
+        "Unsupported features fail closed"
+      ],
+      "paper_changes": "Clarify proof abstraction vs deployment semantics",
+      "code_changes": "Add PolicyDecisionPoint port and in-memory reference model",
+      "experiments": "Conformance tests against reference examples",
+      "evidence_artifacts": "Interface spec, test corpus, policy snapshots",
+      "novelty_value": "High",
+      "risk": "Medium"
+    },
+    {
+      "id": "FM-004",
+      "priority": "P0",
+      "theme": "delegation",
+      "summary": "Formalize scoped attenuating delegation and approval",
+      "rationale": "Useful workflows require explicit privilege expansion; Progent provides monotonic confinement",
+      "dependencies": [
+        "FM-001",
+        "FM-003"
+      ],
+      "acceptance_criteria": [
+        "Delegation has issuer, delegatee, effect scope, resource scope, purpose, expiry, nonce, revocation",
+        "No-amplification theorem",
+        "Expansion requires a valid witness or approval"
+      ],
+      "paper_changes": "Add delegation theorem and distinguish it from PE",
+      "code_changes": "Add delegation token/capability types and verifier",
+      "experiments": "Model-check revocation, nesting, replay, expiry, and confused-deputy cases",
+      "evidence_artifacts": "TLA+/Alloy model, tests, example tokens",
+      "novelty_value": "Very high",
+      "risk": "High"
+    },
+    {
+      "id": "FM-005",
+      "priority": "P0",
+      "theme": "confidentiality",
+      "summary": "Separate authorization from visibility and define observer model",
+      "rationale": "Action authority does not prove noninterference or absence of silent egress",
+      "dependencies": [
+        "FM-001",
+        "FM-003"
+      ],
+      "acceptance_criteria": [
+        "Every effect declares observers/channels",
+        "Visibility decision is independent of action permission",
+        "Covert/denial channels are scoped explicitly"
+      ],
+      "paper_changes": "Narrow exfiltration claims; add confidentiality property",
+      "code_changes": "Add VisibilityPolicy and channel inventory",
+      "experiments": "Two-run hyperproperty checks on bounded scenarios",
+      "evidence_artifacts": "Property spec, counterexamples, channel matrix",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "FM-006",
+      "priority": "P0",
+      "theme": "trusted boundary",
+      "summary": "Specify complete-mediation and observability contract",
+      "rationale": "FORGE makes clear that policy correctness depends on observations and interception",
+      "dependencies": [
+        "FM-001"
+      ],
+      "acceptance_criteria": [
+        "All effect classes enumerated",
+        "Each adapter states observed fields and soundness assumptions",
+        "Bypass tests exist for hosted tools, shell, browser, handoffs, memory, and provider calls"
+      ],
+      "paper_changes": "Add TCB section and assume/guarantee contract",
+      "code_changes": "Add AdapterContract and coverage registry",
+      "experiments": "Mutation tests remove one interception point and must fail",
+      "evidence_artifacts": "Contract docs, mutation results, trace evidence",
+      "novelty_value": "Very high",
+      "risk": "High"
+    },
+    {
+      "id": "BUG-001",
+      "priority": "P0",
+      "theme": "correctness",
+      "summary": "Deny empty Principal Context explicitly",
+      "rationale": "Vacuous all() conflicts with normative semantics",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Shared authorization helper returns deny on empty context unless explicit system authority exists",
+        "Tests cover primitives, nested calls, messages, delegation, providers"
+      ],
+      "paper_changes": "Clarify initial authority model",
+      "code_changes": "Fix helper and callers",
+      "experiments": "Unit and conformance tests",
+      "evidence_artifacts": "Regression trace",
+      "novelty_value": "Medium",
+      "risk": "Low"
+    },
+    {
+      "id": "BUG-002",
+      "priority": "P0",
+      "theme": "correctness",
+      "summary": "Separate provenance contributors from read ACL",
+      "rationale": "Authors/provenance and readers are distinct relations",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Read decisions query reader/policy metadata, never infer readers from provenance",
+        "Tests cover author-not-reader and reader-not-author"
+      ],
+      "paper_changes": "Clarify confidentiality assumptions",
+      "code_changes": "Introduce ReadPolicy port and migrate callers",
+      "experiments": "Regression tests",
+      "evidence_artifacts": "Decision traces",
+      "novelty_value": "High",
+      "risk": "Medium"
+    },
+    {
+      "id": "BUG-003",
+      "priority": "P0",
+      "theme": "correctness",
+      "summary": "Align rich mediator branch semantics with normative model",
+      "rationale": "Unordered frozenset iteration and shared state can create unstable or divergent semantics",
+      "dependencies": [
+        "FM-001"
+      ],
+      "acceptance_criteria": [
+        "Proposal semantics are explicitly branch, sequence, or partial order",
+        "Deterministic ordering or partial-order semantics",
+        "Conformance with MVP for shared subset"
+      ],
+      "paper_changes": "Define operational semantics",
+      "code_changes": "Refactor transition engine to one canonical implementation",
+      "experiments": "Golden trace and sibling-isolation tests",
+      "evidence_artifacts": "Trace diff report",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "BUG-004",
+      "priority": "P0",
+      "theme": "correctness",
+      "summary": "Redefine report guarantees as executed safety properties",
+      "rationale": "Blocked malicious proposals should not count as guarantee failures",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Reports distinguish proposed, blocked, executed, provider-failed, and incomplete",
+        "Guarantees quantify executed/observed violations"
+      ],
+      "paper_changes": "Rewrite evaluation metrics",
+      "code_changes": "Update report schema",
+      "experiments": "Migration and regression tests",
+      "evidence_artifacts": "Versioned result schema",
+      "novelty_value": "Medium",
+      "risk": "Low"
+    },
+    {
+      "id": "PROV-001",
+      "priority": "P0",
+      "theme": "provenance",
+      "summary": "Model denial feedback and policy-oracle observations",
+      "rationale": "ARM shows denied actions can causally influence later effects",
+      "dependencies": [
+        "FM-006"
+      ],
+      "acceptance_criteria": [
+        "Denied actions create trace nodes",
+        "Feedback detail is labelled and configurable",
+        "Later effects inherit denial causal influence when conditioned on feedback"
+      ],
+      "paper_changes": "Add causality-laundering threat",
+      "code_changes": "Extend history graph and transition semantics",
+      "experiments": "Reproduce three denial-feedback scenarios",
+      "evidence_artifacts": "Minimal counterexamples",
+      "novelty_value": "Very high",
+      "risk": "High"
+    },
+    {
+      "id": "MEM-001",
+      "priority": "P0",
+      "theme": "memory",
+      "summary": "Add origin-bound non-malleable memory authority",
+      "rationale": "TMA-NM and Bad Memory show derivation lineage can be laundered across sessions",
+      "dependencies": [
+        "FM-002",
+        "FM-006"
+      ],
+      "acceptance_criteria": [
+        "Memory writes bind original origins and authority ceiling",
+        "Summarization/tool echo cannot upgrade authority",
+        "Expiry/revocation/corroboration modeled"
+      ],
+      "paper_changes": "Add persistent-memory threat and theorem",
+      "code_changes": "Add MemoryRecord and authority-ceiling propagation",
+      "experiments": "Cross-session direct, summary, tool-echo, corroboration attacks",
+      "evidence_artifacts": "TLA+ model, traces, benchmark results",
+      "novelty_value": "Very high",
+      "risk": "High"
+    },
+    {
+      "id": "SLED-001",
+      "priority": "P0",
+      "theme": "verification",
+      "summary": "Recast SLED as bounded explicit-state model checker",
+      "rationale": "Current exhaustive enumeration lacks formal transition-system framing and counterexample minimization",
+      "dependencies": [
+        "FM-001",
+        "BUG-003"
+      ],
+      "acceptance_criteria": [
+        "State, transition, initial states, properties, bounds documented",
+        "Visited-state deduplication and deterministic hashing",
+        "Minimal counterexample traces"
+      ],
+      "paper_changes": "Describe bounded verification, not exhaustive proof",
+      "code_changes": "Add canonical State/Transition/Property interfaces",
+      "experiments": "Validate original environments and injected mutant defences",
+      "evidence_artifacts": "Model-checker report and raw states",
+      "novelty_value": "Very high",
+      "risk": "High"
+    },
+    {
+      "id": "SLED-002",
+      "priority": "P1",
+      "theme": "verification",
+      "summary": "Add partial-order reduction and symmetry reduction",
+      "rationale": "Multi-agent and branching traces otherwise explode",
+      "dependencies": [
+        "SLED-001"
+      ],
+      "acceptance_criteria": [
+        "Independence relation documented",
+        "POR preserves checked safety properties",
+        "Symmetric principals/resources canonicalized"
+      ],
+      "paper_changes": "Add reduction soundness argument",
+      "code_changes": "Implement POR/symmetry modules",
+      "experiments": "Compare state counts and counterexamples",
+      "evidence_artifacts": "Reduction evaluation tables",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "SLED-003",
+      "priority": "P1",
+      "theme": "verification",
+      "summary": "Add mutation completeness suite",
+      "rationale": "A secure-looking implementation can share the same model assumptions as evaluator",
+      "dependencies": [
+        "SLED-001"
+      ],
+      "acceptance_criteria": [
+        "Mutants include dropped provenance, missing check, wrong reader set, empty-context allow, branch leakage, denial-edge omission",
+        "SLED finds each expected counterexample"
+      ],
+      "paper_changes": "Add implementation-validation claims",
+      "code_changes": "Mutation harness",
+      "experiments": "Mutation score over core and adapters",
+      "evidence_artifacts": "Mutant catalog and counterexamples",
+      "novelty_value": "High",
+      "risk": "Medium"
+    },
+    {
+      "id": "SLED-004",
+      "priority": "P1",
+      "theme": "verification",
+      "summary": "Add hyperproperty and two-run checks",
+      "rationale": "Confidentiality and policy-oracle leakage are not single-trace safety properties",
+      "dependencies": [
+        "FM-005",
+        "SLED-001"
+      ],
+      "acceptance_criteria": [
+        "Paired-run state representation",
+        "Observable equivalence checks",
+        "Small examples for confidential data and denial feedback"
+      ],
+      "paper_changes": "Add bounded confidentiality evaluation",
+      "code_changes": "Implement relational runner",
+      "experiments": "Two-run suites",
+      "evidence_artifacts": "Hyperproperty results",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "EVAL-001",
+      "priority": "P0",
+      "theme": "evaluation",
+      "summary": "Publish reproducible baseline bundle",
+      "rationale": "Current repository has more infrastructure than evidence",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Manifest pins commit, environment, model, seed, bounds, policy snapshots",
+        "Raw traces and aggregation scripts committed",
+        "Tables regenerated from raw files"
+      ],
+      "paper_changes": "Replace self-reported template with evidence",
+      "code_changes": "Add experiment record schema and CLI",
+      "experiments": "Run normative MVP and rich mediator",
+      "evidence_artifacts": "Manifest, raw JSONL, tables, logs",
+      "novelty_value": "High",
+      "risk": "Medium"
+    },
+    {
+      "id": "EVAL-002",
+      "priority": "P0",
+      "theme": "evaluation",
+      "summary": "Complete one real AgentDojo vertical integration",
+      "rationale": "Generic wrapper is not benchmark integration",
+      "dependencies": [
+        "EVAL-001",
+        "FM-001"
+      ],
+      "acceptance_criteria": [
+        "Pinned upstream commit and license",
+        "Explicit task/action/provenance mapping",
+        "Real raw fixture",
+        "Smoke test and small comparative run"
+      ],
+      "paper_changes": "Add benchmark methodology",
+      "code_changes": "Implement versioned AgentDojo adapter",
+      "experiments": "ITES, no-defence, one competitor baseline",
+      "evidence_artifacts": "Raw upstream output and translated traces",
+      "novelty_value": "High",
+      "risk": "Medium"
+    },
+    {
+      "id": "EVAL-003",
+      "priority": "P1",
+      "theme": "evaluation",
+      "summary": "Create principal/ACS annotation overlay for external benchmarks",
+      "rationale": "Existing benchmarks rarely encode organisational authority",
+      "dependencies": [
+        "EVAL-002",
+        "FM-003"
+      ],
+      "acceptance_criteria": [
+        "Annotation schema versioned",
+        "Ambiguity and assumptions documented",
+        "Inter-annotator or rule consistency check"
+      ],
+      "paper_changes": "Explain benchmark augmentation",
+      "code_changes": "Add overlay loader/validator",
+      "experiments": "Apply to AgentDojo and AgentPI subset",
+      "evidence_artifacts": "Annotations and validation report",
+      "novelty_value": "Very high",
+      "risk": "High"
+    },
+    {
+      "id": "EVAL-004",
+      "priority": "P1",
+      "theme": "evaluation",
+      "summary": "Build mixed-trust argument diagnostic suite",
+      "rationale": "Mechanism must be tested independently from LLM provenance inference",
+      "dependencies": [
+        "FM-002"
+      ],
+      "acceptance_criteria": [
+        "Oracle provenance cases cover destinations, commands, selectors, content, credentials",
+        "Flat intersection and role-sensitive variants compared"
+      ],
+      "paper_changes": "Add mechanism-isolation evaluation",
+      "code_changes": "Add deterministic suite",
+      "experiments": "Ablation of roles and cross-step provenance",
+      "evidence_artifacts": "Fixture and result table",
+      "novelty_value": "Very high",
+      "risk": "Medium"
+    },
+    {
+      "id": "EVAL-005",
+      "priority": "P1",
+      "theme": "evaluation",
+      "summary": "Add long-horizon memory and internal-channel scenarios",
+      "rationale": "Static one-session traces miss new attack surfaces",
+      "dependencies": [
+        "MEM-001",
+        "SLED-001"
+      ],
+      "acceptance_criteria": [
+        "Multi-session memory writes/retrieval",
+        "Internal sub-agent/tool channels",
+        "Delayed triggers and cleanup steps"
+      ],
+      "paper_changes": "Add long-horizon section",
+      "code_changes": "Add scenario families",
+      "experiments": "Compare direct vs laundering attacks",
+      "evidence_artifacts": "Trace corpus",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "EVAL-006",
+      "priority": "P1",
+      "theme": "evaluation",
+      "summary": "Run adaptive attacks against policy/provenance boundary",
+      "rationale": "Generated policies and provenance inference are adaptive attack targets",
+      "dependencies": [
+        "EVAL-002",
+        "FM-006"
+      ],
+      "acceptance_criteria": [
+        "Attack generator can target denials, policy expansions, provenance parsing, adapter fields",
+        "Security kernel remains fail-closed"
+      ],
+      "paper_changes": "Add adaptive threat model",
+      "code_changes": "Integrate automated attack interface",
+      "experiments": "Use AutoDojo/automated PI concepts",
+      "evidence_artifacts": "Attack logs and failures",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "POL-001",
+      "priority": "P1",
+      "theme": "policy integration",
+      "summary": "Implement Cedar adapter with differential tests",
+      "rationale": "Cedar offers a clean formal request model and production engine",
+      "dependencies": [
+        "FM-003"
+      ],
+      "acceptance_criteria": [
+        "Supported version pinned",
+        "Every decision compared with official evaluator",
+        "Entities/context/policy snapshots retained",
+        "Unsupported constructs fail closed"
+      ],
+      "paper_changes": "Add production policy case study",
+      "code_changes": "Add Cedar PDP adapter",
+      "experiments": "Official examples + generated differential tests",
+      "evidence_artifacts": "Fixture corpus and decision diffs",
+      "novelty_value": "High",
+      "risk": "Medium"
+    },
+    {
+      "id": "POL-002",
+      "priority": "P2",
+      "theme": "policy integration",
+      "summary": "Replace partial AWS approximation with declared subset or provider simulator",
+      "rationale": "Incorrect IAM emulation is dangerous",
+      "dependencies": [
+        "FM-003"
+      ],
+      "acceptance_criteria": [
+        "Feature support matrix",
+        "Explicit unsupported errors",
+        "Differential tests against AWS simulator/examples"
+      ],
+      "paper_changes": "Narrow AWS claims",
+      "code_changes": "Refactor AWS adapter",
+      "experiments": "Policy corpus with identity/resource/boundary/SCP cases",
+      "evidence_artifacts": "Support matrix and diffs",
+      "novelty_value": "Medium",
+      "risk": "High"
+    },
+    {
+      "id": "CAP-001",
+      "priority": "P1",
+      "theme": "execution",
+      "summary": "Issue effect-specific short-lived capabilities to executor",
+      "rationale": "Reference monitor should not share ambient provider credentials",
+      "dependencies": [
+        "FM-004",
+        "FM-006"
+      ],
+      "acceptance_criteria": [
+        "Decision certificate binds canonical effect and expiry",
+        "Executor verifies and consumes nonce once",
+        "Capability cannot be widened"
+      ],
+      "paper_changes": "Add defence-in-depth architecture",
+      "code_changes": "Separate mediator/executor and capability verifier",
+      "experiments": "Replay, substitution, TOCTOU tests",
+      "evidence_artifacts": "Certificates and attack tests",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "TRACE-001",
+      "priority": "P0",
+      "theme": "audit",
+      "summary": "Define complete decision certificate and trace schema",
+      "rationale": "Research and production claims require exact evidence",
+      "dependencies": [
+        "FM-006"
+      ],
+      "acceptance_criteria": [
+        "Stable IDs for values/effects/principals/policies",
+        "Input provenance, role context, all decisions, provider outcome, parent edges",
+        "Versioned JSON schema"
+      ],
+      "paper_changes": "Reference certificates in formal/evaluation sections",
+      "code_changes": "Add serializable certificate and JSONL trace store",
+      "experiments": "Golden trace tests",
+      "evidence_artifacts": "Schema, examples, validation logs",
+      "novelty_value": "High",
+      "risk": "Medium"
+    },
+    {
+      "id": "TRACE-002",
+      "priority": "P1",
+      "theme": "audit",
+      "summary": "Map trace schema to W3C PROV without losing security metadata",
+      "rationale": "Interoperability and external analysis benefit from standard vocabulary",
+      "dependencies": [
+        "TRACE-001"
+      ],
+      "acceptance_criteria": [
+        "PROV mapping documented",
+        "Round-trip preserves Conflux-specific fields via extensions",
+        "Privacy/redaction policy defined"
+      ],
+      "paper_changes": "Add interoperability note",
+      "code_changes": "Exporter/importer",
+      "experiments": "Round-trip tests",
+      "evidence_artifacts": "PROV fixtures",
+      "novelty_value": "Medium",
+      "risk": "Medium"
+    },
+    {
+      "id": "FW-001",
+      "priority": "P1",
+      "theme": "framework integration",
+      "summary": "Integrate one agent framework with complete-mediation inventory",
+      "rationale": "Progent already demonstrates framework integration; Conflux needs executable evidence",
+      "dependencies": [
+        "FM-006",
+        "TRACE-001"
+      ],
+      "acceptance_criteria": [
+        "Effect classes enumerated",
+        "Bypass tests for tools, handoffs, hosted tools, shell/browser, sessions",
+        "All decisions traced"
+      ],
+      "paper_changes": "Add integration case study",
+      "code_changes": "OpenAI Agents SDK or LangGraph adapter",
+      "experiments": "Benign and adversarial workflows",
+      "evidence_artifacts": "Coverage matrix and traces",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "MCP-001",
+      "priority": "P2",
+      "theme": "protocol",
+      "summary": "Add MCP identity and content-provenance envelope",
+      "rationale": "Transport authorization does not establish content authority",
+      "dependencies": [
+        "FM-006",
+        "TRACE-001"
+      ],
+      "acceptance_criteria": [
+        "Server/tool/resource identity authenticated",
+        "Returned values carry upstream principals and policy snapshot",
+        "Delegated calls preserve origins"
+      ],
+      "paper_changes": "Add protocol discussion",
+      "code_changes": "MCP adapter and envelope verifier",
+      "experiments": "Confused-deputy and forged-origin tests",
+      "evidence_artifacts": "Protocol fixtures",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "SUPPLY-001",
+      "priority": "P2",
+      "theme": "supply chain",
+      "summary": "Sign tools, policy bundles, and adapters",
+      "rationale": "Security kernel depends on executable artifacts outside model",
+      "dependencies": [
+        "TRACE-001"
+      ],
+      "acceptance_criteria": [
+        "Artifacts have digest, signer, build provenance, expiry/revocation",
+        "Trace records exact artifact versions"
+      ],
+      "paper_changes": "Add supply-chain TCB subsection",
+      "code_changes": "Add manifest verifier",
+      "experiments": "Tamper/revocation tests",
+      "evidence_artifacts": "Signed fixture bundle",
+      "novelty_value": "Medium",
+      "risk": "Medium"
+    },
+    {
+      "id": "PLAN-001",
+      "priority": "P2",
+      "theme": "planning",
+      "summary": "Develop security-preserving low-taint planner",
+      "rationale": "System authorization can preserve security while model robustness determines utility",
+      "dependencies": [
+        "FM-002",
+        "FM-004"
+      ],
+      "acceptance_criteria": [
+        "Planner minimizes unnecessary provenance and approval",
+        "Cannot grant authority or drop origins",
+        "Optimality defined for bounded task graph"
+      ],
+      "paper_changes": "Add planning as separate utility contribution",
+      "code_changes": "Planner over typed effect graph",
+      "experiments": "Compare utility, calls, approvals, context size",
+      "evidence_artifacts": "Ablation results",
+      "novelty_value": "High",
+      "risk": "High"
+    },
+    {
+      "id": "DOC-001",
+      "priority": "P0",
+      "theme": "claims",
+      "summary": "Create claim-to-evidence ledger",
+      "rationale": "Prevents paper and repository from outrunning evidence",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "Every abstract/contribution/result claim links to theorem, test, experiment, or citation",
+        "Unvalidated claims marked hypothesis"
+      ],
+      "paper_changes": "Add appendix/table",
+      "code_changes": "Add docs/CLAIMS.md checked by CI",
+      "experiments": "CI check",
+      "evidence_artifacts": "Ledger and CI output",
+      "novelty_value": "High",
+      "risk": "Low"
+    },
+    {
+      "id": "CI-001",
+      "priority": "P1",
+      "theme": "governance",
+      "summary": "Add cross-platform CI and protected evidence workflows",
+      "rationale": "Security-sensitive Codex changes need enforced review gates",
+      "dependencies": [],
+      "acceptance_criteria": [
+        "pytest, coverage, mypy, Ruff, audit, conformance, benchmark smoke run",
+        "Artifacts retained",
+        "Main protected"
+      ],
+      "paper_changes": "Mention reproducibility infrastructure",
+      "code_changes": "Add GitHub Actions/nox or uv workflow",
+      "experiments": "CI smoke experiment",
+      "evidence_artifacts": "CI run URL and artifacts",
+      "novelty_value": "Medium",
+      "risk": "Low"
+    },
+    {
+      "id": "PAPER-001",
+      "priority": "P0",
+      "theme": "paper",
+      "summary": "Rewrite title, abstract, introduction, and contributions around role-sensitive Principal Context",
+      "rationale": "Current paper overemphasizes generic system-level novelty",
+      "dependencies": [
+        "RW-001",
+        "FM-002",
+        "FM-003"
+      ],
+      "acceptance_criteria": [
+        "No first-system-level claim",
+        "Contributions match implemented/evaluated artifacts",
+        "Threat model and TCB explicit"
+      ],
+      "paper_changes": "Full rewrite",
+      "code_changes": "No code change",
+      "experiments": "No experiment",
+      "evidence_artifacts": "Revised manuscript diff",
+      "novelty_value": "Very high",
+      "risk": "Medium"
+    },
+    {
+      "id": "PAPER-002",
+      "priority": "P1",
+      "theme": "paper",
+      "summary": "Separate theorem scope from empirical evidence",
+      "rationale": "Bounded SLED results cannot prove environments beyond bounds",
+      "dependencies": [
+        "SLED-001",
+        "EVAL-001"
+      ],
+      "acceptance_criteria": [
+        "Theorems clearly conditional",
+        "Model checking described as bounded",
+        "Incomplete traces reported, not discarded silently"
+      ],
+      "paper_changes": "Rewrite formal/evaluation discussion",
+      "code_changes": "No code change",
+      "experiments": "Regenerate tables",
+      "evidence_artifacts": "Claim-evidence mapping",
+      "novelty_value": "High",
+      "risk": "Low"
+    }
+  ]
+}
