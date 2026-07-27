@@ -1,0 +1,332 @@
+{
+  "schema_version": "1.0",
+  "generated_on": "2026-07-27",
+  "project": "Conflux",
+  "purpose": "Machine-readable implementation and paper-revision plan derived from the comprehensive literature review.",
+  "primary_artifact": "Conflux_Comprehensive_Literature_Review.md",
+  "core_positioning": {
+    "security_interface": "Principal Context",
+    "baseline_policy": "ITES",
+    "verification_framework": "SLED",
+    "defensible_novelty": [
+      "Principal-identity provenance interpreted through an existing organizational access-control system",
+      "Authority attenuation as the meet of influencing principals' parameterized permissions",
+      "Role-sensitive per-argument Principal Context with separate authorization, visibility, and consent",
+      "Explicit attenuating delegation capabilities",
+      "Bounded explicit-state verification of agent reference monitors"
+    ],
+    "claims_to_avoid": [
+      "First provenance-based system-level defense",
+      "Prevents prompt injection without qualification",
+      "Proves information exfiltration impossible without an observer/noninterference model",
+      "SLED exhaustively proves unbounded implementation security",
+      "No new policies or semantic adapters are required",
+      "Maximal utility outside the strict authorization objective and task model"
+    ]
+  },
+  "priority_tasks": [
+    {
+      "id": "RW-001",
+      "priority": "P0",
+      "type": "paper",
+      "title": "Rebuild related-work taxonomy",
+      "target_areas": ["paper/related_work", "paper/introduction", "bibliography"],
+      "instructions": [
+        "Replace the model/system/evaluation-only taxonomy with mechanism-based subsections.",
+        "Add FIDES, Progent, Conseca, FORGE, SEAgent, PACT, ARGUS, AgentArmor, AgentPI, AgentDyn, AutoDojo, and AgentSecBench.",
+        "For each closest work, state its trusted components, enforcement granularity, policy source, and exact difference from Conflux.",
+        "Remove unsupported first-of-kind claims."
+      ],
+      "acceptance_criteria": [
+        "PACT and SEAgent each receive a dedicated comparison paragraph.",
+        "The paper cites Biba, reference monitors, decentralized IFC, capabilities, provenance, and model checking.",
+        "Every novelty claim is scoped against a named closest work."
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "FM-001",
+      "priority": "P0",
+      "type": "paper_and_code",
+      "title": "Specify the trusted computing base",
+      "target_areas": ["paper/threat_model", "docs/security_model", "src/conflux/core", "src/conflux/providers"],
+      "instructions": [
+        "Enumerate reference monitor, provenance adapters, action schemas, ACS/PDP, delegation verifier, and decision composition as trusted components.",
+        "State fail-closed behavior for missing provenance, unknown actions, unavailable policy decisions, and invalid attestations.",
+        "State that the LLM and optional classifiers are not trusted to grant authority."
+      ],
+      "acceptance_criteria": [
+        "A TCB table appears in the paper and docs.",
+        "Every theorem assumption maps to a concrete interface or invariant.",
+        "Unknown provenance cannot increase authority."
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "FM-002",
+      "priority": "P0",
+      "type": "paper_and_code",
+      "title": "Introduce parameterized effects",
+      "target_areas": ["src/conflux/core", "src/conflux/auth", "src/conflux/policy", "paper/formal_model"],
+      "instructions": [
+        "Replace atomic action strings with operation, resource, arguments, environment, observers, and effect class.",
+        "Define the ACS interface as authorize(principal, effect, context).",
+        "Bind authorization decisions to the exact serialized effect to avoid TOCTOU."
+      ],
+      "acceptance_criteria": [
+        "Email recipient and body have separate paths.",
+        "File path and content have separate paths.",
+        "Shell command and non-authority-bearing content are distinguishable.",
+        "Policy version and effect hash are recorded."
+      ],
+      "dependencies": ["FM-001"]
+    },
+    {
+      "id": "FM-003",
+      "priority": "P0",
+      "type": "paper_and_code",
+      "title": "Implement role-sensitive argument provenance",
+      "target_areas": ["src/conflux/core", "src/conflux/execution", "src/conflux/ites", "src/conflux/providers", "paper/ites"],
+      "instructions": [
+        "Add per-value and per-argument provenance labels.",
+        "Support argument roles target, command, credential, selector, control, and content.",
+        "Use the full execution provenance as the conservative fallback when a narrower dependency is not trusted.",
+        "Do not permit the LLM to remove a source from provenance solely by assertion."
+      ],
+      "acceptance_criteria": [
+        "A webpage-derived email body can be sent to a user-derived authorized recipient.",
+        "A webpage-derived recipient is blocked without delegation.",
+        "Unknown argument roles fail closed.",
+        "The paper proves argument-level non-escalation under sound provenance."
+      ],
+      "dependencies": ["FM-002", "SW-001"]
+    },
+    {
+      "id": "FM-004",
+      "priority": "P0",
+      "type": "paper_and_code",
+      "title": "Formalize scoped delegation",
+      "target_areas": ["src/conflux/auth", "src/conflux/policy", "src/conflux/core", "paper/delegation"],
+      "instructions": [
+        "Represent delegation as an authenticated attenuating capability.",
+        "Include issuer, beneficiary/bearer constraints, operation, resource, arguments, purpose, observers, expiry, use count, transitivity, and revocation.",
+        "Make authority increase possible only through a validated delegation transition."
+      ],
+      "acceptance_criteria": [
+        "Delegated authority is a subset of issuer authority.",
+        "Subdelegation can only attenuate.",
+        "Replay, expiry, revocation, and widening tests exist.",
+        "Audit records identify the consumed capability."
+      ],
+      "dependencies": ["FM-002", "FM-001"]
+    },
+    {
+      "id": "SW-001",
+      "priority": "P0",
+      "type": "code_and_docs",
+      "title": "Define the provenance adapter contract",
+      "target_areas": ["src/conflux/providers", "src/conflux/core", "docs/provenance"],
+      "instructions": [
+        "Require adapters to label every returned field with principals, entities, activities, precision, and attestation status.",
+        "Require all narrowing operations to be trusted and explicit.",
+        "Represent unknown or unverifiable provenance conservatively.",
+        "Identify observers and effect sinks."
+      ],
+      "acceptance_criteria": [
+        "Forged, omitted, stale, and contradictory provenance tests fail closed.",
+        "A trusted parser is distinguished from the author of parsed content.",
+        "Cross-process provenance can be authenticated or verified."
+      ],
+      "dependencies": ["FM-001"]
+    },
+    {
+      "id": "SW-002",
+      "priority": "P0",
+      "type": "code_and_tests",
+      "title": "Prove complete mediation operationally",
+      "target_areas": ["src/conflux/execution", "src/conflux/providers", "tests"],
+      "instructions": [
+        "Create an effect-boundary inventory for every external side effect.",
+        "Test nested calls, direct SDK paths, retries, callbacks, background tasks, and alternate transports.",
+        "Route all effects through one reference-monitor interface."
+      ],
+      "acceptance_criteria": [
+        "Every effect type maps to a monitor entry point.",
+        "Bypass attempts are covered by tests.",
+        "Monitor decisions are bound atomically to executed parameters."
+      ],
+      "dependencies": ["FM-002"]
+    },
+    {
+      "id": "EV-001",
+      "priority": "P0",
+      "type": "paper_and_code",
+      "title": "Recast SLED as bounded explicit-state verification",
+      "target_areas": ["src/conflux/sled", "paper/sled", "docs/sled"],
+      "instructions": [
+        "Specify state, transition, terminal, observation, and property semantics.",
+        "Report finite bounds and proposal vocabulary explicitly.",
+        "Add state canonicalization, unique-state counts, transition counts, and minimal counterexamples.",
+        "Do not exclude prefix safety violations because a task later reaches a depth bound."
+      ],
+      "acceptance_criteria": [
+        "The paper uses bounded/exhaustive-within-model wording.",
+        "Security and task-completion metrics treat truncated traces separately.",
+        "Counterexample traces are deterministic and serializable."
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "EV-002",
+      "priority": "P0",
+      "type": "code_and_tests",
+      "title": "Add monitor mutation testing",
+      "target_areas": ["src/conflux/sled", "tests"],
+      "instructions": [
+        "Create mutants for omitted influence, permission union, stale ACS, skipped nested propagation, unknown-provenance allow, observer omission, and delegation replay.",
+        "Run SLED against every mutant and minimize the first counterexample."
+      ],
+      "acceptance_criteria": [
+        "Every seeded security mutant is killed.",
+        "The correct monitor passes the same properties and bounds.",
+        "The oracle is implemented separately from the monitor logic."
+      ],
+      "dependencies": ["EV-001"]
+    },
+    {
+      "id": "EV-003",
+      "priority": "P0",
+      "type": "paper_and_benchmarks",
+      "title": "Separate security verification from empirical utility",
+      "target_areas": ["src/conflux/benchmarks", "paper/evaluation"],
+      "instructions": [
+        "Use nondeterministic/worst-case model outputs for invariant checking.",
+        "Use real models for task completion, proposal quality, and attack interference.",
+        "Report block, allow, ask, provenance-unknown, and delegation-use rates."
+      ],
+      "acceptance_criteria": [
+        "No security metric improves because the model refuses an attack.",
+        "No maximal-utility claim is based only on the authorization predicate.",
+        "Model, monitor, and adapter failures are reported separately."
+      ],
+      "dependencies": ["EV-001"]
+    },
+    {
+      "id": "EV-004",
+      "priority": "P1",
+      "type": "benchmarks",
+      "title": "Add provenance overlays to external benchmarks",
+      "target_areas": ["src/conflux/benchmarks"],
+      "instructions": [
+        "Annotate AgentDojo first with principals, resources, writers/readers, observers, and argument roles.",
+        "Add one context-dependent benchmark such as AgentPI or AgentDyn.",
+        "Include mixed-trust tasks that distinguish flat execution provenance from argument provenance."
+      ],
+      "acceptance_criteria": [
+        "At least one benchmark adapter is reproducible end to end.",
+        "Annotations are stored separately from upstream benchmark code.",
+        "Flat ITES and role-sensitive Principal Context are compared."
+      ],
+      "dependencies": ["FM-003", "EV-003"]
+    },
+    {
+      "id": "SW-003",
+      "priority": "P1",
+      "type": "code",
+      "title": "Integrate a real policy decision point",
+      "target_areas": ["src/conflux/auth", "src/conflux/providers"],
+      "instructions": [
+        "Implement a parameterized adapter for Cedar, OpenFGA, or OPA/Rego.",
+        "Retain the in-memory ACS for proofs and unit tests.",
+        "Record policy version and decision evidence."
+      ],
+      "acceptance_criteria": [
+        "Resource- and argument-sensitive authorization works end to end.",
+        "Revocation is reflected at action time.",
+        "Adapter errors fail closed."
+      ],
+      "dependencies": ["FM-002", "FM-001"]
+    },
+    {
+      "id": "SW-004",
+      "priority": "P1",
+      "type": "code_and_paper",
+      "title": "Separate authorization, visibility, consent, and safety",
+      "target_areas": ["src/conflux/auth", "src/conflux/policy", "src/conflux/ites", "paper/formal_model"],
+      "instructions": [
+        "Introduce typed component decisions and deterministic final composition.",
+        "Treat generated intent policies as restrictions, never grants of ACS authority.",
+        "Model Ask as issuance of a scoped consent, delegation, or declassification grant."
+      ],
+      "acceptance_criteria": [
+        "Tests cover authorized-but-no-consent, authorized-but-confidential, safe-but-unauthorized, and delegated cases.",
+        "The paper no longer conflates authorization with alignment."
+      ],
+      "dependencies": ["FM-002", "FM-004"]
+    },
+    {
+      "id": "DOC-001",
+      "priority": "P1",
+      "type": "documentation",
+      "title": "Maintain a claim-evidence ledger",
+      "target_areas": ["paper", "docs"],
+      "instructions": [
+        "Create one record per major claim with assumptions, proof/test/benchmark evidence, limitations, and citations.",
+        "Link records to code, experiment outputs, and paper sections."
+      ],
+      "acceptance_criteria": [
+        "Every abstract and conclusion claim maps to evidence.",
+        "Codex can identify the exact files and experiments that support each claim.",
+        "Unverified and planned claims are visibly marked."
+      ],
+      "dependencies": ["RW-001", "FM-001", "EV-001"]
+    }
+  ],
+  "recommended_experiments": [
+    {
+      "id": "EXP-ARG-PROV",
+      "priority": "P0",
+      "question": "Does argument-level principal provenance recover mixed-trust utility without sacrificing authorization security?",
+      "baselines": ["flat ITES", "CaMeL-style invocation isolation", "FIDES-style tool label", "PACT-style trust contract"],
+      "domains": ["email", "calendar", "filesystem", "payments", "shell", "database"],
+      "metrics": ["authorized utility", "unauthorized effect rate", "overblocking", "unknown provenance rate", "runtime overhead"]
+    },
+    {
+      "id": "EXP-DELEGATION",
+      "priority": "P0",
+      "question": "Can caveated delegation support action-open tasks while retaining attenuation?",
+      "baselines": ["deny", "allowlist", "human approve every call", "broad role grant"],
+      "attacks": ["replay", "scope widening", "recipient substitution", "expired token", "subdelegation", "confused deputy"]
+    },
+    {
+      "id": "EXP-PROV-PRECISION",
+      "priority": "P1",
+      "question": "What is the security-utility-cost frontier across provenance precision levels?",
+      "levels": ["unknown", "ACL-conservative", "history-attested", "field-attested", "verified transform"],
+      "metrics": ["authority loss from over-tainting", "false provenance narrowing", "adapter cost", "latency"]
+    },
+    {
+      "id": "EXP-SLED-MUTANTS",
+      "priority": "P0",
+      "question": "Does SLED detect representative monitor and adapter bugs?",
+      "metrics": ["mutant kill rate", "counterexample length", "states explored", "time", "memory"]
+    },
+    {
+      "id": "EXP-ADAPTIVE-TCB",
+      "priority": "P1",
+      "question": "Can adaptive attacks exploit provenance inference, role synthesis, approvals, or mediation gaps?",
+      "frameworks": ["AutoDojo", "custom adapter fuzzing", "live integration"],
+      "metrics": ["unauthorized effect rate", "misclassification rate", "approval exploitation rate", "bypass coverage"]
+    }
+  ],
+  "closest_work_priority": [
+    {"rank": 1, "key": "PACT-2026", "reason": "Directly exposes flat provenance granularity and provides argument-level contracts."},
+    {"rank": 2, "key": "SEAGENT-2026", "reason": "Uses privilege escalation as the organizing security objective and covers multi-agent confused deputies."},
+    {"rank": 3, "key": "FIDES-2025", "reason": "Closest classical information-flow-control formulation with separate confidentiality and integrity."},
+    {"rank": 4, "key": "CAMEL-2025", "reason": "Canonical system-level prompt-injection architecture and common AgentDojo baseline."},
+    {"rank": 5, "key": "FORGE-2026", "reason": "Strong policy/reference-monitor/observability architecture with multi-agent history."},
+    {"rank": 6, "key": "ARGUS-2026", "reason": "Causal and argument-level evidence provenance for context-dependent tasks."},
+    {"rank": 7, "key": "PROGENT-2025", "reason": "Programmable privilege constraints and proxy deployment."},
+    {"rank": 8, "key": "CONSECA-2025", "reason": "Contextual task policy generation and deterministic enforcement."}
+  ]
+}
