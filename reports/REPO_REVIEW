@@ -1,0 +1,1083 @@
+# Conflux Repository and Development-Cycle Assessment
+
+**Assessment date:** 26 July 2026  
+**Repository:** `RayaBuckley/Conflux`  
+**Previous implementation reviewed:** attached `main.py`
+
+## 1. Executive assessment
+
+Conflux has progressed from a compact research prototype into a substantial research-software architecture. The current repository contains:
+
+- a provenance and principal model;
+- typed action and resource models;
+- ITES mediation and a separate normative MVP implementation;
+- an evaluation framework descended from SLED;
+- policy abstractions and a partial AWS IAM adapter;
+- filesystem and Docker provider adapters;
+- wrappers for external benchmark and defence repositories;
+- trace, reporting, testing, documentation, and audit infrastructure;
+- clean-architecture-style domain, application, port, adapter, and compatibility layers.
+
+The repository’s strongest area is now **conceptual and architectural organisation**. Its documentation makes useful distinctions between information provenance, decision provenance, consent, visibility, provider policy, and evaluation. The normative MVP is considerably more precise and testable than the original single-file implementation.
+
+The weakest areas are:
+
+1. **Semantic consistency between the normative model and the richer implementation.**
+2. **Empirical evidence.**
+3. **Actual external benchmark integration.**
+4. **Real cloud-policy fidelity.**
+5. **Production execution safety.**
+6. **Automated repository governance.**
+
+The repository should currently be described as a **well-structured research framework under active migration**, not production software. The repository itself largely acknowledges this: its status document calls the clean architecture an initial slice, says provider and benchmark integrations still require migration and fixtures, and explicitly warns that post-paper extensions must not be treated as validated claims without reproducible evidence. ([GitHub](https://github.com/RayaBuckley/Conflux/blob/main/docs/STATUS.md))
+
+A concise maturity assessment is:
+
+| Area | Assessment |
+|---|---|
+| Research idea and security intuition | Strong |
+| Normative MVP specification | Strong but contains one important implementation mismatch |
+| General repository architecture | Promising, still transitional |
+| Core implementation consistency | Mixed |
+| Unit and contract testing | Moderate |
+| End-to-end testing | Weak |
+| Benchmark integration | Mostly infrastructure, little evidence |
+| Cloud policy support | Early prototype |
+| Reproducible empirical results | Not yet established |
+| Production readiness | Low |
+| Codex-oriented development documentation | Strong |
+| Automated enforcement of that process | Weak |
+
+The immediate objective should not be to add more adapters. It should be to establish one authoritative executable semantics, prove that every other path conforms to it, and complete one end-to-end vertical slice.
+
+---
+
+## 2. Evolution from the previous project
+
+### 2.1 What the original prototype achieved
+
+The attached `main.py` is approximately 600 lines and combines the complete system into one executable file. It defines:
+
+- users and permission sets;
+- data with separate authors and readers;
+- primitive actions and nested LLM execution requests;
+- the principal-intersection authorisation rule;
+- recursive influence accumulation;
+- nested-input readability;
+- a defence interface;
+- an exhaustive bounded evaluator;
+- result categories for utility and prompt-injection outcomes;
+- a hard-coded example environment.
+
+Its central security rule is already present: an action is permitted only when every influencing author has the required permission. Nested executions add the authors of their inputs to the accumulated influencer set. The evaluator also saves and restores influence state around nested branches, demonstrating that branch-local influence was already understood as important. 
+
+That is a meaningful research prototype. It contains the core of the later Conflux thesis rather than merely a demonstration script.
+
+### 2.2 Limitations of the prototype
+
+The main limitations were software-engineering and evaluation limitations rather than absence of a research idea.
+
+The file combines domain objects, security policy, execution, exhaustive exploration, fixtures, metrics, debugging, and program startup. Importing it starts the evaluator. The environment, maximum depth, proposal cardinalities, and output format are hard-coded. Results are printed rather than returned as durable, versioned records.
+
+The evaluator is also vulnerable to combinatorial explosion. It constructs every non-empty subset of data as a possible nested request, combines those requests with primitive actions, constructs proposal subsets, and explores bounded decision paths. This is useful for very small model checking, but it is not a scalable benchmark runner.
+
+Several implementation details are fragile:
+
+- `llm_calls_used` is assigned but unused.
+- Helper functions such as `checker` and `any_auth` are unused.
+- Set and frozenset iteration may make exploration and output ordering dependent on hash ordering.
+- A 13-field count structure is later replaced with a 12-element list in one incomplete-task path.
+- The first task-generation pass mutates the declarations list before the second pass uses it.
+- One nested-task exact-match comparison appears to use the outer task’s data rather than the proposed nested task’s data.
+- A no-match nested branch can calculate an index from `-1` values and then access a task-safety list through negative indexing.
+- The numerous count positions make the evaluator difficult to review and easy to modify incorrectly.
+
+These issues are normal for a research prototype, but they explain why directly extending `main.py` would have been a poor development strategy.
+
+### 2.3 What has improved
+
+The current repository has addressed many of these structural weaknesses.
+
+Immutable dataclasses replace most hand-written equality and hashing. Artifacts explicitly contain values and provenance. Provenance supports composition and derivation operations. Execution state and traces have explicit types. Tests cover authorisation, provenance, policy boundaries, evaluation contracts, traces, ITES, and the normative MVP. The project is packaged using a `src` layout with strict mypy configuration, Ruff, pytest, and coverage tooling. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/core/provenance.py))
+
+The original evaluator has also been conceptually decomposed into scenarios, task suites, benchmark runners, traces, reporting, statistics, counterexamples, environment suites, model benchmarks, and defence evaluation. This is the correct broad direction.
+
+---
+
+## 3. Current repository architecture
+
+### 3.1 Repository organisation
+
+The repository now separates the system into packages covering:
+
+- `core`: shared principals, permissions, provenance, artifacts, actions, resources, sessions, consent, and chat policy;
+- `domain`: provider-neutral canonical domain types;
+- `auth`: authorisation decisions;
+- `ites`: the richer mediator and execution state;
+- `research`: the normative minimal ITES implementation;
+- `evaluation`: SLED-derived scenarios, traces, runners, reports, and benchmark services;
+- `policy`: internal policies and the initial AWS adapter;
+- `ports`: abstract environment, model, policy, resource, and tracing boundaries;
+- `application`: use-case services;
+- `adapters`: providers, model adapters, policies, and benchmarks;
+- `compatibility`: staged legacy translation;
+- `execution`: execution support.
+
+The repository also has extensive architecture, development, evaluation, status, glossary, audit, ADR, and template documentation. ([GitHub](https://github.com/RayaBuckley/Conflux/tree/main/docs))
+
+This is a significant improvement over the prototype.
+
+### 3.2 Canonical architecture versus implemented architecture
+
+The main architectural caveat is that the clean architecture is not yet the sole implementation architecture.
+
+The status document says that the domain, ports, application, and adapters packages currently provide typed boundaries over the validated implementation and that deeper migration is staged. Providers still consume compatibility-layer `Data` and `Environment` objects rather than the provider-neutral `EnvironmentSnapshot`. The application mediation service is currently a thin delegate around the existing ITES implementation. ([GitHub](https://github.com/RayaBuckley/Conflux/blob/main/docs/STATUS.md))
+
+This means Conflux presently has three overlapping layers:
+
+1. legacy or SLED-derived implementation types;
+2. canonical domain and port types;
+3. compatibility translation between them.
+
+That is reasonable during migration, but it increases the risk that the same concept acquires different semantics in different paths.
+
+### 3.3 Dual ITES implementations
+
+There are effectively two important ITES paths.
+
+The normative `conflux.research.mvp` path covers:
+
+- immutable artifacts and provenance;
+- principal-context accumulation;
+- primitive authorisation;
+- nested execution;
+- deterministic proposal ordering;
+- bounded calls;
+- explicit branch identifiers;
+- sibling branch isolation;
+- serialisable reports.
+
+The richer mediator path adds:
+
+- visible messages;
+- consent;
+- clarification;
+- delegation;
+- stop and no-op actions;
+- sessions;
+- provider-facing operations;
+- compatibility hooks.
+
+The normative semantics explicitly state that these richer features are extensions and are not part of the MVP semantics. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/docs/ITES_MVP_SEMANTICS.md))
+
+This separation was useful while repairing the repository because it isolated the research claim from a larger implementation. It should not remain an indefinite architectural state. Every security-critical rule added to the richer path now risks diverging from the normative implementation.
+
+The longer-term target should be:
+
+- one semantic transition engine;
+- extension policies layered over that engine;
+- one shared trace model;
+- conformance tests proving that restricted rich executions produce the same outcomes as the MVP.
+
+---
+
+## 4. Security and correctness findings
+
+## 4.1 Critical: empty principal context contradicts the normative semantics
+
+The normative semantics state:
+
+> The empty Principal Context is not granted implicit authority.
+
+However, the shared implementation of `all_principals_authorised` is:
+
+```python
+return all(principal.can_perform(perm) for principal in principals)
+```
+
+Python’s `all()` returns `True` for an empty iterable. The normative MVP then calls this function directly when deciding whether to declare a primitive action. Therefore, as written, an empty-context primitive satisfies the intersection predicate, contrary to the specification. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/auth/authorisation.py))
+
+The richer mediator does not cleanly solve this. Its consent evaluation receives an empty set of decision principals, fails to find any consenter, and then attempts to construct a `ConsentWitness` with neither consenting nor refusing principals. `ConsentWitness` explicitly rejects such an empty witness, so an empty context can result in an exception rather than a conservative denial. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/src/conflux/core/consent.py))
+
+This should be fixed before further evaluation.
+
+Required invariant:
+
+```python
+if not principals:
+    return False
+```
+
+Empty-context handling should then have dedicated tests across:
+
+- the shared authorisation helper;
+- the normative MVP;
+- primitive actions;
+- nested executions;
+- message actions;
+- delegation;
+- consent requests;
+- provider execution.
+
+## 4.2 Critical: information provenance is being used as a read ACL
+
+The canonical `DataItem` correctly separates:
+
+- `authors`;
+- `readers`;
+- provenance generated from authors.
+
+Its `can_read()` method checks the explicit reader set. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/src/conflux/domain/environment.py))
+
+The general action-authorisation code instead implements input readability by assigning:
+
+```python
+readers = artifact.provenance.principals
+```
+
+It therefore treats contributing principals as authorised readers. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/auth/authorisation.py))
+
+This is a semantic error unless the project intentionally defines authorship and read access as identical. The domain model explicitly does not make that assumption.
+
+It creates both false denials and possible false permissions:
+
+- A principal listed as a reader but not an author may be blocked.
+- A principal listed as an author but not a reader may be treated as able to read.
+- Derived artifacts contain the union of contributors, not necessarily the union or intersection of read entitlements.
+- Resource-backed provenance does not necessarily contain any principals, even when an access policy permits reading.
+
+The richer mediator also applies two different readability checks to nested actions:
+
+1. its compatibility hook reads `value.readers`;
+2. central `authorise_action` then checks provenance principals as readers.
+
+A request can therefore pass the explicit ACL check and fail the provenance-as-ACL check. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/ites/mediator.py))
+
+This needs a single authoritative abstraction, such as:
+
+```python
+class ReadPolicy(Protocol):
+    def may_read(
+        self,
+        principal_context: PrincipalContext,
+        artifact: Artifact,
+        environment: EnvironmentSnapshot,
+    ) -> PolicyDecision:
+        ...
+```
+
+Provenance should answer **who influenced this information**. A read policy should answer **who may observe this information**. These are related but not interchangeable.
+
+## 4.3 High: default consent is derived from permissions
+
+When no explicit session is supplied, the mediator builds a session from input provenance and creates a consent profile for each participant whose allowed permissions are exactly that principal’s permissions. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/ites/mediator.py))
+
+This makes default consent nearly equivalent to authorisation. It weakens the documented distinction:
+
+- authorisation: the organisation permits the action;
+- consent: the current decision principals permit automatic execution.
+
+For a production system, missing consent configuration should not silently become full automatic consent for every authorised operation. Safer defaults are:
+
+- deny automatic execution;
+- require confirmation for effectful actions;
+- allow only an explicit low-risk action class;
+- require a deployment-level consent policy.
+
+## 4.4 High: reported “guarantees” measure rejected proposals, not security violations
+
+The mediator sets `primitive_actions_authorised` to false whenever it sees and correctly blocks an unauthorised primitive proposal. It similarly sets `nested_inputs_readable` to false when it blocks an unreadable nested proposal. It then reports these booleans as guarantees. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/ites/mediator.py))
+
+Under attack, a correct defence will therefore frequently report that its “primitive actions authorised” guarantee does not hold, even though no unauthorised action was declared.
+
+These are useful diagnostic measurements, but their current names and descriptions are misleading. Security guarantees should instead be phrased as:
+
+- no unauthorised primitive was declared;
+- no unreadable nested execution was performed;
+- no visibility-forbidden output was emitted;
+- no action requiring ungranted consent was performed;
+- the call budget was not exceeded.
+
+Separately report:
+
+- unauthorised proposals observed;
+- unreadable nested proposals observed;
+- consent-blocked proposals;
+- visibility-blocked proposals.
+
+This distinction is important for benchmark interpretation. An attack-heavy benchmark should generate many invalid proposals while a secure defence continues to satisfy its guarantees.
+
+## 4.5 High: branch semantics differ between the MVP and richer mediator
+
+The normative MVP states that every proposal is evaluated from the same parent state, sibling branches do not observe one another, and proposals are deterministically sorted. Its tests explicitly cover sibling isolation and deterministic output ordering. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/docs/ITES_MVP_SEMANTICS.md))
+
+The richer mediator converts proposals to a frozenset and iterates over them directly. When it encounters a nested proposal, it recursively executes the child and returns an updated aggregate state before continuing with the next proposal. It does not create an isolated parent-state copy for each sibling or restore active state after recursion. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/ites/mediator.py))
+
+Some local variables protect action-time authorisation from direct sibling influence, but other state is shared:
+
+- global call budget;
+- declared and blocked action sets;
+- trace;
+- active influencer field;
+- execution order.
+
+Because frozenset iteration is not an appropriate semantic ordering contract, two nested proposals competing for a small call budget may be explored in an unstable order.
+
+The project must decide whether rich proposals represent:
+
+1. independent alternative branches;
+2. a set of actions all to be executed;
+3. an ordered plan;
+4. a partially ordered collection.
+
+Those are different execution models. A frozenset should not decide between them.
+
+## 4.6 High: decision provenance is overwritten
+
+Before evaluation, `_bind_action_context` replaces an action’s `decision_principals` with the current influencer set. This happens for every action type. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/ites/mediator.py))
+
+There is a defensible security rationale: the system should not trust the model to self-report which principals influenced its decision. However, this means decision provenance is not presently independent of information provenance. It is reconstructed as the full active principal context.
+
+The architecture needs to specify whether decision provenance means:
+
+- every principal whose information could have influenced the model;
+- principals whose instructions causally determined the proposed action;
+- the initiating principal;
+- an externally attested planner/controller principal;
+- some combination of these.
+
+Until a trustworthy causal attribution mechanism exists, using the conservative full influence context is reasonable. The implementation and documentation should explicitly call it **conservative decision context**, rather than implying precise causal provenance.
+
+## 4.7 Medium: trace collection is not yet exposed consistently
+
+`ExecutionState` records an immutable execution trace. The mediator appends execution steps containing proposals, declared actions, blocked actions, inputs, depth, and influencers. Yet the returned `ITESReport` shown in the mediator includes guarantees and declared/blocked action sets, not the full state trace. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/ites/state.py))
+
+The status document similarly describes trace integration as initial and says per-action and exhaustive branch events remain to be integrated. ([GitHub](https://github.com/RayaBuckley/Conflux/blob/main/docs/STATUS.md))
+
+For both research evidence and production auditability, every decision should produce a durable record containing:
+
+- action identifier;
+- exact input artifact identifiers;
+- information provenance;
+- principal context;
+- permission and resource;
+- policy snapshot/version;
+- consent result;
+- visibility result;
+- final decision;
+- reason category;
+- provider result;
+- parent and child trace identifiers;
+- model and prompt/configuration identifiers.
+
+## 4.8 Medium: owner access behaviour requires clarification
+
+The shared resource helper contains a special case that returns true when a resource owner appears in provenance and is the resource owner, without checking the requested permission. Other owner representations fall through to the normal intersection rule. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/auth/authorisation.py))
+
+This creates inconsistent behaviour depending on how ownership is represented. Ownership should be translated into explicit permissions by policy rather than bypassing permission evaluation inside a general helper.
+
+---
+
+## 5. Evaluation and benchmark state
+
+### 5.1 Native evaluation infrastructure
+
+The repository has a credible foundation for evaluation:
+
+- typed scenarios and task suites;
+- benchmark orchestration;
+- deterministic and real-model trace categories;
+- counterexample and reporting types;
+- model and system benchmark surfaces;
+- one-shot and exhaustive evaluation separation;
+- versioned trace concepts.
+
+The evaluation documentation also correctly requires recording environment, attack, defence, model, provider configuration, seed, trace, metrics, and limitations. ([GitHub](https://github.com/RayaBuckley/Conflux/blob/main/docs/EVALUATION.md))
+
+The current benchmark-runner test, however, uses a synthetic one-task suite and a recording stub defence. It validates orchestration, not a real benchmark or defence outcome. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/tests/test_benchmark_runner.py))
+
+### 5.2 Empirical results
+
+The checked-in MVP results document is explicitly a template awaiting an executable run. It does not yet constitute an empirical result set. ([GitHub](https://github.com/RayaBuckley/Conflux/blob/main/docs/MVP_RESULTS.md))
+
+This is the most important project-level gap. The repository currently contains considerably more evaluation infrastructure than evaluation evidence.
+
+Before adding new benchmark families, produce a reproducible baseline containing:
+
+- a committed experiment manifest;
+- a fixed Conflux commit;
+- a fixed model or deterministic model definition;
+- generated traces;
+- raw results;
+- aggregation script;
+- tables and plots generated from raw results;
+- documented exclusions and incomplete cases;
+- an environment lockfile or container image;
+- a machine-readable result schema.
+
+### 5.3 External benchmark adapters
+
+AgentDojo, CaMeL, and Dual-LLM adapters are substantial generic wrappers. They execute configurable external commands, capture stdout and stderr, parse JSON-like artifacts, and heuristically translate fields into Conflux traces. ([GitHub](https://github.com/RayaBuckley/Conflux/raw/refs/heads/main/src/conflux/adapters/benchmarks/external/agentdojo.py))
+
+They are not yet evidence of real integration with those systems.
+
+For example, the AgentDojo wrapper assumes a configurable CLI accepting scenario identifiers, names, principals, data, tools, and optional output arguments. It then accepts several possible generic JSON field names. This is useful adapter infrastructure, but an actual integration needs:
+
+- a pinned upstream repository and commit;
+- an installation procedure;
+- an exact supported upstream version;
+- a concrete command;
+- explicit scenario translation;
+- an explicit trace schema;
+- a fixture produced by the real upstream system;
+- validation that Conflux’s task, attack, and success definitions match the upstream benchmark;
+- failure handling that distinguishes benchmark failure from secure blocking;
+- licence and redistribution documentation.
+
+The repository status correctly says external adapters still require integration fixtures and documented assumptions. ([GitHub](https://github.com/RayaBuckley/Conflux/blob/main/docs/STATUS.md))
+
+### 5.4 Required experiment tracks
+
+A defensible evaluation programme should have four tracks.
+
+**Semantic model checking**
+
+Use small exhaustive environments to verify invariants independently of language-model behaviour.
+
+**Deterministic behavioural benchmarks**
+
+Use scripted model outputs to test known attack and utility cases exactly and cheaply.
+
+**Real-model benchmarks**
+
+Measure security, utility, latency, token overhead, and variance across models and seeds.
+
+**External comparative benchmarks**
+
+Run ITES and competing systems under aligned tasks, tools, permissions, attacks, and outcome definitions.
+
+Each track should report at least:
+
+- unsafe action execution rate;
+- data-exfiltration rate;
+- benign task completion;
+- false-block rate;
+- incomplete execution rate;
+- policy-decision agreement;
+- calls, tokens, and latency;
+- trace completeness;
+- provider errors;
+- results stratified by number and identity of influencing principals.
+
+---
+
+## 6. Policy support
+
+### 6.1 Current AWS support
+
+The AWS adapter is explicitly a minimal IAM-style subset. It supports allow and deny statements, action and resource matching, optional principal patterns, and two simple string condition operators. The code itself warns that it is a foundation rather than a complete IAM evaluator. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/src/conflux/policy/aws.py))
+
+It does not yet model the features required to claim AWS IAM compatibility, including:
+
+- identity and resource policy composition;
+- service control policies;
+- permission boundaries;
+- session policies;
+- role-assumption context;
+- `NotAction`, `NotResource`, and `NotPrincipal`;
+- the full condition operator system;
+- multi-valued condition keys;
+- ARN semantics;
+- policy variables;
+- service-specific dependent actions;
+- explicit-deny composition across policy types;
+- trust policies;
+- resource ownership and account boundaries;
+- organisation and region conditions.
+
+The current implementation also treats principal matching as “any request principal matches”. Whether that is correct for a collective principal context depends on the Conflux composition rule and must be specified explicitly.
+
+### 6.2 Real-world policy architecture
+
+Do not implement AWS, Google Cloud IAM, and Microsoft Entra as increasingly large custom evaluators inside Conflux.
+
+A safer architecture is:
+
+1. translate Conflux’s principal context and proposed operation into a provider-native query;
+2. call or differentially test against the provider’s official evaluator or simulator where available;
+3. preserve the complete provider decision and evidence;
+4. combine individual principal decisions using Conflux’s collective rule;
+5. apply Conflux-specific consent and visibility rules separately.
+
+For every policy adapter, maintain:
+
+- a declared supported subset;
+- unsupported-feature rejection rather than silent approximation;
+- differential tests;
+- provider fixture suites;
+- policy snapshot hashes;
+- decision-explanation records;
+- fail-closed behaviour.
+
+The currently empty `adapters/policy` package and legacy `policy/aws.py` placement are further signs that policy migration is not complete. ([GitHub](https://github.com/RayaBuckley/Conflux/tree/main/src/conflux/adapters/policy))
+
+---
+
+## 7. Provider and production-execution state
+
+### 7.1 Filesystem adapter
+
+The filesystem adapter can enumerate a subtree, read a manifest, create resources and legacy data items, and perform read, write, delete, list, and stat operations. It checks resolved paths against the configured root, which is an important baseline control. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/src/conflux/adapters/providers/filesystem.py))
+
+It is still an evaluation adapter rather than a production execution boundary. Production concerns include:
+
+- time-of-check/time-of-use races;
+- symlink replacement after validation;
+- file ownership and operating-system ACLs;
+- binary and large files;
+- encoding errors;
+- atomic writes;
+- rollback;
+- quotas;
+- concurrent operations;
+- immutable audit records;
+- separation between the evaluator process and effectful provider credentials.
+
+The adapter also catches broad exceptions and silently skips files during materialisation. That may make a benchmark environment appear safer or smaller than the real environment without making the omission visible.
+
+### 7.2 Docker adapter
+
+The Docker adapter inspects containers, reads optional manifests, materialises a compatibility environment, and supports inspect, logs, stop, exec, read-file, and write-file operations through the Docker CLI. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/src/conflux/adapters/providers/docker.py))
+
+Several parts remain prototype-level:
+
+- it imports legacy compatibility environment types;
+- materialisation primarily describes the container rather than a complete resource graph;
+- `docker.exec` derives the command from the permission name rather than a typed command payload;
+- provider actions execute with whatever Docker authority the Conflux process possesses;
+- there is no transaction, approval, capability-token, or dry-run layer;
+- errors are converted to strings without a stable provider-error taxonomy.
+
+Because Docker access often implies extensive host authority, this adapter must never be used as a production executor under the same privilege context as the model-facing process.
+
+### 7.3 Recommended production execution model
+
+Production side effects should be separated into a dedicated executor with:
+
+- least-privilege credentials;
+- typed and schema-validated requests;
+- idempotency keys;
+- precondition checks;
+- policy snapshot identifiers;
+- short-lived capability tokens;
+- approval state;
+- timeout and resource limits;
+- transactional or compensating behaviour;
+- tamper-evident audit events;
+- tenant isolation;
+- a narrow allowlisted operation registry.
+
+The model and mediator should never directly hold broad cloud, filesystem, or container credentials.
+
+---
+
+## 8. Testing and quality controls
+
+### 8.1 Strengths
+
+The repository uses:
+
+- Python 3.12 or later;
+- pytest and coverage;
+- strict mypy;
+- Ruff;
+- immutable dataclasses;
+- contract-oriented test files;
+- architecture and terminology audits;
+- a single local validation command.
+
+The validation script runs the repository audit, pytest with coverage, Ruff, and strict mypy. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/scripts/validate.ps1))
+
+The normative MVP tests cover mixed-context blocking, nested provenance accumulation, sibling isolation, shared call budgets, deterministic serialisation, and provenance creation. Those are valuable tests of research semantics. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/tests/test_ites_mvp.py))
+
+### 8.2 Gaps
+
+The visible test suite is mostly unit and contract testing. The external benchmark runner test uses a stub. I found no visible end-to-end tests executing the actual external defence repositories, Docker operations, or production-style policy snapshots. ([GitHub](https://github.com/RayaBuckley/Conflux/tree/main/tests))
+
+Important missing classes include:
+
+- property-based tests;
+- state-machine tests;
+- differential policy tests;
+- mutation testing;
+- fuzzing of trace and adapter input;
+- adversarial provenance tests;
+- empty-context tests;
+- multi-branch rich-mediator tests;
+- provider race and failure tests;
+- golden end-to-end traces;
+- performance and state-space growth tests;
+- benchmark reproducibility tests.
+
+### 8.3 Audit script limitations
+
+The custom repository audit is a useful Codex guardrail. It checks canonical documents, local links, module docstrings, audit-ledger coverage, preferred terminology, and selected dependency directions. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/scripts/audit_repository.py))
+
+It is not a substitute for architectural tests. In particular, its dependency rules still reference paths and package names from before the recent provider and evaluation moves. For example, it checks a `src/conflux/providers` directory even though providers are now under `adapters/providers`, and several forbidden dependencies refer to old `sled`, `providers`, and `benchmarks` package names.
+
+This is a concrete example of rapid AI-assisted refactoring outpacing its guardrails.
+
+Use import-graph analysis or architecture tests against the current package names rather than text searches for selected import strings.
+
+---
+
+## 9. Repository governance and delivery
+
+As of the inspected snapshot, the repository had approximately 140 commits, one visible `main` branch, no open issues or pull requests, and no published release. GitHub Actions displayed the workflow-onboarding interface rather than a repository workflow. ([GitHub](https://github.com/RayaBuckley/Conflux))
+
+This is adequate for personal experimentation, but not for a security-sensitive research artefact or future company-facing product.
+
+Minimum governance additions should include:
+
+- CI on every push and pull request;
+- protected `main`;
+- changes through short-lived branches;
+- required passing tests, mypy, Ruff, audit, and coverage;
+- a security policy;
+- dependency and secret scanning;
+- release tags;
+- changelog entries;
+- code-owner or reviewer rules for security-critical modules;
+- reproducible benchmark workflows;
+- retained CI result artifacts;
+- issue templates for semantic defects and benchmark discrepancies.
+
+Even as a solo developer, pull requests are useful because they create a review boundary for Codex-generated changes.
+
+---
+
+## 10. Assessment of the Codex-assisted development cycle
+
+### 10.1 Positive aspects
+
+The repository is unusually well prepared for AI-assisted development.
+
+`AGENTS.md` specifies security priorities, non-negotiable invariants, workflow expectations, and validation. The development guide requires inspecting architecture and APIs, writing a feature specification, making the smallest coherent change, validating, updating status, and auditing repository consistency. Templates exist for feature specifications and change checklists. ([GitHub](https://github.com/RayaBuckley/Conflux/blob/main/AGENTS.md))
+
+These are the correct mechanisms for using Codex on a security-sensitive project:
+
+- persistent project instructions;
+- explicit terminology;
+- canonical documents;
+- documented invariants;
+- typed APIs;
+- small changes;
+- test and static-analysis gates;
+- architecture decisions;
+- an ownership ledger.
+
+The recent commit messages are also much better structured than the earlier broad commits. They distinguish `feat`, `fix`, `refactor`, `docs`, and `chore`, and recent migration work was split into conceptually named commits. ([GitHub](https://github.com/RayaBuckley/Conflux/commits/main/))
+
+### 10.2 Observed development pattern
+
+The history shows an initial file-generation phase, including separate modules for benchmark runners and external defences, followed by large folder reorganisations, documentation work, a preserved baseline, repair commits, clean-architecture boundaries, and a concentrated migration sequence on 26 July 2026. More than twenty commits are visible for that day alone. ([GitHub](https://github.com/RayaBuckley/Conflux/commits/main/))
+
+This suggests the cycle has been:
+
+1. generate broad feature scaffolding;
+2. defer exact integration;
+3. reorganise the package;
+4. add documentation and AI instructions;
+5. repair type and API inconsistencies;
+6. add canonical boundaries;
+7. migrate legacy code incrementally.
+
+That has produced broad coverage quickly. It has also produced:
+
+- duplicate or overlapping semantic paths;
+- compatibility layers;
+- generic integrations without real fixtures;
+- documentation that can become stale immediately after refactoring;
+- more interfaces than validated vertical features;
+- a risk that “implemented” means “a plausible module exists”.
+
+### 10.3 Main Codex risk
+
+The largest risk is **plausibility without evidence**.
+
+Files such as the external benchmark adapters are long, structured, typed, and professionally documented. They look complete. In practice, they remain generic wrappers until exercised against pinned upstream implementations.
+
+The same pattern applies to production language. A provider adapter that can call `subprocess.run` is not yet a secure provider integration. A partial AWS policy evaluator is not yet real-world IAM support. An immutable trace type is not yet a reproducible audit trail.
+
+Codex should therefore be asked to optimise for **evidence-producing vertical slices**, not repository breadth.
+
+### 10.4 Recommended Codex task contract
+
+Every substantial Codex task should begin with a committed specification containing:
+
+- problem statement;
+- security invariant;
+- exact in-scope behaviour;
+- explicit non-goals;
+- canonical types affected;
+- compatibility impact;
+- failure modes;
+- required tests;
+- required trace evidence;
+- acceptance commands;
+- deletion or migration plan for superseded code.
+
+A task should not be considered complete because code compiles. Completion should require one or more executable evidence artifacts.
+
+For example:
+
+> Integrate AgentDojo version X at commit Y, execute scenario Z, translate its actual output schema, retain the raw output fixture, produce a Conflux trace, and assert the expected security and utility result.
+
+That is materially better than:
+
+> Add AgentDojo support.
+
+---
+
+## 11. Recommended development cycle
+
+### Stage A: semantic freeze
+
+Before adding new functionality:
+
+1. Select the normative source of truth.
+2. Fix empty-context behaviour.
+3. separate read entitlements from provenance;
+4. define rich-action branch semantics;
+5. define conservative decision context precisely;
+6. redefine security guarantees;
+7. expose complete traces;
+8. add conformance tests between the MVP and rich mediator.
+
+Produce a compact semantic test corpus that every implementation must pass.
+
+### Stage B: canonical-model consolidation
+
+Move one complete execution path onto:
+
+- `domain.DataItem`;
+- `domain.EnvironmentSnapshot`;
+- canonical artifacts and provenance;
+- application services;
+- ports;
+- adapters.
+
+Then remove or sharply reduce compatibility aliases. Do not migrate all modules simultaneously. Migrate one end-to-end path, then repeat.
+
+A suitable first vertical slice is:
+
+> Immutable filesystem fixture → provider-neutral environment → deterministic model → ITES mediation → policy decision → no-op or sandboxed provider → versioned trace → benchmark report.
+
+### Stage C: automated gates
+
+Add cross-platform validation through CI.
+
+The current setup and validation scripts assume a Windows virtual environment path and PowerShell. ([GitHub](https://raw.githubusercontent.com/RayaBuckley/Conflux/refs/heads/main/scripts/validate.ps1))
+
+Retain PowerShell for local university machines, but add platform-neutral commands through one of:
+
+- `tox`;
+- `nox`;
+- `uv`;
+- a small Python task runner;
+- standard CI commands.
+
+CI should include:
+
+- unit tests;
+- strict mypy;
+- Ruff;
+- repository audit;
+- coverage threshold;
+- semantic conformance tests;
+- golden trace tests;
+- packaging test;
+- benchmark smoke test.
+
+### Stage D: evidence-first benchmark integration
+
+Integrate one external benchmark at a time.
+
+For each benchmark:
+
+1. pin upstream revision;
+2. document licence and setup;
+3. create a translation specification;
+4. retain upstream fixture output;
+5. implement explicit schema translation;
+6. validate outcome equivalence;
+7. add a smoke test;
+8. run a small real experiment;
+9. commit the experiment manifest and raw result;
+10. only then add the next benchmark.
+
+Avoid maintaining three large generic wrappers without validated examples.
+
+### Stage E: policy fidelity
+
+Implement a provider-independent policy request and decision record first.
+
+Then add:
+
+- AWS IAM;
+- Google Cloud IAM;
+- Microsoft Entra or Azure RBAC/PIM;
+
+as distinct adapters. Each must publish its supported subset and fail on unsupported constructs.
+
+Use differential testing against provider tools or carefully curated official examples wherever possible.
+
+### Stage F: real-model evaluation
+
+Once deterministic experiments are stable:
+
+- define a model adapter schema;
+- use structured action output;
+- preserve raw model responses;
+- record model and provider versions;
+- record sampling configuration;
+- use fixed seeds where supported;
+- repeat stochastic runs;
+- separate parser failures from security decisions;
+- report confidence intervals;
+- retain costs and latency.
+
+### Stage G: production hardening
+
+Only after policy and benchmark evidence exists should the project add:
+
+- persistent service APIs;
+- production provider credentials;
+- multi-tenant execution;
+- distributed tracing;
+- long-running workers;
+- deployment manifests;
+- release packaging.
+
+---
+
+## 12. Prioritised engineering backlog
+
+### P0: security correctness
+
+1. Deny empty principal contexts explicitly.
+2. Replace provenance-based read checks with an explicit reader/policy decision.
+3. Add tests for authors who are not readers and readers who are not authors.
+4. Define and enforce deterministic rich-proposal ordering.
+5. Decide whether rich proposals branch or execute collectively.
+6. Correct guarantee semantics.
+7. Make traces part of every returned report.
+8. Add rich/MVP conformance tests.
+9. Remove implicit full-permission consent defaults.
+10. Specify decision-context semantics.
+
+### P1: architectural consolidation
+
+1. Migrate filesystem provider to `EnvironmentSnapshot`.
+2. Remove compatibility imports from providers.
+3. Make application services own use-case orchestration rather than merely delegate.
+4. Consolidate duplicate environment and evaluation concepts.
+5. Update the repository audit to current package paths.
+6. Add architecture tests using the real import graph.
+7. Eliminate stale compatibility modules as callers migrate.
+8. Add stable identifiers for artifacts, actions, traces, and policy snapshots.
+
+### P1: evidence and reproducibility
+
+1. Execute and publish the normative MVP baseline.
+2. Create machine-readable result files.
+3. Add golden trace fixtures.
+4. Add a deterministic attack corpus.
+5. Commit experiment manifests.
+6. Produce tables from raw data programmatically.
+7. Record incomplete and excluded cases rather than discarding them.
+8. Add CI smoke benchmarks.
+
+### P2: external evaluation
+
+1. Complete one real AgentDojo integration.
+2. Validate scenario and metric equivalence.
+3. Add CaMeL only after the first integration is reproducible.
+4. Replace heuristic trace parsing with explicit per-version schemas.
+5. Pin upstream revisions.
+6. Preserve raw external outputs.
+7. Separate external process failure from defence failure.
+
+### P2: policy work
+
+1. Define a policy-adapter conformance suite.
+2. Implement explicit unsupported-feature errors.
+3. Add AWS differential fixtures.
+4. Model collective principal-context composition.
+5. Add Google Cloud IAM and Entra only through the same conformance boundary.
+6. Add policy snapshot versioning and decision explanations.
+
+### P3: production work
+
+1. Separate mediator and executor processes.
+2. Introduce short-lived capabilities.
+3. Add idempotency and approval state.
+4. Implement tamper-evident audit storage.
+5. Add tenant boundaries.
+6. Add operational metrics and incident diagnostics.
+7. Package signed releases.
+8. Complete a security review before effectful deployment.
+
+---
+
+## 13. Suggested repository restructuring
+
+The current layout can be simplified after migration:
+
+```text
+src/conflux/
+    domain/
+        principals.py
+        provenance.py
+        artifacts.py
+        resources.py
+        actions.py
+        environment.py
+        decisions.py
+
+    policy/
+        engine.py
+        composition.py
+        consent.py
+        visibility.py
+
+    mediation/
+        state.py
+        transitions.py
+        engine.py
+        report.py
+
+    evaluation/
+        scenarios.py
+        traces.py
+        exhaustive.py
+        benchmark.py
+        metrics.py
+        reporting.py
+
+    ports/
+        model.py
+        policy.py
+        provider.py
+        trace_store.py
+
+    adapters/
+        models/
+        policies/
+            aws/
+            gcp/
+            entra/
+        providers/
+            filesystem/
+            docker/
+        benchmarks/
+            agentdojo/
+            camel/
+
+    experiments/
+        manifests.py
+        runner.py
+        records.py
+```
+
+The important change is not the exact folder names. It is that the normative mediation transition logic becomes the shared implementation rather than living separately under `research`.
+
+Research-only fixtures and exploratory exhaustive generators can remain separate, but the security predicate itself should not have two implementations.
+
+---
+
+## 14. Definition of “production software”
+
+For Conflux to be credibly offered to organisations, it must eventually demonstrate all of the following:
+
+### Correctness
+
+- one authoritative semantics;
+- stable policy composition;
+- typed actions;
+- complete provenance;
+- conservative failures;
+- branch determinism;
+- comprehensive adversarial tests.
+
+### Policy fidelity
+
+- documented provider subsets;
+- differential validation;
+- versioned policy snapshots;
+- explicit unsupported cases;
+- explainable decisions.
+
+### Isolation
+
+- model cannot bypass mediation;
+- executor has least privilege;
+- tenants are isolated;
+- capabilities expire;
+- side effects are transactional or compensatable.
+
+### Auditability
+
+- complete immutable traces;
+- stable identifiers;
+- model and policy versions;
+- raw decision evidence;
+- secure log retention.
+
+### Reliability
+
+- idempotency;
+- retries with correct semantics;
+- timeouts;
+- quotas;
+- concurrency handling;
+- provider error classification.
+
+### Delivery
+
+- CI;
+- signed releases;
+- dependency management;
+- vulnerability handling;
+- deployment documentation;
+- rollback procedures;
+- a supportable public API.
+
+The current repository has early components of correctness and auditability, but it has not yet satisfied these production criteria.
+
+---
+
+## 15. Overall conclusion
+
+Conflux is in a substantially better state than the original project. The core research idea survived the transition, and the repository now has enough structure to support serious fourth-year work.
+
+The most valuable accomplishments are:
+
+- extraction of provenance-bearing artifacts;
+- explicit principal contexts;
+- a normative MVP;
+- deterministic and isolated MVP exploration;
+- separation of policy, consent, visibility, and provenance;
+- typed evaluation and trace concepts;
+- strong Codex instructions and development documentation;
+- strict local static-analysis configuration.
+
+The main danger is now overextension. The repository has accumulated benchmark adapters, providers, policy models, clean-architecture layers, compatibility paths, and reporting abstractions faster than it has accumulated executable evidence.
+
+The next phase should therefore be a **consolidation and validation phase**, not another broad feature-generation phase.
+
+The key success criterion for that phase is:
+
+> One canonical Conflux execution path, operating on one canonical domain model, with deterministic semantics, explicit read-policy enforcement, complete traces, automated tests, and reproducible benchmark results.
+
+Once that exists, external benchmarks and cloud policies become measured integrations rather than speculative modules. Production work then has a stable security kernel on which to build.
