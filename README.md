@@ -22,3 +22,7 @@ and multiple model proposals are isolated alternatives.
 
 Start with [the documentation hub](docs/README.md). Set up Python 3.12+ with
 `.\scripts\setup.ps1`, then run `.\scripts\validate.ps1`.
+
+The work-in-progress fourth-year paper lives in
+[`manuscript/`](manuscript/README.md). The previous-year `paper/` tree is a
+checksum-protected archive and is not evidence for the current implementation.

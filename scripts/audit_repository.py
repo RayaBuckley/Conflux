@@ -30,6 +30,7 @@ CANONICAL_DOCS = {
 LEGACY = {"core", "auth", "research", "compatibility"}
 FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
 PAPER = ROOT / "paper"
+MANUSCRIPT = ROOT / "manuscript"
 
 
 def imports(path: Path) -> set[str]:
@@ -111,12 +112,29 @@ def check_archived_paper(errors: list[str]) -> None:
             errors.append(f"archived paper file changed: paper/{name}")
 
 
+def check_manuscript(errors: list[str]) -> None:
+    required = {
+        "README.md",
+        "REFERENCES.md",
+        "conflux_fourth_year_2026.tex",
+        "references.bib",
+        "generated/tables/README.md",
+        "generated/figures/README.md",
+    }
+    for name in required:
+        if not (MANUSCRIPT / name).is_file():
+            errors.append(f"current manuscript file is missing: manuscript/{name}")
+    if (MANUSCRIPT / "conflux_fourth_year_2026.pdf").exists():
+        errors.append("generated current-manuscript PDF must be a CI artefact")
+
+
 def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
     check_docs(errors)
     check_reports(errors)
     check_archived_paper(errors)
+    check_manuscript(errors)
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))

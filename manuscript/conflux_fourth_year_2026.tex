@@ -1,0 +1,143 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[numbers]{natbib}
+
+\title{Conflux: Principal-Context Security, Evaluation and Verification for LLM Agents\\\large Work-in-progress fourth-year paper}
+\author{Raya Buckley}
+\date{29 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Large-language-model agents combine information controlled by different
+principals while performing externally visible actions. Previous work
+introduced Influence Tracking with Extrapolated Security (ITES) and the
+System-Level Evaluator for Defences (SLED). Conflux develops those ideas into a
+provider- and benchmark-independent research framework. The current repository
+has one canonical, fail-closed security kernel with immutable provenance,
+independent read, authorisation, visibility and consent decisions, versioned
+decision evidence, and bounded explicit-state verification. Architectural
+repair is tested, but real-model, external-benchmark and solver-backed claims
+remain gated on reproducible result artefacts. This paper distinguishes
+archived evidence, current implementation evidence and planned experiments;
+numerical placeholders are filled only by generated artefacts.
+\end{abstract}
+
+\section{Introduction}
+LLM agents process requests, retrieved documents and tool output controlled by
+principals with different authority. An external author should not acquire the
+initiating Principal's permissions merely by influencing a model context.
+Model-level prompt-injection defences improve instruction following, while
+system-level approaches constrain effects externally
+\citep{camel,designpatterns,struq,spotlighting}.
+
+For Principal Context $PC$ and action $a$, the restricted ITES rule is
+\[
+  \operatorname{Allow}(PC,a) \Longleftrightarrow
+  PC \neq \varnothing \land \forall p \in PC,\;P(p,a).
+\]
+The explicit non-empty condition prevents vacuous authority. Provenance grows
+monotonically, while organisational authority is supplied by an independent
+policy decision point.
+
+\section{Previous-year contribution and archived evidence}
+The previous prototype accumulated authorship provenance and intersected
+permissions. Its bounded SLED results apply to that implementation and model.
+The archived source and PDF remain under \texttt{paper/} with checksums. They
+are not evidence for the refactored kernel. Current experiments use separately
+named legacy-reproduction and canonical suites.
+
+\section{Related work and positioning}
+CaMeL isolates control and data flows, while privilege-oriented systems such as
+Progent mediate tool calls with symbolic policy \citep{camel,progent}. PACT
+tracks argument-level provenance and FORGE enforces history-sensitive Datalog
+policies \citep{pact,forge}. AgentDojo supplies realistic prompt-injection tasks
+and metrics \citep{agentdojo}. Conflux therefore does not claim priority for
+system-level mediation, provenance or privilege control. Its narrower research
+focus is collective Principal Context derived from authenticated provenance,
+interpreted through organisational policy, and evaluated with a shared
+operational and verification transition model.
+
+\section{Canonical architecture}
+Immutable domain values represent Principals, Principal Contexts, permissions,
+resources, artefacts, provenance, sessions, actions and environment snapshots.
+Policy ports decide read access, authorisation, visibility and consent
+independently. The ITES kernel is pure: model proposals cannot assert or narrow
+their Principal Context, alternative branches share an immutable parent, and
+effect execution requires the exact decision certificate.
+
+\subsection{Proposal semantics}
+A versioned proposal batch declares either \texttt{ALTERNATIVES} or
+\texttt{ORDERED\_PLAN}. Alternatives are independently explored from one
+parent. Ordered steps propagate state but are re-authorised immediately before
+execution; no batch grants future authority.
+
+\subsection{Evidence and failure semantics}
+Reports distinguish proposed, authorised, blocked, executed, provider-failed
+and incomplete actions. Policy errors, malformed proposals, missing provenance
+and exhausted bounds are explicit fail-closed outcomes. Securely blocked
+attacks are diagnostics, not executed invariant failures.
+
+\section{Evaluation methodology}
+The deterministic semantic corpus covers empty and mixed contexts,
+author/reader inversions, derivation, nested accumulation, branch isolation,
+ordered plans, consent, visibility, unsupported delegation, policy changes and
+provider failure. Executable defective variants must yield minimal
+counterexamples.
+
+Native SLED uses versioned legacy-reproduction and corrected canonical suites.
+SLED-MC performs breadth-first exploration with canonical state keys,
+deduplication, predecessor edges and explicit \texttt{SAFE},
+\texttt{BOUNDED\_SAFE}, \texttt{UNSAFE} and \texttt{UNKNOWN} verdicts.
+
+Real-model manifests record model revision, endpoint configuration, sampling,
+structured-output mode, raw-response hashes, token use and latency. AgentDojo
+integration pins an upstream revision, preserves upstream IDs, and reports
+native and Conflux metrics without hiding added provenance assumptions.
+
+\section{Formal verification and planning}
+SLED-V accepts a finite serialisable transition IR rather than arbitrary
+Python. Initial properties cover unauthorised effects and reads, provenance
+monotonicity, absence of implicit delegation and bounded resource use. Bounded
+SMT results retain solver artefacts; unbounded claims require an
+IC3/PDR-capable backend and runtime-to-IR conformance.
+
+Authority-constrained planning represents typed operations, preconditions,
+outcomes, required reads and permissions. Security is a hard constraint.
+Selection may then minimise authority footprint, sensitive observations,
+calls, latency and irreversible effects.
+
+\section{Results}
+\textbf{Repository validation:} \emph{generated result pending}.\\
+\textbf{Semantic conformance:} \emph{generated result pending}.\\
+\textbf{Native SLED:} \emph{generated result pending}.\\
+\textbf{SLED-MC/SLED-V:} \emph{generated result pending}.\\
+\textbf{Real models and AgentDojo:} \emph{generated result pending}.
+
+No numerical claim is entered manually. Tables and figures are generated from
+retained, versioned result JSON and include input checksums.
+
+\section{Limitations}
+Conflux assumes sound authentication, provenance, policy state and complete
+mediation. It does not prevent actions already authorised for every influencing
+Principal and does not guarantee subjective intent alignment. Conservative
+contexts can over-approximate influence. Delegation remains unsupported.
+Authorised-read safety is not noninterference. Formal results are scoped to
+their model, backend and conformance evidence. Provider adapters are research
+prototypes, not production isolation boundaries.
+
+\section{Conclusion}
+Conflux now has one tested security semantics and a bounded state-exploration
+foundation. The remaining contribution is evidence: reproducible native,
+real-model, external-benchmark and formal-verification artefacts whose claims
+remain tied to explicit assumptions and bounds.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}
