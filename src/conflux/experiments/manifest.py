@@ -69,10 +69,15 @@ class ExperimentManifest:
     def materialise(self, directory: Path) -> Path:
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / "manifest.json"
-        path.write_text(canonical_json(self.to_dict()) + "\n", encoding="utf-8")
+        path.write_text(
+            canonical_json(self.to_dict()) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
         (directory / "RERUN.txt").write_text(
             " ".join(self.rerun_command) + "\n",
             encoding="utf-8",
+            newline="\n",
         )
         return path
 
