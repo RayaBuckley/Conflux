@@ -1,6 +1,6 @@
 # ADR 007: Legacy implementation mapping
 
-Status: accepted
+Status: superseded by ADR 008
 
 ## Decision
 
@@ -12,16 +12,15 @@ public compatibility target. Its concepts map as follows:
 | `User` | `Principal` | identity uses stable IDs; policy owns permissions |
 | `Data` | `domain.environment.DataItem` | scenario metadata is not provenance |
 | `Environment` | `EnvironmentSnapshot` | providers expose snapshots through ports |
-| `PrimitiveAction` | `core.actions.PrimitiveAction` | declarative action only |
+| `PrimitiveAction` | `domain.actions.PrimitiveAction` | declarative action only |
 | `LLMExecutionAction` | `NestedExecutionAction` | nested execution remains mediated |
 | `MyLogic` | `application.MediationService` and canonical ITES | no direct provider side effects |
 | `Evaluator` | `evaluation.Evaluator` | one-shot and exhaustive APIs stay distinct |
 
-The old callback and predefined-logic shapes are available only through
-`conflux.compatibility`. Canonical domain and ITES modules must not import them.
+The old callback and predefined-logic shapes were temporarily exposed through
+`conflux.compatibility`. ADR 008 completed their removal.
 
 ## Consequences
 
-This preserves the research hypothesis and security invariants while allowing
-the old implementation to be removed once callers and evidence are migrated.
-The compatibility layer is transitional and must not gain new semantics.
+The migration retained this mapping as historical evidence. All callers now use
+the canonical domain and ITES APIs; no compatibility layer remains.
