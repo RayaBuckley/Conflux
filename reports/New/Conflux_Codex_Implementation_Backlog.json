@@ -1,0 +1,1565 @@
+{
+  "schema_version": "1.0",
+  "generated_on": "2026-07-29",
+  "project": "Conflux",
+  "objective": "Reach an interactive, reproducible, result-ready ITES/SLED/SLED-V and AgentDojo implementation.",
+  "global_definition_of_done": [
+    "Security semantics are covered by tests before implementation changes are accepted.",
+    "Every run records source, environment, policy and model versions.",
+    "Every external integration uses a pinned upstream revision and real fixture.",
+    "Blocked invalid proposals are diagnostics, not executed security violations.",
+    "Archived results are not presented as validation of the current implementation."
+  ],
+  "tasks": [
+    {
+      "id": "BASE-001",
+      "title": "Capture current validation baseline",
+      "priority": "P0",
+      "milestone": "M0",
+      "dependencies": [],
+      "files": [
+        "docs/BASELINE_2026-07.md",
+        "artifacts/validation/"
+      ],
+      "problem_or_change": "Run all validation commands on a fresh checkout, retain logs, record commit/platform and turn failures into tracked defects.",
+      "acceptance_criteria": [
+        "Raw logs exist",
+        "Commit and Python version recorded",
+        "No pass claim without command output"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "BASE-002",
+      "title": "Mark archived paper immutable",
+      "priority": "P0",
+      "milestone": "M0",
+      "dependencies": [],
+      "files": [
+        "paper/ARCHIVED.md",
+        "manuscript/README.md"
+      ],
+      "problem_or_change": "Document that existing paper/results belong to the previous prototype and create a separate manuscript path.",
+      "acceptance_criteria": [
+        "Existing paper files unchanged",
+        "Archive commit/tag documented",
+        "New manuscript path exists"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SEC-001",
+      "title": "Deny empty Principal Context",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "BASE-001"
+      ],
+      "files": [
+        "src/conflux/auth/authorisation.py",
+        "src/conflux/application/authorisation.py",
+        "tests/semantics/test_empty_context.py"
+      ],
+      "problem_or_change": "Make empty authority fail closed; represent trusted system operations with an explicit system principal.",
+      "acceptance_criteria": [
+        "All action families deny empty context",
+        "MVP/kernel/application agree",
+        "System principal positive test passes"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SEC-002",
+      "title": "Separate read policy from provenance",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "BASE-001"
+      ],
+      "files": [
+        "src/conflux/ports/read_policy.py",
+        "src/conflux/application/read_policy.py",
+        "src/conflux/auth/authorisation.py",
+        "tests/semantics/test_read_policy.py"
+      ],
+      "problem_or_change": "Introduce ReadRequest/ReadDecision and remove provenance-as-reader logic.",
+      "acceptance_criteria": [
+        "Reader-not-author allowed",
+        "Author-not-reader denied",
+        "Nested and visible actions share one read path"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SEC-003",
+      "title": "Make consent defaults fail closed",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "SEC-001"
+      ],
+      "files": [
+        "src/conflux/core/consent.py",
+        "src/conflux/ites/mediator.py",
+        "tests/semantics/test_consent_defaults.py"
+      ],
+      "problem_or_change": "Replace permission-derived implicit consent with explicit deployment modes.",
+      "acceptance_criteria": [
+        "Effectful action requires explicit consent/confirmation",
+        "Test-permissive mode is visibly marked",
+        "Production config rejects permissive default"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SEC-004",
+      "title": "Split invariants from proposal diagnostics",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "SEC-001",
+        "SEC-002"
+      ],
+      "files": [
+        "src/conflux/ites/__init__.py",
+        "src/conflux/ites/mediator.py",
+        "src/conflux/evaluation/task_classification.py",
+        "tests/semantics/test_result_taxonomy.py"
+      ],
+      "problem_or_change": "Report executed violations as invariants and attempted invalid proposals as diagnostics.",
+      "acceptance_criteria": [
+        "Secure block leaves invariants true",
+        "Vulnerable defence makes invariant false",
+        "Benchmark pass logic uses invariants only"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SEC-005",
+      "title": "Define ProposalBatch modes",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "BASE-001"
+      ],
+      "files": [
+        "src/conflux/core/actions.py",
+        "src/conflux/ites/mediator.py",
+        "tests/semantics/test_proposal_modes.py"
+      ],
+      "problem_or_change": "Replace semantic use of unordered proposal sets with alternatives and ordered-plan batches.",
+      "acceptance_criteria": [
+        "Deterministic order",
+        "Sibling alternatives isolated",
+        "Ordered plans propagate state"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SEC-006",
+      "title": "Separate authority context and decision attestation",
+      "priority": "P1",
+      "milestone": "M1",
+      "dependencies": [
+        "SEC-005"
+      ],
+      "files": [
+        "src/conflux/core/actions.py",
+        "src/conflux/core/provenance.py",
+        "src/conflux/ites/mediator.py"
+      ],
+      "problem_or_change": "Rename conservative decision context and preserve optional attested planner provenance separately.",
+      "acceptance_criteria": [
+        "No exact-causality claim",
+        "Trace records both fields",
+        "Conservative context cannot be model-forged"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SEC-007",
+      "title": "Remove owner permission bypass",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "BASE-001"
+      ],
+      "files": [
+        "src/conflux/auth/authorisation.py",
+        "src/conflux/policy/owner_policy.py",
+        "tests/semantics/test_owner_policy.py"
+      ],
+      "problem_or_change": "Translate ownership through policy evidence rather than an unconditional helper return.",
+      "acceptance_criteria": [
+        "Requested permission always checked",
+        "Legacy/direct owner shapes agree",
+        "Missing owner fails closed"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "TRACE-001",
+      "title": "Return complete mediation trace",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "SEC-004",
+        "SEC-005"
+      ],
+      "files": [
+        "src/conflux/ites/state.py",
+        "src/conflux/ites/__init__.py",
+        "src/conflux/ites/mediator.py"
+      ],
+      "problem_or_change": "Add trace and snapshot identifiers to mediation report.",
+      "acceptance_criteria": [
+        "Every proposal recorded",
+        "Blocked/malformed proposals recorded",
+        "Report exposes full trace"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "TRACE-002",
+      "title": "Version trace and result schemas",
+      "priority": "P0",
+      "milestone": "M2",
+      "dependencies": [
+        "TRACE-001"
+      ],
+      "files": [
+        "schemas/trace.schema.json",
+        "schemas/result.schema.json",
+        "src/conflux/evaluation/records.py",
+        "tests/fixtures/traces/"
+      ],
+      "problem_or_change": "Define JSON Schema and stable canonical serialisation.",
+      "acceptance_criteria": [
+        "Golden fixtures validate",
+        "Canonical hashes stable",
+        "Schema version in every record"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "ARCH-001",
+      "title": "Create canonical security kernel",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "SEC-001",
+        "SEC-002",
+        "SEC-003",
+        "SEC-004",
+        "SEC-005",
+        "TRACE-001"
+      ],
+      "files": [
+        "src/conflux/mediation/",
+        "tests/semantics/"
+      ],
+      "problem_or_change": "Move transition semantics into one reusable kernel used by runtime and evaluation.",
+      "acceptance_criteria": [
+        "No duplicated supported semantics",
+        "Pure transition API",
+        "Semantic corpus passes"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "ARCH-002",
+      "title": "Add MVP conformance harness",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "ARCH-001"
+      ],
+      "files": [
+        "tests/conformance/test_mvp_kernel.py"
+      ],
+      "problem_or_change": "Run shared restricted cases through research MVP and canonical kernel.",
+      "acceptance_criteria": [
+        "Outcomes and traces agree",
+        "Intentional extensions documented",
+        "Mismatch yields minimal fixture"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "ARCH-003",
+      "title": "Migrate providers to EnvironmentSnapshot",
+      "priority": "P1",
+      "milestone": "M2",
+      "dependencies": [
+        "ARCH-001"
+      ],
+      "files": [
+        "src/conflux/adapters/providers/base.py",
+        "src/conflux/adapters/providers/filesystem.py",
+        "src/conflux/adapters/providers/docker.py"
+      ],
+      "problem_or_change": "Remove legacy Data/Environment from canonical provider boundaries.",
+      "acceptance_criteria": [
+        "No compatibility import",
+        "Boundary contract tests",
+        "Stable provider errors"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "ARCH-004",
+      "title": "Migrate evaluation to canonical domain",
+      "priority": "P1",
+      "milestone": "M3",
+      "dependencies": [
+        "ARCH-001",
+        "ARCH-003"
+      ],
+      "files": [
+        "src/conflux/evaluation/"
+      ],
+      "problem_or_change": "Use EnvironmentSnapshot/DataItem throughout supported SLED path.",
+      "acceptance_criteria": [
+        "Compatibility conversion at ingress only",
+        "Architecture test enforced",
+        "Legacy fixtures explicitly named"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "RUNTIME-001",
+      "title": "Implement deterministic scripted model",
+      "priority": "P0",
+      "milestone": "M2",
+      "dependencies": [
+        "SEC-005",
+        "TRACE-002"
+      ],
+      "files": [
+        "src/conflux/adapters/models/scripted.py",
+        "tests/test_scripted_model.py"
+      ],
+      "problem_or_change": "Map input/model-call signatures to strict ProposalBatch fixtures.",
+      "acceptance_criteria": [
+        "Deterministic",
+        "Raw and parsed records emitted",
+        "Supports allowed/blocked demo"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "RUNTIME-002",
+      "title": "Implement in-memory provider",
+      "priority": "P0",
+      "milestone": "M2",
+      "dependencies": [
+        "ARCH-001"
+      ],
+      "files": [
+        "src/conflux/adapters/providers/memory.py",
+        "tests/test_memory_provider.py"
+      ],
+      "problem_or_change": "Create no-host-effect provider with typed operations and idempotency.",
+      "acceptance_criteria": [
+        "Allowlist enforced",
+        "Stable errors",
+        "State snapshot reproducible"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "RUNTIME-003",
+      "title": "Implement temporary filesystem provider",
+      "priority": "P1",
+      "milestone": "M2",
+      "dependencies": [
+        "RUNTIME-002",
+        "ARCH-003"
+      ],
+      "files": [
+        "src/conflux/adapters/providers/temp_filesystem.py",
+        "tests/test_temp_filesystem_provider.py"
+      ],
+      "problem_or_change": "Add root-confined, atomic, non-shell filesystem effects for demos.",
+      "acceptance_criteria": [
+        "Symlink/path escape tests",
+        "Atomic write",
+        "Dry run default"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "RUNTIME-004",
+      "title": "Add scenario/config loader",
+      "priority": "P0",
+      "milestone": "M2",
+      "dependencies": [
+        "TRACE-002"
+      ],
+      "files": [
+        "src/conflux/application/config.py",
+        "examples/basic.yaml",
+        "schemas/scenario.schema.json"
+      ],
+      "problem_or_change": "Load declarative principals, data, policy, model and provider config.",
+      "acceptance_criteria": [
+        "Schema validation",
+        "Unknown keys rejected",
+        "Snapshot hash generated"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "CLI-001",
+      "title": "Add supported console entry point",
+      "priority": "P0",
+      "milestone": "M2",
+      "dependencies": [
+        "RUNTIME-001",
+        "RUNTIME-002",
+        "RUNTIME-004"
+      ],
+      "files": [
+        "src/conflux/cli.py",
+        "pyproject.toml"
+      ],
+      "problem_or_change": "Expose demo, report and doctor commands using argparse.",
+      "acceptance_criteria": [
+        "Clean install exposes conflux",
+        "Demo writes trace/result",
+        "Exit codes documented"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "CLI-002",
+      "title": "Add interactive chat loop",
+      "priority": "P1",
+      "milestone": "M4",
+      "dependencies": [
+        "CLI-001",
+        "MODEL-001"
+      ],
+      "files": [
+        "src/conflux/application/chat.py",
+        "src/conflux/cli.py"
+      ],
+      "problem_or_change": "Run iterative model calls through the same kernel and provider.",
+      "acceptance_criteria": [
+        "Every effect mediated",
+        "Session snapshot retained",
+        "Ctrl-C safe abort"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "EXP-001",
+      "title": "Implement experiment manifests",
+      "priority": "P0",
+      "milestone": "M3",
+      "dependencies": [
+        "TRACE-002",
+        "CLI-001"
+      ],
+      "files": [
+        "src/conflux/experiments/manifest.py",
+        "experiments/manifests/"
+      ],
+      "problem_or_change": "Capture versions, bounds, seeds, models, policies, machine and outputs.",
+      "acceptance_criteria": [
+        "Manifest copied into run directory",
+        "Hash included in result",
+        "Rerun command emitted"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "EXP-002",
+      "title": "Translate legacy environments",
+      "priority": "P0",
+      "milestone": "M3",
+      "dependencies": [
+        "ARCH-004",
+        "EXP-001"
+      ],
+      "files": [
+        "experiments/suites/legacy-reproduction/",
+        "experiments/suites/canonical/"
+      ],
+      "problem_or_change": "Encode previous environments and corrected canonical variants separately.",
+      "acceptance_criteria": [
+        "Legacy assumptions documented",
+        "No silent semantic mixing",
+        "Fixture IDs stable"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "EXP-003",
+      "title": "Validate negative-control defences",
+      "priority": "P0",
+      "milestone": "M3",
+      "dependencies": [
+        "EXP-002",
+        "SEC-004"
+      ],
+      "files": [
+        "src/conflux/evaluation/defences/",
+        "tests/integration/test_negative_controls.py"
+      ],
+      "problem_or_change": "Ensure each deliberately weak defence yields a known counterexample.",
+      "acceptance_criteria": [
+        "At least one violation each",
+        "ITES does not share violation",
+        "Counterexample retained"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "EXP-004",
+      "title": "Produce first current-code smoke result",
+      "priority": "P0",
+      "milestone": "M3",
+      "dependencies": [
+        "EXP-001",
+        "EXP-002",
+        "EXP-003"
+      ],
+      "files": [
+        "runs/smoke/",
+        "docs/MVP_RESULTS.md"
+      ],
+      "problem_or_change": "Generate a small reproducible result package from current code.",
+      "acceptance_criteria": [
+        "Raw JSONL trace",
+        "Versioned result JSON",
+        "Generated table",
+        "Single rerun command"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SLEDMC-001",
+      "title": "Define canonical model-checker state",
+      "priority": "P0",
+      "milestone": "M5",
+      "dependencies": [
+        "ARCH-001",
+        "ARCH-004"
+      ],
+      "files": [
+        "src/conflux/verification/state.py"
+      ],
+      "problem_or_change": "Create a hashable state containing future-relevant security fields.",
+      "acceptance_criteria": [
+        "Canonical serialisation",
+        "No trace history unless property requires it",
+        "State equality tests"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SLEDMC-002",
+      "title": "Implement BFS reachability and counterexamples",
+      "priority": "P0",
+      "milestone": "M5",
+      "dependencies": [
+        "SLEDMC-001"
+      ],
+      "files": [
+        "src/conflux/verification/explicit.py",
+        "tests/test_explicit_model_checker.py"
+      ],
+      "problem_or_change": "Explore unique states and reconstruct shortest violating paths.",
+      "acceptance_criteria": [
+        "SAFE/UNSAFE/BOUNDED_SAFE/UNKNOWN",
+        "Shortest counterexample",
+        "Bound states retained"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SLEDMC-003",
+      "title": "Compare trace and state exploration",
+      "priority": "P1",
+      "milestone": "M5",
+      "dependencies": [
+        "SLEDMC-002",
+        "EXP-002"
+      ],
+      "files": [
+        "experiments/manifests/sledmc-comparison.yaml"
+      ],
+      "problem_or_change": "Measure trace count, unique states, runtime, memory and verdict agreement.",
+      "acceptance_criteria": [
+        "Generated report",
+        "Same fixtures/bounds",
+        "No hand-entered numbers"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "MODEL-001",
+      "title": "Implement OpenAI-compatible adapter",
+      "priority": "P1",
+      "milestone": "M4",
+      "dependencies": [
+        "TRACE-002",
+        "SEC-005"
+      ],
+      "files": [
+        "src/conflux/adapters/models/openai_compatible.py",
+        "tests/test_openai_compatible_adapter.py"
+      ],
+      "problem_or_change": "Use configurable HTTP endpoint and strict structured proposal parsing.",
+      "acceptance_criteria": [
+        "Secrets only from env",
+        "Timeout/retry policy",
+        "Malformed output blocked and traced"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "MODEL-002",
+      "title": "Implement optional local HF adapter",
+      "priority": "P2",
+      "milestone": "M4",
+      "dependencies": [
+        "MODEL-001"
+      ],
+      "files": [
+        "src/conflux/adapters/models/huggingface.py",
+        "pyproject.toml"
+      ],
+      "problem_or_change": "Support one documented local causal model behind an optional extra.",
+      "acceptance_criteria": [
+        "Core install remains light",
+        "One model smoke test documented",
+        "Device/dtype recorded"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "AGENTDOJO-001",
+      "title": "Pin upstream AgentDojo",
+      "priority": "P0",
+      "milestone": "M6",
+      "dependencies": [
+        "EXP-004"
+      ],
+      "files": [
+        "external/agentdojo.lock",
+        "docs/integrations/agentdojo.md"
+      ],
+      "problem_or_change": "Select exact upstream revision, licence and install process.",
+      "acceptance_criteria": [
+        "Commit/version pinned",
+        "Setup reproduced",
+        "Raw upstream fixture retained"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "AGENTDOJO-002",
+      "title": "Implement explicit AgentDojo translation",
+      "priority": "P0",
+      "milestone": "M6",
+      "dependencies": [
+        "AGENTDOJO-001",
+        "ARCH-004"
+      ],
+      "files": [
+        "src/conflux/adapters/benchmarks/agentdojo_v1.py",
+        "tests/fixtures/agentdojo/"
+      ],
+      "problem_or_change": "Translate real task/tool/state/attack/result objects without heuristic field guessing.",
+      "acceptance_criteria": [
+        "Fixture-based tests",
+        "Upstream IDs preserved",
+        "Failure taxonomy complete"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "AGENTDOJO-003",
+      "title": "Run AgentDojo smoke comparison",
+      "priority": "P1",
+      "milestone": "M6",
+      "dependencies": [
+        "AGENTDOJO-002",
+        "MODEL-001"
+      ],
+      "files": [
+        "experiments/manifests/agentdojo-smoke.yaml"
+      ],
+      "problem_or_change": "Run no-defence and ITES on a small pinned subset.",
+      "acceptance_criteria": [
+        "Native metrics",
+        "Conflux metrics",
+        "Raw upstream outputs",
+        "Annotation assumptions documented"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SLEDV-001",
+      "title": "Define verification IR",
+      "priority": "P0",
+      "milestone": "M7",
+      "dependencies": [
+        "SLEDMC-002"
+      ],
+      "files": [
+        "src/conflux/verification/ir.py",
+        "schemas/verification-model.schema.json"
+      ],
+      "problem_or_change": "Represent finite initial states, transitions, observations, safety/goal properties and assumptions.",
+      "acceptance_criteria": [
+        "No hidden callbacks",
+        "Serializable",
+        "Unsupported semantics rejected"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SLEDV-002",
+      "title": "Implement Z3 bounded backend",
+      "priority": "P0",
+      "milestone": "M7",
+      "dependencies": [
+        "SLEDV-001"
+      ],
+      "files": [
+        "src/conflux/verification/z3_backend.py",
+        "pyproject.toml"
+      ],
+      "problem_or_change": "Find violating traces or return bounded-safe with solver artefacts.",
+      "acceptance_criteria": [
+        "Vulnerable defence counterexample",
+        "ITES bounded-safe fixture",
+        "Solver/query hashes retained"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SLEDV-003",
+      "title": "Add runtime-to-IR conformance",
+      "priority": "P0",
+      "milestone": "M7",
+      "dependencies": [
+        "SLEDV-001",
+        "ARCH-001",
+        "TRACE-002"
+      ],
+      "files": [
+        "src/conflux/verification/conformance.py",
+        "tests/conformance/"
+      ],
+      "problem_or_change": "Map runtime transitions to IR and differentially check supported fixtures.",
+      "acceptance_criteria": [
+        "All fixture transitions admitted",
+        "Mismatch counterexample",
+        "Model proof not promoted without conformance"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "SLEDV-004",
+      "title": "Add IC3/PDR-capable backend",
+      "priority": "P2",
+      "milestone": "M8",
+      "dependencies": [
+        "SLEDV-002",
+        "SLEDV-003"
+      ],
+      "files": [
+        "src/conflux/verification/nuxmv_backend.py"
+      ],
+      "problem_or_change": "Translate finite ITES model to an unbounded safety checker.",
+      "acceptance_criteria": [
+        "Backend/version recorded",
+        "Invariant/proof retained if available",
+        "UNKNOWN on unsupported model"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "PLAN-001",
+      "title": "Define typed plan graph",
+      "priority": "P2",
+      "milestone": "M8",
+      "dependencies": [
+        "SEC-005",
+        "SLEDV-001"
+      ],
+      "files": [
+        "src/conflux/planning/model.py"
+      ],
+      "problem_or_change": "Represent operations, preconditions, outcomes, reads, permissions and compensation.",
+      "acceptance_criteria": [
+        "Strict schema",
+        "Authenticated tool catalogue IDs",
+        "No natural-language action execution"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "PLAN-002",
+      "title": "Implement secure plan validation",
+      "priority": "P2",
+      "milestone": "M8",
+      "dependencies": [
+        "PLAN-001",
+        "SLEDV-002"
+      ],
+      "files": [
+        "src/conflux/planning/verify.py"
+      ],
+      "problem_or_change": "Verify all plan outcomes against security invariants before execution.",
+      "acceptance_criteria": [
+        "Safe/unsafe plan fixtures",
+        "Error outcomes checked",
+        "Replanning envelope encoded"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "PLAN-003",
+      "title": "Implement authority-minimising selection",
+      "priority": "P3",
+      "milestone": "M8",
+      "dependencies": [
+        "PLAN-002"
+      ],
+      "files": [
+        "src/conflux/planning/optimise.py"
+      ],
+      "problem_or_change": "Choose among verified plans using lexicographic utility/authority/observation/cost objectives.",
+      "acceptance_criteria": [
+        "Security hard constraint",
+        "Objective metrics in trace",
+        "Deterministic tie-break"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "CLUSTER-001",
+      "title": "Add hardware and scheduler probe",
+      "priority": "P1",
+      "milestone": "M4",
+      "dependencies": [
+        "CLI-001"
+      ],
+      "files": [
+        "src/conflux/application/doctor.py",
+        "scripts/cluster/probe.sh"
+      ],
+      "problem_or_change": "Record actual laptop/TorrNodes compute without assuming a GPU.",
+      "acceptance_criteria": [
+        "JSON output",
+        "No secret leakage",
+        "GPU/scheduler/container detection"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "CLUSTER-002",
+      "title": "Add resumable cluster runner",
+      "priority": "P2",
+      "milestone": "M8",
+      "dependencies": [
+        "CLUSTER-001",
+        "EXP-001"
+      ],
+      "files": [
+        "scripts/cluster/submit_experiment.sh",
+        "src/conflux/experiments/resume.py"
+      ],
+      "problem_or_change": "Support manifest-driven array jobs, logs and completed-case resumption.",
+      "acceptance_criteria": [
+        "No duplicate completed cases",
+        "Seed mapping stable",
+        "Outputs self-contained"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "CI-001",
+      "title": "Add platform-neutral validation",
+      "priority": "P0",
+      "milestone": "M1",
+      "dependencies": [
+        "BASE-001"
+      ],
+      "files": [
+        "noxfile.py",
+        "scripts/validate.ps1"
+      ],
+      "problem_or_change": "Expose identical test/type/lint/audit commands on Linux and Windows.",
+      "acceptance_criteria": [
+        "One documented command",
+        "PowerShell delegates",
+        "Local and CI parity"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "CI-002",
+      "title": "Add GitHub Actions core workflow",
+      "priority": "P1",
+      "milestone": "M2",
+      "dependencies": [
+        "CI-001"
+      ],
+      "files": [
+        ".github/workflows/validate.yml"
+      ],
+      "problem_or_change": "Run Python 3.12 core validation and retain test artefacts.",
+      "acceptance_criteria": [
+        "Required checks pass",
+        "No external/GPU dependency",
+        "Logs downloadable"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "PAPER-001",
+      "title": "Create current manuscript tree",
+      "priority": "P0",
+      "milestone": "M0",
+      "dependencies": [
+        "BASE-002"
+      ],
+      "files": [
+        "manuscript/conflux_fourth_year_2026.tex",
+        "manuscript/references.bib"
+      ],
+      "problem_or_change": "Add WIP paper without altering archive and include explicit result placeholders.",
+      "acceptance_criteria": [
+        "Compiles",
+        "Archived paper untouched",
+        "Claims distinguish old/new evidence"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    },
+    {
+      "id": "PAPER-002",
+      "title": "Generate tables from result JSON",
+      "priority": "P1",
+      "milestone": "M8",
+      "dependencies": [
+        "EXP-004",
+        "PAPER-001"
+      ],
+      "files": [
+        "scripts/generate_paper_artifacts.py",
+        "manuscript/generated/"
+      ],
+      "problem_or_change": "Create all paper tables/figures from versioned outputs.",
+      "acceptance_criteria": [
+        "No manual headline numbers",
+        "Input checksums recorded",
+        "Rebuild documented"
+      ],
+      "required_evidence": [
+        "Tests or integration fixtures committed",
+        "Validation commands and outputs recorded",
+        "docs/STATUS.md and docs/AUDIT.md updated when ownership/status changes"
+      ],
+      "codex_instructions": {
+        "before_coding": [
+          "Read AGENTS.md and local AGENTS.md files",
+          "Write or update a focused feature specification",
+          "Inspect all affected canonical contracts and callers"
+        ],
+        "completion_rule": "Do not mark complete merely because code imports; produce the acceptance evidence.",
+        "scope_rule": "Avoid unrelated refactoring and do not add new semantics to compatibility modules."
+      }
+    }
+  ]
+}
