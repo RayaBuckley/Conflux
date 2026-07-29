@@ -7,6 +7,7 @@
 - [Evaluation](EVALUATION.md)
 - [Deterministic Runtime](RUNTIME.md)
 - [Command-line Interface](CLI.md)
+- [Evaluation Negative Controls](NEGATIVE_CONTROLS.md)
 - [Change Catalogue](CHANGE_CATALOG.md)
 - [Claim-to-Evidence Ledger](CLAIMS.md)
 - [Related-work Positioning](RELATED_WORK.md)

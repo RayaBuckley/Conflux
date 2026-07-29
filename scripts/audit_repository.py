@@ -21,6 +21,7 @@ CANONICAL_DOCS = {
     "EVALUATION.md",
     "RUNTIME.md",
     "CLI.md",
+    "NEGATIVE_CONTROLS.md",
     "CHANGE_CATALOG.md",
     "CLAIMS.md",
     "RELATED_WORK.md",
