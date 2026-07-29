@@ -10,8 +10,11 @@ from conflux.domain import (
     Artifact,
     DataItem,
     EnvironmentSnapshot,
+    NoOpAction,
     Principal,
     PrincipalContext,
+    ProposalBatch,
+    ProposalMode,
     Provenance,
     ProvenancePrecision,
     canonical_json,
@@ -88,3 +91,21 @@ def test_environment_rejects_duplicate_data_ids() -> None:
 
 def test_canonical_json_orders_mappings() -> None:
     assert canonical_json({"b": 2, "a": 1}) == '{"a":1,"b":2}'
+
+
+def test_proposal_batch_is_immutable_and_serialisable() -> None:
+    action = NoOpAction("noop")
+    batch = ProposalBatch.ordered_plan(action)
+    assert batch.mode is ProposalMode.ORDERED_PLAN
+    assert batch.to_dict()["proposals"] == [
+        {
+            "id": "noop",
+            "kind": "no_op",
+            "visibility": "internal",
+            "input_ids": [],
+            "label": "no-op",
+        }
+    ]
+    assert batch.fingerprint == ProposalBatch.ordered_plan(action).fingerprint
+    with pytest.raises(ValueError, match="at least one"):
+        ProposalBatch(ProposalMode.ORDERED_PLAN, ())

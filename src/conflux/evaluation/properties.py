@@ -8,6 +8,7 @@ from conflux.domain import (
     Action,
     EnvironmentSnapshot,
     NestedExecutionAction,
+    ProposalBatch,
     Session,
     action_sort_key,
 )
@@ -31,9 +32,9 @@ class ITESVerificationSystem:
         return self.actions if state.status == BranchStatus.ACTIVE else ()
 
     def step(self, state: BranchState, action: Action) -> tuple[BranchState, ...]:
-        return self.kernel.expand(
+        return self.kernel.expand_batch(
             parent=state,
-            proposals=(action,),
+            batch=ProposalBatch.alternatives(action),
             session=self.session,
             environment=self.environment,
             model_calls=state.model_calls + 1,

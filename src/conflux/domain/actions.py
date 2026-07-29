@@ -27,6 +27,11 @@ class ActionVisibility(StrEnum):
     TRANSCRIPT = "transcript"
 
 
+class ProposalMode(StrEnum):
+    ALTERNATIVES = "alternatives"
+    ORDERED_PLAN = "ordered_plan"
+
+
 @dataclass(frozen=True, slots=True)
 class PrimitiveAction:
     id: str
@@ -122,6 +127,37 @@ Action: TypeAlias = (
 Proposal: TypeAlias = Action
 
 
+@dataclass(frozen=True, slots=True)
+class ProposalBatch:
+    mode: ProposalMode
+    proposals: tuple[Action, ...]
+    schema_version: str = "1"
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "proposals", tuple(self.proposals))
+        if self.mode == ProposalMode.ORDERED_PLAN and not self.proposals:
+            raise ValueError("an ordered plan must contain at least one action")
+
+    @classmethod
+    def alternatives(cls, *proposals: Action) -> "ProposalBatch":
+        return cls(ProposalMode.ALTERNATIVES, proposals)
+
+    @classmethod
+    def ordered_plan(cls, *proposals: Action) -> "ProposalBatch":
+        return cls(ProposalMode.ORDERED_PLAN, proposals)
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "schema_version": self.schema_version,
+            "mode": self.mode.value,
+            "proposals": [action_to_dict(action) for action in self.proposals],
+        }
+
+    @property
+    def fingerprint(self) -> str:
+        return fingerprint(self.to_dict())
+
+
 def action_inputs(action: Action) -> tuple[Artifact[Any], ...]:
     return action.inputs
 
@@ -168,6 +204,8 @@ __all__ = [
     "NoOpAction",
     "PrimitiveAction",
     "Proposal",
+    "ProposalBatch",
+    "ProposalMode",
     "StopAction",
     "action_fingerprint",
     "action_inputs",

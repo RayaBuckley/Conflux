@@ -11,6 +11,8 @@ from conflux.domain import (
     EnvironmentSnapshot,
     NestedExecutionAction,
     PrincipalContext,
+    ProposalBatch,
+    ProposalMode,
     Session,
     action_sort_key,
     provenance_union,
@@ -18,6 +20,7 @@ from conflux.domain import (
 
 from .state import (
     ActionOutcome,
+    AuthorisedStep,
     BranchState,
     BranchStatus,
     DecisionCertificate,
@@ -40,27 +43,43 @@ class DecisionEngine(Protocol):
 class TransitionKernel:
     decisions: DecisionEngine
 
-    def expand(
+    def expand_batch(
         self,
         *,
         parent: BranchState,
-        proposals: tuple[Action, ...],
+        batch: ProposalBatch,
         session: Session,
         environment: EnvironmentSnapshot,
         model_calls: int,
     ) -> tuple[BranchState, ...]:
-        ordered = tuple(sorted(proposals, key=action_sort_key))
-        return tuple(
-            self._transition(
-                parent=parent,
+        if batch.mode == ProposalMode.ALTERNATIVES:
+            ordered = tuple(sorted(batch.proposals, key=action_sort_key))
+            return tuple(
+                self._transition(
+                    parent=parent,
+                    action=action,
+                    index=index,
+                    session=session,
+                    environment=environment,
+                    model_calls=model_calls,
+                )
+                for index, action in enumerate(ordered, 1)
+            )
+        current = parent
+        for index, action in enumerate(batch.proposals, 1):
+            current = self._transition(
+                parent=current,
                 action=action,
                 index=index,
                 session=session,
                 environment=environment,
                 model_calls=model_calls,
             )
-            for index, action in enumerate(ordered, 1)
-        )
+            if current.status == BranchStatus.BLOCKED:
+                break
+            if index < len(batch.proposals):
+                current = replace(current, status=BranchStatus.ACTIVE)
+        return (current,)
 
     def _transition(
         self,
@@ -101,6 +120,16 @@ class TransitionKernel:
             depth += 1
             status = BranchStatus.ACTIVE
         outcome = ActionOutcome.AUTHORISED if allowed else ActionOutcome.BLOCKED
+        certificate = (
+            DecisionCertificate.issue(
+                action=action,
+                context=context,
+                branch_id=branch_id,
+                decision=decision,
+            )
+            if allowed
+            else None
+        )
         result_event = TraceEvent(
             sequence=len(parent.trace) + 1,
             branch_id=branch_id,
@@ -112,16 +141,9 @@ class TransitionKernel:
             decision=decision,
             reason="all_decisions_allow" if allowed else _first_denial(decision),
         )
-        certificate = (
-            DecisionCertificate.issue(
-                action=action,
-                context=context,
-                branch_id=branch_id,
-                decision=decision,
-            )
-            if allowed
-            else None
-        )
+        steps = parent.authorised_steps
+        if certificate is not None:
+            steps += (AuthorisedStep(action, decision, certificate),)
         return replace(
             parent,
             branch_id=branch_id,
@@ -135,6 +157,7 @@ class TransitionKernel:
             action=action,
             decision=decision,
             certificate=certificate,
+            authorised_steps=steps,
         )
 
 

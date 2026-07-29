@@ -48,16 +48,16 @@ class MediatingITES:
                 continue
             calls += 1
             try:
-                proposals = tuple(model.propose(state.inputs))
+                batch = model.propose(state.inputs)
             except Exception as error:
                 terminal.append(_model_error(state, calls, error))
                 continue
-            if not proposals:
+            if not batch.proposals:
                 terminal.append(_complete(state, calls))
                 continue
-            children = self.kernel.expand(
+            children = self.kernel.expand_batch(
                 parent=state,
-                proposals=proposals,
+                batch=batch,
                 session=session,
                 environment=environment,
                 model_calls=calls,

@@ -134,6 +134,13 @@ class DecisionCertificate:
 
 
 @dataclass(frozen=True, slots=True)
+class AuthorisedStep:
+    action: Action
+    decision: ActionDecision
+    certificate: DecisionCertificate
+
+
+@dataclass(frozen=True, slots=True)
 class BranchState:
     branch_id: str
     parent_branch_id: str | None
@@ -146,6 +153,7 @@ class BranchState:
     action: Action | None = None
     decision: ActionDecision | None = None
     certificate: DecisionCertificate | None = None
+    authorised_steps: tuple[AuthorisedStep, ...] = ()
 
     @classmethod
     def initial(cls, inputs: tuple[Artifact[Any], ...]) -> "BranchState":
@@ -177,6 +185,12 @@ class AuthorisedBranch:
     action: Action
     decision: ActionDecision
     certificate: DecisionCertificate
+    branch_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class AuthorisedPlan:
+    steps: tuple[AuthorisedStep, ...]
     branch_id: str
 
 
@@ -225,6 +239,14 @@ class ITESReport:
                     )
                 )
         return tuple(result)
+
+    @property
+    def authorised_plans(self) -> tuple[AuthorisedPlan, ...]:
+        return tuple(
+            AuthorisedPlan(branch.authorised_steps, branch.branch_id)
+            for branch in self.branches
+            if branch.status == BranchStatus.AUTHORISED and len(branch.authorised_steps) > 1
+        )
 
     @property
     def proposed_count(self) -> int:
@@ -321,6 +343,13 @@ class ITESReport:
                     "model_calls": branch.model_calls,
                     "action_id": branch.action.id if branch.action else None,
                     "certificate": branch.certificate.to_dict() if branch.certificate else None,
+                    "authorised_steps": [
+                        {
+                            "action_id": step.action.id,
+                            "certificate": step.certificate.to_dict(),
+                        }
+                        for step in branch.authorised_steps
+                    ],
                     "trace": [event.to_dict() for event in branch.trace],
                 }
                 for branch in sorted(self.branches, key=lambda item: item.branch_id)
@@ -347,6 +376,8 @@ def _execution_assessment(branches: tuple[BranchState, ...]) -> SafetyAssessment
 __all__ = [
     "ActionOutcome",
     "AuthorisedBranch",
+    "AuthorisedPlan",
+    "AuthorisedStep",
     "BranchState",
     "BranchStatus",
     "CERTIFICATE_SCHEMA_VERSION",

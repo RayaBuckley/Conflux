@@ -6,11 +6,12 @@ provider, model, policy, executor, and tracing boundaries.
 only security transition kernel. `conflux.evaluation` owns SLED verification.
 External systems exist only below `conflux.adapters`.
 
-The model proposes declarative alternatives. ITES derives the conservative
-Principal Context from trusted provenance and evaluates every alternative from
-the same immutable parent. An authorised action receives a certificate bound to
-the action, context, branch, and policy versions. Execution is a separate use
-case and requires that certificate.
+The model returns a `ProposalBatch`. Alternative actions are evaluated from the
+same immutable parent in canonical order. Ordered-plan actions retain their
+declared order, propagate branch state, stop at the first denial, and each
+receives its own certificate. ITES derives the conservative Principal Context
+from trusted provenance; a batch cannot grant authority to later steps.
+Execution is a separate use case and revalidates the exact certificate.
 
 Domain and ITES never import adapters or benchmarks. Evaluation observes the
 kernel and cannot redefine its security decisions.

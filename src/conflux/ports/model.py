@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
-from conflux.domain import Action, Artifact
+from conflux.domain import Artifact, ProposalBatch
 
 
 class ModelPort(Protocol):
-    def propose(self, inputs: tuple[Artifact[Any], ...]) -> tuple[Action, ...]:
-        """Return declarative alternatives without performing side effects."""
+    def propose(self, inputs: tuple[Artifact[Any], ...]) -> ProposalBatch:
+        """Return a typed proposal batch without performing side effects."""
         ...
 
 

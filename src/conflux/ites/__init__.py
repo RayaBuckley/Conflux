@@ -5,6 +5,8 @@ from .mediator import MediatingITES
 from .state import (
     ActionOutcome,
     AuthorisedBranch,
+    AuthorisedPlan,
+    AuthorisedStep,
     BranchState,
     BranchStatus,
     DecisionCertificate,
@@ -16,6 +18,8 @@ from .state import (
 __all__ = [
     "ActionOutcome",
     "AuthorisedBranch",
+    "AuthorisedPlan",
+    "AuthorisedStep",
     "BranchState",
     "BranchStatus",
     "DecisionCertificate",
