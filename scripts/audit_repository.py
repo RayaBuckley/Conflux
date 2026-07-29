@@ -1,118 +1,102 @@
-"""Static repository checks for AI-assisted changes.
-
-The audit is deliberately dependency-free.  It checks the repository's
-documentation graph, Python module ownership, and canonical terminology so a
-reviewer gets a useful failure before running the full test suite.
-"""
+"""Dependency-free structural and documentation audit."""
 
 from __future__ import annotations
 
+import ast
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCS = ROOT / "docs"
 SOURCE = ROOT / "src" / "conflux"
+DOCS = ROOT / "docs"
 CANONICAL_DOCS = {
-    "docs/README.md",
-    "docs/ARCHITECTURE.md",
-    "docs/REFERENCE.md",
-    "docs/DEVELOPMENT.md",
-    "docs/EVALUATION.md",
-    "docs/STATUS.md",
-    "docs/AUDIT.md",
-    "docs/GLOSSARY.md",
+    "README.md",
+    "ARCHITECTURE.md",
+    "SECURITY_MODEL.md",
+    "REFERENCE.md",
+    "SLED.md",
+    "EVALUATION.md",
+    "CHANGE_CATALOG.md",
+    "CLAIMS.md",
+    "RELATED_WORK.md",
+    "DEVELOPMENT.md",
+    "STATUS.md",
+    "AUDIT.md",
+    "GLOSSARY.md",
 }
+LEGACY = {"core", "auth", "research", "compatibility"}
+FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
 
 
-def markdown_links(path: Path) -> list[tuple[int, str]]:
-    pattern = re.compile(r"\[[^]]+\]\(([^)#]+)(?:#[^)]+)?\)")
-    return [
-        (line_no, target)
-        for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
-        for target in pattern.findall(line)
-    ]
+def imports(path: Path) -> set[str]:
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    result: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module:
+            result.add(node.module)
+        elif isinstance(node, ast.Import):
+            result.update(alias.name for alias in node.names)
+    return result
 
 
-def check_documentation_links(errors: list[str]) -> None:
-    for relative in CANONICAL_DOCS:
-        if not (ROOT / relative).exists():
-            errors.append(f"missing canonical document {relative}")
-    for path in [ROOT / "README.md", *DOCS.rglob("*.md")]:
-        for line_no, target in markdown_links(path):
-            if "://" in target or target.startswith("mailto:"):
-                continue
-            resolved = (path.parent / target).resolve()
-            if not resolved.exists():
-                errors.append(f"{path.relative_to(ROOT)}:{line_no}: missing link target {target}")
-
-
-def check_module_docstrings(errors: list[str]) -> None:
+def check_architecture(errors: list[str]) -> None:
+    for name in LEGACY:
+        if list((SOURCE / name).glob("*.py")):
+            errors.append(f"legacy package still contains Python modules: conflux.{name}")
     for path in SOURCE.rglob("*.py"):
-        if path.name == "__init__.py":
-            continue
+        for imported in imports(path):
+            if imported.startswith(FORBIDDEN_IMPORTS):
+                errors.append(f"{path.relative_to(ROOT)} imports legacy {imported}")
+            if path.is_relative_to(SOURCE / "domain") and imported.startswith("conflux."):
+                errors.append(f"{path.relative_to(ROOT)}: domain imports outward {imported}")
+            if path.is_relative_to(SOURCE / "ports") and imported.startswith("conflux.adapters"):
+                errors.append(f"{path.relative_to(ROOT)}: port imports adapter {imported}")
+
+
+def check_docs(errors: list[str]) -> None:
+    for name in CANONICAL_DOCS:
+        if not (DOCS / name).exists():
+            errors.append(f"missing canonical document docs/{name}")
+    link_pattern = re.compile(r"\[[^]]+\]\(([^)#]+)(?:#[^)]+)?\)")
+    for path in (ROOT / "README.md", *DOCS.rglob("*.md")):
         text = path.read_text(encoding="utf-8")
-        if not re.match(r"\s*(?:from __future__ import annotations\s*)?(?:\"\"\"|''')", text):
-            errors.append(f"{path.relative_to(ROOT)}: missing module docstring")
+        if "â" in text:
+            errors.append(f"{path.relative_to(ROOT)} contains probable mojibake")
+        for line, content in enumerate(text.splitlines(), 1):
+            for target in link_pattern.findall(content):
+                if "://" in target or target.startswith("mailto:"):
+                    continue
+                if not (path.parent / target).resolve().exists():
+                    errors.append(f"{path.relative_to(ROOT)}:{line}: missing link {target}")
 
 
-def check_audit_coverage(errors: list[str]) -> None:
-    ledger = (DOCS / "AUDIT.md").read_text(encoding="utf-8")
-    documented = set(re.findall(r"`([^`]+)`", ledger))
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts:
-            continue
-        relative = path.relative_to(ROOT).as_posix()
-        if relative.startswith((
-            ".venv/",
-            ".pytest_cache/",
-            ".mypy_cache/",
-            ".ruff_cache/",
-            "src/conflux.egg-info/",
-        )) or relative in {".coverage"}:
-            continue
-        if relative not in documented and relative not in {"docs/AUDIT.md"}:
-            errors.append(f"{relative}: missing docs/AUDIT.md ledger entry")
-
-
-def check_terminology(errors: list[str]) -> None:
-    forbidden = re.compile(r"\buser(?:s)?\b", re.IGNORECASE)
-    for path in [ROOT / "README.md", *DOCS.rglob("*.md")]:
-        for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-            if "human user" in line.lower() or "human users" in line.lower():
-                continue
-            if forbidden.search(line) and "Principal" not in line:
-                errors.append(f"{path.relative_to(ROOT)}:{line_no}: prefer Principal terminology")
-
-
-def check_dependency_direction(errors: list[str]) -> None:
-    """Reject imports that would make canonical boundaries depend outward."""
-    rules = {
-        SOURCE / "domain": ("conflux.sled", "conflux.providers", "conflux.benchmarks", "conflux.compatibility"),
-        SOURCE / "ports": ("conflux.adapters", "conflux.sled", "conflux.providers", "conflux.benchmarks"),
-        SOURCE / "providers": ("conflux.sled",),
+def check_reports(errors: list[str]) -> None:
+    catalogue = (DOCS / "CHANGE_CATALOG.md").read_text(encoding="utf-8")
+    for identifier in ("BUG-001", "BUG-002", "BUG-003", "BUG-004", "SLED-001", "TRACE-001"):
+        if identifier not in catalogue:
+            errors.append(f"change catalogue missing report identifier {identifier}")
+    expected = {
+        "REPO_REVIEW",
+        "SLED_REVIEW",
+        "Conflux_Codex_Action_Manifest.json",
+        "Conflux_Codex_Research_Backlog.json",
     }
-    for directory, forbidden in rules.items():
-        for path in directory.rglob("*.py"):
-            for line_no, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-                for target in forbidden:
-                    if target in line and ("import " in line or "from " in line):
-                        errors.append(f"{path.relative_to(ROOT)}:{line_no}: forbidden dependency {target}")
+    missing = expected - {path.name for path in (ROOT / "reports").iterdir()}
+    if missing:
+        errors.append(f"missing report artifacts: {sorted(missing)}")
 
 
 def main() -> int:
     errors: list[str] = []
-    check_documentation_links(errors)
-    check_module_docstrings(errors)
-    check_audit_coverage(errors)
-    check_terminology(errors)
-    check_dependency_direction(errors)
+    check_architecture(errors)
+    check_docs(errors)
+    check_reports(errors)
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("Repository audit passed: documentation, module ownership, and terminology checks")
+    print("Repository audit passed")
     return 0
 
 

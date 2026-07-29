@@ -4,6 +4,9 @@ __pycache__/
 *.pyo
 *.egg-info/
 .venv/
+.test-venv/
+.python/
+.uv-cache/
 venv/
 env/
 ENV/
@@ -32,6 +35,8 @@ results/
 experiments/
 data/
 *.jsonl
+dist/
+build/
 
 # LaTeX temporary/build files (the final PDF remains tracked)
 *.aux
