@@ -1,0 +1,17 @@
+{
+  "schema_version": "1",
+  "source_commit": "26213bf042c5a94b5d8428974637c4abdcbc22c1",
+  "captured_at": "2026-07-29",
+  "python": "CPython 3.12.12",
+  "platform": "Windows",
+  "commands": [
+    "python -m pytest -q",
+    "python -m mypy src tests --no-error-summary",
+    "python -m ruff check src tests",
+    "python scripts/audit_repository.py",
+    ".\\scripts\\validate.ps1 -Python .\\.test-venv\\Scripts\\python.exe"
+  ],
+  "result": "passed",
+  "tests": 54,
+  "branch_coverage_percent": 90.64
+}

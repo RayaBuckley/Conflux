@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import ast
+import hashlib
+import json
 import re
 import sys
 from pathlib import Path
@@ -27,6 +29,7 @@ CANONICAL_DOCS = {
 }
 LEGACY = {"core", "auth", "research", "compatibility"}
 FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
+PAPER = ROOT / "paper"
 
 
 def imports(path: Path) -> set[str]:
@@ -87,11 +90,33 @@ def check_reports(errors: list[str]) -> None:
         errors.append(f"missing report artifacts: {sorted(missing)}")
 
 
+def check_archived_paper(errors: list[str]) -> None:
+    manifest_path = PAPER / "ARCHIVE_MANIFEST.json"
+    marker_path = PAPER / "ARCHIVED.md"
+    if not manifest_path.exists() or not marker_path.exists():
+        errors.append("archived paper marker or checksum manifest is missing")
+        return
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    files = manifest.get("files")
+    if not isinstance(files, dict):
+        errors.append("paper archive manifest has no file map")
+        return
+    for name, expected in files.items():
+        path = PAPER / str(name)
+        if not path.is_file():
+            errors.append(f"archived paper file is missing: paper/{name}")
+            continue
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if actual != expected:
+            errors.append(f"archived paper file changed: paper/{name}")
+
+
 def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
     check_docs(errors)
     check_reports(errors)
+    check_archived_paper(errors)
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))

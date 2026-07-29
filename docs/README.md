@@ -10,8 +10,10 @@
 - [Related-work Positioning](RELATED_WORK.md)
 - [Development](DEVELOPMENT.md)
 - [Status](STATUS.md)
+- [July 2026 baseline](BASELINE_2026-07.md)
 - [Audit](AUDIT.md)
 - [Glossary](GLOSSARY.md)
 - [Architecture decisions](decisions/README.md)
+- [Feature specifications](specifications/)
 
 The `reports/` directory is immutable research input and `paper/` is archived.

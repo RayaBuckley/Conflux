@@ -1,0 +1,19 @@
+$ python -m pytest -q
+......................................................                   [100%]
+54 passed in 0.12s
+
+$ python -m mypy src tests --no-error-summary
+
+$ python -m ruff check src tests
+All checks passed!
+
+$ python scripts/audit_repository.py
+Repository audit passed
+
+$ .\scripts\validate.ps1 -Python .\.test-venv\Scripts\python.exe
+Repository audit passed
+54 passed in 0.70s
+Required test coverage of 90% reached. Total coverage: 90.64%
+All checks passed!
+Successfully built conflux-0.1.0-py3-none-any.whl
+[validate] all checks passed
