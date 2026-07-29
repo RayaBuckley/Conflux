@@ -12,5 +12,10 @@
   evaluation services.
 - `conflux.adapters`: provider, policy, and benchmark translations.
 
+Stable offline adapters are `ScriptedModel`, `load_scenario`,
+`InMemoryExecutor`, and `ConfinedFilesystemExecutor`. The filesystem executor
+is dry-run by default and live writes require a matching precondition hash.
+See [Deterministic Runtime](RUNTIME.md) for the fail-closed contract.
+
 There are no compatibility imports from `core`, `auth`, `research`, or
 `compatibility`.

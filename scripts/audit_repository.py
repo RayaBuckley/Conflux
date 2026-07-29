@@ -19,6 +19,7 @@ CANONICAL_DOCS = {
     "REFERENCE.md",
     "SLED.md",
     "EVALUATION.md",
+    "RUNTIME.md",
     "CHANGE_CATALOG.md",
     "CLAIMS.md",
     "RELATED_WORK.md",

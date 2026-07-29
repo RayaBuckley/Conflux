@@ -10,17 +10,144 @@
     "mode": {"enum": ["alternatives", "ordered_plan"]},
     "proposals": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "kind", "visibility", "input_ids"],
-        "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "kind": {"enum": ["primitive", "nested", "message", "delegation", "stop", "no_op"]},
-          "visibility": {"enum": ["internal", "participants", "transcript"]},
-          "input_ids": {"type": "array", "items": {"type": "string"}}
-        },
-        "additionalProperties": true
+      "items": {"oneOf": [
+        {"$ref": "#/$defs/primitive"},
+        {"$ref": "#/$defs/nested"},
+        {"$ref": "#/$defs/message"},
+        {"$ref": "#/$defs/delegation"},
+        {"$ref": "#/$defs/stop"},
+        {"$ref": "#/$defs/no_op"}
+      ]}
+    }
+  },
+  "$defs": {
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "resource_id", "resource_type", "attributes"],
+      "properties": {
+        "provider": {"type": "string", "minLength": 1},
+        "resource_id": {"type": "string", "minLength": 1},
+        "resource_type": {"type": "string", "minLength": 1},
+        "attributes": {"type": "object"}
       }
+    },
+    "base": {
+      "type": "object",
+      "required": ["id", "kind", "visibility", "input_ids"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"type": "string"},
+        "visibility": {"enum": ["internal", "participants", "transcript"]},
+        "input_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "primitive": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "kind", "visibility", "input_ids", "operation", "permission", "resource"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "kind": {"const": "primitive"},
+            "visibility": {"enum": ["internal", "participants", "transcript"]},
+            "input_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "operation": {"type": "string", "minLength": 1},
+            "permission": {"type": "string", "minLength": 1},
+            "resource": {"oneOf": [{"$ref": "#/$defs/resource"}, {"type": "null"}]}
+          }
+        }
+      ]
+    },
+    "nested": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "kind", "visibility", "input_ids"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "kind": {"const": "nested"},
+            "visibility": {"enum": ["internal", "participants", "transcript"]},
+            "input_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+          }
+        }
+      ]
+    },
+    "message": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "kind", "visibility", "input_ids", "message"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "kind": {"const": "message"},
+            "visibility": {"enum": ["internal", "participants", "transcript"]},
+            "input_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "message": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "delegation": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "kind", "visibility", "input_ids", "scope"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "kind": {"const": "delegation"},
+            "visibility": {"enum": ["internal", "participants", "transcript"]},
+            "input_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "scope": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "stop": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "kind", "visibility", "input_ids", "reason"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "kind": {"const": "stop"},
+            "visibility": {"enum": ["internal", "participants", "transcript"]},
+            "input_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "reason": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "no_op": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "kind", "visibility", "input_ids", "label"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "kind": {"const": "no_op"},
+            "visibility": {"enum": ["internal", "participants", "transcript"]},
+            "input_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "label": {"type": "string"}
+          }
+        }
+      ]
     }
   }
 }

@@ -1,1 +1,5 @@
-"""Model adapters translating model output into declarative actions."""
+"""Model adapters."""
+
+from .scripted import ScriptedModel
+
+__all__ = ["ScriptedModel"]

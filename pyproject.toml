@@ -42,6 +42,7 @@ dev = [
     "mypy>=1.10",
     "build>=1.2",
     "types-jsonschema>=4.23",
+    "types-PyYAML>=6.0.12",
 ]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -62,3 +63,5 @@ strict = true
 package-dir = { "" = "src" }
 [tool.setuptools.packages.find]
 where = ["src"]
+[tool.setuptools.data-files]
+"share/conflux/schemas" = ["schemas/*.json"]

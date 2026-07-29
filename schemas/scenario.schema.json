@@ -8,11 +8,54 @@
   "properties": {
     "schema_version": {"const": "1"},
     "id": {"type": "string", "minLength": 1},
-    "principals": {"type": "array", "items": {"type": "object"}},
-    "data": {"type": "array", "items": {"type": "object"}},
-    "resources": {"type": "array", "items": {"type": "object"}},
-    "grants": {"type": "array", "items": {"type": "object"}},
-    "consent": {"type": "array", "items": {"type": "string"}},
-    "model": {"$ref": "proposal-batch.schema.json"}
+    "principals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "kind"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "value", "authors", "readers"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "value": {},
+          "authors": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "readers": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "label": {"type": ["string", "null"]},
+          "confidential": {"type": "boolean"}
+        }
+      }
+    },
+    "resources": {
+      "type": "array",
+      "items": {"$ref": "https://conflux.example/schemas/proposal-batch-v1.json#/$defs/resource"}
+    },
+    "grants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["principal_id", "permission", "resource_id"],
+        "properties": {
+          "principal_id": {"type": "string", "minLength": 1},
+          "permission": {"type": "string", "minLength": 1},
+          "resource_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "consent": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "model": {"$ref": "https://conflux.example/schemas/proposal-batch-v1.json"}
   }
 }

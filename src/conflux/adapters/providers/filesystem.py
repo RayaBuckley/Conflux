@@ -18,6 +18,9 @@ class FilesystemSnapshotProvider:
         root = self.root.resolve()
         if not root.is_dir():
             raise ValueError("filesystem root must be a directory")
+        paths = tuple(sorted(root.rglob("*")))
+        if any(path.is_symlink() for path in paths):
+            raise ValueError("filesystem snapshot rejects symlinks")
         items = tuple(
             DataItem(
                 id=path.relative_to(root).as_posix(),
@@ -26,7 +29,7 @@ class FilesystemSnapshotProvider:
                 readers=self.readers,
                 label=path.name,
             )
-            for path in sorted(root.rglob("*"))
+            for path in paths
             if path.is_file()
         )
         return EnvironmentSnapshot(id=f"filesystem:{root.name}", data=items)
