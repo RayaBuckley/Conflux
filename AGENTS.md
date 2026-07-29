@@ -16,13 +16,12 @@ current Principal Context and provenance, not static prompt trust labels.
 
 ## Repository map
 
-- `src/conflux/core`: immutable security-domain values and action taxonomy.
+- `src/conflux/domain`: immutable security-domain values and action taxonomy.
 - `src/conflux/execution`: provenance-preserving transformations.
-- `src/conflux/auth`, `policy`: authorisation and policy decisions/adapters.
+- `src/conflux/policy`, `application`: policy decisions and composition.
 - `src/conflux/ites`: canonical security boundary and mediation.
-- `src/conflux/providers`: external resource/environment adapters.
-- `src/conflux/sled`: benchmark-independent evaluation, traces, and reports.
-- `src/conflux/benchmarks`: native and external benchmark adapters.
+- `src/conflux/adapters`: external policy, provider, and benchmark adapters.
+- `src/conflux/evaluation`: SLED bounded verification and evaluation services.
 - `tests`: offline unit, security, integration, and reproducibility tests.
 - `docs`: architecture, contracts, decisions, status, and workflows.
 - `paper`: archived LaTeX research artefact and post-paper reference.
@@ -33,7 +32,7 @@ current Principal Context and provenance, not static prompt trust labels.
 - Principal Context is evaluated at action time.
 - Authorisation, visibility, and consent are separate decisions.
 - Consent never manufactures authority.
-- Core and ITES do not import benchmark-specific behavior.
+- Domain and ITES do not import benchmark-specific behavior.
 - Evaluation code measures defences and does not encode benchmark shortcuts.
 
 ## Engineering rules

@@ -1,124 +1,19 @@
 # Conflux Architecture
 
-Purpose: define the system boundary, dependency direction, security invariants,
-and extension points. Owner: repository maintainers. This is the architectural
-source of truth; file ownership is recorded in [AUDIT.md](AUDIT.md) and public
-API ownership in [REFERENCE.md](REFERENCE.md).
+`conflux.domain` owns immutable security values. `conflux.ports` declares
+provider, model, policy, executor, and tracing boundaries.
+`conflux.application` composes decisions and use cases. `conflux.ites` owns the
+only security transition kernel. `conflux.evaluation` owns SLED verification.
+External systems exist only below `conflux.adapters`.
 
-Conflux is organised around a provenance-aware security model for AI-agent
-execution. ITES is the defence; SLED is the evaluation framework.
+The model proposes declarative alternatives. ITES derives the conservative
+Principal Context from trusted provenance and evaluates every alternative from
+the same immutable parent. An authorised action receives a certificate bound to
+the action, context, branch, and policy versions. Execution is a separate use
+case and requires that certificate.
 
-## System boundary
+Domain and ITES never import adapters or benchmarks. Evaluation observes the
+kernel and cannot redefine its security decisions.
 
-```text
-agent/model proposals
-          ↓
-ITES mediation ← core domain, provenance, policies
-          ↓
-provider execution or nested execution
-          ↓
-immutable trace and SLED evaluation
-```
-
-The model, provider, and benchmark are adapters around the security boundary.
-Benchmark-specific behaviour must not be embedded in core or ITES.
-
-## Layers
-
-### Core domain
-
-`conflux.core` contains immutable values for Principals, resources,
-permissions, artifacts, provenance, actions, consent, visibility, and sessions.
-It must not depend on providers or benchmark implementations.
-
-The clean-slate domain entry point is `conflux.domain`. It provides
-provider-neutral `PrincipalContext`, `ResourceRef`, `Intent`, typed decisions,
-and domain-level imports for artifacts and provenance. `conflux.core` remains
-the behavioral compatibility source during migration; new domain code must
-not import SLED, providers, or benchmarks.
-
-`conflux.application` owns use cases such as mediation. `conflux.ports` owns
-typed Protocol boundaries. `conflux.adapters` is reserved for outer
-translations and has no authority to redefine domain semantics.
-
-`conflux.evaluation` owns benchmark-independent, versioned trace values. It
-records outcomes but does not decide whether an action is secure.
-
-`conflux.domain.environment` owns `DataItem` and `EnvironmentSnapshot`.
-Provider materialisation enters through `conflux.ports.EnvironmentPort`.
-Evaluation environments are owned by `conflux.evaluation.environment`.
-Provider-neutral domain values remain owned by `conflux.domain.environment`;
-conversion between them is an explicit evaluation boundary.
-
-### Execution
-
-`conflux.execution` transforms artifacts while preserving provenance. It is
-the mechanism for representing derivation without silently losing causal data.
-
-### Security
-
-`conflux.auth` computes authority from the Principal Context. `conflux.policy`
-defines policy decisions and adapters for external policy semantics.
-
-### ITES
-
-`conflux.ites` exposes the defence interface, mediates actions, tracks
-immutable execution state, and evaluates security properties. ITES separates
-authorisation, visibility, and consent.
-
-### Evaluation
-
-`conflux.evaluation` constructs environments and scenarios, applies attacks and
-defences, explores execution, records traces, classifies security and utility
-outcomes, and aggregates reports. The former SLED implementation graph has
-been moved here.
-
-### Adapters
-
-`conflux.adapters.providers` materialises filesystem and Docker environments.
-`conflux.adapters.benchmarks` connects native and external benchmark systems. Adapters
-translate external representations into Conflux models and must not weaken
-provenance or authorisation checks.
-
-## Public extension points
-
-The principal interfaces are:
-
-- `ITES`: runs a defence against an environment and input artifacts.
-- `Policy`: evaluates a structured policy request.
-- `PolicyAdapter`: translates provider policy context into a policy decision.
-- `ProviderAdapter`: materialises, describes, resolves, and executes provider
-  resources.
-- `Attack`: transforms a scenario to model an attack.
-- `TaskSuite`: supplies benchmark tasks.
-- benchmark and external protocols: translate task inputs and execution traces.
-
-The migration direction is:
-
-```text
-domain → ports → application → adapters
-                 ↓
-              evaluation
-```
-
-Compatibility modules may depend on canonical modules, but canonical domain
-modules may not import compatibility, SLED, provider, or benchmark modules.
-
-These interfaces require explicit technical contracts before new backends are
-added. See `docs/AUDIT.md` for the file-purpose ledger and `docs/REFERENCE.md`
-for public API ownership.
-
-## Security invariants
-
-- Every security-relevant artifact retains provenance.
-- The Principal Context is evaluated at action time.
-- Mixed contexts use the intended intersection/collective-authorisation rule.
-- Consent cannot manufacture or broaden authority.
-- Visibility is independent from permission to execute.
-- Execution state and traces are immutable from the caller's perspective.
-
-## Repository structure
-
-See `docs/AUDIT.md` for file responsibilities. Architectural changes should be
-recorded as decision records under `docs/decisions/` and synchronised
-with the paper terminology and diagrams.
+See [Security Model](SECURITY_MODEL.md), [SLED](SLED.md), and
+[Reference](REFERENCE.md).
