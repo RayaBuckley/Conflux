@@ -65,7 +65,8 @@ class MediatingITES:
             queue.extend(child for child in children if child.status == BranchStatus.ACTIVE)
             terminal.extend(child for child in children if child.status != BranchStatus.ACTIVE)
 
-        incomplete = any(branch.status == BranchStatus.INCOMPLETE for branch in terminal)
+        branches = tuple(sorted(terminal, key=lambda branch: branch.branch_id))
+        incomplete = any(branch.status == BranchStatus.INCOMPLETE for branch in branches)
         run_id = fingerprint(
             {
                 "environment": environment.id,
@@ -73,12 +74,20 @@ class MediatingITES:
                 "session": session.id,
                 "inputs": [item.fingerprint for item in initial_inputs],
                 "max_model_calls": max_model_calls,
+                "branches": [
+                    {
+                        "branch_id": branch.branch_id,
+                        "state_key": branch.state_key,
+                        "trace_event_ids": [event.id for event in branch.trace],
+                    }
+                    for branch in branches
+                ],
             }
         )
-        assessments = _assess(tuple(terminal), calls, max_model_calls)
+        assessments = _assess(branches, calls, max_model_calls)
         return ITESReport(
             run_id=run_id,
-            branches=tuple(sorted(terminal, key=lambda branch: branch.branch_id)),
+            branches=branches,
             assessments=assessments,
             model_calls=calls,
             max_model_calls=max_model_calls,

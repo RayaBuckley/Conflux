@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 
+from conflux.adapters.providers import InMemoryExecutor, RecordingExecutor
 from conflux.application import DecisionPipeline, MediationService
 from conflux.domain import (
     ActionVisibility,
@@ -28,7 +29,7 @@ from conflux.domain import (
     StopAction,
 )
 from conflux.ites import BranchStatus, MediatingITES, TransitionKernel
-from conflux.policy import ExplicitConsentPolicy
+from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy
 from conflux.ports import ProviderResult
 
 
@@ -236,6 +237,83 @@ def test_ordered_plan_preserves_order_and_retains_every_certificate(
     assert [step.action.id for step in branch.authorised_steps] == ["second", "first"]
     assert len({step.certificate.id for step in branch.authorised_steps}) == 2
     assert report.authorised_plans[0].branch_id == branch.branch_id
+    result = MediationService(MediatingITES(TransitionKernel(ordered_pipeline))).execute_plan(
+        report=report,
+        plan=report.authorised_plans[0],
+        executor=RecordingExecutor(),
+        environment=environment,
+        session=session,
+    )
+    assert result.completed
+    assert [provider.outcome for provider in result.providers] == ["second", "first"]
+    assert result.report.executed_count == 2
+    assert result.report.authorised_count == 2
+
+
+def test_ordered_plan_execution_stops_on_provider_failure(
+    pipeline: DecisionPipeline,
+    environment: EnvironmentSnapshot,
+    session: Session,
+) -> None:
+    item = environment.data_item("shared-doc")
+    assert item is not None
+    ordered_pipeline = replace(
+        pipeline,
+        consent=ExplicitConsentPolicy(frozenset({"first", "second"})),
+    )
+    mediator = MediatingITES(TransitionKernel(ordered_pipeline))
+    report = mediator.run(
+        environment=environment,
+        session=session,
+        initial_inputs=(item.to_artifact(),),
+        model=StaticModel(
+            (primitive("first"), primitive("second")),
+            ProposalMode.ORDERED_PLAN,
+        ),
+    )
+    result = MediationService(mediator).execute_plan(
+        report=report,
+        plan=report.authorised_plans[0],
+        executor=InMemoryExecutor(frozenset({"second"})),
+        environment=environment,
+        session=session,
+    )
+    assert not result.completed
+    assert len(result.providers) == 2
+    assert result.report.executed_count == 1
+    assert result.report.provider_failed_count == 1
+
+
+def test_execution_reauthorises_and_observes_policy_revocation(
+    pipeline: DecisionPipeline,
+    environment: EnvironmentSnapshot,
+    session: Session,
+) -> None:
+    item = environment.data_item("shared-doc")
+    assert item is not None
+    initial_mediator = MediatingITES(TransitionKernel(pipeline))
+    report = initial_mediator.run(
+        environment=environment,
+        session=session,
+        initial_inputs=(item.to_artifact(),),
+        model=StaticModel((primitive("write"),)),
+    )
+    revoked = replace(
+        pipeline,
+        authorisation=InMemoryAuthorisationPolicy(frozenset()),
+    )
+    executor = RecordingExecutor()
+    result = MediationService(MediatingITES(TransitionKernel(revoked))).execute(
+        report=report,
+        branch=report.authorised_branches[0],
+        executor=executor,
+        environment=environment,
+        session=session,
+    )
+    assert result.provider.error == "execution_reauthorisation_denied"
+    assert not executor.executed
+    assert result.report.blocked_count == 1
+    assert result.report.executed_count == 0
 
 
 def test_ordered_plan_stops_at_first_denial(
@@ -313,12 +391,24 @@ def test_execution_requires_matching_certificate(
     )
     branch = report.authorised_branches[0]
     service = MediationService(mediator)
-    result = service.execute(report=report, branch=branch, executor=Executor())
+    result = service.execute(
+        report=report,
+        branch=branch,
+        executor=Executor(),
+        environment=environment,
+        session=session,
+    )
     assert result.provider.success
     assert result.report.executed_count == 1
-    assert result.report.authorised_count == 0
+    assert result.report.authorised_count == 1
     tampered = replace(branch, action=primitive("different"))
-    rejected = service.execute(report=report, branch=tampered, executor=Executor())
+    rejected = service.execute(
+        report=report,
+        branch=tampered,
+        executor=Executor(),
+        environment=environment,
+        session=session,
+    )
     assert rejected.provider.error == "certificate_action_mismatch"
     assert rejected.report.executed_count == 0
 
@@ -353,6 +443,8 @@ def test_provider_failure_is_recorded_separately(
         report=report,
         branch=branch,
         executor=FailedExecutor(),
+        environment=environment,
+        session=session,
     )
     assert not result.provider.success
     assert result.report.provider_failed_count == 1
@@ -380,6 +472,13 @@ def test_report_is_deterministically_serialisable(
         model=StaticModel((MessageAction("message", "hello"),)),
     )
     assert first.to_dict() == second.to_dict()
+    different = mediator.run(
+        environment=environment,
+        session=session,
+        initial_inputs=(item.to_artifact(),),
+        model=StaticModel((MessageAction("different", "hello"),)),
+    )
+    assert first.run_id != different.run_id
 
 
 def test_no_proposals_complete_and_model_errors_fail_closed(

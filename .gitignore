@@ -33,6 +33,7 @@ Thumbs.db
 outputs/
 results/
 experiments/
+runs/
 data/
 *.jsonl
 dist/

@@ -1,0 +1,38 @@
+schema_version: "1"
+id: basic
+principals:
+  - id: alice
+    name: Alice
+    kind: human
+data:
+  - id: request
+    value: hello
+    authors: [alice]
+    readers: [alice]
+resources:
+  - provider: filesystem
+    resource_id: output.txt
+    resource_type: document
+    attributes:
+      precondition_sha256: missing
+grants:
+  - principal_id: alice
+    permission: write
+    resource_id: output.txt
+consent: [write-output]
+model:
+  schema_version: "1"
+  mode: alternatives
+  proposals:
+    - id: write-output
+      kind: primitive
+      visibility: internal
+      input_ids: [request]
+      operation: write
+      permission: write
+      resource:
+        provider: filesystem
+        resource_id: output.txt
+        resource_type: document
+        attributes:
+          precondition_sha256: missing

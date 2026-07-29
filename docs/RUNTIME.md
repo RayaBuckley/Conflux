@@ -34,3 +34,7 @@ addressed to the `filesystem` provider. It:
 Provider failure remains separate from policy denial. These adapters do not
 grant authority and cannot execute during multi-branch exploration; execution
 still enters through `MediationService` with the exact report certificate.
+Immediately before each effect, the service reruns all policy dimensions
+against the current environment and session. Revocation or any certificate
+change blocks execution. Ordered plans execute one certificate-bound step at a
+time and stop at the first action-time denial or provider failure.

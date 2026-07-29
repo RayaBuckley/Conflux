@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sysconfig
 from dataclasses import dataclass
+from importlib.metadata import PackageNotFoundError, distribution
 from pathlib import Path
 from typing import Any, cast
 
@@ -54,9 +55,18 @@ class LoadedScenario:
     schema_version: str = "1"
 
 
-def _schema(name: str) -> dict[str, Any]:
+def load_schema(name: str) -> dict[str, Any]:
+    installed = _installed_schema_path(name)
     schema_path = next(
-        (directory / name for directory in (REPOSITORY_SCHEMAS, INSTALLED_SCHEMAS) if (directory / name).is_file()),
+        (
+            path
+            for path in (
+                REPOSITORY_SCHEMAS / name,
+                INSTALLED_SCHEMAS / name,
+                installed,
+            )
+            if path is not None and path.is_file()
+        ),
         None,
     )
     if schema_path is None:
@@ -67,9 +77,20 @@ def _schema(name: str) -> dict[str, Any]:
     )
 
 
+def _installed_schema_path(name: str) -> Path | None:
+    try:
+        package = distribution("conflux")
+    except PackageNotFoundError:
+        return None
+    for entry in package.files or ():
+        if entry.as_posix().endswith(f"share/conflux/schemas/{name}"):
+            return Path(str(package.locate_file(entry)))
+    return None
+
+
 def _resolved_scenario_schema() -> dict[str, Any]:
-    scenario = _schema("scenario.schema.json")
-    proposal = _schema("proposal-batch.schema.json")
+    scenario = load_schema("scenario.schema.json")
+    proposal = load_schema("proposal-batch.schema.json")
     properties = cast(dict[str, Any], scenario["properties"])
     resources = cast(dict[str, Any], properties["resources"])
     resources["items"] = proposal["$defs"]["resource"]
@@ -200,4 +221,4 @@ def _action(payload: dict[str, Any], environment: EnvironmentSnapshot) -> Action
     raise ValueError(f"unsupported_action_kind:{kind}")
 
 
-__all__ = ["LoadedScenario", "load_scenario"]
+__all__ = ["LoadedScenario", "load_scenario", "load_schema"]

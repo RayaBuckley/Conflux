@@ -1,6 +1,13 @@
 """Canonical application use cases."""
 
-from .mediate import ExecutionResult, MediationService
+from .doctor import CapabilityReport
+from .mediate import ExecutionResult, MediationService, PlanExecutionResult
 from .policy import DecisionPipeline
 
-__all__ = ["DecisionPipeline", "ExecutionResult", "MediationService"]
+__all__ = [
+    "CapabilityReport",
+    "DecisionPipeline",
+    "ExecutionResult",
+    "MediationService",
+    "PlanExecutionResult",
+]

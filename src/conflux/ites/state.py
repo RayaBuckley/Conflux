@@ -258,23 +258,43 @@ class ITESReport:
 
     @property
     def blocked_count(self) -> int:
-        return sum(branch.status == BranchStatus.BLOCKED for branch in self.branches)
+        return sum(
+            event.outcome == ActionOutcome.BLOCKED
+            for branch in self.branches
+            for event in branch.trace
+        )
 
     @property
     def authorised_count(self) -> int:
-        return sum(branch.status == BranchStatus.AUTHORISED for branch in self.branches)
+        return sum(
+            event.outcome == ActionOutcome.AUTHORISED
+            for branch in self.branches
+            for event in branch.trace
+        )
 
     @property
     def executed_count(self) -> int:
-        return sum(branch.status == BranchStatus.EXECUTED for branch in self.branches)
+        return sum(
+            event.outcome == ActionOutcome.EXECUTED
+            for branch in self.branches
+            for event in branch.trace
+        )
 
     @property
     def provider_failed_count(self) -> int:
-        return sum(branch.status == BranchStatus.PROVIDER_FAILED for branch in self.branches)
+        return sum(
+            event.outcome == ActionOutcome.PROVIDER_FAILED
+            for branch in self.branches
+            for event in branch.trace
+        )
 
     @property
     def incomplete_count(self) -> int:
-        return sum(branch.status == BranchStatus.INCOMPLETE for branch in self.branches)
+        return sum(
+            event.outcome == ActionOutcome.INCOMPLETE
+            for branch in self.branches
+            for event in branch.trace
+        )
 
     def record_execution(
         self,
@@ -284,6 +304,35 @@ class ITESReport:
         reason: str = "",
     ) -> "ITESReport":
         """Return a report containing one certificate-bound provider outcome."""
+        branch = next((item for item in self.branches if item.branch_id == branch_id), None)
+        if branch is None or branch.action is None or branch.decision is None:
+            raise ValueError(f"unknown or incomplete branch: {branch_id}")
+        return self.record_step_outcome(
+            branch_id=branch_id,
+            action=branch.action,
+            decision=branch.decision,
+            outcome=ActionOutcome.EXECUTED if success else ActionOutcome.PROVIDER_FAILED,
+            reason=reason or ("provider_succeeded" if success else "provider_failed"),
+            terminal=True,
+        )
+
+    def record_step_outcome(
+        self,
+        *,
+        branch_id: str,
+        action: Action,
+        decision: ActionDecision,
+        outcome: ActionOutcome,
+        reason: str,
+        terminal: bool,
+    ) -> "ITESReport":
+        """Append one action-time decision and effect outcome to a plan branch."""
+        if outcome not in {
+            ActionOutcome.BLOCKED,
+            ActionOutcome.EXECUTED,
+            ActionOutcome.PROVIDER_FAILED,
+        }:
+            raise ValueError("unsupported execution outcome")
         updated: list[BranchState] = []
         found = False
         for branch in self.branches:
@@ -292,21 +341,26 @@ class ITESReport:
                 continue
             if branch.status != BranchStatus.AUTHORISED:
                 raise ValueError("only an authorised branch may record execution")
-            if branch.action is None or branch.decision is None or branch.certificate is None:
+            if branch.certificate is None:
                 raise ValueError("authorised branch is missing decision evidence")
             found = True
-            outcome = ActionOutcome.EXECUTED if success else ActionOutcome.PROVIDER_FAILED
-            status = BranchStatus.EXECUTED if success else BranchStatus.PROVIDER_FAILED
+            status: BranchStatus = branch.status
+            if terminal:
+                status = {
+                    ActionOutcome.BLOCKED: BranchStatus.BLOCKED,
+                    ActionOutcome.EXECUTED: BranchStatus.EXECUTED,
+                    ActionOutcome.PROVIDER_FAILED: BranchStatus.PROVIDER_FAILED,
+                }[outcome]
             event = TraceEvent(
                 sequence=len(branch.trace),
                 branch_id=branch.branch_id,
                 parent_branch_id=branch.parent_branch_id,
                 depth=branch.depth,
                 outcome=outcome,
-                context=branch.context,
-                action=branch.action,
-                decision=branch.decision,
-                reason=reason or ("provider_succeeded" if success else "provider_failed"),
+                context=decision.context,
+                action=action,
+                decision=decision,
+                reason=reason,
             )
             updated.append(replace(branch, status=status, trace=branch.trace + (event,)))
         if not found:

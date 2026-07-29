@@ -17,5 +17,9 @@ Stable offline adapters are `ScriptedModel`, `load_scenario`,
 is dry-run by default and live writes require a matching precondition hash.
 See [Deterministic Runtime](RUNTIME.md) for the fail-closed contract.
 
+The installed `conflux` entry point exposes the supported runtime and native
+verification workflows. See the [CLI contract](CLI.md) for commands and exit
+codes.
+
 There are no compatibility imports from `core`, `auth`, `research`, or
 `compatibility`.

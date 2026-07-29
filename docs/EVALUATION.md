@@ -16,6 +16,8 @@ outcomes. An injected clock supplies presentation timestamps. Timestamps are
 excluded from event fingerprints, so the same semantic run has the same IDs.
 JSONL traces and result JSON are written with canonical ordering and SHA-256
 linkage. Security assessments and utility outcomes remain distinct fields.
+Action counters count lifecycle events, so an executed action remains visible
+in both the authorised and executed totals.
 
 SLED uses adversarial typed choices and reports finite bounds. Experimental
 external benchmark records retain separate `secure` and `useful` fields and
