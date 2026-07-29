@@ -22,6 +22,7 @@ CANONICAL_DOCS = {
     "RUNTIME.md",
     "CLI.md",
     "NEGATIVE_CONTROLS.md",
+    "MVP_RESULTS.md",
     "CHANGE_CATALOG.md",
     "CLAIMS.md",
     "RELATED_WORK.md",
@@ -34,6 +35,7 @@ LEGACY = {"core", "auth", "research", "compatibility"}
 FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
 PAPER = ROOT / "paper"
 MANUSCRIPT = ROOT / "manuscript"
+SMOKE = ROOT / "runs" / "smoke"
 
 
 def imports(path: Path) -> set[str]:
@@ -131,6 +133,31 @@ def check_manuscript(errors: list[str]) -> None:
         errors.append("generated current-manuscript PDF must be a CI artefact")
 
 
+def check_smoke_evidence(errors: list[str]) -> None:
+    required = {
+        "RERUN.txt",
+        "checksums.sha256",
+        "counterexample.json",
+        "manifest.json",
+        "raw.jsonl",
+        "result.json",
+        "table.md",
+    }
+    missing = required - {path.name for path in SMOKE.glob("*")}
+    if missing:
+        errors.append(f"smoke evidence is incomplete: {sorted(missing)}")
+        return
+    for line in (SMOKE / "checksums.sha256").read_text(encoding="utf-8").splitlines():
+        expected, separator, name = line.partition("  ")
+        path = SMOKE / name
+        if not separator or not path.is_file():
+            errors.append(f"invalid smoke checksum entry: {line}")
+            continue
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if actual != expected:
+            errors.append(f"smoke evidence checksum changed: runs/smoke/{name}")
+
+
 def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
@@ -138,6 +165,7 @@ def main() -> int:
     check_reports(errors)
     check_archived_paper(errors)
     check_manuscript(errors)
+    check_smoke_evidence(errors)
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))

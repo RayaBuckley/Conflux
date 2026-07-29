@@ -19,3 +19,5 @@ traceability, rejects legacy modules, and checks terminology and local links.
 The portable validator also validates all versioned JSON Schemas, exercises the
 CLI and deterministic runtime, enforces branch coverage, and verifies that the
 built wheel contains its schema data.
+Curated smoke evidence is checksum-verified and deterministically regenerated
+from its committed manifest during the portable validation gate.

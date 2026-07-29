@@ -18,6 +18,12 @@ def main() -> int:
     run("scripts/audit_repository.py")
     run("scripts/validate_schemas.py")
     run(
+        "scripts/generate_smoke_evidence.py",
+        "experiments/manifests/m3-smoke.yaml",
+        "runs/smoke",
+        "--check",
+    )
+    run(
         "-m",
         "pytest",
         "-p",

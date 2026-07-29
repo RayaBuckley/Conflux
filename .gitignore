@@ -32,9 +32,12 @@ Thumbs.db
 # Local experiment output
 outputs/
 results/
-runs/
+runs/*
+!runs/smoke/
+!runs/smoke/**
 data/
 *.jsonl
+!runs/smoke/*.jsonl
 dist/
 build/
 

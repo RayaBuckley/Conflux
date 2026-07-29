@@ -18,6 +18,12 @@ executor, native `sled run`, and an installed `argparse` CLI. Commands whose
 M4/M6/M7 backends do not yet exist fail closed with a documented unavailable
 status.
 
+M3 is complete for offline scripted evidence. Legacy-reproduction and
+canonical suites are explicitly separated; five real negative-control engines
+each yield a minimal witness while canonical ITES remains safe; and
+`runs/smoke/` retains an authorised case, blocked attack, vulnerable control,
+raw trace, result, generated table, manifest, rerun command, and checksums.
+
 Production PDPs, complete mediation of real frameworks, real external
 benchmarks, formal delegation, role-sensitive effects, persistent memory,
 symbolic verification, and paper revision remain post-migration work.

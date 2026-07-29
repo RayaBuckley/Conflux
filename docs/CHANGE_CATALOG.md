@@ -17,6 +17,7 @@ the repository has accepted, implemented, or deferred.
 | ARCH-002 | Restricted direct-policy/kernel conformance | table-driven semantic corpus |
 | EXP-003 (semantic layer) | Executable defective monitors | six one-step SLED counterexamples |
 | BASE-001, BASE-002, PAPER-001 | Baseline, archive integrity, and current manuscript | retained logs, hashes, and manuscript CI |
+| EXP-001..EXP-004 | Manifests, separated suites, negative controls, and current-code smoke | strict manifest tests, six scenarios, five controls, `runs/smoke/` |
 
 ## Deferred research programme
 

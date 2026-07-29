@@ -10,5 +10,8 @@
 | Conflux is secure for unbounded deployments | Not claimed | needs symbolic proof and implementation conformance |
 | External benchmarks establish utility | Not yet evidenced | real integrations and result bundles are deferred |
 | Cloud policy behaviour matches a provider | Not claimed | current AWS adapter is an explicit fail-closed subset |
+| The current evidence pipeline handles allow, block, and vulnerable-control cases | Bounded evidence | `runs/smoke/`, two scripted cases, one one-step negative-control witness |
 
 The archived paper is historical evidence, not the status source of truth.
+The M3 smoke result is pipeline-readiness evidence only; it is not promoted to
+a deployment-security or external-utility claim.
