@@ -16,3 +16,6 @@
 
 The automated audit parses imports, verifies canonical documentation and report
 traceability, rejects legacy modules, and checks terminology and local links.
+The portable validator also validates all versioned JSON Schemas, exercises the
+CLI and deterministic runtime, enforces branch coverage, and verifies that the
+built wheel contains its schema data.

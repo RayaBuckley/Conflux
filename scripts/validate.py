@@ -30,7 +30,7 @@ def main() -> int:
     run("-m", "ruff", "check", "src", "tests", "scripts")
     run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
     run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
-    run("-c", "import conflux, conflux.domain, conflux.ites, conflux.evaluation")
+    run("scripts/validate_wheel.py")
     print("[validate] all checks passed")
     return 0
 
