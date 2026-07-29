@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/result-v1.json",
+  "title": "Conflux run result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "run_id", "status", "source", "manifest_hash",
+    "security", "utility", "bounds", "diagnostics", "trace"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["completed", "incomplete", "failed"]},
+    "source": {"type": "object"},
+    "manifest_hash": {"type": "string"},
+    "security": {"type": "object"},
+    "utility": {"type": "object"},
+    "bounds": {"type": "object"},
+    "diagnostics": {"type": "object"},
+    "trace": {"type": "object"}
+  }
+}

@@ -18,9 +18,19 @@ from .properties import (
     PrincipalContextMonotonicity,
     ProvenancePreserved,
 )
+from .records import (
+    DeterministicClock,
+    RunResult,
+    RunStatus,
+    UtilityOutcome,
+    trace_records,
+    write_result,
+    write_trace,
+)
 
 __all__ = [
     "Counterexample",
+    "DeterministicClock",
     "EvaluationResult",
     "Evaluator",
     "ExplicitStateChecker",
@@ -29,11 +39,17 @@ __all__ = [
     "NoUnauthorisedAuthorisation",
     "PrincipalContextMonotonicity",
     "ProvenancePreserved",
+    "RunResult",
+    "RunStatus",
     "SafetyProperty",
     "Transition",
     "TransitionSystem",
+    "UtilityOutcome",
     "VerificationBounds",
     "VerificationEvaluator",
     "VerificationResult",
     "VerificationVerdict",
+    "trace_records",
+    "write_result",
+    "write_trace",
 ]

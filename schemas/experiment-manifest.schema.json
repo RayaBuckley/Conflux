@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/experiment-manifest-v1.json",
+  "title": "Conflux experiment manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "suite", "source_commit", "bounds", "model", "provider", "policy", "seed"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string", "minLength": 1},
+    "suite": {"type": "string", "minLength": 1},
+    "source_commit": {"type": "string", "minLength": 7},
+    "bounds": {"type": "object"},
+    "model": {"type": "object"},
+    "provider": {"type": "object"},
+    "policy": {"type": "object"},
+    "seed": {"type": "integer"}
+  }
+}

@@ -85,11 +85,14 @@ class VerificationResult(Generic[StateT, ActionT]):
 
     def to_dict(self) -> dict[str, object]:
         return {
+            "schema_version": "1",
             "verdict": self.verdict.value,
-            "unique_states": self.unique_states,
-            "transitions": self.transitions,
-            "duplicate_states": self.duplicate_states,
-            "truncated": self.truncated,
+            "statistics": {
+                "unique_states": self.unique_states,
+                "transitions": self.transitions,
+                "duplicate_states": self.duplicate_states,
+                "truncated": self.truncated,
+            },
             "bounds": {
                 "max_depth": self.bounds.max_depth,
                 "max_states": self.bounds.max_states,

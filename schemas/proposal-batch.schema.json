@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/proposal-batch-v1.json",
+  "title": "Conflux proposal batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mode", "proposals"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "mode": {"enum": ["alternatives", "ordered_plan"]},
+    "proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "visibility", "input_ids"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["primitive", "nested", "message", "delegation", "stop", "no_op"]},
+          "visibility": {"enum": ["internal", "participants", "transcript"]},
+          "input_ids": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

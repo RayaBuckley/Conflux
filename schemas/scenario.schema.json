@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/scenario-v1.json",
+  "title": "Conflux scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "principals", "data", "resources", "grants", "consent", "model"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string", "minLength": 1},
+    "principals": {"type": "array", "items": {"type": "object"}},
+    "data": {"type": "array", "items": {"type": "object"}},
+    "resources": {"type": "array", "items": {"type": "object"}},
+    "grants": {"type": "array", "items": {"type": "object"}},
+    "consent": {"type": "array", "items": {"type": "string"}},
+    "model": {"$ref": "proposal-batch.schema.json"}
+  }
+}

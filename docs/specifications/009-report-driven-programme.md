@@ -53,6 +53,17 @@ Every task ends in one of four dispositions:
 | PAPER-001 | implemented | compile in pinned CI toolchain |
 | PAPER-002 | planned | generated evidence after EXP-004 |
 
+## Progress after baseline
+
+| Task | Current disposition | Evidence |
+|---|---|---|
+| BASE-001, BASE-002 | implemented | `paper/ARCHIVE_MANIFEST.json`, `docs/BASELINE_2026-07.md` |
+| SEC-005 | implemented | `ProposalBatch`, ordered-plan kernel and execution tests |
+| ARCH-002 | implemented | shared semantic corpus under `tests/semantics/` |
+| TRACE-002 | implemented | `schemas/`, deterministic records, schema tests |
+| RUNTIME-001..RUNTIME-004 | in progress | M2 runtime-adapter commits |
+| CLI-001, CLI-002 | in progress | M2 CLI commit |
+
 ## Milestone acceptance
 
 Milestones M0 through M8 use the exit criteria in the source report. A milestone

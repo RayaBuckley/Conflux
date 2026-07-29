@@ -16,6 +16,7 @@ def run(*arguments: str) -> None:
 
 def main() -> int:
     run("scripts/audit_repository.py")
+    run("scripts/validate_schemas.py")
     run(
         "-m",
         "pytest",

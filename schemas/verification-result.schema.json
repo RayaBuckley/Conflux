@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/verification-result-v1.json",
+  "title": "Conflux verification result",
+  "type": "object",
+  "required": ["schema_version", "verdict", "statistics", "bounds"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "verdict": {"enum": ["safe", "bounded_safe", "unsafe", "unknown"]},
+    "statistics": {
+      "type": "object",
+      "required": ["unique_states", "transitions", "duplicate_states", "truncated"]
+    },
+    "bounds": {"type": "object"},
+    "counterexample": {"type": ["object", "null"]},
+    "error": {"type": ["string", "null"]}
+  }
+}
