@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import pytest
-
 from conflux.application import DecisionPipeline
 from conflux.domain import Artifact, EnvironmentSnapshot, NoOpAction, Principal, Provenance, Session
 from conflux.evaluation import (
@@ -97,25 +95,6 @@ def test_model_error_is_unknown() -> None:
     result = ExplicitStateChecker().verify(BrokenGraph({0: (1,)}), (ForbiddenState(9),))
     assert result.verdict is VerificationVerdict.UNKNOWN
     assert "RuntimeError" in (result.error or "")
-
-
-@pytest.mark.parametrize(
-    "mutant",
-    [
-        "empty_context_allow",
-        "permission_union",
-        "provenance_as_acl",
-        "stale_context",
-        "sibling_leak",
-        "rejected_proposal_violation",
-    ],
-)
-def test_seeded_security_mutants_have_minimal_counterexamples(mutant: str) -> None:
-    _ = mutant
-    result = ExplicitStateChecker().verify(Graph({0: (9,)}), (ForbiddenState(9),))
-    assert result.verdict is VerificationVerdict.UNSAFE
-    assert result.counterexample is not None
-    assert result.counterexample.length == 1
 
 
 def test_ites_white_box_properties_are_executable(

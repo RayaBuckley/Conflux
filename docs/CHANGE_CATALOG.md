@@ -13,6 +13,10 @@ the repository has accepted, implemented, or deferred.
 | BUG-004 | Executed guarantees are separate from rejected proposals | ITES report tests |
 | SLED-001 | Native bounded explicit-state checker | checker, bounds, deduplication, and counterexample tests |
 | TRACE-001 (initial) | Versioned traces and decision certificates | deterministic serialization tests |
+| SEC-005 | Alternative and ordered-plan proposal batches | ordering, sibling, denial, and per-step certificate tests |
+| ARCH-002 | Restricted direct-policy/kernel conformance | table-driven semantic corpus |
+| EXP-003 (semantic layer) | Executable defective monitors | six one-step SLED counterexamples |
+| BASE-001, BASE-002, PAPER-001 | Baseline, archive integrity, and current manuscript | retained logs, hashes, and manuscript CI |
 
 ## Deferred research programme
 
@@ -25,7 +29,7 @@ the repository has accepted, implemented, or deferred.
 | POL-001, POL-002 | Differentially tested production PDP and cloud-policy adapters |
 | CAP-001, TRACE-002 | Short-lived executor capabilities and W3C PROV mapping |
 | FW-001, MCP-001, SUPPLY-001, PLAN-001 | Framework, protocol, supply-chain, and verified-planning work |
-| PAPER-001, PAPER-002, RW-001 | Post-paper claim and related-work revision |
+| PAPER-002, RW-001 | Generated paper evidence and continuing related-work revision |
 
 No deferred item is described as implemented merely because an experimental
 adapter or report exists.

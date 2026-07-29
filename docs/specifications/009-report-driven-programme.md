@@ -35,11 +35,11 @@ Every task ends in one of four dispositions:
 |---|---|---|
 | BASE-001, BASE-002 | implemented | archive hash and baseline validation checks |
 | SEC-001..SEC-004, SEC-006, SEC-007 | implemented | shared semantic corpus |
-| SEC-005 | partial | ordered-plan mode and propagation tests |
+| SEC-005 | implemented | continuing runtime re-authorisation evidence |
 | TRACE-001 | implemented | event-schema expansion |
 | TRACE-002 | partial | JSON Schemas and golden fixtures |
 | ARCH-001, ARCH-003, ARCH-004 | implemented | continuing architecture audit |
-| ARCH-002 | partial | shared-subset differential corpus |
+| ARCH-002 | implemented | expand corpus with each supported action |
 | RUNTIME-001..RUNTIME-004, CLI-001, CLI-002 | planned | M2/M4 runtime evidence |
 | EXP-001..EXP-004 | planned | manifests, suites, controls, smoke result |
 | SLEDMC-001, SLEDMC-002 | partial | canonical state contract and retained bounds |
