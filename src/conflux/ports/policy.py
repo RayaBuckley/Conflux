@@ -1,29 +1,73 @@
-"""Port for provider-independent policy decisions."""
+"""Independent fail-closed policy boundaries."""
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Any, Protocol
 
-from conflux.core.actions import Action
-from conflux.core.session import Session
-from conflux.domain.decisions import Decision
-from conflux.domain.identity import PrincipalContext
-
-
-class PolicyPort(Protocol):
-    """Evaluate one independent policy dimension for an action."""
-
-    def decide(self, session: Session, action: Action[object]) -> Decision:
-        """Return a typed decision with reason and evidence."""
-        ...
+from conflux.domain import (
+    Action,
+    Artifact,
+    Decision,
+    EnvironmentSnapshot,
+    Principal,
+    PrincipalContext,
+    Session,
+)
 
 
 class AuthorisationPort(Protocol):
-    """Evaluate collective authorisation without owning Principal identity."""
+    @property
+    def policy_id(self) -> str: ...
 
-    def decide(self, action: Action[object], context: PrincipalContext) -> Decision:
-        """Return an intersection-rule authorisation decision."""
-        ...
+    @property
+    def policy_version(self) -> str: ...
+
+    def decide(
+        self,
+        principal: Principal,
+        action: Action,
+        environment: EnvironmentSnapshot,
+    ) -> Decision: ...
 
 
-__all__ = ["AuthorisationPort", "PolicyPort"]
+class ReadPolicyPort(Protocol):
+    @property
+    def policy_id(self) -> str: ...
+
+    @property
+    def policy_version(self) -> str: ...
+
+    def decide(
+        self,
+        principal: Principal,
+        artifact: Artifact[Any],
+        environment: EnvironmentSnapshot,
+    ) -> Decision: ...
+
+
+class VisibilityPolicyPort(Protocol):
+    @property
+    def policy_id(self) -> str: ...
+
+    @property
+    def policy_version(self) -> str: ...
+
+    def decide(self, session: Session, action: Action, context: PrincipalContext) -> Decision: ...
+
+
+class ConsentPolicyPort(Protocol):
+    @property
+    def policy_id(self) -> str: ...
+
+    @property
+    def policy_version(self) -> str: ...
+
+    def decide(self, session: Session, action: Action, context: PrincipalContext) -> Decision: ...
+
+
+__all__ = [
+    "AuthorisationPort",
+    "ConsentPolicyPort",
+    "ReadPolicyPort",
+    "VisibilityPolicyPort",
+]

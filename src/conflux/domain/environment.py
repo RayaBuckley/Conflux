@@ -1,31 +1,21 @@
-"""Provider-neutral immutable evaluation inputs and environment snapshots.
-
-Purpose
-Layer: domain
-Dependencies: Principal, Provenance, Artifact, and standard-library values.
-Public API: DataItem and EnvironmentSnapshot.
-Security/data invariants: authors/readers are immutable; scenario metadata is
-not added to provenance; snapshots contain no provider implementation state.
-Related documentation and tests: docs/ARCHITECTURE.md, docs/EVALUATION.md,
-tests/test_environment_contract.py.
-"""
+"""Provider-neutral data and immutable environment snapshots."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Any, Iterable, Mapping
+from typing import Any, Mapping
 
-from conflux.core.artifacts import Artifact
-from conflux.core.principals import Principal
-from conflux.core.provenance import Provenance
+from .artifacts import Artifact
+from .identity import Principal
+from .provenance import Provenance
+from .resources import ResourceRef
 
 
 @dataclass(frozen=True, slots=True)
 class DataItem:
-    """Immutable provider-neutral information item used by evaluation."""
-
     id: str
+    value: Any
     authors: frozenset[Principal] = field(default_factory=frozenset)
     readers: frozenset[Principal] = field(default_factory=frozenset)
     label: str | None = None
@@ -39,54 +29,46 @@ class DataItem:
         object.__setattr__(self, "readers", frozenset(self.readers))
         object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
-    def provenance(self) -> Provenance:
-        """Return security provenance, excluding scenario metadata."""
-        result = Provenance.from_principals(self.authors)
-        if self.confidential:
-            result = result.with_tag("confidential")
-        return result
-
-    def to_artifact(self) -> Artifact["DataItem"]:
-        """Convert this item to an artifact with the canonical input operation."""
+    def to_artifact(self) -> Artifact[Any]:
+        provenance = (
+            Provenance.from_principals(self.authors).with_activity("environment_input")
+            if self.authors
+            else Provenance.unknown(source=f"environment:{self.id}")
+        )
         return Artifact(
-            value=self,
-            provenance=self.provenance().with_operation("environment_input"),
+            id=self.id,
+            value=self.value,
+            provenance=provenance,
             label=self.label,
             confidential=self.confidential,
         )
 
-    def can_read(self, principal: Principal) -> bool:
-        """Return whether a Principal may read this item."""
-        return principal in self.readers
-
-    def with_metadata(self, **updates: Any) -> "DataItem":
-        """Return a copy with evaluation metadata changed only."""
-        metadata = dict(self.metadata)
-        metadata.update(updates)
-        return replace(self, metadata=metadata)
-
 
 @dataclass(frozen=True, slots=True)
 class EnvironmentSnapshot:
-    """Immutable provider-neutral collection of evaluation data."""
-
-    data: frozenset[DataItem] = field(default_factory=frozenset)
-    provider_id: str = "environment"
+    id: str
+    data: tuple[DataItem, ...] = ()
+    resources: tuple[ResourceRef, ...] = ()
+    version: str = "1"
     metadata: Mapping[str, Any] = field(default_factory=dict, compare=False, hash=False, repr=False)
 
     def __post_init__(self) -> None:
-        if not self.provider_id:
-            raise ValueError("EnvironmentSnapshot.provider_id must be non-empty")
-        object.__setattr__(self, "data", frozenset(self.data))
+        if not self.id or not self.version:
+            raise ValueError("EnvironmentSnapshot id and version must be non-empty")
+        object.__setattr__(self, "data", tuple(self.data))
+        object.__setattr__(self, "resources", tuple(self.resources))
         object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
+        if len({item.id for item in self.data}) != len(self.data):
+            raise ValueError("EnvironmentSnapshot data ids must be unique")
 
-    def contains_all(self, items: Iterable[DataItem]) -> bool:
-        """Return whether every item is present in the snapshot."""
-        return all(item in self.data for item in items)
+    def data_item(self, item_id: str) -> DataItem | None:
+        return next((item for item in self.data if item.id == item_id), None)
 
-    def as_artifacts(self) -> frozenset[Artifact[DataItem]]:
-        """Materialise all data as provenance-bearing artifacts."""
-        return frozenset(item.to_artifact() for item in self.data)
+    def resource(self, resource_id: str) -> ResourceRef | None:
+        return next((item for item in self.resources if item.resource_id == resource_id), None)
+
+    def artifacts(self) -> tuple[Artifact[Any], ...]:
+        return tuple(item.to_artifact() for item in self.data)
 
 
 __all__ = ["DataItem", "EnvironmentSnapshot"]

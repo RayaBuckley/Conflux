@@ -1,51 +1,64 @@
-"""
-Policy abstractions.
-This module defines the minimal interface for policy evaluation. Concrete
-implementations can later model enterprise authorisation systems such as AWS
-IAM, Google Cloud IAM, or Microsoft Entra without changing the rest of the
-project.
-The goal is to keep policy evaluation separate from provenance propagation and
-execution semantics.
-"""
+"""Deterministic policy implementations for the canonical ports."""
+
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import FrozenSet
 
-from conflux.core import Principal, Resource
+from conflux.domain import (
+    Action,
+    Decision,
+    DecisionCategory,
+    EnvironmentSnapshot,
+    PrimitiveAction,
+    Principal,
+)
 
 
 @dataclass(frozen=True, slots=True)
-class PolicyRequest:
-    """
-    Input to a policy evaluation.
-    Attributes
-    ----------
-    principals:
-        The principals contributing authority to the request.
-    resource:
-        The protected resource being accessed.
-    permission:
-        The requested action, expressed as a simple string for now.
-    """
-    principals: FrozenSet[Principal]
-    resource: Resource
+class PolicyGrant:
+    principal_id: str
     permission: str
+    resource_id: str | None = None
+
+
 @dataclass(frozen=True, slots=True)
-class PolicyDecision:
-    """
-    Result of evaluating a policy request.
-    """
-    allowed: bool
-    reason: str = ""
-class Policy(ABC):
-    """
-    Base class for policy engines.
-    """
-    @abstractmethod
-    def evaluate(self, request: PolicyRequest) -> PolicyDecision:
-        """
-        Evaluate whether a request is allowed.
-        """
-        raise NotImplementedError
+class InMemoryAuthorisationPolicy:
+    """Pointwise offline policy oracle used for specifications and tests."""
+
+    grants: frozenset[PolicyGrant]
+    policy_id: str = "in-memory-authorisation"
+    policy_version: str = "1"
+
+    def decide(
+        self,
+        principal: Principal,
+        action: Action,
+        environment: EnvironmentSnapshot,
+    ) -> Decision:
+        _ = environment
+        if not isinstance(action, PrimitiveAction):
+            return Decision(
+                DecisionCategory.AUTHORISATION,
+                True,
+                "not_authority_bearing",
+                self.policy_id,
+                self.policy_version,
+            )
+        resource_id = action.resource.resource_id if action.resource else None
+        allowed = any(
+            grant.principal_id == principal.id
+            and grant.permission == action.permission.name
+            and (grant.resource_id is None or grant.resource_id == resource_id)
+            for grant in self.grants
+        )
+        return Decision(
+            DecisionCategory.AUTHORISATION,
+            allowed,
+            "policy_grant" if allowed else "policy_deny",
+            self.policy_id,
+            self.policy_version,
+            evidence=(principal.id, action.permission.name, resource_id or "*"),
+        )
+
+
+__all__ = ["InMemoryAuthorisationPolicy", "PolicyGrant"]

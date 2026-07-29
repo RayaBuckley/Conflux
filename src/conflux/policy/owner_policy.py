@@ -1,29 +1,38 @@
-"""
-Owner-based policy implementation.
-This is the first concrete policy in the system. It keeps the policy layer
-separate from provenance tracking and execution semantics, while providing a
-simple, testable authorisation rule.
-Rule:
-- a request is allowed only when the resource owner appears among the
-  contributing principals for that request
-"""
+"""Owner policy expressed as a normal policy oracle, never a bypass."""
+
 from __future__ import annotations
 
-from .base import Policy, PolicyDecision, PolicyRequest
+from dataclasses import dataclass
+
+from conflux.domain import Action, Decision, DecisionCategory, EnvironmentSnapshot, PrimitiveAction, Principal
 
 
-class OwnerPolicy(Policy):
-    """
-    Policy that grants access only to the resource owner.
-    """
-    def evaluate(self, request: PolicyRequest) -> PolicyDecision:
-        owner = request.resource.owner
-        if owner is not None and owner in request.principals:
-            return PolicyDecision(
-                allowed=True,
-                reason="resource owner is present in contributing principals",
-            )
-        return PolicyDecision(
-            allowed=False,
-            reason="resource owner is not present in contributing principals",
+@dataclass(frozen=True, slots=True)
+class OwnerAuthorisationPolicy:
+    policy_id: str = "owner-authorisation"
+    policy_version: str = "1"
+
+    def decide(
+        self,
+        principal: Principal,
+        action: Action,
+        environment: EnvironmentSnapshot,
+    ) -> Decision:
+        _ = environment
+        owner_id = (
+            action.resource.attributes.get("owner_id")
+            if isinstance(action, PrimitiveAction) and action.resource is not None
+            else None
         )
+        allowed = owner_id == principal.id
+        return Decision(
+            DecisionCategory.AUTHORISATION,
+            allowed,
+            "owner_grant" if allowed else "owner_deny",
+            self.policy_id,
+            self.policy_version,
+            evidence=(str(owner_id), principal.id),
+        )
+
+
+__all__ = ["OwnerAuthorisationPolicy"]

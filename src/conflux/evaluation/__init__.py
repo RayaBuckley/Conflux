@@ -1,32 +1,39 @@
-"""Benchmark-independent evaluation value types and trace contracts."""
+"""Benchmark-independent evaluation and native bounded verification."""
 
-from .records import TRACE_SCHEMA_VERSION, TraceRecord
-
-
-def __getattr__(name: str) -> object:
-    """Load evaluator/reporting services lazily to avoid initialization cycles."""
-    if name in {"EvaluationResult", "Evaluator", "ExhaustiveEvaluationResult", "ExhaustiveEvaluator"}:
-        from .services import EvaluationResult, Evaluator, ExhaustiveEvaluationResult, ExhaustiveEvaluator
-
-        return {
-            "EvaluationResult": EvaluationResult,
-            "Evaluator": Evaluator,
-            "ExhaustiveEvaluationResult": ExhaustiveEvaluationResult,
-            "ExhaustiveEvaluator": ExhaustiveEvaluator,
-        }[name]
-    if name in {"EvaluationSummary", "summarise_branching"}:
-        from .reporting import EvaluationSummary, summarise_branching
-
-        return {"EvaluationSummary": EvaluationSummary, "summarise_branching": summarise_branching}[name]
-    raise AttributeError(name)
+from .evaluator import EvaluationResult, Evaluator, VerificationEvaluator
+from .model_checking import (
+    Counterexample,
+    ExplicitStateChecker,
+    SafetyProperty,
+    Transition,
+    TransitionSystem,
+    VerificationBounds,
+    VerificationResult,
+    VerificationVerdict,
+)
+from .properties import (
+    ITESVerificationSystem,
+    NoForbiddenObservation,
+    NoUnauthorisedAuthorisation,
+    PrincipalContextMonotonicity,
+    ProvenancePreserved,
+)
 
 __all__ = [
+    "Counterexample",
     "EvaluationResult",
     "Evaluator",
-    "EvaluationSummary",
-    "ExhaustiveEvaluationResult",
-    "ExhaustiveEvaluator",
-    "TRACE_SCHEMA_VERSION",
-    "TraceRecord",
-    "summarise_branching",
+    "ExplicitStateChecker",
+    "ITESVerificationSystem",
+    "NoForbiddenObservation",
+    "NoUnauthorisedAuthorisation",
+    "PrincipalContextMonotonicity",
+    "ProvenancePreserved",
+    "SafetyProperty",
+    "Transition",
+    "TransitionSystem",
+    "VerificationBounds",
+    "VerificationEvaluator",
+    "VerificationResult",
+    "VerificationVerdict",
 ]

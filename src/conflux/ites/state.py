@@ -1,241 +1,358 @@
-"""
-ITES execution state.
-
-This module makes the semantics of an ITES run explicit.
-
-The mediator should transform immutable state rather than mutating local
-variables. That makes the defence easier to test, easier to trace, and easier
-to connect to SLED benchmark reporting.
-
-The state objects here are intentionally generic and lightweight. They are not a
-scheduler or planner; they simply capture what happened during a defence run.
-"""
+"""Immutable branch state, trace, certificate, and report values for ITES."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
-from typing import Any, FrozenSet, Tuple
+from dataclasses import dataclass, replace
+from enum import StrEnum
+from typing import Any
 
-from conflux.core import Artifact, Principal, Session
-from conflux.core.actions import Action
+from conflux.domain import (
+    Action,
+    ActionDecision,
+    Artifact,
+    PrincipalContext,
+    action_fingerprint,
+    fingerprint,
+    provenance_union,
+)
 
-from . import Guarantee
+TRACE_SCHEMA_VERSION = "2"
+CERTIFICATE_SCHEMA_VERSION = "1"
+
+
+class BranchStatus(StrEnum):
+    ACTIVE = "active"
+    AUTHORISED = "authorised"
+    BLOCKED = "blocked"
+    EXECUTED = "executed"
+    PROVIDER_FAILED = "provider_failed"
+    TERMINAL = "terminal"
+    INCOMPLETE = "incomplete"
+
+
+class ActionOutcome(StrEnum):
+    PROPOSED = "proposed"
+    AUTHORISED = "authorised"
+    BLOCKED = "blocked"
+    EXECUTED = "executed"
+    PROVIDER_FAILED = "provider_failed"
+    INCOMPLETE = "incomplete"
+    COMPLETE = "complete"
 
 
 @dataclass(frozen=True, slots=True)
-class ExecutionStep:
-    """
-    A single step in an ITES run.
-
-    Attributes
-    ----------
-    depth:
-        Recursion depth or execution nesting level.
-    inputs:
-        The artifacts seen at this step.
-    proposals:
-        The proposals returned by the LLM for this step.
-    declared:
-        Proposals accepted by the defence at this step.
-    blocked:
-        Proposals rejected by the defence at this step.
-    influencers:
-        Principals contributing authority at the time of the step.
-    note:
-        Optional human-readable explanation.
-    """
-
+class TraceEvent:
+    sequence: int
+    branch_id: str
+    parent_branch_id: str | None
     depth: int
-    inputs: FrozenSet[Artifact[Any]] = field(default_factory=frozenset)
-    proposals: FrozenSet[Action[Any]] = field(default_factory=frozenset)
-    declared: FrozenSet[Action[Any]] = field(default_factory=frozenset)
-    blocked: FrozenSet[Action[Any]] = field(default_factory=frozenset)
-    influencers: FrozenSet[Principal] = field(default_factory=frozenset)
-    note: str = ""
+    outcome: ActionOutcome
+    context: PrincipalContext
+    action: Action | None = None
+    decision: ActionDecision | None = None
+    reason: str = ""
+    schema_version: str = TRACE_SCHEMA_VERSION
+
+    @property
+    def id(self) -> str:
+        return fingerprint(
+            {
+                "branch_id": self.branch_id,
+                "sequence": self.sequence,
+                "outcome": self.outcome.value,
+                "action_id": self.action.id if self.action else None,
+            }
+        )
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "schema_version": self.schema_version,
+            "id": self.id,
+            "sequence": self.sequence,
+            "branch_id": self.branch_id,
+            "parent_branch_id": self.parent_branch_id,
+            "depth": self.depth,
+            "outcome": self.outcome.value,
+            "context": self.context.to_dict(),
+            "action_id": self.action.id if self.action else None,
+            "action_fingerprint": action_fingerprint(self.action) if self.action else None,
+            "decision": self.decision.to_dict() if self.decision else None,
+            "reason": self.reason,
+        }
 
 
 @dataclass(frozen=True, slots=True)
-class ExecutionTrace:
-    """
-    Immutable execution trace.
+class DecisionCertificate:
+    id: str
+    action_fingerprint: str
+    context_fingerprint: str
+    branch_id: str
+    policy_versions: tuple[str, ...]
+    decision: ActionDecision
+    schema_version: str = CERTIFICATE_SCHEMA_VERSION
 
-    The trace is append-only. Each modification returns a new trace instance.
-    """
+    @classmethod
+    def issue(
+        cls,
+        *,
+        action: Action,
+        context: PrincipalContext,
+        branch_id: str,
+        decision: ActionDecision,
+    ) -> "DecisionCertificate":
+        policy_versions = tuple(
+            f"{item.policy_id}@{item.policy_version}" for item in decision.decisions
+        )
+        action_hash = action_fingerprint(action)
+        context_hash = context.fingerprint
+        payload = {
+            "action_fingerprint": action_hash,
+            "context_fingerprint": context_hash,
+            "branch_id": branch_id,
+            "policy_versions": policy_versions,
+            "decision": decision.to_dict(),
+        }
+        return cls(
+            id=fingerprint(payload),
+            action_fingerprint=action_hash,
+            context_fingerprint=context_hash,
+            branch_id=branch_id,
+            policy_versions=policy_versions,
+            decision=decision,
+        )
 
-    steps: Tuple[ExecutionStep, ...] = field(default_factory=tuple)
-
-    def add_step(self, step: ExecutionStep) -> "ExecutionTrace":
-        """
-        Return a new trace with one additional step appended.
-        """
-        return ExecutionTrace(steps=self.steps + (step,))
-
-    def last(self) -> ExecutionStep | None:
-        """
-        Return the most recent step, if any.
-        """
-        return self.steps[-1] if self.steps else None
-
-    @property
-    def depth(self) -> int:
-        """
-        Return the number of recorded steps.
-        """
-        return len(self.steps)
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "schema_version": self.schema_version,
+            "id": self.id,
+            "action_fingerprint": self.action_fingerprint,
+            "context_fingerprint": self.context_fingerprint,
+            "branch_id": self.branch_id,
+            "policy_versions": list(self.policy_versions),
+            "decision": self.decision.to_dict(),
+        }
 
 
 @dataclass(frozen=True, slots=True)
-class ExecutionState:
-    """
-    Immutable ITES state.
+class BranchState:
+    branch_id: str
+    parent_branch_id: str | None
+    depth: int
+    inputs: tuple[Artifact[Any], ...]
+    context: PrincipalContext
+    status: BranchStatus = BranchStatus.ACTIVE
+    model_calls: int = 0
+    trace: tuple[TraceEvent, ...] = ()
+    action: Action | None = None
+    decision: ActionDecision | None = None
+    certificate: DecisionCertificate | None = None
 
-    Attributes
-    ----------
-    environment:
-        The evaluation environment supplied by SLED.
-    session:
-        The conversation/session context for visibility and consent.
-    initial_inputs:
-        Initial artifacts given to the defence.
-    max_llm_calls:
-        Maximum number of LLM invocations permitted.
-    llm_calls_used:
-        Number of LLM calls consumed so far.
-    active_influencers:
-        Principals currently contributing authority.
-    declared_actions:
-        Proposals accepted by the defence.
-    blocked_actions:
-        Proposals rejected by the defence.
-    guarantees:
-        Guarantee objects accumulated during the run.
-    trace:
-        Full execution trace.
-    """
-
-    environment: Any
-    session: Session | None = None
-    initial_inputs: FrozenSet[Artifact[Any]] = field(default_factory=frozenset)
-    max_llm_calls: int = 3
-    llm_calls_used: int = 0
-    active_influencers: FrozenSet[Principal] = field(default_factory=frozenset)
-    declared_actions: FrozenSet[Action[Any]] = field(default_factory=frozenset)
-    blocked_actions: FrozenSet[Action[Any]] = field(default_factory=frozenset)
-    guarantees: FrozenSet[Guarantee] = field(default_factory=frozenset)
-    trace: ExecutionTrace = field(default_factory=ExecutionTrace)
-
-    def __post_init__(self) -> None:
-        if self.max_llm_calls < 1:
-            raise ValueError("max_llm_calls must be at least 1")
-        if self.llm_calls_used < 0:
-            raise ValueError("llm_calls_used must be non-negative")
-
-    def with_initial_inputs(
-        self,
-        initial_inputs: FrozenSet[Artifact[Any]],
-    ) -> "ExecutionState":
-        """
-        Return a copy of the state with a new initial input set.
-        """
-        return replace(self, initial_inputs=initial_inputs)
-
-    def with_session(self, session: Session | None) -> "ExecutionState":
-        """
-        Return a copy of the state with a new session context.
-        """
-        return replace(self, session=session)
-
-    def with_influencers(
-        self,
-        influencers: FrozenSet[Principal],
-    ) -> "ExecutionState":
-        """
-        Return a copy of the state with updated active influencers.
-        """
-        return replace(self, active_influencers=influencers)
-
-    def increment_llm_calls(self, count: int = 1) -> "ExecutionState":
-        """
-        Return a copy of the state with more LLM calls consumed.
-        """
-        if count < 0:
-            raise ValueError("count must be non-negative")
-        return replace(self, llm_calls_used=self.llm_calls_used + count)
-
-    def record_declared(self, proposal: Action[Any]) -> "ExecutionState":
-        """
-        Return a copy of the state with one more declared action.
-        """
-        return replace(
-            self,
-            declared_actions=self.declared_actions | frozenset({proposal}),
-        )
-
-    def record_blocked(self, proposal: Action[Any]) -> "ExecutionState":
-        """
-        Return a copy of the state with one more blocked action.
-        """
-        return replace(
-            self,
-            blocked_actions=self.blocked_actions | frozenset({proposal}),
-        )
-
-    def add_guarantee(self, guarantee: Guarantee) -> "ExecutionState":
-        """
-        Return a copy of the state with one more guarantee.
-        """
-        return replace(
-            self,
-            guarantees=self.guarantees | frozenset({guarantee}),
-        )
-
-    def add_step(self, step: ExecutionStep) -> "ExecutionState":
-        """
-        Return a copy of the state with an appended execution step.
-        """
-        return replace(self, trace=self.trace.add_step(step))
-
-    def can_call_llm(self) -> bool:
-        """
-        Check whether another LLM call is still permitted.
-        """
-        return self.llm_calls_used < self.max_llm_calls
+    @classmethod
+    def initial(cls, inputs: tuple[Artifact[Any], ...]) -> "BranchState":
+        if inputs:
+            provenance = provenance_union(*(artifact.provenance for artifact in inputs))
+            context = provenance.context
+        else:
+            context = PrincipalContext(unknown=True)
+        return cls("root", None, 0, tuple(inputs), context)
 
     @property
-    def current_influencers(self) -> FrozenSet[Principal]:
-        """
-        Compatibility alias for the current influencer set.
-        """
-        return self.active_influencers
+    def state_key(self) -> str:
+        return fingerprint(
+            {
+                "inputs": [artifact.fingerprint for artifact in self.inputs],
+                "context": self.context.to_dict(),
+                "depth": self.depth,
+                "status": self.status.value,
+                "model_calls": self.model_calls,
+            }
+        )
+
+    def append(self, event: TraceEvent) -> "BranchState":
+        return replace(self, trace=self.trace + (event,))
+
+
+@dataclass(frozen=True, slots=True)
+class AuthorisedBranch:
+    action: Action
+    decision: ActionDecision
+    certificate: DecisionCertificate
+    branch_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class SafetyAssessment:
+    name: str
+    holds: bool
+    details: str
+    evidence: tuple[str, ...] = ()
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "name": self.name,
+            "holds": self.holds,
+            "details": self.details,
+            "evidence": list(self.evidence),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ITESReport:
+    run_id: str
+    branches: tuple[BranchState, ...]
+    assessments: tuple[SafetyAssessment, ...]
+    model_calls: int
+    max_model_calls: int
+    incomplete: bool
+    trace_schema_version: str = TRACE_SCHEMA_VERSION
 
     @property
-    def trace_length(self) -> int:
-        """
-        Return the number of recorded steps.
-        """
-        return self.trace.depth
+    def authorised_branches(self) -> tuple[AuthorisedBranch, ...]:
+        result: list[AuthorisedBranch] = []
+        for branch in self.branches:
+            if (
+                branch.status == BranchStatus.AUTHORISED
+                and branch.action is not None
+                and branch.decision is not None
+                and branch.certificate is not None
+            ):
+                result.append(
+                    AuthorisedBranch(
+                        branch.action,
+                        branch.decision,
+                        branch.certificate,
+                        branch.branch_id,
+                    )
+                )
+        return tuple(result)
 
-    def has_declared(self, proposal: Action[Any]) -> bool:
-        """
-        Return True if the action has already been declared.
-        """
-        return proposal in self.declared_actions
+    @property
+    def proposed_count(self) -> int:
+        return sum(
+            event.outcome == ActionOutcome.PROPOSED
+            for branch in self.branches
+            for event in branch.trace
+        )
 
-    def has_blocked(self, proposal: Action[Any]) -> bool:
-        """
-        Return True if the action has already been blocked.
-        """
-        return proposal in self.blocked_actions
+    @property
+    def blocked_count(self) -> int:
+        return sum(branch.status == BranchStatus.BLOCKED for branch in self.branches)
 
-    def with_trace(self, trace: ExecutionTrace) -> "ExecutionState":
-        """
-        Return a copy with a replaced trace.
-        """
-        return replace(self, trace=trace)
+    @property
+    def authorised_count(self) -> int:
+        return sum(branch.status == BranchStatus.AUTHORISED for branch in self.branches)
+
+    @property
+    def executed_count(self) -> int:
+        return sum(branch.status == BranchStatus.EXECUTED for branch in self.branches)
+
+    @property
+    def provider_failed_count(self) -> int:
+        return sum(branch.status == BranchStatus.PROVIDER_FAILED for branch in self.branches)
+
+    @property
+    def incomplete_count(self) -> int:
+        return sum(branch.status == BranchStatus.INCOMPLETE for branch in self.branches)
+
+    def record_execution(
+        self,
+        *,
+        branch_id: str,
+        success: bool,
+        reason: str = "",
+    ) -> "ITESReport":
+        """Return a report containing one certificate-bound provider outcome."""
+        updated: list[BranchState] = []
+        found = False
+        for branch in self.branches:
+            if branch.branch_id != branch_id:
+                updated.append(branch)
+                continue
+            if branch.status != BranchStatus.AUTHORISED:
+                raise ValueError("only an authorised branch may record execution")
+            if branch.action is None or branch.decision is None or branch.certificate is None:
+                raise ValueError("authorised branch is missing decision evidence")
+            found = True
+            outcome = ActionOutcome.EXECUTED if success else ActionOutcome.PROVIDER_FAILED
+            status = BranchStatus.EXECUTED if success else BranchStatus.PROVIDER_FAILED
+            event = TraceEvent(
+                sequence=len(branch.trace),
+                branch_id=branch.branch_id,
+                parent_branch_id=branch.parent_branch_id,
+                depth=branch.depth,
+                outcome=outcome,
+                context=branch.context,
+                action=branch.action,
+                decision=branch.decision,
+                reason=reason or ("provider_succeeded" if success else "provider_failed"),
+            )
+            updated.append(replace(branch, status=status, trace=branch.trace + (event,)))
+        if not found:
+            raise ValueError(f"unknown branch: {branch_id}")
+        branches = tuple(updated)
+        assessments = tuple(
+            _execution_assessment(branches) if item.name == "no_unauthorised_execution" else item
+            for item in self.assessments
+        )
+        return replace(self, branches=branches, assessments=assessments)
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "trace_schema_version": self.trace_schema_version,
+            "run_id": self.run_id,
+            "model_calls": self.model_calls,
+            "max_model_calls": self.max_model_calls,
+            "incomplete": self.incomplete,
+            "proposed_count": self.proposed_count,
+            "authorised_count": self.authorised_count,
+            "blocked_count": self.blocked_count,
+            "executed_count": self.executed_count,
+            "provider_failed_count": self.provider_failed_count,
+            "incomplete_count": self.incomplete_count,
+            "assessments": [assessment.to_dict() for assessment in self.assessments],
+            "branches": [
+                {
+                    "branch_id": branch.branch_id,
+                    "parent_branch_id": branch.parent_branch_id,
+                    "depth": branch.depth,
+                    "status": branch.status.value,
+                    "input_ids": [item.id for item in branch.inputs],
+                    "context": branch.context.to_dict(),
+                    "model_calls": branch.model_calls,
+                    "action_id": branch.action.id if branch.action else None,
+                    "certificate": branch.certificate.to_dict() if branch.certificate else None,
+                    "trace": [event.to_dict() for event in branch.trace],
+                }
+                for branch in sorted(self.branches, key=lambda item: item.branch_id)
+            ],
+        }
+
+
+def _execution_assessment(branches: tuple[BranchState, ...]) -> SafetyAssessment:
+    events = tuple(
+        event
+        for branch in branches
+        for event in branch.trace
+        if event.outcome == ActionOutcome.EXECUTED
+    )
+    holds = all(event.decision is not None and event.decision.allowed for event in events)
+    return SafetyAssessment(
+        "no_unauthorised_execution",
+        holds,
+        "Executed actions, not rejected proposals, determine this property.",
+        (f"executed={len(events)}",),
+    )
 
 
 __all__ = [
-    "ExecutionState",
-    "ExecutionStep",
-    "ExecutionTrace",
+    "ActionOutcome",
+    "AuthorisedBranch",
+    "BranchState",
+    "BranchStatus",
+    "CERTIFICATE_SCHEMA_VERSION",
+    "DecisionCertificate",
+    "ITESReport",
+    "SafetyAssessment",
+    "TRACE_SCHEMA_VERSION",
+    "TraceEvent",
 ]

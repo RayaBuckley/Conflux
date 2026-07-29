@@ -1,44 +1,69 @@
-"""Typed outcomes for independent security checks and their composition."""
+"""Typed independent policy decisions and deterministic composition."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import StrEnum
 
 from .identity import PrincipalContext
 
 
 class DecisionCategory(StrEnum):
-    """Security check represented by a decision."""
-
     AUTHORISATION = "authorisation"
+    READ = "read"
     VISIBILITY = "visibility"
     CONSENT = "consent"
 
 
 @dataclass(frozen=True, slots=True)
 class Decision:
-    """Immutable result of one named security check."""
-
     category: DecisionCategory
     allowed: bool
     reason: str
-    context: PrincipalContext = field(default_factory=PrincipalContext)
+    policy_id: str
+    policy_version: str
     evidence: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.reason or not self.policy_id or not self.policy_version:
+            raise ValueError("Decision reason and policy identity must be non-empty")
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "category": self.category.value,
+            "allowed": self.allowed,
+            "reason": self.reason,
+            "policy_id": self.policy_id,
+            "policy_version": self.policy_version,
+            "evidence": list(self.evidence),
+        }
 
 
 @dataclass(frozen=True, slots=True)
-class MediationDecision:
-    """Composition of authorisation, visibility, and consent decisions."""
-
+class ActionDecision:
+    context: PrincipalContext
     authorisation: Decision
+    read: Decision
     visibility: Decision
     consent: Decision
 
     @property
     def allowed(self) -> bool:
-        """Return true only when every independent check allows the action."""
-        return all((self.authorisation.allowed, self.visibility.allowed, self.consent.allowed))
+        return all(
+            decision.allowed
+            for decision in (self.authorisation, self.read, self.visibility, self.consent)
+        )
+
+    @property
+    def decisions(self) -> tuple[Decision, ...]:
+        return (self.authorisation, self.read, self.visibility, self.consent)
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "context": self.context.to_dict(),
+            "allowed": self.allowed,
+            "decisions": [decision.to_dict() for decision in self.decisions],
+        }
 
 
-__all__ = ["Decision", "DecisionCategory", "MediationDecision"]
+__all__ = ["ActionDecision", "Decision", "DecisionCategory"]

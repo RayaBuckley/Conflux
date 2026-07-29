@@ -1,14 +1,20 @@
-"""
-Policy abstractions.
-This package defines the interfaces and concrete policy models used to decide
-whether a provenance-derived request should be permitted.
-Policy evaluation is intentionally separated from provenance tracking and
-execution semantics so the architecture stays modular and testable.
-"""
-from .base import Policy, PolicyDecision, PolicyRequest
+"""Canonical policy implementations."""
+
+from .adapters import (
+    AllowInternalReadPolicy,
+    ExplicitConsentPolicy,
+    SessionVisibilityPolicy,
+    SnapshotReadPolicy,
+)
+from .base import InMemoryAuthorisationPolicy, PolicyGrant
+from .owner_policy import OwnerAuthorisationPolicy
 
 __all__ = [
-    "Policy",
-    "PolicyDecision",
-    "PolicyRequest",
+    "AllowInternalReadPolicy",
+    "ExplicitConsentPolicy",
+    "InMemoryAuthorisationPolicy",
+    "OwnerAuthorisationPolicy",
+    "PolicyGrant",
+    "SessionVisibilityPolicy",
+    "SnapshotReadPolicy",
 ]

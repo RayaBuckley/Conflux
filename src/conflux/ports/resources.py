@@ -1,23 +1,30 @@
-"""Port for provider resource resolution and execution."""
+"""Authorised effect execution boundary."""
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Protocol
 
-from conflux.core.actions import Action
-from conflux.core.resources import Resource
+from conflux.domain import Action
 
 
-class ResourcePort(Protocol):
-    """Translate stable resources to provider operations."""
+@dataclass(frozen=True, slots=True)
+class ProviderResult:
+    success: bool
+    outcome: object | None = None
+    error: str | None = None
 
-    def resolve(self, resource_id: str) -> Resource | None:
-        """Resolve a stable provider resource identifier."""
+
+class ExecutorPort(Protocol):
+    def execute(
+        self,
+        action: Action,
+        *,
+        certificate_id: str,
+        action_fingerprint: str,
+    ) -> ProviderResult:
+        """Execute one action already bound to an authorising certificate."""
         ...
 
-    def execute(self, action: Action[object]) -> object:
-        """Execute an already-authorised action."""
-        ...
 
-
-__all__ = ["ResourcePort"]
+__all__ = ["ExecutorPort", "ProviderResult"]

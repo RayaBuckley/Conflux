@@ -1,18 +1,15 @@
-"""Port for model proposal generation."""
+"""Boundary for deterministic or real model proposal generation."""
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Any, Protocol
 
-from conflux.core import Artifact
-from conflux.core.actions import Action
+from conflux.domain import Action, Artifact
 
 
 class ModelPort(Protocol):
-    """Generate declarative actions from immutable input artifacts."""
-
-    def propose(self, inputs: frozenset[Artifact[object]]) -> frozenset[Action[object]]:
-        """Return proposals without performing side effects."""
+    def propose(self, inputs: tuple[Artifact[Any], ...]) -> tuple[Action, ...]:
+        """Return declarative alternatives without performing side effects."""
         ...
 
 

@@ -1,6 +1,6 @@
-"""Application use cases that orchestrate domain values and ports."""
+"""Canonical application use cases."""
 
-from .mediate import MediationService
-from .policy import AuthorisationService
+from .mediate import ExecutionResult, MediationService
+from .policy import DecisionPipeline
 
-__all__ = ["AuthorisationService", "MediationService"]
+__all__ = ["DecisionPipeline", "ExecutionResult", "MediationService"]

@@ -1,16 +1,13 @@
-"""Port for append-only execution and decision traces."""
+"""Append-only trace boundary."""
 
 from __future__ import annotations
 
-from typing import Protocol
+from collections.abc import Mapping
+from typing import Any, Protocol
 
 
 class TraceSink(Protocol):
-    """Receive immutable, serializable trace records."""
-
-    def append(self, record: object) -> None:
-        """Append one record in evaluation order."""
-        ...
+    def append(self, record: Mapping[str, Any]) -> None: ...
 
 
 __all__ = ["TraceSink"]
