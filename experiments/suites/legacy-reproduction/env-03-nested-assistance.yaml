@@ -1,0 +1,15 @@
+schema_version: "1"
+id: legacy-env-03-nested-assistance
+principals:
+  - {id: alice, name: Alice, kind: human}
+  - {id: bob, name: Bob, kind: human}
+data:
+  - {id: task, value: legacy-task, authors: [alice], readers: [alice]}
+resources: []
+grants: []
+consent: [nested]
+model:
+  schema_version: "1"
+  mode: alternatives
+  proposals:
+    - {id: nested, kind: nested, visibility: internal, input_ids: [task]}

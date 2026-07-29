@@ -29,6 +29,7 @@ from conflux.evaluation import (
     write_result,
     write_trace,
 )
+from conflux.experiments import load_manifest
 from conflux.ites import BranchState, MediatingITES, TransitionKernel
 
 EXIT_OK = 0
@@ -47,6 +48,7 @@ def _parser() -> argparse.ArgumentParser:
     demo.add_argument("--output", type=Path)
     demo.add_argument("--select-branch")
     demo.add_argument("--max-model-calls", type=int, default=3)
+    demo.add_argument("--manifest", type=Path)
 
     chat = commands.add_parser("chat", help="interactive model loop (M4)")
     chat.add_argument("--scenario", type=Path)
@@ -115,6 +117,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _demo(arguments: argparse.Namespace) -> int:
     scenario = load_scenario(cast(Path, arguments.scenario))
+    manifest = (
+        load_manifest(cast(Path, arguments.manifest))
+        if arguments.manifest is not None
+        else None
+    )
     mediator = MediatingITES(TransitionKernel(scenario.pipeline))
     service = MediationService(mediator)
     report = service.evaluate(
@@ -144,14 +151,24 @@ def _demo(arguments: argparse.Namespace) -> int:
         utility = UtilityOutcome(False, "branch_selection_required")
     else:
         utility = UtilityOutcome(False, "all_proposals_blocked")
-    output = cast(Path | None, arguments.output) or Path("runs") / report.run_id
+    output = (
+        cast(Path | None, arguments.output)
+        or (Path(manifest.output_directory) if manifest else None)
+        or Path("runs") / report.run_id
+    )
     output.mkdir(parents=True, exist_ok=True)
+    if manifest is not None:
+        manifest.materialise(output)
     trace_path = output / "trace.jsonl"
     trace_hash = write_trace(report, trace_path)
     result = RunResult.from_report(
         report,
         source={"scenario_id": scenario.id, "scenario_path": str(arguments.scenario)},
-        manifest={"scenario": scenario.id, "model": "scripted"},
+        manifest=(
+            manifest.to_dict()
+            if manifest
+            else {"scenario": scenario.id, "model": "scripted"}
+        ),
         utility=utility,
         trace_path="trace.jsonl",
         trace_sha256=trace_hash,

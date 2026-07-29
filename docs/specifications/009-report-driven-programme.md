@@ -63,6 +63,8 @@ Every task ends in one of four dispositions:
 | TRACE-002 | implemented | `schemas/`, deterministic records, schema tests |
 | RUNTIME-001..RUNTIME-004 | in progress | M2 runtime-adapter commits |
 | CLI-001, CLI-002 | in progress | M2 CLI commit |
+| EXP-001, EXP-002 | implemented | strict manifests and separate versioned suites |
+| EXP-003, EXP-004 | in progress | negative controls and retained smoke evidence |
 
 ## Milestone acceptance
 

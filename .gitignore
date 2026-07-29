@@ -32,12 +32,14 @@ Thumbs.db
 # Local experiment output
 outputs/
 results/
-experiments/
 runs/
 data/
 *.jsonl
 dist/
 build/
+
+# Experiment definitions are tracked; local run output is not.
+experiments/local-runs/
 
 # LaTeX temporary/build files (the final PDF remains tracked)
 *.aux

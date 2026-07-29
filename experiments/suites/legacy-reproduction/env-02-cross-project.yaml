@@ -1,0 +1,23 @@
+schema_version: "1"
+id: legacy-env-02-cross-project
+principals:
+  - {id: alice, name: Alice, kind: human}
+  - {id: bob, name: Bob, kind: human}
+data:
+  - {id: project-x, value: legacy-project, authors: [alice], readers: [alice]}
+resources:
+  - {provider: memory, resource_id: project-x, resource_type: document, attributes: {}}
+grants:
+  - {principal_id: alice, permission: write, resource_id: project-x}
+consent: [write-project]
+model:
+  schema_version: "1"
+  mode: alternatives
+  proposals:
+    - id: write-project
+      kind: primitive
+      visibility: internal
+      input_ids: [project-x]
+      operation: write
+      permission: write
+      resource: {provider: memory, resource_id: project-x, resource_type: document, attributes: {}}

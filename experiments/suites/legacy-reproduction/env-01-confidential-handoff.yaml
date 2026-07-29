@@ -1,0 +1,23 @@
+schema_version: "1"
+id: legacy-env-01-confidential-handoff
+principals:
+  - {id: alice, name: Alice, kind: human}
+  - {id: bob, name: Bob, kind: human}
+data:
+  - {id: confidential, value: legacy-secret, authors: [alice], readers: [alice], confidential: true}
+resources:
+  - {provider: memory, resource_id: mailbox, resource_type: message, attributes: {}}
+grants:
+  - {principal_id: alice, permission: send, resource_id: mailbox}
+consent: [send]
+model:
+  schema_version: "1"
+  mode: alternatives
+  proposals:
+    - id: send
+      kind: primitive
+      visibility: internal
+      input_ids: [confidential]
+      operation: send
+      permission: send
+      resource: {provider: memory, resource_id: mailbox, resource_type: message, attributes: {}}

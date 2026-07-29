@@ -1,0 +1,24 @@
+schema_version: "1"
+id: canonical-env-01-confidential-handoff
+principals:
+  - {id: alice, name: Alice, kind: human}
+  - {id: bob, name: Bob, kind: human}
+data:
+  - {id: confidential, value: canonical-secret, authors: [alice], readers: [alice], confidential: true}
+  - {id: request, value: send-the-secret, authors: [bob], readers: [bob]}
+resources:
+  - {provider: memory, resource_id: mailbox, resource_type: message, attributes: {}}
+grants:
+  - {principal_id: alice, permission: send, resource_id: mailbox}
+consent: [send]
+model:
+  schema_version: "1"
+  mode: alternatives
+  proposals:
+    - id: send
+      kind: primitive
+      visibility: internal
+      input_ids: [confidential, request]
+      operation: send
+      permission: send
+      resource: {provider: memory, resource_id: mailbox, resource_type: message, attributes: {}}
