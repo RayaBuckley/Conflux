@@ -8,11 +8,17 @@ from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from hashlib import sha256
 from pathlib import Path
+from typing import Protocol
 
 from conflux.domain import Decision, canonical_json, fingerprint
 from conflux.ites import ActionOutcome, ITESReport, TraceEvent
+from conflux.planning.state import PlanExecutionState, PlanTraceEvent
 
 RESULT_SCHEMA_VERSION = "1"
+
+
+class SerializableRecord(Protocol):
+    def to_dict(self) -> dict[str, object]: ...
 
 
 class RunStatus(StrEnum):
@@ -307,6 +313,76 @@ def write_result(result: RunResult, path: Path) -> None:
     path.write_text(canonical_json(result.to_dict()) + "\n", encoding="utf-8", newline="\n")
 
 
+def plan_trace_records(
+    state: PlanExecutionState,
+    clock: DeterministicClock = DeterministicClock(),
+) -> tuple[dict[str, object], ...]:
+    """Convert planner events to the common timestamped trace envelope."""
+    return tuple(
+        {
+            "schema_version": "2",
+            "event_type": event.event_type,
+            "event_id": event.id,
+            "run_id": event.run_id,
+            "plan_id": event.plan_id,
+            "node_id": event.node_id,
+            "branch_id": event.branch_id,
+            "sequence": event.sequence,
+            "timestamp": clock.at(event.sequence),
+            "causal_parent_ids": list(event.causal_parent_ids),
+            "payload": event.payload,
+        }
+        for event in state.events
+    )
+
+
+def replay_plan_trace(
+    initial_plan: dict[str, object],
+    events: tuple[PlanTraceEvent, ...],
+) -> tuple[dict[str, object], tuple[dict[str, object], ...]]:
+    """Reconstruct the final plan and node-state summary from retained events."""
+    plan = initial_plan
+    node_states: tuple[dict[str, object], ...] = ()
+    for event in events:
+        if event.event_type == "plan.patch_applied":
+            candidate = event.payload.get("plan")
+            if isinstance(candidate, dict):
+                plan = candidate
+        if event.event_type in {
+            "plan.completed",
+            "plan.failed",
+            "bound.reached",
+        }:
+            final_plan = event.payload.get("final_plan")
+            if isinstance(final_plan, dict):
+                plan = final_plan
+            states = event.payload.get("node_states")
+            if isinstance(states, list) and all(isinstance(item, dict) for item in states):
+                node_states = tuple(states)
+    return plan, node_states
+
+
+def write_plan_trace(
+    state: PlanExecutionState,
+    path: Path,
+    clock: DeterministicClock = DeterministicClock(),
+) -> str:
+    content = "".join(
+        json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n"
+        for record in plan_trace_records(state, clock)
+    )
+    path.write_text(content, encoding="utf-8", newline="\n")
+    return sha256(content.encode("utf-8")).hexdigest()
+
+
+def write_plan_result(result: SerializableRecord, path: Path) -> None:
+    path.write_text(
+        canonical_json(result.to_dict()) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
 __all__ = [
     "DeterministicClock",
     "RESULT_SCHEMA_VERSION",
@@ -315,6 +391,10 @@ __all__ = [
     "UtilityOutcome",
     "action_event_type",
     "trace_records",
+    "plan_trace_records",
+    "replay_plan_trace",
+    "write_plan_trace",
+    "write_plan_result",
     "write_result",
     "write_trace",
 ]

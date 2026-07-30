@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/dynamic-plan-result-v1.json",
+  "title": "Conflux dynamic plan result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "completed", "state", "mediation_run_ids"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "completed": {"type": "boolean"},
+    "mediation_run_ids": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "run_id", "plan_id", "plan_fingerprint", "status",
+        "failure_category", "nodes", "outputs", "events", "activated_node_ids",
+        "loop_iterations", "statistics"
+      ],
+      "properties": {
+        "schema_version": {"const": "1"},
+        "run_id": {"type": "string", "minLength": 1},
+        "plan_id": {"type": "string", "minLength": 1},
+        "plan_fingerprint": {"type": "string", "minLength": 1},
+        "status": {
+          "enum": [
+            "running", "succeeded", "safe_stop", "failed", "blocked", "incomplete"
+          ]
+        },
+        "failure_category": {"type": ["string", "null"]},
+        "nodes": {"type": "array"},
+        "outputs": {"type": "array"},
+        "events": {"type": "array"},
+        "activated_node_ids": {"type": "array", "items": {"type": "string"}},
+        "loop_iterations": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "statistics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "transitions", "planner_calls", "continuation_depth", "effects"
+          ],
+          "properties": {
+            "transitions": {"type": "integer", "minimum": 0},
+            "planner_calls": {"type": "integer", "minimum": 0},
+            "continuation_depth": {"type": "integer", "minimum": 0},
+            "effects": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    }
+  }
+}

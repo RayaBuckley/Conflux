@@ -25,6 +25,7 @@ from .continuation import (
     PlanPatch,
     apply_patch,
 )
+from .executor import DynamicPlanExecutor, DynamicPlanResult
 from .model import (
     ActionTemplateNode,
     ApprovalNode,
@@ -43,6 +44,15 @@ from .model import (
 from .parsing import parse_binding, parse_node, parse_plan, parse_plan_patch, parse_template
 from .records import PlannerRecord
 from .requests import ContinuationRequest, PlanBudgets, PlanningRequest
+from .state import (
+    NodeOutput,
+    NodeState,
+    NodeStatus,
+    PlanExecutionState,
+    PlanRunStatus,
+    PlanTraceEvent,
+    ready_nodes,
+)
 
 __all__ = [
     "ActionTemplate",
@@ -57,6 +67,8 @@ __all__ = [
     "ContinuePlanningNode",
     "ContinuationRequest",
     "DelegationNode",
+    "DynamicPlanExecutor",
+    "DynamicPlanResult",
     "GroundAction",
     "GroundArgument",
     "HistoricalNodeStatus",
@@ -64,6 +76,9 @@ __all__ = [
     "LoopNode",
     "ModelCallNode",
     "NodeKind",
+    "NodeOutput",
+    "NodeState",
+    "NodeStatus",
     "NodeOutputBinding",
     "OperationCatalogue",
     "OperationSchema",
@@ -74,6 +89,9 @@ __all__ = [
     "PlanBudgets",
     "PlanNode",
     "PlanPatch",
+    "PlanExecutionState",
+    "PlanRunStatus",
+    "PlanTraceEvent",
     "PlannerRecord",
     "PlanningRequest",
     "SubplanNode",
@@ -83,6 +101,7 @@ __all__ = [
     "apply_patch",
     "ground_action",
     "resolve_binding",
+    "ready_nodes",
     "parse_binding",
     "parse_node",
     "parse_plan",

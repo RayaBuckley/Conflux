@@ -15,6 +15,7 @@ from conflux.adapters.models import OpenAICompatibleModel, ScriptedModel
 from conflux.adapters.providers import InMemoryExecutor
 from conflux.adapters.scenarios import load_scenario, load_schema
 from conflux.application import CapabilityReport, ChatRuntime, MediationService
+from conflux.application.planning_demo import run_dynamic_planning_demo
 from conflux.domain import canonical_json
 from conflux.evaluation import (
     ExplicitStateChecker,
@@ -26,6 +27,8 @@ from conflux.evaluation import (
     RunResult,
     UtilityOutcome,
     VerificationBounds,
+    write_plan_result,
+    write_plan_trace,
     write_result,
     write_trace,
 )
@@ -56,6 +59,11 @@ def _parser() -> argparse.ArgumentParser:
     chat.add_argument("--model", required=True)
     chat.add_argument("--api-key-env", default="OPENAI_API_KEY")
     chat.add_argument("--principal")
+
+    plan = commands.add_parser("plan", help="open-ended dynamic planning")
+    plan_commands = plan.add_subparsers(dest="plan_command", required=True)
+    plan_demo = plan_commands.add_parser("demo", help="run the scripted recovery plan")
+    plan_demo.add_argument("--output", type=Path, default=Path("runs/plan-demo"))
 
     sled = commands.add_parser("sled", help="native bounded verification")
     sled_commands = sled.add_subparsers(dest="sled_command", required=True)
@@ -102,6 +110,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _doctor(arguments)
         if command == "chat":
             return _chat(arguments)
+        if command == "plan":
+            return _plan(arguments)
         if command == "verify":
             return _unavailable("verification_ir_unavailable:M7")
         if command == "benchmark":
@@ -313,6 +323,34 @@ def _chat(arguments: argparse.Namespace) -> int:
     except (EOFError, KeyboardInterrupt):
         print("\nchat_aborted_safely")
         return EXIT_OK
+
+
+def _plan(arguments: argparse.Namespace) -> int:
+    if str(arguments.plan_command) != "demo":
+        return _unavailable(f"unsupported_plan_command:{arguments.plan_command}")
+    result = run_dynamic_planning_demo()
+    output = cast(Path, arguments.output)
+    output.mkdir(parents=True, exist_ok=True)
+    trace_hash = write_plan_trace(result.state, output / "trace.jsonl")
+    write_plan_result(result, output / "result.json")
+    print(
+        canonical_json(
+            {
+                "run_id": result.state.run_id,
+                "status": result.state.status.value,
+                "completed": result.completed,
+                "blocked": sum(
+                    report.blocked_count for report in result.mediation_reports
+                ),
+                "executed": sum(
+                    report.executed_count for report in result.mediation_reports
+                ),
+                "trace_sha256": trace_hash,
+                "output": str(output),
+            }
+        )
+    )
+    return EXIT_OK if result.completed else EXIT_RUNTIME
 
 
 def _unavailable(reason: str) -> int:

@@ -18,11 +18,20 @@
         "policy.visibility_decided", "policy.consent_decided",
         "action.allowed", "action.blocked", "action.executed",
         "action.failed", "branch.created", "branch.completed",
-        "bound.reached", "environment.changed"
+        "bound.reached", "environment.changed",
+        "plan.created", "plan.planner_responded", "plan.node_ready",
+        "plan.node_started", "plan.node_succeeded", "plan.node_failed",
+        "plan.node_blocked", "plan.model_responded", "plan.action_grounded",
+        "plan.continuation_requested", "plan.patch_received",
+        "plan.patch_applied", "plan.patch_rejected", "plan.loop_iteration",
+        "plan.subplan_completed", "plan.completed", "plan.failed",
+        "code.requested", "code.completed", "code.failed"
       ]
     },
     "event_id": {"type": "string", "minLength": 1},
     "run_id": {"type": "string", "minLength": 1},
+    "plan_id": {"type": "string", "minLength": 1},
+    "node_id": {"type": ["string", "null"]},
     "branch_id": {"type": "string", "minLength": 1},
     "sequence": {"type": "integer", "minimum": 0},
     "timestamp": {"type": "string", "format": "date-time"},

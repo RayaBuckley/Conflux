@@ -23,7 +23,11 @@ from .records import (
     RunResult,
     RunStatus,
     UtilityOutcome,
+    plan_trace_records,
+    replay_plan_trace,
     trace_records,
+    write_plan_result,
+    write_plan_trace,
     write_result,
     write_trace,
 )
@@ -50,6 +54,10 @@ __all__ = [
     "VerificationResult",
     "VerificationVerdict",
     "trace_records",
+    "plan_trace_records",
+    "replay_plan_trace",
+    "write_plan_trace",
+    "write_plan_result",
     "write_result",
     "write_trace",
 ]

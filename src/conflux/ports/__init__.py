@@ -2,7 +2,14 @@
 
 from .environment import EnvironmentPort
 from .model import ModelPort
-from .planner import ContinuationResponse, InitialPlanResponse, PlannerPort
+from .planner import (
+    ContinuationResponse,
+    InitialPlanResponse,
+    PlannerPort,
+    ValueModelPort,
+    ValueRequest,
+    ValueResponse,
+)
 from .policy import AuthorisationPort, ConsentPolicyPort, ReadPolicyPort, VisibilityPolicyPort
 from .resources import ExecutorPort, ProviderResult
 from .tracing import TraceSink
@@ -16,6 +23,9 @@ __all__ = [
     "ContinuationResponse",
     "InitialPlanResponse",
     "PlannerPort",
+    "ValueModelPort",
+    "ValueRequest",
+    "ValueResponse",
     "ProviderResult",
     "ReadPolicyPort",
     "TraceSink",

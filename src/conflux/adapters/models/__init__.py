@@ -7,6 +7,7 @@ from .openai_compatible import (
     OpenAICompatibleModel,
 )
 from .scripted import ScriptedModel
+from .scripted_planner import ScriptedPlanner, ScriptedValueModel
 
 __all__ = [
     "HuggingFaceCausalModel",
@@ -14,4 +15,6 @@ __all__ = [
     "ModelProviderError",
     "OpenAICompatibleModel",
     "ScriptedModel",
+    "ScriptedPlanner",
+    "ScriptedValueModel",
 ]

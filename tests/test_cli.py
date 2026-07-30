@@ -49,6 +49,21 @@ def test_native_sled_command_writes_verification_result(tmp_path: Path) -> None:
     assert payload["verdict"] == "safe"
 
 
+def test_dynamic_plan_demo_writes_replayable_evidence(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    output = tmp_path / "plan-demo"
+    assert main(["plan", "demo", "--output", str(output)]) == EXIT_OK
+    payload = json.loads((output / "result.json").read_text(encoding="utf-8"))
+    assert payload["completed"] is True
+    assert payload["state"]["status"] == "safe_stop"
+    assert (output / "trace.jsonl").is_file()
+    summary = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
+    assert summary["blocked"] == 1
+    assert summary["executed"] == 1
+
+
 def test_report_and_doctor_have_machine_readable_modes(
     tmp_path: Path,
     capsys: object,
