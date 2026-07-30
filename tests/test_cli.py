@@ -69,7 +69,6 @@ def test_report_and_doctor_have_machine_readable_modes(
 def test_unavailable_backends_and_invalid_evidence_fail_closed(
     tmp_path: Path,
 ) -> None:
-    assert main(["chat"]) == EXIT_USAGE
     assert main(["verify"]) == EXIT_USAGE
     assert main(["benchmark", "agentdojo", "--config", "missing.yaml"]) == EXIT_USAGE
 

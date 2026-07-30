@@ -24,6 +24,12 @@ each yield a minimal witness while canonical ITES remains safe; and
 `runs/smoke/` retains an authorised case, blocked attack, vulnerable control,
 raw trace, result, generated table, manifest, rerun command, and checksums.
 
+M4 model adapters are implemented and offline-tested: strict
+OpenAI-compatible structured output with environment-only secrets and redacted
+retention, plus one pinned optional Hugging Face causal-model path. Interactive
+chat preserves turn state and mediates every effect. Live endpoint and
+model-weight evidence remains externally gated and is not claimed.
+
 Production PDPs, complete mediation of real frameworks, real external
 benchmarks, formal delegation, role-sensitive effects, persistent memory,
 symbolic verification, and paper revision remain post-migration work.

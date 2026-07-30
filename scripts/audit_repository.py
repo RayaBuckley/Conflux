@@ -166,6 +166,8 @@ def main() -> int:
     check_archived_paper(errors)
     check_manuscript(errors)
     check_smoke_evidence(errors)
+    if not (ROOT / "SECURITY.md").is_file():
+        errors.append("missing repository security policy: SECURITY.md")
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))

@@ -5,6 +5,7 @@ not inspect credentials.
 
 ```text
 conflux demo --scenario examples/basic.yaml --model scripted --output runs/demo
+conflux chat --scenario examples/basic.yaml --endpoint https://model.example/v1/chat/completions --model example
 conflux sled run --suite examples/basic.yaml --output runs/sled
 conflux report runs/demo/result.json
 conflux doctor --json
@@ -21,9 +22,11 @@ the scenario action set. `report` validates result JSON before rendering it.
 `doctor` reports local capabilities without executing cluster, container, GPU,
 or external-model commands.
 
-The `chat`, solver-facing `verify`, and `benchmark agentdojo` command surfaces
-are reserved but return explicit unavailable errors until their M4, M7, and M6
-backends exist.
+`chat` uses the optional OpenAI-compatible adapter and retains each turn in the
+session environment. Every proposed effect uses the same ITES and
+certificate-bound executor; Ctrl-C and EOF abort safely. It returns unavailable
+when the configured secret or `httpx` extra is absent. Solver-facing `verify`
+and `benchmark agentdojo` remain reserved for M7 and M6.
 
 ## Exit codes
 

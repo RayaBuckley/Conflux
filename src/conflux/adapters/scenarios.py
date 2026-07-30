@@ -17,6 +17,7 @@ from conflux.application import DecisionPipeline
 from conflux.domain import (
     Action,
     ActionVisibility,
+    Artifact,
     DataItem,
     DelegationAction,
     EnvironmentSnapshot,
@@ -184,13 +185,26 @@ def _resource(payload: dict[str, Any]) -> ResourceRef:
 
 
 def _proposal_batch(payload: dict[str, Any], environment: EnvironmentSnapshot) -> ProposalBatch:
-    actions = tuple(_action(item, environment) for item in payload["proposals"])
+    return parse_proposal_batch(payload, environment.artifacts())
+
+
+def parse_proposal_batch(
+    payload: dict[str, Any],
+    inputs: tuple[Artifact[Any], ...],
+) -> ProposalBatch:
+    try:
+        Draft202012Validator(load_schema("proposal-batch.schema.json")).validate(payload)
+    except ValidationError as error:
+        location = ".".join(str(item) for item in error.absolute_path) or "<root>"
+        raise ValueError(f"proposal_schema_error:{location}:{error.message}") from error
+    by_id = {item.id: item for item in inputs}
+    if len(by_id) != len(inputs):
+        raise ValueError("duplicate_input_id")
+    actions = tuple(_action(item, by_id) for item in payload["proposals"])
     return ProposalBatch(ProposalMode(str(payload["mode"])), actions)
 
 
-def _action(payload: dict[str, Any], environment: EnvironmentSnapshot) -> Action:
-    artifacts = environment.artifacts()
-    by_id = {item.id: item for item in artifacts}
+def _action(payload: dict[str, Any], by_id: dict[str, Artifact[Any]]) -> Action:
     try:
         inputs = tuple(by_id[str(identifier)] for identifier in payload["input_ids"])
     except KeyError as error:
@@ -221,4 +235,9 @@ def _action(payload: dict[str, Any], environment: EnvironmentSnapshot) -> Action
     raise ValueError(f"unsupported_action_kind:{kind}")
 
 
-__all__ = ["LoadedScenario", "load_scenario", "load_schema"]
+__all__ = [
+    "LoadedScenario",
+    "load_scenario",
+    "load_schema",
+    "parse_proposal_batch",
+]

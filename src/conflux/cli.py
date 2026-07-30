@@ -11,10 +11,10 @@ from typing import Any, cast
 
 from jsonschema import Draft202012Validator, ValidationError
 
-from conflux.adapters.models import ScriptedModel
+from conflux.adapters.models import OpenAICompatibleModel, ScriptedModel
 from conflux.adapters.providers import InMemoryExecutor
 from conflux.adapters.scenarios import load_scenario, load_schema
-from conflux.application import CapabilityReport, MediationService
+from conflux.application import CapabilityReport, ChatRuntime, MediationService
 from conflux.domain import canonical_json
 from conflux.evaluation import (
     ExplicitStateChecker,
@@ -51,8 +51,11 @@ def _parser() -> argparse.ArgumentParser:
     demo.add_argument("--manifest", type=Path)
 
     chat = commands.add_parser("chat", help="interactive model loop (M4)")
-    chat.add_argument("--scenario", type=Path)
-    chat.add_argument("--model", default="openai-compatible")
+    chat.add_argument("--scenario", type=Path, required=True)
+    chat.add_argument("--endpoint", required=True)
+    chat.add_argument("--model", required=True)
+    chat.add_argument("--api-key-env", default="OPENAI_API_KEY")
+    chat.add_argument("--principal")
 
     sled = commands.add_parser("sled", help="native bounded verification")
     sled_commands = sled.add_subparsers(dest="sled_command", required=True)
@@ -98,7 +101,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if command == "doctor":
             return _doctor(arguments)
         if command == "chat":
-            return _unavailable("chat_backend_unavailable:M4")
+            return _chat(arguments)
         if command == "verify":
             return _unavailable("verification_ir_unavailable:M7")
         if command == "benchmark":
@@ -253,6 +256,63 @@ def _doctor(arguments: argparse.Namespace) -> int:
         print(f"GPU probe: {report.gpu_probe or 'unavailable'}")
         print(f"Schedulers: {', '.join(report.schedulers) or 'unavailable'}")
     return EXIT_OK
+
+
+def _chat(arguments: argparse.Namespace) -> int:
+    scenario = load_scenario(cast(Path, arguments.scenario))
+    principal_id = (
+        str(arguments.principal)
+        if arguments.principal
+        else min(scenario.session.participants).id
+    )
+    human = next(
+        (
+            principal
+            for principal in scenario.session.participants
+            if principal.id == principal_id
+        ),
+        None,
+    )
+    if human is None:
+        raise ValueError(f"unknown_chat_principal:{principal_id}")
+    model = OpenAICompatibleModel(
+        str(arguments.endpoint),
+        str(arguments.model),
+        frozenset(resource.key for resource in scenario.environment.resources),
+        api_key_env=str(arguments.api_key_env),
+    )
+    if not model.available():
+        return _unavailable(
+            f"chat_backend_unavailable:secret_or_httpx:{model.api_key_env}"
+        )
+    runtime = ChatRuntime(
+        scenario.environment,
+        scenario.session,
+        human,
+        MediatingITES(TransitionKernel(scenario.pipeline)),
+        model,
+        InMemoryExecutor(),
+    )
+    print("Conflux mediated chat. Type 'exit' to stop.")
+    try:
+        while True:
+            text = input("conflux> ").strip()
+            if text.lower() in {"exit", "quit"}:
+                return EXIT_OK
+            turn = runtime.submit(text)
+            print(
+                canonical_json(
+                    {
+                        "run_id": turn.report.run_id,
+                        "executed": turn.executed,
+                        "reason": turn.reason,
+                        "blocked": turn.report.blocked_count,
+                    }
+                )
+            )
+    except (EOFError, KeyboardInterrupt):
+        print("\nchat_aborted_safely")
+        return EXIT_OK
 
 
 def _unavailable(reason: str) -> int:

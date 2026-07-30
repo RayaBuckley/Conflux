@@ -63,7 +63,16 @@ class RunResult:
             }
             for item in report.assessments
         }
-        status = RunStatus.INCOMPLETE if report.incomplete else RunStatus.COMPLETED
+        failed = report.provider_failed_count > 0 or any(
+            event.action is None and event.reason.startswith("model_error:")
+            for branch in report.branches
+            for event in branch.trace
+        )
+        status = (
+            RunStatus.FAILED
+            if failed
+            else (RunStatus.INCOMPLETE if report.incomplete else RunStatus.COMPLETED)
+        )
         return cls(
             report.run_id,
             status,
@@ -113,6 +122,11 @@ class DeterministicClock:
 
 
 def action_event_type(event: TraceEvent) -> str:
+    if event.outcome == ActionOutcome.BLOCKED and event.action is None:
+        if "ModelOutputError" in event.reason:
+            return "model.parse_failed"
+        if event.reason.startswith("model_error:"):
+            return "run.failed"
     return {
         ActionOutcome.PROPOSED: "proposal.observed",
         ActionOutcome.AUTHORISED: "action.allowed",
@@ -260,8 +274,12 @@ def trace_records(
             },
             (parent,),
         )
+    run_failed = any(
+        event.action is None and event.reason.startswith("model_error:")
+        for event in unique_events.values()
+    )
     emit(
-        "run.completed",
+        "run.failed" if run_failed else "run.completed",
         "run",
         {
             "incomplete": report.incomplete,

@@ -61,10 +61,11 @@ Every task ends in one of four dispositions:
 | SEC-005 | implemented | `ProposalBatch`, ordered-plan kernel and execution tests |
 | ARCH-002 | implemented | shared semantic corpus under `tests/semantics/` |
 | TRACE-002 | implemented | `schemas/`, deterministic records, schema tests |
-| RUNTIME-001..RUNTIME-004 | in progress | M2 runtime-adapter commits |
-| CLI-001, CLI-002 | in progress | M2 CLI commit |
+| RUNTIME-001..RUNTIME-004 | implemented | deterministic and confined adapter tests |
+| CLI-001, CLI-002 | implemented | installed CLI and mediated chat tests |
 | EXP-001, EXP-002 | implemented | strict manifests and separate versioned suites |
 | EXP-003, EXP-004 | implemented | minimal control witnesses and `runs/smoke/` |
+| MODEL-001, MODEL-002 | partial / externally gated | offline adapters pass; live endpoint and weights unavailable |
 
 ## Milestone acceptance
 
