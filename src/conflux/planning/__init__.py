@@ -48,6 +48,7 @@ from .model import (
     TerminalNode,
     TerminalOutcome,
 )
+from .optimise import CandidateSecurity, PlanCandidate, PlanSelection, select_plan
 from .parsing import parse_binding, parse_node, parse_plan, parse_plan_patch, parse_template
 from .records import PlannerRecord
 from .requests import ContinuationRequest, PlanBudgets, PlanningRequest
@@ -72,6 +73,7 @@ __all__ = [
     "BindingEnvironment",
     "BranchNode",
     "CapabilityEnvelope",
+    "CandidateSecurity",
     "CodeExecutionRequest",
     "CodeExecutionResult",
     "CodeOutput",
@@ -97,11 +99,13 @@ __all__ = [
     "PatchKind",
     "PatchOperation",
     "Plan",
+    "PlanCandidate",
     "PlanBudgets",
     "PlanNode",
     "PlanPatch",
     "PlanExecutionState",
     "PlanRunStatus",
+    "PlanSelection",
     "PlanTraceEvent",
     "PlannerRecord",
     "PlanningRequest",
@@ -113,6 +117,7 @@ __all__ = [
     "code_operation_permission",
     "ground_action",
     "resolve_binding",
+    "select_plan",
     "ready_nodes",
     "parse_binding",
     "parse_node",

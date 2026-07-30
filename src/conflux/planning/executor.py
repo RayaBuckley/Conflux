@@ -362,6 +362,30 @@ class DynamicPlanExecutor:
                     failure_category="provider_failure",
                 )
             return state, execution.report
+        try:
+            ground.schema.validate_result(execution.provider.outcome)
+        except ValueError as error:
+            state = state.with_node(
+                node.id,
+                NodeStatus.FAILED,
+                reason=f"outcome_contract_violation:{error}",
+            ).emit(
+                "plan.node_failed",
+                node_id=node.id,
+                payload={
+                    "reason": str(error),
+                    "failure_category": "outcome_contract_violation",
+                },
+            )
+            if node.on_failure is not None:
+                state = state.activate(node.on_failure)
+            else:
+                state = replace(
+                    state,
+                    status=PlanRunStatus.FAILED,
+                    failure_category="outcome_contract_violation",
+                )
+            return state, execution.report
         output = Artifact(
             f"{state.plan.id}:{node.id}:{node.output_name}",
             execution.provider.outcome,

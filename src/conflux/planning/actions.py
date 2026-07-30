@@ -71,6 +71,7 @@ class OperationSchema:
     permission: Permission
     arguments: tuple[ArgumentSpec, ...] = ()
     resource_argument: str | None = None
+    result_type: ArgumentType | None = None
 
     def __post_init__(self) -> None:
         if not all((self.id, self.version, self.provider, self.resource_type, self.operation)):
@@ -99,11 +100,16 @@ class OperationSchema:
             "permission": self.permission.name,
             "arguments": [item.to_dict() for item in self.arguments],
             "resource_argument": self.resource_argument,
+            "result_type": self.result_type.value if self.result_type is not None else None,
         }
 
     @property
     def fingerprint(self) -> str:
         return fingerprint(self.to_dict())
+
+    def validate_result(self, value: object) -> None:
+        if self.result_type is not None:
+            ArgumentSpec("result", self.result_type).validate(value)
 
 
 @dataclass(frozen=True, slots=True)

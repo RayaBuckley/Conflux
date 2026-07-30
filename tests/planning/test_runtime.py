@@ -445,3 +445,67 @@ def test_loop_bound_is_explicit_and_does_not_claim_completion(alice: Principal) 
     assert result.state.status == PlanRunStatus.INCOMPLETE
     assert result.state.failure_category == "loop_iteration_bound"
     assert result.state.effects == 1
+
+
+def test_authenticated_outcome_contract_blocks_malformed_provider_result(
+    alice: Principal,
+) -> None:
+    provenance = source(alice)
+    operation = OperationSchema(
+        "filesystem.write",
+        "1",
+        "filesystem",
+        "file",
+        "write",
+        WRITE,
+        (
+            ArgumentSpec("path", ArgumentType.STRING),
+            ArgumentSpec("content", ArgumentType.STRING),
+        ),
+        "path",
+        ArgumentType.STRING,
+    )
+    action = ActionTemplateNode(
+        "contracted-write",
+        ActionTemplate(
+            "contracted-write",
+            operation.id,
+            operation.version,
+            (
+                TemplateArgument(
+                    "path",
+                    LiteralBinding("safe.txt", provenance),
+                ),
+                TemplateArgument(
+                    "content",
+                    LiteralBinding("content", provenance),
+                ),
+            ),
+        ),
+        provenance,
+    )
+    plan = Plan("outcome-contract", "validate provider output", (action,), provenance)
+    pipeline = DecisionPipeline(
+        InMemoryAuthorisationPolicy(
+            frozenset({PolicyGrant("alice", "write", "safe.txt")})
+        ),
+        AllowInternalReadPolicy(),
+        SessionVisibilityPolicy(),
+        ExplicitConsentPolicy(frozenset({action.id})),
+    )
+    result = DynamicPlanExecutor(
+        ScriptedPlanner({}, {}),
+        ScriptedValueModel({}),
+        MediationService(MediatingITES(TransitionKernel(pipeline))),
+        InMemoryExecutor(),
+        OperationCatalogue((operation,)),
+        EnvironmentSnapshot(
+            "contract-env",
+            resources=(ResourceRef("filesystem", "safe.txt", "file"),),
+        ),
+        Session("contract-session", frozenset({alice})),
+        clock=lambda: 0.0,
+    ).execute(plan)
+    assert not result.completed
+    assert result.state.failure_category == "outcome_contract_violation"
+    assert result.state.node_state(action.id).status == NodeStatus.FAILED
