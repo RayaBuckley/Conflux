@@ -1,0 +1,31 @@
+schema_version: "1"
+id: agentdojo-v0.1.35-smoke
+suite: agentdojo-workspace
+suite_version: "v1.2.2"
+source_commit: 68fe2af
+defence: ites
+bounds:
+  user_tasks: [user_task_17]
+  injection_tasks: [injection_task_1]
+  max_model_calls: 8
+model:
+  adapter: openai-compatible
+  version: externally-supplied
+  credential: environment-only
+provider:
+  adapter: agentdojo-0.1.35
+  upstream_commit: a75aba7631d3ca5fb7ab938965c97ead2f9ff84b
+policy:
+  adapter: conflux-annotations-v1
+  comparison: [no_defence, ites]
+seed: 0
+machine:
+  execution: manual-gated
+  hardware_relevance: none
+output_directory: runs/agentdojo-smoke
+rerun_command:
+  - conflux
+  - benchmark
+  - agentdojo
+  - --config
+  - experiments/manifests/agentdojo-smoke.yaml

@@ -32,6 +32,9 @@ openai-compatible = [
 verification = [
     "z3-solver>=4.13",
 ]
+agentdojo = [
+    "agentdojo==0.1.35",
+]
 local-model = [
     "accelerate>=1.0",
     "torch>=2.4",
