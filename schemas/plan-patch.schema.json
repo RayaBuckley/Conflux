@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/plan-patch-v1.json",
+  "title": "Conflux dynamic plan patch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "plan_id", "operations"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string", "minLength": 1},
+    "plan_id": {"type": "string", "minLength": 1},
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "kind", "nodes", "target_node_ids", "subplans",
+          "terminal_outcome", "terminal_reason"
+        ],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["append", "replace", "spawn_subplan", "terminate"]},
+          "nodes": {"type": "array"},
+          "target_node_ids": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "uniqueItems": true
+          },
+          "subplans": {"type": "array"},
+          "terminal_outcome": {
+            "type": ["string", "null"],
+            "enum": ["succeeded", "safe_stop", "failed", null]
+          },
+          "terminal_reason": {"type": "string"}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"kind": {"const": "append"}}},
+            "then": {"properties": {"nodes": {"minItems": 1}}}
+          },
+          {
+            "if": {"properties": {"kind": {"const": "replace"}}},
+            "then": {
+              "properties": {
+                "nodes": {"minItems": 1},
+                "target_node_ids": {"minItems": 1}
+              }
+            }
+          },
+          {
+            "if": {"properties": {"kind": {"const": "spawn_subplan"}}},
+            "then": {"properties": {"subplans": {"minItems": 1}}}
+          },
+          {
+            "if": {"properties": {"kind": {"const": "terminate"}}},
+            "then": {
+              "properties": {
+                "terminal_outcome": {
+                  "enum": ["succeeded", "safe_stop", "failed"]
+                },
+                "terminal_reason": {"minLength": 1}
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

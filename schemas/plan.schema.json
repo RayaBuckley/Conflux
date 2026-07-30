@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/plan-v1.json",
+  "title": "Conflux dynamic plan",
+  "$ref": "#/$defs/plan",
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_ids", "sources", "activities", "precision", "attested"],
+      "properties": {
+        "principal_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "sources": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "activities": {"type": "array", "items": {"type": "string"}},
+        "precision": {"enum": ["exact", "conservative", "unknown"]},
+        "attested": {"type": "boolean"}
+      }
+    },
+    "binding": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value", "provenance"],
+          "properties": {
+            "kind": {"const": "literal"},
+            "value": {},
+            "provenance": {"$ref": "#/$defs/provenance"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "artifact_id"],
+          "properties": {
+            "kind": {"const": "artifact"},
+            "artifact_id": {"type": "string", "minLength": 1}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "node_id", "output_name"],
+          "properties": {
+            "kind": {"const": "node_output"},
+            "node_id": {"type": "string", "minLength": 1},
+            "output_name": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "operation_id", "operation_version", "arguments", "visibility"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "operation_id": {"type": "string", "minLength": 1},
+        "operation_version": {"type": "string", "minLength": 1},
+        "visibility": {
+          "enum": ["internal", "participants", "transcript"]
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "binding"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "binding": {"$ref": "#/$defs/binding"}
+            }
+          }
+        }
+      }
+    },
+    "nodeBase": {
+      "type": "object",
+      "required": ["id", "kind", "dependencies", "control_provenance"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"type": "string"},
+        "dependencies": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "control_provenance": {"$ref": "#/$defs/provenance"}
+      }
+    },
+    "node": {
+      "allOf": [
+        {"$ref": "#/$defs/nodeBase"},
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "kind": {"const": "model_call"},
+                "prompt": {"$ref": "#/$defs/binding"},
+                "output_name": {"type": "string", "minLength": 1}
+              },
+              "required": ["prompt", "output_name"]
+            },
+            {
+              "properties": {
+                "kind": {"const": "action_template"},
+                "template": {"$ref": "#/$defs/template"},
+                "on_block": {"type": ["string", "null"]},
+                "on_failure": {"type": ["string", "null"]},
+                "output_name": {"type": "string", "minLength": 1}
+              },
+              "required": ["template", "on_block", "on_failure", "output_name"]
+            },
+            {
+              "properties": {
+                "kind": {"const": "branch"},
+                "condition": {"$ref": "#/$defs/binding"},
+                "when_true": {"type": "string", "minLength": 1},
+                "when_false": {"type": "string", "minLength": 1}
+              },
+              "required": ["condition", "when_true", "when_false"]
+            },
+            {
+              "properties": {
+                "kind": {"const": "loop"},
+                "condition": {"$ref": "#/$defs/binding"},
+                "body_node_id": {"type": "string", "minLength": 1},
+                "exit_node_id": {"type": "string", "minLength": 1},
+                "max_iterations": {"type": "integer", "minimum": 1}
+              },
+              "required": [
+                "condition", "body_node_id", "exit_node_id", "max_iterations"
+              ]
+            },
+            {
+              "properties": {
+                "kind": {"const": "continue_planning"},
+                "observation_bindings": {
+                  "type": "array",
+                  "items": {"$ref": "#/$defs/binding"}
+                },
+                "trigger": {"type": "string", "minLength": 1}
+              },
+              "required": ["observation_bindings", "trigger"]
+            },
+            {
+              "properties": {
+                "kind": {"const": "approval"},
+                "request": {"type": "string", "minLength": 1}
+              },
+              "required": ["request"]
+            },
+            {
+              "properties": {
+                "kind": {"const": "delegation"},
+                "scope": {"type": "string", "minLength": 1}
+              },
+              "required": ["scope"]
+            },
+            {
+              "properties": {
+                "kind": {"const": "subplan"},
+                "child_plan_id": {"type": "string", "minLength": 1}
+              },
+              "required": ["child_plan_id"]
+            },
+            {
+              "properties": {
+                "kind": {"const": "terminal"},
+                "outcome": {"enum": ["succeeded", "safe_stop", "failed"]},
+                "reason": {"type": "string", "minLength": 1}
+              },
+              "required": ["outcome", "reason"]
+            }
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "id", "goal", "invocation_provenance", "nodes", "subplans"
+      ],
+      "properties": {
+        "schema_version": {"const": "1"},
+        "id": {"type": "string", "minLength": 1},
+        "goal": {"type": "string", "minLength": 1},
+        "invocation_provenance": {"$ref": "#/$defs/provenance"},
+        "nodes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/node"}
+        },
+        "subplans": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/plan"}
+        }
+      }
+    }
+  }
+}
