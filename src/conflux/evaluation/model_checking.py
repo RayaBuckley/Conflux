@@ -155,11 +155,19 @@ class ExplicitStateChecker:
             source_key = system.state_key(state)
             if system.is_terminal(state):
                 continue
+            system_bound = getattr(system, "bound_reached", None)
+            if callable(system_bound) and bool(system_bound(state)):
+                truncated = True
+                continue
             if depth >= bounds.max_depth or system.model_calls(state) >= bounds.max_model_calls:
                 truncated = True
                 continue
             for action in sorted(system.enabled(state), key=system.action_key):
                 for target in system.step(state, action):
+                    if transitions >= bounds.max_transitions:
+                        truncated = True
+                        queue.clear()
+                        break
                     transitions += 1
                     transition = Transition(state, action, target, label=str(system.action_key(action)))
                     for property_ in properties:
@@ -175,10 +183,6 @@ class ExplicitStateChecker:
                                 bounds,
                                 Counterexample(property_.name, reason, path),
                             )
-                    if transitions >= bounds.max_transitions:
-                        truncated = True
-                        queue.clear()
-                        break
                     target_key = system.state_key(target)
                     if target_key in visited:
                         duplicates += 1
@@ -190,7 +194,10 @@ class ExplicitStateChecker:
                     visited[target_key] = target
                     predecessor[target_key] = (source_key, transition)
                     queue.append((target, depth + 1))
-                if transitions >= bounds.max_transitions or len(visited) >= bounds.max_states:
+                if truncated and (
+                    transitions >= bounds.max_transitions
+                    or len(visited) >= bounds.max_states
+                ):
                     break
 
         verdict = VerificationVerdict.BOUNDED_SAFE if truncated else VerificationVerdict.SAFE

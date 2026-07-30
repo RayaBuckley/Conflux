@@ -11,6 +11,18 @@ from .model_checking import (
     VerificationResult,
     VerificationVerdict,
 )
+from .planning import (
+    AbstractEffect,
+    AbstractPatchKind,
+    AbstractPlanPatch,
+    AbstractPlanStatus,
+    CodeCapabilityPreserved,
+    NoUnauthorisedPlanningEffect,
+    PlanningAction,
+    PlanningContextMonotonicity,
+    PlanningModelState,
+    WorstCasePlanningSystem,
+)
 from .properties import (
     ITESVerificationSystem,
     NoForbiddenObservation,
@@ -34,14 +46,23 @@ from .records import (
 
 __all__ = [
     "Counterexample",
+    "AbstractEffect",
+    "AbstractPatchKind",
+    "AbstractPlanPatch",
+    "AbstractPlanStatus",
+    "CodeCapabilityPreserved",
     "DeterministicClock",
     "EvaluationResult",
     "Evaluator",
     "ExplicitStateChecker",
     "ITESVerificationSystem",
     "NoForbiddenObservation",
+    "NoUnauthorisedPlanningEffect",
     "NoUnauthorisedAuthorisation",
     "PrincipalContextMonotonicity",
+    "PlanningAction",
+    "PlanningContextMonotonicity",
+    "PlanningModelState",
     "ProvenancePreserved",
     "RunResult",
     "RunStatus",
@@ -60,4 +81,5 @@ __all__ = [
     "write_plan_result",
     "write_result",
     "write_trace",
+    "WorstCasePlanningSystem",
 ]
