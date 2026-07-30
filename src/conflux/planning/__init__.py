@@ -17,6 +17,13 @@ from .actions import (
     ground_action,
     resolve_binding,
 )
+from .code_execution import (
+    CapabilityEnvelope,
+    CodeExecutionRequest,
+    CodeExecutionResult,
+    CodeOutput,
+    code_operation_permission,
+)
 from .continuation import (
     HistoricalNodeStatus,
     PatchApplication,
@@ -64,6 +71,10 @@ __all__ = [
     "Binding",
     "BindingEnvironment",
     "BranchNode",
+    "CapabilityEnvelope",
+    "CodeExecutionRequest",
+    "CodeExecutionResult",
+    "CodeOutput",
     "ContinuePlanningNode",
     "ContinuationRequest",
     "DelegationNode",
@@ -99,6 +110,7 @@ __all__ = [
     "TerminalNode",
     "TerminalOutcome",
     "apply_patch",
+    "code_operation_permission",
     "ground_action",
     "resolve_binding",
     "ready_nodes",

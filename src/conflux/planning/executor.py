@@ -14,12 +14,14 @@ from conflux.domain import (
     ProposalBatch,
     Provenance,
     Session,
+    fingerprint,
     provenance_union,
 )
 from conflux.ites import ITESReport
 from conflux.ports import ExecutorPort, PlannerPort, ValueModelPort, ValueRequest
 
 from .actions import BindingEnvironment, OperationCatalogue, ground_action, resolve_binding
+from .code_execution import CapabilityEnvelope, CodeExecutionResult
 from .continuation import HistoricalNodeStatus, apply_patch
 from .model import (
     ActionTemplateNode,
@@ -278,6 +280,19 @@ class DynamicPlanExecutor:
                 "context_fingerprint": ground.provenance.context.fingerprint,
             },
         )
+        if action.operation == "execute_code":
+            arguments = {item.name: item.value for item in ground.arguments}
+            envelope_value = arguments.get("envelope")
+            envelope = CapabilityEnvelope.from_dict(envelope_value)
+            state = state.emit(
+                "code.requested",
+                node_id=node.id,
+                payload={
+                    "source_hash": fingerprint(arguments.get("source")),
+                    "runtime_image": envelope.runtime_image,
+                    "envelope_fingerprint": envelope.fingerprint,
+                },
+            )
         report = self.mediation.evaluate(
             environment=self.environment,
             session=self.session,
@@ -327,6 +342,17 @@ class DynamicPlanExecutor:
                     },
                 )
             )
+            if action.operation == "execute_code":
+                outcome = execution.provider.outcome
+                state = state.emit(
+                    "code.failed",
+                    node_id=node.id,
+                    payload=(
+                        outcome.to_dict()
+                        if isinstance(outcome, CodeExecutionResult)
+                        else {"reason": reason}
+                    ),
+                )
             if node.on_failure is not None:
                 state = state.activate(node.on_failure)
             else:
@@ -354,6 +380,17 @@ class DynamicPlanExecutor:
                 },
             )
         )
+        if action.operation == "execute_code":
+            outcome = execution.provider.outcome
+            state = state.emit(
+                "code.completed",
+                node_id=node.id,
+                payload=(
+                    outcome.to_dict()
+                    if isinstance(outcome, CodeExecutionResult)
+                    else {"outcome_fingerprint": fingerprint(outcome)}
+                ),
+            )
         unused = tuple(
             target for target in (node.on_block, node.on_failure) if target is not None
         )
