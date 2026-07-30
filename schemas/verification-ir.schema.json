@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/verification-ir-v1.json",
+  "title": "Conflux serialisable verification IR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "id", "bound", "assumptions", "variables",
+    "transitions", "invariants"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string", "minLength": 1},
+    "bound": {"type": "integer", "minimum": 1},
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "variables": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "sort", "initial", "minimum", "maximum"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "sort": {"enum": ["boolean", "integer"]},
+          "initial": {"type": ["boolean", "integer"]},
+          "minimum": {"type": ["integer", "null"]},
+          "maximum": {"type": ["integer", "null"]}
+        }
+      }
+    },
+    "transitions": {"type": "array"},
+    "invariants": {"type": "array"}
+  }
+}

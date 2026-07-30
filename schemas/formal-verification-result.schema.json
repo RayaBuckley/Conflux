@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/formal-verification-result-v1.json",
+  "title": "Conflux formal verification result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "verdict", "backend", "ir_hash", "query_hash",
+    "solver_hash", "model_hash", "bound", "assumptions",
+    "counterexample", "error"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "verdict": {"enum": ["safe", "bounded_safe", "unsafe", "unknown"]},
+    "backend": {"type": "string", "minLength": 1},
+    "ir_hash": {"type": "string", "minLength": 1},
+    "query_hash": {"type": "string", "minLength": 1},
+    "solver_hash": {"type": "string", "minLength": 1},
+    "model_hash": {"type": ["string", "null"]},
+    "bound": {"type": "integer", "minimum": 1},
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "counterexample": {"type": "array", "items": {"type": "object"}},
+    "error": {"type": ["string", "null"]}
+  }
+}

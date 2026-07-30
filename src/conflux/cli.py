@@ -6,6 +6,7 @@ import argparse
 import json
 import sys
 from collections.abc import Sequence
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
@@ -34,6 +35,7 @@ from conflux.evaluation import (
 )
 from conflux.experiments import load_manifest
 from conflux.ites import BranchState, MediatingITES, TransitionKernel
+from conflux.verification import NuXmvBackend, VerificationIR, verify_with_z3
 
 EXIT_OK = 0
 EXIT_USAGE = 2
@@ -78,6 +80,8 @@ def _parser() -> argparse.ArgumentParser:
     verify = commands.add_parser("verify", help="solver-facing verification (M7)")
     verify.add_argument("--model", type=Path)
     verify.add_argument("--property")
+    verify.add_argument("--backend", choices=("z3", "nuxmv"), default="z3")
+    verify.add_argument("--output", type=Path)
 
     benchmark = commands.add_parser("benchmark", help="external benchmarks")
     benchmark_commands = benchmark.add_subparsers(
@@ -113,7 +117,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if command == "plan":
             return _plan(arguments)
         if command == "verify":
-            return _unavailable("verification_ir_unavailable:M7")
+            return _verify(arguments)
         if command == "benchmark":
             return _unavailable("agentdojo_backend_unavailable:M6")
         return _unavailable(f"unsupported_command:{command}")
@@ -234,6 +238,35 @@ def _report(arguments: argparse.Namespace) -> int:
     Draft202012Validator(load_schema("result.schema.json")).validate(payload)
     print(canonical_json(payload) if arguments.json else _render_result(payload))
     return EXIT_OK
+
+
+def _verify(arguments: argparse.Namespace) -> int:
+    model_path = cast(Path | None, arguments.model)
+    if model_path is None:
+        raise ValueError("verification_model_required")
+    payload = json.loads(model_path.read_text(encoding="utf-8"))
+    ir = VerificationIR.from_dict(payload)
+    property_id = str(arguments.property) if arguments.property else None
+    if property_id is not None:
+        selected = tuple(item for item in ir.invariants if item.id == property_id)
+        if not selected:
+            raise ValueError(f"unknown_verification_property:{property_id}")
+        ir = replace(ir, invariants=selected)
+    result = (
+        verify_with_z3(ir)
+        if str(arguments.backend) == "z3"
+        else NuXmvBackend().verify(ir)
+    )
+    output = cast(Path | None, arguments.output)
+    if output is not None:
+        output.mkdir(parents=True, exist_ok=True)
+        (output / "formal-verification.json").write_text(
+            canonical_json(result.to_dict()) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+    print(canonical_json(result.to_dict()))
+    return EXIT_RUNTIME if result.verdict.value == "unknown" else EXIT_OK
 
 
 def _render_result(payload: dict[str, Any]) -> str:
