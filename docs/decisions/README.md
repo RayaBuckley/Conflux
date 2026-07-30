@@ -17,3 +17,4 @@ each record a sequential number, and link it from affected documentation.
 | [008](008-canonical-security-kernel.md) | One canonical security kernel |
 | [009](009-branch-and-consent-semantics.md) | Branch and consent semantics |
 | [010](010-sled-verdicts.md) | Native SLED verdict semantics |
+| [011](011-open-ended-dynamic-plans.md) | Open-ended dynamic plans and bounded verification |
