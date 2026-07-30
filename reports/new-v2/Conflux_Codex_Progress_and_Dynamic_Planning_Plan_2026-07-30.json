@@ -1,0 +1,828 @@
+{
+  "schema_version": "2.0",
+  "generated_at": "2026-07-30T15:44:00+01:00",
+  "project": "Conflux",
+  "repository": {
+    "url": "https://github.com/RayaBuckley/Conflux/",
+    "branch": "main",
+    "observed_commits": 147,
+    "inspection_mode": "public source and report review; no independent checkout execution",
+    "limitations": [
+      "GitHub source was inspected online, but the repository was not cloned or executed in this environment.",
+      "Validation claims in docs/STATUS.md are therefore treated as repository self-report.",
+      "Task completion is inferred from visible files and code, not from a complete commit-by-commit audit."
+    ]
+  },
+  "overall_assessment": {
+    "reports": "advanced_and_comprehensive",
+    "report_governance": "fragmented",
+    "security_kernel": "transitional_with_known_unresolved_defects",
+    "interactive_runtime": "not_result_ready",
+    "current_empirical_results": "absent_for_refactored_repository",
+    "sled_mc_v": "specified_not_implemented",
+    "agentdojo": "adapter_scaffolding_not_genuine_pinned_integration",
+    "planning": "three_closed_plan_tasks_specified_no_implementation",
+    "summary": "Documentation and research planning are substantially ahead of implementation and evidence. The immediate priority remains semantic repair and an executable vertical slice. Dynamic planning should be introduced as a runtime capability earlier than full SLED-V, while its formal verification and optimisation remain later milestones."
+  },
+  "repo_snapshot": {
+    "top_level": [
+      "docs",
+      "paper",
+      "reports",
+      "scripts",
+      "src/conflux",
+      "tests"
+    ],
+    "source_packages": [
+      "adapters",
+      "application",
+      "auth",
+      "compatibility",
+      "core",
+      "domain",
+      "evaluation",
+      "execution",
+      "ites",
+      "policy",
+      "ports",
+      "research"
+    ],
+    "visible_test_files": 14,
+    "current_action_model": "primitive/nested/delegation/message/clarification/consent/stop/no-op actions; no plan types or argument binding model",
+    "current_model_port": "propose(inputs) -> frozenset[Action]",
+    "current_mediation_service": "thin delegate to ITES.run",
+    "current_plan_package": "absent",
+    "current_verification_package": "absent",
+    "current_results_file": "template pending executable run"
+  },
+  "report_inventory": [
+    {
+      "id": "RPT-ARCHIVED-PAPER",
+      "path": "paper/",
+      "title": "Archived previous-year paper and evidence",
+      "document_status": "complete_archived",
+      "implementation_status": "historical_prototype_only",
+      "evidence_status": "preserved_but_not_current_validation",
+      "assessment": "The previous ITES/SLED contribution and bounded results are documented. They should remain immutable and must not be treated as validation of the refactored repository.",
+      "next_actions": [
+        "Add paper/ARCHIVED.md with archive commit or tag",
+        "Create the current manuscript at manuscript/ rather than reports/New/"
+      ]
+    },
+    {
+      "id": "RPT-REPO-REVIEW",
+      "path": "reports/REPO_REVIEW",
+      "title": "Repository review",
+      "document_status": "complete",
+      "implementation_status": "partially_translated_into_new_spec",
+      "evidence_status": "superseded_as_primary_plan",
+      "assessment": "The review successfully identified semantic divergence, integration gaps, weak empirical evidence and production limitations. Most major findings were copied into the 29 July implementation specification, but the corresponding code changes and evidence are mostly absent.",
+      "next_actions": [
+        "Mark it superseded by the New implementation package while retaining it as an audit input",
+        "Link every unresolved finding to a current backlog task"
+      ]
+    },
+    {
+      "id": "RPT-SLED-REVIEW",
+      "path": "reports/SLED_REVIEW",
+      "title": "SLED formal-verification and planning review",
+      "document_status": "complete_research_landscape",
+      "implementation_status": "not_started",
+      "evidence_status": "design_input_only",
+      "assessment": "The report gives a strong path from bounded trace enumeration to state exploration, symbolic verification, conformance checking and secure planning. The current source tree does not expose the proposed verification or planning packages.",
+      "next_actions": [
+        "Split SLED-MC, SLED-V and planning into independently deliverable milestones",
+        "Implement state memoisation before solver integration"
+      ]
+    },
+    {
+      "id": "RPT-LITERATURE-SUITE",
+      "path": "reports/Conflux_*Literature* and reports/Conflux_Research_Landscape_2026.md",
+      "title": "Literature, novelty and related-work suite",
+      "document_status": "complete",
+      "implementation_status": "not_applicable",
+      "evidence_status": "usable_with_bibliography_reverification",
+      "assessment": "The literature package substantially improves novelty positioning and covers recent provenance, policy, causal and planning systems. Its claims should be reconciled with Zotero and the final bibliography before submission.",
+      "next_actions": [
+        "Add stable report lifecycle metadata",
+        "Revalidate recent references immediately before paper submission"
+      ]
+    },
+    {
+      "id": "RPT-OLD-CODEX",
+      "path": "reports/Conflux_Codex_Action_Manifest.json and reports/Conflux_Codex_Research_Backlog.json",
+      "title": "Earlier Codex manifests and research backlog",
+      "document_status": "complete",
+      "implementation_status": "mixed_unknown",
+      "evidence_status": "superseded_without_explicit_status",
+      "assessment": "These are useful historical planning artefacts, but there is no authoritative lifecycle marker or machine-readable mapping from old task IDs to the current backlog.",
+      "next_actions": [
+        "Add supersedes/superseded_by fields",
+        "Create one current task registry rather than parallel untracked manifests"
+      ]
+    },
+    {
+      "id": "RPT-NEW-SPEC",
+      "path": "reports/New/Conflux_Implementation_Technical_Specification.md",
+      "title": "29 July implementation technical specification",
+      "document_status": "current_primary_spec",
+      "implementation_status": "mostly_not_implemented",
+      "evidence_status": "strong_acceptance_criteria_but_no_progress_ledger",
+      "assessment": "This is the strongest implementation document. It correctly prioritises semantic repair, a canonical kernel, complete traces, a vertical slice, real benchmarks and SLED-V. Its planning section is too closed for the newly stated requirement: it assumes a preverified envelope and does not specify open-ended LLM continuation, plan patches, arbitrary code execution or plan-provenance semantics.",
+      "next_actions": [
+        "Replace W8 with an open-ended dynamic-plan specification",
+        "Separate operational planning from later formal verification and optimisation"
+      ]
+    },
+    {
+      "id": "RPT-NEW-BACKLOG",
+      "path": "reports/New/Conflux_Codex_Implementation_Backlog.json",
+      "title": "29 July Codex implementation backlog",
+      "document_status": "current_machine_readable_plan",
+      "implementation_status": "predominantly_unimplemented",
+      "evidence_status": "acceptance_criteria_present_status_fields_absent",
+      "assessment": "The backlog appears to contain 46 tasks across baseline, security, trace, architecture, runtime, experiments, model checking, models, AgentDojo, SLED-V, planning, cluster, CI and paper work. It contains PLAN-001 through PLAN-003, but these cover only a typed graph, pre-execution verification and optimisation. The technical specification requires SEC-001 through SEC-008, while the JSON backlog has no SEC-008 task; TRACE-001 partially overlaps it. Tasks also lack explicit status, evidence links, completion commit and verification timestamp.",
+      "next_actions": [
+        "Add SEC-008 or explicitly alias it to TRACE-001",
+        "Add status/evidence/completed_at/completed_commit fields",
+        "Replace or extend PLAN-001..003 with the dynamic-planning task graph in this review"
+      ]
+    },
+    {
+      "id": "RPT-PAPER-DRAFT",
+      "path": "reports/New/Conflux_Fourth_Year_Paper_Draft.md and reports/New/conflux_fourth_year_2026.tex",
+      "title": "Fourth-year paper draft",
+      "document_status": "substantial_work_in_progress",
+      "implementation_status": "results_pending",
+      "evidence_status": "honest_placeholders",
+      "assessment": "The manuscript clearly separates archived evidence from current claims and has a credible revised contribution. All new empirical sections remain TODO, as they should. Its planning contribution currently describes authority-constrained controller synthesis and restricted replanning, so it must be revised if open-ended realistic planning becomes the target.",
+      "next_actions": [
+        "Move draft to manuscript/",
+        "Update planning section and research questions",
+        "Generate results and figures only from versioned result JSON"
+      ]
+    },
+    {
+      "id": "RPT-CANONICAL-DOCS",
+      "path": "docs/STATUS.md, docs/ARCHITECTURE.md, docs/AUDIT.md, docs/EVALUATION.md",
+      "title": "Canonical repository documentation",
+      "document_status": "present_and_useful",
+      "implementation_status": "transitional",
+      "evidence_status": "mostly_qualitative",
+      "assessment": "The docs establish sensible boundaries and invariants. STATUS reports that audit, compilation, runtime, mypy and Ruff pass, but this review did not independently execute the repository. STATUS is not linked to backlog IDs and does not record evidence artefact paths or completion commits.",
+      "next_actions": [
+        "Make STATUS generated or cross-checked from the task registry",
+        "Add a planning layer to ARCHITECTURE.md after the ADR is accepted"
+      ]
+    },
+    {
+      "id": "RPT-MVP-RESULTS",
+      "path": "docs/MVP_RESULTS.md",
+      "title": "Current MVP result document",
+      "document_status": "template",
+      "implementation_status": "pending_executable_run",
+      "evidence_status": "no_current_results",
+      "assessment": "The file explicitly says it is a template pending an executable run. It is not evidence for the refactored implementation.",
+      "next_actions": [
+        "Run a versioned deterministic MVP experiment",
+        "Commit raw trace, result JSON and generated report"
+      ]
+    },
+    {
+      "id": "RPT-ROOT-README",
+      "path": "README.md",
+      "title": "Repository README",
+      "document_status": "stale_in_parts",
+      "implementation_status": "not_applicable",
+      "evidence_status": "structure_drift",
+      "assessment": "The README still lists providers, sled and benchmarks at old package paths, while the architecture document uses adapters and evaluation. It also does not explain the current implementation package or future planning layer.",
+      "next_actions": [
+        "Update package tree",
+        "Link the current technical specification and task registry"
+      ]
+    }
+  ],
+  "backlog_review": {
+    "observed_task_count": 46,
+    "task_families": {
+      "BASE": 2,
+      "SEC": 7,
+      "TRACE": 2,
+      "ARCH": 4,
+      "RUNTIME": 4,
+      "CLI": 2,
+      "EXP": 4,
+      "SLEDMC": 3,
+      "MODEL": 2,
+      "AGENTDOJO": 3,
+      "SLEDV": 4,
+      "PLAN": 3,
+      "CLUSTER": 2,
+      "CI": 2,
+      "PAPER": 2
+    },
+    "consistency_defects": [
+      "The technical specification requires SEC-001 through SEC-008, but the JSON backlog has SEC-001 through SEC-007 only.",
+      "TRACE-001 covers much of SEC-008 but is not declared as an alias or replacement.",
+      "Backlog tasks do not have status, evidence paths, completed commit, completed timestamp or verification timestamp.",
+      "The recommended repository placement in reports/New/README.md has not been carried out; the current manuscript remains under reports/New/.",
+      "Existing PLAN-001 through PLAN-003 assume a closed typed graph, pre-execution verification and optimisation; they do not implement open-ended LLM continuation or arbitrary code execution."
+    ],
+    "recommended_task_fields": [
+      "status",
+      "status_reason",
+      "evidence_paths",
+      "completed_commit",
+      "completed_at",
+      "verified_at",
+      "supersedes",
+      "superseded_by",
+      "owner",
+      "risk",
+      "claim_impact"
+    ]
+  },
+  "dynamic_planning_architecture": {
+    "goal": "Support realistic, open-ended agent behaviour capable of attempting arbitrary tasks, including arbitrary code execution, while mediating every externally relevant effect through ITES.",
+    "non_goal": "Prove the semantic behaviour of arbitrary generated programs in full generality.",
+    "key_distinction": "Runtime expressiveness may be unbounded; verification operates on finite bounds, declared effect summaries or conservative abstractions and may return UNKNOWN.",
+    "core_types": [
+      "OperationSchema",
+      "ActionTemplate",
+      "ArgumentBinding",
+      "GroundAction",
+      "Plan",
+      "PlanNode",
+      "ModelCallNode",
+      "ActionTemplateNode",
+      "BranchNode",
+      "LoopNode",
+      "ContinuePlanningNode",
+      "ApprovalNode",
+      "DelegationNode",
+      "SubplanNode",
+      "TerminalNode",
+      "PlanningRequest",
+      "ContinuationRequest",
+      "PlanPatch",
+      "CodeExecutionRequest",
+      "CapabilityEnvelope"
+    ],
+    "authority_context_rule": "A grounded effect is constrained by the node/path control provenance, invocation context and the provenance of every bound argument and observation that influenced that effect. A continuation creates new nodes whose control provenance includes every input to the planner call. Replanning never resets context.",
+    "execution_loop": [
+      "Create or receive an initial typed plan.",
+      "Select deterministic ready nodes.",
+      "Execute value/model nodes to produce provenance-bearing artifacts.",
+      "Resolve action templates into grounded actions.",
+      "Mediate the grounded action at execution time.",
+      "Execute only allowed provider effects.",
+      "Record result and update immutable plan state.",
+      "At ContinuePlanningNode, send a typed continuation request to the planner.",
+      "Validate and apply the returned plan patch or fail closed.",
+      "Repeat until goal, safe stop, failure or explicit budget exhaustion."
+    ],
+    "arbitrary_code_execution": {
+      "representation": "Authenticated execute_code operation with generated source as an Artifact argument.",
+      "capability_fields": [
+        "runtime",
+        "workspace",
+        "read_mounts",
+        "write_mounts",
+        "network_allowlist",
+        "credential_capabilities",
+        "timeout",
+        "memory_limit",
+        "process_limit",
+        "output_limit"
+      ],
+      "security_model": "ITES authorises the operation and capability envelope. The runtime sandbox enforces the envelope. SLED conservatively treats code as capable of any effect permitted by that envelope.",
+      "trace_requirements": [
+        "source hash",
+        "runtime image/version",
+        "capability envelope hash",
+        "input artifacts",
+        "observed reads/writes",
+        "stdout/stderr hashes",
+        "exit status",
+        "resource usage",
+        "output artifacts"
+      ]
+    },
+    "evaluation_modes": {
+      "scripted": "Exact plans and patches for deterministic semantics and regression tests.",
+      "real_model": "Concrete structured plans from a real LLM for utility, efficiency and attack experiments.",
+      "sled_worst_case": "Any well-formed plan patch and any effect within declared capability envelopes.",
+      "formal": "Finite or symbolic plan abstraction with SAFE/UNSAFE/BOUNDED_SAFE/UNKNOWN and explicit assumptions."
+    }
+  },
+  "recommended_planning_tasks": [
+    {
+      "id": "PLAN-DYN-000",
+      "title": "Adopt dynamic-plan ADR and update canonical reports",
+      "priority": "P0",
+      "milestone": "M1P",
+      "dependencies": [
+        "SEC-005",
+        "SEC-006",
+        "TRACE-001"
+      ],
+      "files": [
+        "docs/decisions/ADR-dynamic-plans.md",
+        "docs/ARCHITECTURE.md",
+        "reports/New/Conflux_Implementation_Technical_Specification.md",
+        "reports/New/Conflux_Fourth_Year_Paper_Draft.md"
+      ],
+      "change": "Specify that runtime plans are open-ended programs with explicit continuation points. Distinguish operational expressiveness from bounded or abstract verification.",
+      "acceptance_criteria": [
+        "ADR defines plan, node, patch, continuation and execution semantics",
+        "Existing PLAN-001..003 are marked replaced or narrowed",
+        "Paper and architecture use identical terminology"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-001",
+      "title": "Define operation schemas, templates, bindings and grounded actions",
+      "priority": "P0",
+      "milestone": "M1P",
+      "dependencies": [
+        "PLAN-DYN-000",
+        "SEC-006"
+      ],
+      "files": [
+        "src/conflux/planning/actions.py",
+        "src/conflux/core/actions.py",
+        "tests/planning/test_action_grounding.py"
+      ],
+      "change": "Separate reusable operation definitions, partially bound action templates and executable grounded actions. Record provenance for every binding.",
+      "acceptance_criteria": [
+        "Literal, artifact and prior-node-output bindings supported",
+        "Operation identity cannot be supplied as an unvalidated natural-language string",
+        "Ground action is immutable and completely serialisable",
+        "Binding provenance contributes to authority context"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-002",
+      "title": "Define open-ended plan and node model",
+      "priority": "P0",
+      "milestone": "M1P",
+      "dependencies": [
+        "PLAN-DYN-001"
+      ],
+      "files": [
+        "src/conflux/planning/model.py",
+        "schemas/plan.schema.json",
+        "tests/planning/test_plan_schema.py"
+      ],
+      "change": "Represent plan metadata and nodes for model calls, action templates, branches, loops, continuations, approvals, delegation, subplans and termination.",
+      "acceptance_criteria": [
+        "Stable plan/node IDs and parent links",
+        "Acyclic and cyclic plans can be represented explicitly",
+        "Every node has control provenance and declared input dependencies",
+        "Strict JSON schema and canonical hash"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-003",
+      "title": "Define continuation requests and plan patches",
+      "priority": "P0",
+      "milestone": "M1P",
+      "dependencies": [
+        "PLAN-DYN-002"
+      ],
+      "files": [
+        "src/conflux/planning/continuation.py",
+        "schemas/plan-patch.schema.json",
+        "tests/planning/test_plan_patches.py"
+      ],
+      "change": "Make check-what-next explicit. A continuation LLM call may append nodes, replace a subtree, spawn a subplan, request approval or terminate.",
+      "acceptance_criteria": [
+        "Patch operations are typed and deterministic",
+        "Patch cannot mutate completed history",
+        "New nodes inherit planner-call provenance",
+        "Malformed patch fails closed and is traced"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-004",
+      "title": "Add planner ports and structured planner records",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-003",
+        "TRACE-002"
+      ],
+      "files": [
+        "src/conflux/ports/planner.py",
+        "src/conflux/planning/requests.py",
+        "src/conflux/planning/records.py"
+      ],
+      "change": "Add initial-plan and continue-plan protocols separate from the current action-set ModelPort.",
+      "acceptance_criteria": [
+        "PlanningRequest includes goal, observations, current plan, catalogue and budget",
+        "PlannerResponse preserves raw and parsed forms",
+        "Planner identity/configuration hash recorded",
+        "No side effects in planner port"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-005",
+      "title": "Implement deterministic scripted planner",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-004",
+        "RUNTIME-001"
+      ],
+      "files": [
+        "src/conflux/adapters/models/scripted_planner.py",
+        "tests/planning/test_scripted_planner.py"
+      ],
+      "change": "Provide exact plan and continuation fixtures for unit, integration and SLED tests.",
+      "acceptance_criteria": [
+        "Initial plans and patches keyed by call ID or canonical request hash",
+        "Raw and parsed records emitted",
+        "Supports success, malformed output, replan and safe stop cases"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-006",
+      "title": "Implement plan execution state machine",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-002",
+        "PLAN-DYN-003",
+        "ARCH-001"
+      ],
+      "files": [
+        "src/conflux/planning/executor.py",
+        "src/conflux/planning/state.py",
+        "tests/planning/test_executor.py"
+      ],
+      "change": "Execute ready nodes, maintain node status, resolve dependencies, request continuations and preserve immutable execution history.",
+      "acceptance_criteria": [
+        "Deterministic ready-node ordering",
+        "Explicit running/succeeded/failed/blocked/skipped states",
+        "Loops and continuation depth obey configured budgets",
+        "Safe abort on inconsistent graph"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-007",
+      "title": "Define plan and path provenance semantics",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-001",
+        "PLAN-DYN-006",
+        "SEC-006"
+      ],
+      "files": [
+        "src/conflux/planning/provenance.py",
+        "tests/semantics/test_plan_provenance.py"
+      ],
+      "change": "Track plan-generation provenance, node control provenance, branch-condition provenance, invocation provenance and argument provenance. Replanning must never reset authority context.",
+      "acceptance_criteria": [
+        "Untrusted observation used in replanning constrains every new node it controls",
+        "Unused observation does not silently taint unrelated pre-existing nodes in the dataflow-sensitive mode",
+        "Conservative whole-call mode is available and documented",
+        "No model-supplied provenance is trusted without mediation"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-008",
+      "title": "Integrate grounded plan effects with the security kernel",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-006",
+        "PLAN-DYN-007",
+        "ARCH-001",
+        "SEC-002",
+        "SEC-004"
+      ],
+      "files": [
+        "src/conflux/application/execute_plan.py",
+        "src/conflux/mediation/",
+        "tests/integration/test_plan_mediation.py"
+      ],
+      "change": "Every effect is grounded and re-authorised at execution time. Plan approval never grants authority and does not bypass read, consent or visibility decisions.",
+      "acceptance_criteria": [
+        "No provider effect can occur directly from planner output",
+        "Policy revocation between planning and execution is honoured",
+        "Blocked node can trigger a typed continuation without authority reset",
+        "Allowed and blocked effects appear in one trace"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-009",
+      "title": "Add arbitrary code execution operation with capability envelope",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-001",
+        "PLAN-DYN-008",
+        "RUNTIME-003"
+      ],
+      "files": [
+        "src/conflux/planning/code_execution.py",
+        "src/conflux/adapters/providers/code_sandbox.py",
+        "tests/integration/test_code_sandbox.py"
+      ],
+      "change": "Permit arbitrary generated source code as data supplied to an authenticated execute-code operation. Mediate its filesystem, network, credential, process and resource capability envelope.",
+      "acceptance_criteria": [
+        "Source may contain arbitrary valid program text",
+        "No host shell interpolation",
+        "Root-confined workspace and explicit mounts",
+        "Network denied by default and allowlisted when enabled",
+        "Timeout, memory, process and output limits",
+        "Observed reads/writes/exit status captured",
+        "Code output artifacts inherit source, input and runtime provenance"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-010",
+      "title": "Extend trace and result schemas for plans",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-003",
+        "PLAN-DYN-008",
+        "TRACE-002"
+      ],
+      "files": [
+        "schemas/trace.schema.json",
+        "schemas/result.schema.json",
+        "src/conflux/evaluation/records.py",
+        "tests/fixtures/traces/plans/"
+      ],
+      "change": "Record plan creation, patching, binding, grounding, continuation, code execution, subplan and node lifecycle events.",
+      "acceptance_criteria": [
+        "Every event has run, plan, node, branch and causal parent IDs",
+        "Raw planner response hash recorded",
+        "Plan and patch hashes stable",
+        "Replay reconstructs final plan and node states"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-011",
+      "title": "Expose dynamic-plan demo and interactive loop",
+      "priority": "P0",
+      "milestone": "M2P",
+      "dependencies": [
+        "PLAN-DYN-005",
+        "PLAN-DYN-006",
+        "PLAN-DYN-008",
+        "PLAN-DYN-010",
+        "CLI-001"
+      ],
+      "files": [
+        "src/conflux/cli.py",
+        "examples/planning/",
+        "tests/integration/test_planning_demo.py"
+      ],
+      "change": "Add a deterministic scenario in which a plan reads data, generates a value, performs a grounded effect, encounters a failure and asks the planner for a next step.",
+      "acceptance_criteria": [
+        "Clean install runs the demo",
+        "At least one continuation creates a new subplan",
+        "One safe effect executes and one unsafe effect is blocked",
+        "Trace/result validate and are deterministic"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-012",
+      "title": "Implement real structured LLM planner adapter",
+      "priority": "P1",
+      "milestone": "M4P",
+      "dependencies": [
+        "PLAN-DYN-004",
+        "MODEL-001",
+        "PLAN-DYN-010"
+      ],
+      "files": [
+        "src/conflux/adapters/models/openai_compatible_planner.py",
+        "tests/test_openai_compatible_planner.py"
+      ],
+      "change": "Request strict structured initial plans and plan patches from an OpenAI-compatible endpoint while retaining raw responses and parser failures.",
+      "acceptance_criteria": [
+        "Schema-constrained response mode where supported",
+        "Repair is bounded and never executes unparsed text",
+        "Model/version/parameters/tokens/latency recorded",
+        "Replay adapter can rerun captured responses without network"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-013",
+      "title": "Add plan-specific semantic and adversarial corpus",
+      "priority": "P0",
+      "milestone": "M3P",
+      "dependencies": [
+        "PLAN-DYN-008",
+        "PLAN-DYN-009",
+        "PLAN-DYN-010"
+      ],
+      "files": [
+        "tests/semantics/test_dynamic_plans.py",
+        "tests/fixtures/plans/"
+      ],
+      "change": "Test plan laundering, untrusted destinations, patch replacement, branch provenance, permission revocation, denial-driven replanning, generated code and infinite continuation.",
+      "acceptance_criteria": [
+        "Each unsafe baseline produces a counterexample",
+        "Replanning never regains removed authority",
+        "Code cannot exceed capability envelope",
+        "Bound exhaustion is explicit rather than silently incomplete"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-014",
+      "title": "Add SLED worst-case dynamic planner model",
+      "priority": "P1",
+      "milestone": "M5P",
+      "dependencies": [
+        "PLAN-DYN-013",
+        "SLEDMC-001"
+      ],
+      "files": [
+        "src/conflux/evaluation/planning.py",
+        "src/conflux/verification/planning_state.py",
+        "tests/test_planning_model_checker.py"
+      ],
+      "change": "At each continuation, model any well-formed plan patch and any code outcome allowed by the capability envelope. Explore bounded or abstract states rather than concrete source-code semantics.",
+      "acceptance_criteria": [
+        "Planner is nondeterministic but type/schema constrained",
+        "Arbitrary code is abstracted as worst-case permitted effects",
+        "Verdict reports plan/call/depth/value bounds",
+        "Shortest plan-level counterexample reconstructed"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-015",
+      "title": "Define plan verification abstraction and UNKNOWN conditions",
+      "priority": "P1",
+      "milestone": "M7P",
+      "dependencies": [
+        "PLAN-DYN-014",
+        "SLEDV-001",
+        "SLEDV-002"
+      ],
+      "files": [
+        "src/conflux/planning/verify.py",
+        "src/conflux/verification/plan_ir.py"
+      ],
+      "change": "Verify the explicit plan structure and abstract effects. Do not claim to verify arbitrary program semantics; return UNKNOWN when effects or domains are unsupported.",
+      "acceptance_criteria": [
+        "Safe, unsafe, bounded-safe and unknown fixtures",
+        "Every assumption and abstraction recorded",
+        "Dynamic continuation is modelled as nondeterministic plan extension",
+        "Runtime-to-IR conformance covers supported plan transitions"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-016",
+      "title": "Run realistic planning comparison",
+      "priority": "P1",
+      "milestone": "M6P",
+      "dependencies": [
+        "PLAN-DYN-011",
+        "PLAN-DYN-012",
+        "EXP-001"
+      ],
+      "files": [
+        "experiments/manifests/planning-comparison.yaml",
+        "scripts/generate_planning_report.py"
+      ],
+      "change": "Compare direct reactive proposals, closed static plans, open-ended continuation plans and open-ended plans with code execution.",
+      "acceptance_criteria": [
+        "Same tasks, model settings and provider where applicable",
+        "Security and utility metrics separated",
+        "Calls, tokens, latency, replans, plan growth, sensitive reads and maximum authority-context size reported",
+        "Failures and bound-reached runs retained"
+      ]
+    },
+    {
+      "id": "PLAN-DYN-017",
+      "title": "Implement authority-aware plan optimisation",
+      "priority": "P2",
+      "milestone": "M8P",
+      "dependencies": [
+        "PLAN-DYN-015",
+        "PLAN-DYN-016"
+      ],
+      "files": [
+        "src/conflux/planning/optimise.py",
+        "tests/planning/test_optimise.py"
+      ],
+      "change": "Choose among candidate plans using security as a hard constraint and utility, authority footprint, sensitive observations, cost and irreversible effects as ordered objectives.",
+      "acceptance_criteria": [
+        "Deterministic tie-breaking",
+        "Objective vector recorded",
+        "Optimiser cannot turn UNKNOWN into safe",
+        "Ablation shows effect of each objective"
+      ]
+    }
+  ],
+  "recommended_sequence": [
+    {
+      "phase": "A",
+      "name": "Semantic prerequisites",
+      "tasks": [
+        "SEC-001",
+        "SEC-002",
+        "SEC-004",
+        "SEC-005",
+        "SEC-006",
+        "TRACE-001",
+        "ARCH-001"
+      ]
+    },
+    {
+      "phase": "B",
+      "name": "Dynamic-plan contracts",
+      "tasks": [
+        "PLAN-DYN-000",
+        "PLAN-DYN-001",
+        "PLAN-DYN-002",
+        "PLAN-DYN-003",
+        "PLAN-DYN-004"
+      ]
+    },
+    {
+      "phase": "C",
+      "name": "Deterministic runtime vertical slice",
+      "tasks": [
+        "PLAN-DYN-005",
+        "PLAN-DYN-006",
+        "PLAN-DYN-007",
+        "PLAN-DYN-008",
+        "PLAN-DYN-010",
+        "PLAN-DYN-011"
+      ]
+    },
+    {
+      "phase": "D",
+      "name": "Arbitrary code execution",
+      "tasks": [
+        "RUNTIME-003",
+        "PLAN-DYN-009",
+        "PLAN-DYN-013"
+      ]
+    },
+    {
+      "phase": "E",
+      "name": "Realistic LLM planning",
+      "tasks": [
+        "MODEL-001",
+        "PLAN-DYN-012",
+        "PLAN-DYN-016"
+      ]
+    },
+    {
+      "phase": "F",
+      "name": "SLED and verification integration",
+      "tasks": [
+        "SLEDMC-001",
+        "SLEDMC-002",
+        "SLEDV-001",
+        "SLEDV-002",
+        "PLAN-DYN-014",
+        "PLAN-DYN-015"
+      ]
+    },
+    {
+      "phase": "G",
+      "name": "Optimisation and synthesis",
+      "tasks": [
+        "PLAN-DYN-017"
+      ]
+    }
+  ],
+  "definition_of_done_for_first_planning_result": [
+    "A real or scripted LLM can produce an initial plan and at least one continuation patch.",
+    "The plan can produce values that bind later action arguments.",
+    "The plan can request arbitrary code execution within an explicit sandbox capability envelope.",
+    "Every grounded effect passes through the canonical security kernel at execution time.",
+    "Plan, patch, node, binding and action provenance are replayable from the trace.",
+    "A deterministic demo includes allowed, blocked, failed and replanned steps.",
+    "A real-model experiment compares reactive, static and dynamic planning.",
+    "SLED can model arbitrary well-formed continuation patches under stated bounds.",
+    "Claims distinguish operational support, bounded verification and empirical model utility."
+  ],
+  "source_index": {
+    "repo": "https://github.com/RayaBuckley/Conflux/",
+    "status": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/docs/STATUS.md",
+    "architecture": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/docs/ARCHITECTURE.md",
+    "actions": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/src/conflux/core/actions.py",
+    "model_port": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/src/conflux/ports/model.py",
+    "mediator": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/src/conflux/ites/mediator.py",
+    "authorisation": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/src/conflux/auth/authorisation.py",
+    "new_spec": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/reports/New/Conflux_Implementation_Technical_Specification.md",
+    "new_backlog": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/reports/New/Conflux_Codex_Implementation_Backlog.json",
+    "paper_draft": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/reports/New/Conflux_Fourth_Year_Paper_Draft.md",
+    "mvp_results": "https://raw.githubusercontent.com/RayaBuckley/Conflux/main/docs/MVP_RESULTS.md",
+    "camel": "https://arxiv.org/abs/2503.18813",
+    "react": "https://arxiv.org/abs/2210.03629",
+    "rewoo": "https://arxiv.org/abs/2305.18323",
+    "llm_plus_p": "https://arxiv.org/abs/2304.11477"
+  }
+}
