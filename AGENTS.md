@@ -22,9 +22,13 @@ current Principal Context and provenance, not static prompt trust labels.
 - `src/conflux/ites`: canonical security boundary and mediation.
 - `src/conflux/adapters`: external policy, provider, and benchmark adapters.
 - `src/conflux/evaluation`: SLED bounded verification and evaluation services.
+- `src/conflux/planning`: authenticated dynamic plans and bounded execution.
+- `src/conflux/verification`: serialisable formal subset and optional backends.
 - `tests`: offline unit, security, integration, and reproducibility tests.
 - `docs`: architecture, contracts, decisions, status, and workflows.
-- `paper`: archived LaTeX research artefact and post-paper reference.
+- `manuscript`: current LaTeX paper and evidence-controlled generated inputs.
+- `reports/analysis`: current synthesis of immutable historical reports.
+- `reports/archive` and `paper`: integrity-protected historical evidence.
 
 ## Non-negotiable invariants
 
@@ -47,6 +51,9 @@ Inspect the architecture and affected APIs, write a decision-complete feature
 specification, implement the smallest coherent change, run
 `scripts\validate.ps1`, update documentation and status, and review the diff.
 Use `scripts\audit_repository.py` during AI-assisted changes.
+Read `docs/AI_AGENT_GUIDE.md` for source authority, documentation routing, and
+stop conditions. Update one canonical owner rather than creating parallel
+status, rationale, roadmap, or claim documents.
 
 ## Terminology and paper policy
 
