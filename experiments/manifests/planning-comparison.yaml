@@ -1,0 +1,31 @@
+schema_version: "1"
+id: planning-comparison-v1
+suite: dynamic-planning-comparison
+suite_version: "1"
+source_commit: 68fe2af
+defence: ites
+bounds:
+  cases: [safe-read-write, injected-destination, revocation, provider-failure]
+  max_model_calls: 12
+  max_plan_nodes: 64
+model:
+  adapter: openai-compatible
+  version: externally-supplied
+  modes: [reactive, static, dynamic, dynamic_code]
+  credential: environment-only
+provider:
+  adapter: confined-filesystem
+  version: "1"
+policy:
+  adapter: in-memory
+  version: "1"
+seed: 0
+machine:
+  execution: manual-gated
+  hardware_relevance: none
+output_directory: runs/planning-comparison
+rerun_command:
+  - python
+  - scripts/generate_planning_report.py
+  - runs/planning-comparison/raw
+  - runs/planning-comparison/result.json

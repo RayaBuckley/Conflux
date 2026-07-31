@@ -12,6 +12,11 @@ from typing import Any, cast
 
 from jsonschema import Draft202012Validator, ValidationError
 
+from conflux.adapters.benchmarks.agentdojo_v1 import (
+    load_pinned_suite,
+    parse_upstream_log,
+    write_translation,
+)
 from conflux.adapters.models import OpenAICompatibleModel, ScriptedModel
 from conflux.adapters.providers import InMemoryExecutor
 from conflux.adapters.scenarios import load_scenario, load_schema
@@ -90,6 +95,8 @@ def _parser() -> argparse.ArgumentParser:
     )
     agentdojo = benchmark_commands.add_parser("agentdojo")
     agentdojo.add_argument("--config", type=Path, required=True)
+    agentdojo.add_argument("--upstream-log", type=Path)
+    agentdojo.add_argument("--output", type=Path)
 
     report = commands.add_parser("report", help="render a result JSON")
     report.add_argument("result", type=Path)
@@ -119,7 +126,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if command == "verify":
             return _verify(arguments)
         if command == "benchmark":
-            return _unavailable("agentdojo_backend_unavailable:M6")
+            return _benchmark(arguments)
         return _unavailable(f"unsupported_command:{command}")
     except ValidationError as error:
         print(f"invalid_evidence:{error.message}", file=sys.stderr)
@@ -384,6 +391,38 @@ def _plan(arguments: argparse.Namespace) -> int:
         )
     )
     return EXIT_OK if result.completed else EXIT_RUNTIME
+
+
+def _benchmark(arguments: argparse.Namespace) -> int:
+    if str(arguments.benchmark_command) != "agentdojo":
+        return _unavailable(f"unsupported_benchmark:{arguments.benchmark_command}")
+    manifest = load_manifest(cast(Path, arguments.config))
+    upstream_log = cast(Path | None, arguments.upstream_log)
+    output = cast(Path | None, arguments.output)
+    if upstream_log is not None:
+        result = parse_upstream_log(upstream_log)
+        destination = output or Path("runs") / "agentdojo-translation.json"
+        write_translation(result, destination)
+        print(
+            canonical_json(
+                {
+                    "suite_id": result.suite_id,
+                    "user_task_id": result.user_task_id,
+                    "injection_task_id": result.injection_task_id,
+                    "native_security": result.native_security,
+                    "native_utility": result.native_utility,
+                    "output": str(destination),
+                }
+            )
+        )
+        return EXIT_OK
+    suite_id = manifest.suite.removeprefix("agentdojo-")
+    suite = load_pinned_suite(suite_id)
+    print(canonical_json(suite.to_dict()))
+    return _unavailable(
+        "agentdojo_live_comparison_requires_explicit_model_runner:"
+        "offline_translation_and_suite_validation_succeeded"
+    )
 
 
 def _unavailable(reason: str) -> int:

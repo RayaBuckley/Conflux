@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/planning-observation-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id", "mode", "security_passed", "utility_completed", "status",
+    "calls", "tokens", "latency_ms", "replans", "plan_nodes",
+    "sensitive_reads", "max_context_size"
+  ],
+  "properties": {
+    "task_id": {"type": "string", "minLength": 1},
+    "mode": {"enum": ["reactive", "static", "dynamic", "dynamic_code"]},
+    "security_passed": {"type": "boolean"},
+    "utility_completed": {"type": "boolean"},
+    "status": {"enum": ["complete", "blocked", "provider_failed", "bound_reached", "model_failed", "parser_failed"]},
+    "calls": {"type": "integer", "minimum": 0},
+    "tokens": {"type": "integer", "minimum": 0},
+    "latency_ms": {"type": "integer", "minimum": 0},
+    "replans": {"type": "integer", "minimum": 0},
+    "plan_nodes": {"type": "integer", "minimum": 0},
+    "sensitive_reads": {"type": "integer", "minimum": 0},
+    "max_context_size": {"type": "integer", "minimum": 0}
+  }
+}

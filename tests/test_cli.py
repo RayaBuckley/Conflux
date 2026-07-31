@@ -14,6 +14,15 @@ from conflux.cli import (
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO = ROOT / "examples" / "basic.yaml"
+AGENTDOJO_FIXTURE = (
+    ROOT
+    / "tests"
+    / "fixtures"
+    / "agentdojo"
+    / "v0.1.35"
+    / "workspace-user_task_17-injection_task_1.json"
+)
+AGENTDOJO_MANIFEST = ROOT / "experiments" / "manifests" / "agentdojo-smoke.yaml"
 
 
 def test_demo_writes_linked_trace_result_and_report(
@@ -90,3 +99,28 @@ def test_unavailable_backends_and_invalid_evidence_fail_closed(
     invalid = tmp_path / "result.json"
     invalid.write_text('{"schema_version":"1"}', encoding="utf-8")
     assert main(["report", str(invalid)]) == EXIT_INVALID_EVIDENCE
+
+
+def test_agentdojo_command_translates_retained_upstream_log(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    output = tmp_path / "translated.json"
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "--config",
+                str(AGENTDOJO_MANIFEST),
+                "--upstream-log",
+                str(AGENTDOJO_FIXTURE),
+                "--output",
+                str(output),
+            ]
+        )
+        == EXIT_OK
+    )
+    assert json.loads(output.read_text())["user_task_id"] == "user_task_17"
+    summary = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
+    assert summary["native_security"] is False

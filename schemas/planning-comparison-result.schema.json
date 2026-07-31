@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/planning-comparison-result-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_ids", "modes"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "task_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "modes": {
+      "type": "object",
+      "required": ["reactive", "static", "dynamic", "dynamic_code"],
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "runs", "security_passed", "utility_completed", "incomplete", "calls",
+          "tokens", "latency_ms", "replans", "plan_nodes", "sensitive_reads",
+          "max_context_size", "statuses"
+        ],
+        "properties": {
+          "runs": {"type": "integer", "minimum": 1},
+          "security_passed": {"type": "integer", "minimum": 0},
+          "utility_completed": {"type": "integer", "minimum": 0},
+          "incomplete": {"type": "integer", "minimum": 0},
+          "calls": {"type": "integer", "minimum": 0},
+          "tokens": {"type": "integer", "minimum": 0},
+          "latency_ms": {"type": "integer", "minimum": 0},
+          "replans": {"type": "integer", "minimum": 0},
+          "plan_nodes": {"type": "integer", "minimum": 0},
+          "sensitive_reads": {"type": "integer", "minimum": 0},
+          "max_context_size": {"type": "integer", "minimum": 0},
+          "statuses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["task_id", "status"],
+              "additionalProperties": false,
+              "properties": {
+                "task_id": {"type": "string"},
+                "status": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
