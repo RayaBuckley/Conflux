@@ -190,7 +190,7 @@ def _table(result: RunResult) -> str:
 
 def _write_checksums(output: Path) -> None:
     lines = (
-        f"{hashlib.sha256((output / name).read_bytes()).hexdigest()}  {name}"
+        f"{_canonical_file_sha256(output / name)}  {name}"
         for name in BUNDLE_FILES
     )
     (output / "checksums.sha256").write_text(
@@ -198,6 +198,11 @@ def _write_checksums(output: Path) -> None:
         encoding="utf-8",
         newline="\n",
     )
+
+
+def _canonical_file_sha256(path: Path) -> str:
+    content = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 __all__ = ["BUNDLE_FILES", "generate_smoke_bundle", "replace_record"]

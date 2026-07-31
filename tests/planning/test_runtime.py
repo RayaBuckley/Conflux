@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+import pytest
+
 from conflux.adapters.models import ScriptedPlanner, ScriptedValueModel
 from conflux.adapters.providers import InMemoryExecutor
 from conflux.application import DecisionPipeline, MediationService
@@ -24,9 +26,11 @@ from conflux.ites import MediatingITES, TransitionKernel
 from conflux.planning import (
     ActionTemplate,
     ActionTemplateNode,
+    ApprovalNode,
     ArgumentSpec,
     ArgumentType,
     ContinuePlanningNode,
+    DelegationNode,
     DynamicPlanExecutor,
     LiteralBinding,
     LoopNode,
@@ -509,3 +513,140 @@ def test_authenticated_outcome_contract_blocks_malformed_provider_result(
     assert not result.completed
     assert result.state.failure_category == "outcome_contract_violation"
     assert result.state.node_state(action.id).status == NodeStatus.FAILED
+
+
+def test_run_rejects_catalogue_mismatch_and_invalid_initial_plan(
+    alice: Principal,
+) -> None:
+    request = PlanningRequest(
+        "initial",
+        "repair",
+        (),
+        "wrong-catalogue",
+        PlanBudgets(),
+        source(alice),
+    )
+    mismatch = executor(
+        alice=alice,
+        planner=ScriptedPlanner({}, {}),
+        value_model=ScriptedValueModel({}),
+        provider=InMemoryExecutor(),
+        grants=frozenset(),
+        consent=frozenset(),
+    ).run(request)
+    assert mismatch.state.failure_category == "catalogue_mismatch"
+    valid_request = PlanningRequest(
+        "initial",
+        "repair",
+        (),
+        catalogue().fingerprint,
+        PlanBudgets(),
+        source(alice),
+    )
+    invalid = executor(
+        alice=alice,
+        planner=ScriptedPlanner({"initial": {"bad": True}}, {}),
+        value_model=ScriptedValueModel({}),
+        provider=InMemoryExecutor(),
+        grants=frozenset(),
+        consent=frozenset(),
+    ).run(valid_request)
+    assert invalid.state.failure_category == "planner_output_invalid"
+    assert invalid.state.events[-1].event_type == "plan.failed"
+
+
+def test_run_accepts_parsed_initial_plan_and_records_planner_response(
+    alice: Principal,
+) -> None:
+    provenance = source(alice)
+    plan = Plan(
+        "initial-plan",
+        "repair",
+        (TerminalNode("done", TerminalOutcome.SUCCEEDED, "done", provenance),),
+        provenance,
+    )
+    request = PlanningRequest(
+        "initial",
+        "repair",
+        (),
+        catalogue().fingerprint,
+        PlanBudgets(),
+        provenance,
+    )
+    result = executor(
+        alice=alice,
+        planner=ScriptedPlanner({"initial": plan.to_dict()}, {}),
+        value_model=ScriptedValueModel({}),
+        provider=InMemoryExecutor(),
+        grants=frozenset(),
+        consent=frozenset(),
+    ).run(request)
+    assert result.completed
+    assert result.state.planner_calls == 1
+    assert "plan.planner_responded" in [event.event_type for event in result.state.events]
+
+
+@pytest.mark.parametrize(
+    ("node", "category"),
+    [
+        (
+            ApprovalNode(
+                "approval",
+                "confirm",
+                Provenance.unknown(source="approval"),
+            ),
+            "approval_unavailable",
+        ),
+        (
+            DelegationNode(
+                "delegation",
+                "write:*",
+                Provenance.unknown(source="delegation"),
+            ),
+            "delegation_unsupported",
+        ),
+    ],
+)
+def test_unsupported_authority_nodes_block_without_effect(
+    alice: Principal,
+    node: ApprovalNode | DelegationNode,
+    category: str,
+) -> None:
+    trusted = source(alice)
+    node = (
+        ApprovalNode(node.id, node.request, trusted)
+        if isinstance(node, ApprovalNode)
+        else DelegationNode(node.id, node.scope, trusted)
+    )
+    result = executor(
+        alice=alice,
+        planner=ScriptedPlanner({}, {}),
+        value_model=ScriptedValueModel({}),
+        provider=InMemoryExecutor(),
+        grants=frozenset(),
+        consent=frozenset(),
+    ).execute(Plan(f"{node.id}-plan", "test", (node,), trusted))
+    assert result.state.failure_category == category
+    assert result.state.node_state(node.id).status == NodeStatus.BLOCKED
+
+
+def test_missing_model_value_fails_closed(alice: Principal) -> None:
+    from conflux.planning import ModelCallNode
+
+    provenance = source(alice)
+    node = ModelCallNode(
+        "model",
+        LiteralBinding("prompt", provenance),
+        "text",
+        provenance,
+    )
+    result = executor(
+        alice=alice,
+        planner=ScriptedPlanner({}, {}),
+        value_model=ScriptedValueModel({}),
+        provider=InMemoryExecutor(),
+        grants=frozenset(),
+        consent=frozenset(),
+    ).execute(Plan("model-plan", "test", (node,), provenance))
+    assert result.state.failure_category == "model_output_invalid"
+    assert result.state.node_state("model").reason == "scripted_value_missing"

@@ -6,8 +6,9 @@ import importlib.util
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import cast
+from typing import Callable, cast
 
+import pytest
 from jsonschema import Draft202012Validator
 
 from conflux.verification import (
@@ -194,3 +195,117 @@ def test_nuxmv_adapter_safe_unsafe_unknown_and_hashes() -> None:
     unsupported = NuXmvBackend(availability=lambda _: True).verify(integer)
     assert unsupported.verdict == FormalVerdict.UNKNOWN
     assert "unsupported_integer_variables" in (unsupported.error or "")
+
+
+@pytest.mark.parametrize(
+    ("expression", "message"),
+    [
+        (lambda: Expression(ExpressionKind.NOT), "requires 1 arguments"),
+        (lambda: Expression(ExpressionKind.AND), "requires arguments"),
+        (lambda: Expression(ExpressionKind.CONSTANT, "bad"), "requires a Boolean"),
+        (lambda: Expression(ExpressionKind.VARIABLE, ""), "requires a name"),
+        (
+            lambda: Expression(
+                ExpressionKind.NOT,
+                True,
+                (Expression.constant(True),),
+            ),
+            "cannot contain a direct value",
+        ),
+    ],
+)
+def test_expression_contracts_fail_closed(
+    expression: Callable[[], Expression],
+    message: str,
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        expression()
+
+
+@pytest.mark.parametrize(
+    ("variable", "message"),
+    [
+        (lambda: StateVariable("", Sort.BOOLEAN, True), "name must be non-empty"),
+        (lambda: StateVariable("flag", Sort.BOOLEAN, 1), "requires a Boolean"),
+        (lambda: StateVariable("count", Sort.INTEGER, True), "requires an integer"),
+        (lambda: StateVariable("flag", Sort.BOOLEAN, True, 0, 1), "cannot have numeric"),
+        (lambda: StateVariable("count", Sort.INTEGER, 2, 3, 1), "minimum exceeds"),
+        (lambda: StateVariable("count", Sort.INTEGER, 4, 0, 3), "outside its domain"),
+    ],
+)
+def test_state_variable_contracts_fail_closed(
+    variable: Callable[[], StateVariable],
+    message: str,
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        variable()
+
+
+def test_ir_rejects_duplicate_unknown_and_malformed_structures() -> None:
+    flag = StateVariable("flag", Sort.BOOLEAN, False)
+    with pytest.raises(ValueError, match="non-empty and unique"):
+        VerificationIR("empty", (), (), (), 1)
+    with pytest.raises(ValueError, match="transition rule ids must be unique"):
+        rule = TransitionRule("same", Expression.constant(True), ())
+        VerificationIR("duplicate", (flag,), (rule, rule), (), 1)
+    with pytest.raises(ValueError, match="invariant ids must be unique"):
+        invariant = SafetyInvariant("same", Expression.constant(True))
+        VerificationIR("duplicate", (flag,), (), (invariant, invariant), 1)
+    with pytest.raises(ValueError, match="assigns unknown variables"):
+        VerificationIR(
+            "unknown",
+            (flag,),
+            (
+                TransitionRule(
+                    "bad",
+                    Expression.constant(True),
+                    (Assignment("missing", Expression.constant(True)),),
+                ),
+            ),
+            (),
+            1,
+        )
+    with pytest.raises(ValueError, match="references unknown variable"):
+        VerificationIR(
+            "unknown",
+            (flag,),
+            (),
+            (SafetyInvariant("bad", Expression.variable("missing")),),
+            1,
+        )
+    for payload in (
+        None,
+        {},
+        {
+            **security_ir().to_dict(),
+            "variables": "not-an-array",
+        },
+        {
+            **security_ir().to_dict(),
+            "assumptions": [1],
+        },
+        {
+            **security_ir().to_dict(),
+            "id": 1,
+        },
+    ):
+        with pytest.raises(ValueError):
+            VerificationIR.from_dict(payload)
+
+
+def test_ir_nested_parsers_reject_malformed_records() -> None:
+    payload = security_ir().to_dict()
+    malformed_values = (
+        ("variables", [None]),
+        ("transitions", [None]),
+        ("invariants", [None]),
+        (
+            "transitions",
+            [{"id": "x", "guard": Expression.constant(True).to_dict(), "assignments": [None]}],
+        ),
+    )
+    for key, value in malformed_values:
+        candidate = dict(payload)
+        candidate[key] = value
+        with pytest.raises((ValueError, TypeError)):
+            VerificationIR.from_dict(candidate)

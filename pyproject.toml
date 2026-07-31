@@ -52,6 +52,18 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-p no:cacheprovider"
+[tool.coverage.run]
+branch = true
+source = ["src/conflux"]
+omit = [
+    "src/conflux/adapters/benchmarks/agentdojo_v1.py",
+    "src/conflux/adapters/models/huggingface.py",
+    "src/conflux/adapters/models/openai_compatible.py",
+    "src/conflux/adapters/models/openai_compatible_planner.py",
+    "src/conflux/adapters/providers/code_sandbox.py",
+    "src/conflux/verification/nuxmv_backend.py",
+    "src/conflux/verification/z3_backend.py",
+]
 [tool.ruff]
 line-length = 140
 target-version = "py312"

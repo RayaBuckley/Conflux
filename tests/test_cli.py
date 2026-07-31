@@ -124,3 +124,119 @@ def test_agentdojo_command_translates_retained_upstream_log(
     assert json.loads(output.read_text())["user_task_id"] == "user_task_17"
     summary = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert summary["native_security"] is False
+
+
+def test_text_modes_selection_and_optional_failures_are_explicit(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    output = tmp_path / "run"
+    assert main(["demo", "--scenario", str(SCENARIO), "--output", str(output)]) == EXIT_OK
+    assert main(["report", str(output / "result.json")]) == EXIT_OK
+    assert "# Conflux run" in capsys.readouterr().out  # type: ignore[attr-defined]
+    assert main(["doctor"]) == EXIT_OK
+    assert "Conflux doctor:" in capsys.readouterr().out  # type: ignore[attr-defined]
+    assert (
+        main(
+            [
+                "demo",
+                "--scenario",
+                str(SCENARIO),
+                "--output",
+                str(tmp_path / "invalid"),
+                "--select-branch",
+                "missing",
+            ]
+        )
+        == EXIT_USAGE
+    )
+    assert (
+        main(
+            [
+                "chat",
+                "--scenario",
+                str(SCENARIO),
+                "--endpoint",
+                "http://127.0.0.1:1/v1/chat/completions",
+                "--model",
+                "unavailable",
+                "--principal",
+                "missing",
+            ]
+        )
+        == EXIT_USAGE
+    )
+
+
+def test_verify_cli_retains_unknown_optional_backend_result(
+    tmp_path: Path,
+) -> None:
+    model = tmp_path / "model.json"
+    model.write_text(
+        json.dumps(
+            {
+                "schema_version": "1",
+                "id": "cli-model",
+                "bound": 1,
+                "assumptions": [],
+                "variables": [
+                    {
+                        "name": "safe",
+                        "sort": "boolean",
+                        "initial": True,
+                        "minimum": None,
+                        "maximum": None,
+                    }
+                ],
+                "transitions": [],
+                "invariants": [
+                    {
+                        "id": "safe",
+                        "expression": {
+                            "kind": "variable",
+                            "value": "safe",
+                            "arguments": [],
+                        },
+                        "description": "",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "verify"
+    assert (
+        main(
+            [
+                "verify",
+                "--model",
+                str(model),
+                "--property",
+                "safe",
+                "--backend",
+                "z3",
+                "--output",
+                str(output),
+            ]
+        )
+        == 3
+    )
+    assert json.loads((output / "formal-verification.json").read_text())["verdict"] == "unknown"
+    assert (
+        main(["verify", "--model", str(model), "--property", "missing"])
+        == EXIT_USAGE
+    )
+
+
+def test_live_agentdojo_gate_reports_missing_optional_package() -> None:
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "--config",
+                str(AGENTDOJO_MANIFEST),
+            ]
+        )
+        == 3
+    )

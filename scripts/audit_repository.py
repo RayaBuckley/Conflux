@@ -36,6 +36,8 @@ FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
 PAPER = ROOT / "paper"
 MANUSCRIPT = ROOT / "manuscript"
 SMOKE = ROOT / "runs" / "smoke"
+TASK_REGISTRY = DOCS / "task-registry.json"
+EVIDENCE_SOURCES = DOCS / "evidence-sources.json"
 
 
 def imports(path: Path) -> set[str]:
@@ -47,6 +49,10 @@ def imports(path: Path) -> set[str]:
         elif isinstance(node, ast.Import):
             result.update(alias.name for alias in node.names)
     return result
+
+
+def canonical_text_bytes(path: Path) -> bytes:
+    return path.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
 
 
 def check_architecture(errors: list[str]) -> None:
@@ -61,6 +67,15 @@ def check_architecture(errors: list[str]) -> None:
                 errors.append(f"{path.relative_to(ROOT)}: domain imports outward {imported}")
             if path.is_relative_to(SOURCE / "ports") and imported.startswith("conflux.adapters"):
                 errors.append(f"{path.relative_to(ROOT)}: port imports adapter {imported}")
+            if path.is_relative_to(SOURCE / "planning") and imported.startswith(
+                "conflux.adapters"
+            ):
+                errors.append(f"{path.relative_to(ROOT)}: planning imports adapter {imported}")
+    benchmark_exports = (SOURCE / "adapters" / "benchmarks" / "__init__.py").read_text(
+        encoding="utf-8"
+    )
+    if "agentdojo" in benchmark_exports.lower():
+        errors.append("experimental AgentDojo integration is publicly re-exported")
 
 
 def check_docs(errors: list[str]) -> None:
@@ -94,6 +109,92 @@ def check_reports(errors: list[str]) -> None:
     missing = expected - {path.name for path in (ROOT / "reports").iterdir()}
     if missing:
         errors.append(f"missing report artifacts: {sorted(missing)}")
+    check_task_registry(errors)
+    check_evidence_sources(errors)
+
+
+def check_task_registry(errors: list[str]) -> None:
+    if not TASK_REGISTRY.is_file():
+        errors.append("missing machine-readable task registry")
+        return
+    registry = json.loads(TASK_REGISTRY.read_text(encoding="utf-8"))
+    groups = registry.get("groups")
+    if not isinstance(groups, list):
+        errors.append("task registry has no groups")
+        return
+    registered: set[str] = set()
+    valid_statuses = {"implemented", "partial", "externally_gated", "deferred"}
+    for index, group in enumerate(groups):
+        if not isinstance(group, dict):
+            errors.append(f"task registry group {index} is not an object")
+            continue
+        identifiers = group.get("ids")
+        status = group.get("status")
+        evidence = group.get("evidence")
+        if not isinstance(identifiers, list) or not identifiers:
+            errors.append(f"task registry group {index} has no IDs")
+            continue
+        if status not in valid_statuses:
+            errors.append(f"task registry group {index} has invalid status {status}")
+        if status in {"partial", "externally_gated"} and not group.get("gap"):
+            errors.append(f"task registry group {index} has no explicit evidence gap")
+        if not isinstance(evidence, list) or not evidence:
+            errors.append(f"task registry group {index} has no evidence")
+            continue
+        for item in evidence:
+            if not isinstance(item, str) or not (ROOT / item).exists():
+                errors.append(f"task registry group {index} has missing evidence {item}")
+        for identifier in identifiers:
+            if not isinstance(identifier, str):
+                errors.append(f"task registry group {index} has non-string ID")
+            elif identifier in registered:
+                errors.append(f"task registry duplicates {identifier}")
+            else:
+                registered.add(identifier)
+
+    backlog = json.loads(
+        (ROOT / "reports" / "New" / "Conflux_Codex_Implementation_Backlog.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    dynamic = json.loads(
+        (
+            ROOT
+            / "reports"
+            / "new-v2"
+            / "Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json"
+        ).read_text(encoding="utf-8")
+    )
+    expected = {task["id"] for task in backlog["tasks"]}
+    expected.update(task["id"] for task in dynamic["recommended_planning_tasks"])
+    expected.add("SEC-008")
+    for identifier in sorted(expected - registered):
+        errors.append(f"task registry missing report task {identifier}")
+    for identifier in sorted(registered - expected):
+        errors.append(f"task registry contains unknown task {identifier}")
+
+
+def check_evidence_sources(errors: list[str]) -> None:
+    if not EVIDENCE_SOURCES.is_file():
+        errors.append("missing immutable evidence source manifest")
+        return
+    manifest = json.loads(EVIDENCE_SOURCES.read_text(encoding="utf-8"))
+    sources = manifest.get("sources")
+    if not isinstance(sources, list):
+        errors.append("evidence source manifest has no source list")
+        return
+    for source in sources:
+        if not isinstance(source, dict):
+            errors.append("evidence source entry is not an object")
+            continue
+        path = ROOT / str(source.get("path"))
+        expected = source.get("sha256")
+        if not path.is_file() or not isinstance(expected, str):
+            errors.append(f"invalid evidence source entry: {source}")
+            continue
+        actual = hashlib.sha256(canonical_text_bytes(path)).hexdigest()
+        if actual != expected:
+            errors.append(f"immutable evidence source changed: {path.relative_to(ROOT)}")
 
 
 def check_archived_paper(errors: list[str]) -> None:
@@ -153,9 +254,30 @@ def check_smoke_evidence(errors: list[str]) -> None:
         if not separator or not path.is_file():
             errors.append(f"invalid smoke checksum entry: {line}")
             continue
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        actual = hashlib.sha256(canonical_text_bytes(path)).hexdigest()
         if actual != expected:
             errors.append(f"smoke evidence checksum changed: runs/smoke/{name}")
+
+
+def check_schemas(errors: list[str]) -> None:
+    required = {
+        "dynamic-plan-result.schema.json",
+        "experiment-manifest.schema.json",
+        "formal-verification-result.schema.json",
+        "plan-patch.schema.json",
+        "plan.schema.json",
+        "planning-comparison-result.schema.json",
+        "planning-observation.schema.json",
+        "proposal-batch.schema.json",
+        "result.schema.json",
+        "scenario.schema.json",
+        "trace-event.schema.json",
+        "verification-ir.schema.json",
+        "verification-result.schema.json",
+    }
+    actual = {path.name for path in (ROOT / "schemas").glob("*.json")}
+    for name in sorted(required - actual):
+        errors.append(f"missing versioned schema: schemas/{name}")
 
 
 def main() -> int:
@@ -166,6 +288,7 @@ def main() -> int:
     check_archived_paper(errors)
     check_manuscript(errors)
     check_smoke_evidence(errors)
+    check_schemas(errors)
     if not (ROOT / "SECURITY.md").is_file():
         errors.append("missing repository security policy: SECURITY.md")
     if errors:

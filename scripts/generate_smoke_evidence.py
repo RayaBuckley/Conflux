@@ -29,8 +29,12 @@ def main() -> int:
             name
             for name in names
             if not (arguments.output / name).is_file()
-            or (arguments.output / name).read_bytes()
-            != (regenerated / name).read_bytes()
+            or (arguments.output / name)
+            .read_text(encoding="utf-8")
+            .replace("\r\n", "\n")
+            != (regenerated / name)
+            .read_text(encoding="utf-8")
+            .replace("\r\n", "\n")
         ]
     if changed:
         print(f"Smoke evidence is stale: {', '.join(changed)}", file=sys.stderr)

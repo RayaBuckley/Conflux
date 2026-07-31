@@ -1,0 +1,113 @@
+{
+  "schema_version": "1",
+  "verified_at": "2026-07-31",
+  "status_definitions": {
+    "implemented": "Acceptance behavior and offline evidence exist in the repository.",
+    "partial": "A coherent subset exists; the named evidence gap remains.",
+    "externally_gated": "Offline integration exists; a live claim requires an unavailable external dependency.",
+    "deferred": "Explicitly outside the completed implementation scope."
+  },
+  "groups": [
+    {
+      "ids": ["BASE-001", "BASE-002", "SEC-001", "SEC-002", "SEC-003", "SEC-004", "SEC-005", "SEC-006", "SEC-007", "SEC-008", "TRACE-001", "TRACE-002", "ARCH-001", "ARCH-002", "ARCH-003", "ARCH-004"],
+      "status": "implemented",
+      "evidence": ["docs/BASELINE_2026-07.md", "docs/SECURITY_MODEL.md", "tests/semantics/", "tests/test_policy_and_ites.py", "tests/test_records_and_schemas.py"]
+    },
+    {
+      "ids": ["RUNTIME-001", "RUNTIME-002", "RUNTIME-003", "RUNTIME-004", "CLI-001", "CLI-002"],
+      "status": "implemented",
+      "evidence": ["src/conflux/cli.py", "src/conflux/adapters/providers/", "tests/test_cli.py", "tests/test_runtime_adapters.py"]
+    },
+    {
+      "ids": ["EXP-001", "EXP-002", "EXP-003", "EXP-004"],
+      "status": "implemented",
+      "evidence": ["experiments/", "runs/smoke/", "tests/test_experiment_manifest.py", "tests/test_smoke_evidence.py", "tests/integration/test_negative_controls.py"]
+    },
+    {
+      "ids": ["SLEDMC-001", "SLEDMC-002", "SLEDMC-003"],
+      "status": "implemented",
+      "evidence": ["src/conflux/evaluation/model_checking.py", "src/conflux/experiments/sled_comparison.py", "tests/test_sled.py", "tests/test_sled_comparison.py"]
+    },
+    {
+      "ids": ["MODEL-001"],
+      "status": "partial",
+      "evidence": ["src/conflux/adapters/models/openai_compatible.py", "src/conflux/adapters/models/openai_compatible_planner.py", "tests/test_model_adapters.py", "tests/planning/test_openai_planner.py"],
+      "gap": "No credentialed live endpoint result is retained."
+    },
+    {
+      "ids": ["MODEL-002"],
+      "status": "partial",
+      "evidence": ["src/conflux/adapters/models/huggingface.py", "tests/test_model_adapters.py"],
+      "gap": "Model weights are not available in core CI; no live local-model result is claimed."
+    },
+    {
+      "ids": ["AGENTDOJO-001", "AGENTDOJO-002"],
+      "status": "implemented",
+      "evidence": ["external/agentdojo.lock", "docs/integrations/agentdojo.md", "src/conflux/adapters/benchmarks/agentdojo_v1.py", "tests/fixtures/agentdojo/v0.1.35/", "tests/test_agentdojo_adapter.py"]
+    },
+    {
+      "ids": ["AGENTDOJO-003"],
+      "status": "externally_gated",
+      "evidence": ["experiments/manifests/agentdojo-smoke.yaml", "src/conflux/cli.py"],
+      "gap": "The optional package/model credential is unavailable; no live no-defence-versus-ITES result is claimed."
+    },
+    {
+      "ids": ["SLEDV-001", "SLEDV-002", "SLEDV-003"],
+      "status": "implemented",
+      "evidence": ["src/conflux/verification/", "schemas/verification-ir.schema.json", "tests/test_verification_ir.py"]
+    },
+    {
+      "ids": ["SLEDV-004"],
+      "status": "partial",
+      "evidence": ["src/conflux/verification/nuxmv_backend.py", "tests/test_verification_ir.py"],
+      "gap": "The nuXmv binary is unavailable; the adapter returns UNKNOWN."
+    },
+    {
+      "ids": ["PLAN-001", "PLAN-002", "PLAN-003"],
+      "status": "implemented",
+      "evidence": ["src/conflux/planning/", "tests/planning/test_plan_verification.py", "tests/planning/test_optimise.py"]
+    },
+    {
+      "ids": ["CLUSTER-001", "CLUSTER-002"],
+      "status": "implemented",
+      "evidence": ["src/conflux/application/doctor.py", "src/conflux/experiments/resume.py", "scripts/cluster/", "tests/test_resume.py"],
+      "gap": "No TorrNodes scheduler was discovered or used; job submission remains an operator action."
+    },
+    {
+      "ids": ["CI-001", "CI-002", "PAPER-001"],
+      "status": "implemented",
+      "evidence": ["scripts/validate.py", "scripts/validate.ps1", ".github/workflows/validate.yml", "paper/ARCHIVE_MANIFEST.json", "manuscript/"]
+    },
+    {
+      "ids": ["PAPER-002"],
+      "status": "partial",
+      "evidence": ["manuscript/conflux_fourth_year_2026.tex", "runs/smoke/"],
+      "gap": "Real-model and external-benchmark numerical placeholders await matching retained evidence."
+    },
+    {
+      "ids": ["PLAN-DYN-000", "PLAN-DYN-001", "PLAN-DYN-002", "PLAN-DYN-003", "PLAN-DYN-004", "PLAN-DYN-005", "PLAN-DYN-006", "PLAN-DYN-007", "PLAN-DYN-008", "PLAN-DYN-009", "PLAN-DYN-010", "PLAN-DYN-011", "PLAN-DYN-013", "PLAN-DYN-014", "PLAN-DYN-015", "PLAN-DYN-017"],
+      "status": "implemented",
+      "evidence": ["docs/specifications/010-open-ended-dynamic-planning.md", "src/conflux/planning/", "src/conflux/evaluation/planning.py", "src/conflux/verification/plan_ir.py", "tests/planning/"]
+    },
+    {
+      "ids": ["PLAN-DYN-012"],
+      "status": "partial",
+      "evidence": ["src/conflux/adapters/models/openai_compatible_planner.py", "tests/planning/test_openai_planner.py"],
+      "gap": "Offline structured-output and repair fixtures pass; a live planner run is not retained."
+    },
+    {
+      "ids": ["PLAN-DYN-016"],
+      "status": "externally_gated",
+      "evidence": ["experiments/manifests/planning-comparison.yaml", "src/conflux/experiments/planning_comparison.py", "scripts/generate_planning_report.py", "tests/test_planning_comparison.py"],
+      "gap": "The four-way real-model comparison requires a configured endpoint; no numerical comparison is claimed."
+    }
+  ],
+  "deferred_research": [
+    "formal delegation and scoped attenuating capabilities",
+    "role-sensitive argument effects",
+    "persistent-memory authority",
+    "symbolic arbitrary-program verification",
+    "production PDP/framework integrations",
+    "live paper-result generation without matching retained evidence"
+  ]
+}
