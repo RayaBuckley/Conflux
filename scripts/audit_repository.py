@@ -59,8 +59,7 @@ def imports(path: Path) -> set[str]:
 
 
 def canonical_text_bytes(path: Path) -> bytes:
-    text = path.read_bytes().decode("utf-8")
-    return text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+    return canonical_utf8_bytes(path.read_bytes())
 
 
 def archive_digest(path: Path, mode: str) -> str:
@@ -86,6 +85,21 @@ def index_blob_oid(path: Path) -> str | None:
         return None
     fields = result.stdout.split(maxsplit=3)
     return fields[1] if len(fields) == 4 else None
+
+
+def git_blob_bytes(object_id: str) -> bytes | None:
+    result = subprocess.run(
+        ("git", "cat-file", "blob", object_id),
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return result.stdout if result.returncode == 0 else None
+
+
+def canonical_utf8_bytes(payload: bytes) -> bytes:
+    text = payload.decode("utf-8")
+    return text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
 
 
 def check_architecture(errors: list[str]) -> None:
@@ -279,12 +293,14 @@ def check_report_archive(errors: list[str]) -> None:
         expected_size = record.get("size_bytes")
         expected_hash = record.get("sha256_bytes")
         expected_blob = record.get("git_blob_oid")
+        media_type = record.get("media_type")
         if (
             not isinstance(archive_path, str)
             or not isinstance(original_path, str)
             or not isinstance(package_id, str)
             or not isinstance(expected_hash, str)
             or not isinstance(expected_blob, str)
+            or not isinstance(media_type, str)
         ):
             errors.append(f"report artifact {index} has incomplete identity metadata")
             continue
@@ -305,11 +321,30 @@ def check_report_archive(errors: list[str]) -> None:
         if not path.is_file():
             errors.append(f"archived report is missing: {archive_path}")
             continue
-        payload = path.read_bytes()
-        if len(payload) != expected_size or hashlib.sha256(payload).hexdigest() != expected_hash:
-            errors.append(f"archived report bytes changed: {archive_path}")
         if index_blob_oid(path) != expected_blob:
             errors.append(f"archived report Git object changed: {archive_path}")
+        blob = git_blob_bytes(expected_blob)
+        if blob is None:
+            errors.append(f"archived report Git object is unavailable: {archive_path}")
+            continue
+        if len(blob) != expected_size or hashlib.sha256(blob).hexdigest() != expected_hash:
+            errors.append(f"archived report manifest does not match its Git object: {archive_path}")
+        worktree = path.read_bytes()
+        textual = media_type.startswith("text/") or media_type in {
+            "application/json",
+            "application/x-bibtex",
+            "application/x-tex",
+        }
+        try:
+            worktree_matches = (
+                canonical_utf8_bytes(worktree) == canonical_utf8_bytes(blob)
+                if textual
+                else worktree == blob
+            )
+        except UnicodeDecodeError:
+            worktree_matches = False
+        if not worktree_matches:
+            errors.append(f"archived report working copy changed: {archive_path}")
 
     if manifest.get("artifact_count") != len(artifact_records):
         errors.append("report archive artifact count does not match its records")
