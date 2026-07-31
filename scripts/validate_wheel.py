@@ -53,7 +53,7 @@ def main() -> int:
         )
         if json.loads(doctor.stdout)["schema_version"] != "1":
             raise RuntimeError("installed doctor returned an unknown schema")
-        output = Path(temporary) / "demo"
+        demo_output = Path(temporary) / "demo"
         subprocess.run(
             (
                 str(command),
@@ -61,7 +61,7 @@ def main() -> int:
                 "--scenario",
                 str(ROOT / "examples" / "basic.yaml"),
                 "--output",
-                str(output),
+                str(demo_output),
             ),
             cwd=temporary,
             check=True,
@@ -69,8 +69,51 @@ def main() -> int:
             text=True,
             env=smoke_environment,
         )
-        if not (output / "result.json").is_file():
+        if not (demo_output / "result.json").is_file():
             raise RuntimeError("installed CLI did not produce result evidence")
+        report = subprocess.run(
+            (str(command), "report", str(demo_output / "result.json"), "--json"),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        if json.loads(report.stdout)["schema_version"] != "1":
+            raise RuntimeError("installed report returned an unknown schema")
+        plan_output = Path(temporary) / "plan"
+        subprocess.run(
+            (str(command), "plan", "demo", "--output", str(plan_output)),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        if not (plan_output / "result.json").is_file():
+            raise RuntimeError("installed planning CLI did not produce result evidence")
+        sled_output = Path(temporary) / "sled"
+        subprocess.run(
+            (
+                str(command),
+                "sled",
+                "run",
+                "--suite",
+                str(ROOT / "examples" / "basic.yaml"),
+                "--output",
+                str(sled_output),
+            ),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        verification = json.loads(
+            (sled_output / "verification.json").read_text(encoding="utf-8")
+        )
+        if verification["verdict"] != "safe":
+            raise RuntimeError("installed SLED smoke did not exhaust the finite fixture")
     print(f"Installed CLI smoke passed: {wheels[-1].name}")
     return 0
 

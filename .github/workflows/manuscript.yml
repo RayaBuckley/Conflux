@@ -10,11 +10,16 @@ on:
       - "manuscript/**"
       - ".github/workflows/manuscript.yml"
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install TeX packages
         run: |
           sudo apt-get update
@@ -22,7 +27,9 @@ jobs:
       - name: Compile manuscript
         working-directory: manuscript
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error conflux_fourth_year_2026.tex
-      - uses: actions/upload-artifact@v4
+      - name: Retain compiled manuscript
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: conflux-fourth-year-manuscript
           path: manuscript/conflux_fourth_year_2026.pdf
+          retention-days: 14
