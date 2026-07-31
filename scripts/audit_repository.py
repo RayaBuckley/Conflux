@@ -6,6 +6,7 @@ import ast
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -52,7 +53,33 @@ def imports(path: Path) -> set[str]:
 
 
 def canonical_text_bytes(path: Path) -> bytes:
-    return path.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
+    text = path.read_bytes().decode("utf-8")
+    return text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+
+
+def archive_digest(path: Path, mode: str) -> str:
+    if mode == "canonical_utf8_lf":
+        payload = canonical_text_bytes(path)
+    elif mode == "raw_bytes":
+        payload = path.read_bytes()
+    else:
+        raise ValueError(f"unsupported archive checksum mode {mode}")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def index_blob_oid(path: Path) -> str | None:
+    relative = path.relative_to(ROOT).as_posix()
+    result = subprocess.run(
+        ("git", "ls-files", "--stage", "--", relative),
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0 or not result.stdout.strip():
+        return None
+    fields = result.stdout.split(maxsplit=3)
+    return fields[1] if len(fields) == 4 else None
 
 
 def check_architecture(errors: list[str]) -> None:
@@ -208,14 +235,36 @@ def check_archived_paper(errors: list[str]) -> None:
     if not isinstance(files, dict):
         errors.append("paper archive manifest has no file map")
         return
-    for name, expected in files.items():
+    if manifest.get("schema_version") != "2":
+        errors.append("paper archive manifest has an unsupported schema version")
+        return
+    for name, record in files.items():
         path = PAPER / str(name)
         if not path.is_file():
             errors.append(f"archived paper file is missing: paper/{name}")
             continue
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if not isinstance(record, dict):
+            errors.append(f"paper archive record is invalid: paper/{name}")
+            continue
+        mode = record.get("mode")
+        expected = record.get("sha256")
+        expected_blob = record.get("git_blob_oid")
+        if (
+            not isinstance(mode, str)
+            or not isinstance(expected, str)
+            or not isinstance(expected_blob, str)
+        ):
+            errors.append(f"paper archive record is incomplete: paper/{name}")
+            continue
+        try:
+            actual = archive_digest(path, mode)
+        except (UnicodeDecodeError, ValueError) as error:
+            errors.append(f"paper/{name}: {error}")
+            continue
         if actual != expected:
             errors.append(f"archived paper file changed: paper/{name}")
+        if index_blob_oid(path) != expected_blob:
+            errors.append(f"archived paper Git object changed: paper/{name}")
 
 
 def check_manuscript(errors: list[str]) -> None:
