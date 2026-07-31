@@ -19,8 +19,19 @@ linkage. Security assessments and utility outcomes remain distinct fields.
 Action counters count lifecycle events, so an executed action remains visible
 in both the authorised and executed totals.
 
-SLED uses adversarial typed choices and reports finite bounds. Experimental
-external benchmark records retain separate `secure` and `useful` fields and
-reject unknown schemas. Real AgentDojo, CaMeL, and model experiments require
-pinned upstream revisions, raw fixtures, manifests, and repeatable aggregation
-before supporting claims.
+SLED uses adversarial typed choices and reports finite bounds. Planning SLED
+models any schema-valid continuation and any code effect permitted by its
+capability envelope. It abstracts program semantics and records that assumption
+instead of claiming arbitrary-code verification.
+
+Planning comparison observations use four fixed modes—reactive, static,
+dynamic, and dynamic with code—and retain blocked, failed, and bound-reached
+runs. Aggregation requires identical task IDs and reports security separately
+from utility, calls, tokens, latency, replans, plan growth, sensitive reads, and
+maximum context size.
+
+AgentDojo translation is pinned to package `0.1.35` and benchmark `v1.2.2`.
+Exact upstream IDs, injections, messages, errors, utility, and security are
+preserved. Conflux Principal Context and policy annotations are an explicit
+benchmark augmentation. The raw fixture validates translation only; a real
+comparative efficacy claim still requires a retained live result.

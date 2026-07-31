@@ -18,10 +18,16 @@ the repository has accepted, implemented, or deferred.
 | EXP-003 (semantic layer) | Executable defective monitors | six one-step SLED counterexamples |
 | BASE-001, BASE-002, PAPER-001 | Baseline, archive integrity, and current manuscript | retained logs, hashes, and manuscript CI |
 | EXP-001..EXP-004 | Manifests, separated suites, negative controls, and current-code smoke | strict manifest tests, six scenarios, five controls, `runs/smoke/` |
+| SLEDMC-001..SLEDMC-003 | Canonical-state checking and trace/state comparison | checker and deterministic comparison tests |
+| SLEDV-001..SLEDV-003 | Serializable IR, bounded backend, and runtime conformance | verification schemas and differential tests |
+| PLAN-001..PLAN-003 | Typed plans, outcome validation, authority-minimising selection | planning and optimisation tests |
+| AGENTDOJO-001, AGENTDOJO-002 | Pinned upstream structures and strict result translation | lock, raw fixture, adapter tests |
+| CLUSTER-001, CLUSTER-002 | Capability discovery and resumable manifest jobs | doctor and resume tests |
+| PLAN-DYN-000..PLAN-DYN-011, PLAN-DYN-013..PLAN-DYN-015, PLAN-DYN-017 | Open-ended planning contracts, mediation, code envelope, SLED abstraction, and optimisation | specification, runtime, sandbox, verification, and mutation tests |
 
-## Deferred research programme
+## Partial and externally gated programme
 
-| IDs | Required change before an implementation claim |
+| IDs | Implemented boundary and remaining evidence |
 |---|---|
 | FM-001..FM-006 | Parameterised effects, role-sensitive context, pointwise production ACS, scoped delegation, observer model, and complete-mediation inventory |
 | PROV-001, MEM-001 | Denial-feedback provenance and origin-bound persistent memory |
@@ -29,8 +35,13 @@ the repository has accepted, implemented, or deferred.
 | EVAL-001..EVAL-006 | Reproducible real-model and external-benchmark evidence |
 | POL-001, POL-002 | Differentially tested production PDP and cloud-policy adapters |
 | CAP-001, TRACE-002 | Short-lived executor capabilities and W3C PROV mapping |
-| FW-001, MCP-001, SUPPLY-001, PLAN-001 | Framework, protocol, supply-chain, and verified-planning work |
-| PAPER-002, RW-001 | Generated paper evidence and continuing related-work revision |
+| FW-001, MCP-001, SUPPLY-001 | Framework, protocol, and supply-chain integration |
+| MODEL-001, MODEL-002, PLAN-DYN-012 | Offline adapters are implemented; credentialed/model-weight evidence remains gated |
+| AGENTDOJO-003 | Pinned manifest and translation exist; live no-defence-versus-ITES result remains gated |
+| SLEDV-004 | nuXmv adapter exists; binary-backed evidence remains gated |
+| PLAN-DYN-016 | Strict four-mode aggregation exists; live observations remain gated |
+| PAPER-002, RW-001 | Generated external-result evidence and continuing related-work revision |
 
-No deferred item is described as implemented merely because an experimental
-adapter or report exists.
+The complete, per-task disposition and evidence paths are in
+`docs/task-registry.json`. No gated item is promoted to a live claim merely
+because its adapter, manifest, or report source exists.

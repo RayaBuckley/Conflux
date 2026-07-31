@@ -7,12 +7,17 @@ influence an action.
 
 - **ITES** is the sole mediation transition kernel.
 - **SLED** performs bounded explicit-state verification of that kernel.
+- **Planning** executes authenticated open-ended plans through ITES.
+- **SLED-V** exposes a serialisable finite verification subset and optional
+  solver backends.
 
 The canonical dependency direction is:
 
 ```text
 domain -> ports -> application -> adapters
              \-> ITES -> evaluation
+planning -> ITES; evaluation -> native SLED
+verification -> optional solver adapters
 ```
 
 Principals are identities, not permission containers. Authorisation,
@@ -27,8 +32,12 @@ Run the offline vertical slice with:
 
 ```powershell
 conflux demo --scenario examples/basic.yaml --output runs/demo
+conflux plan demo --output runs/plan-demo
 conflux report runs/demo/result.json
 ```
+
+Pinned external integrations and live models are optional. Their absence fails
+closed and does not affect offline validation.
 
 The work-in-progress fourth-year paper lives in
 [`manuscript/`](manuscript/README.md). The previous-year `paper/` tree is a

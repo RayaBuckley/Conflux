@@ -1,35 +1,40 @@
 # Conflux Status
 
-The clean-architecture migration is complete: canonical values live in
-`domain`, ITES has one transition kernel, SLED has a native bounded checker,
-and legacy package surfaces have been removed.
+The canonical migration and P0 security repair are complete. Immutable values
+live in `domain`; ITES has one transition kernel; Principal Context is derived
+from trusted provenance at action time; policy dimensions remain independent;
+and the legacy `core`, `auth`, `research`, and `compatibility` surfaces are
+absent.
 
-Implemented evidence covers fail-closed Principal Context, independent policy
-dimensions, provenance/read separation, deterministic branches, versioned
-traces, decision certificates, bounded verification, minimal counterexamples,
-and fail-closed experimental adapters. M0 archival integrity and a separate
-current manuscript are complete. M1 now includes explicit alternative and
-ordered-plan batches; ordered plans retain order, stop on denial, and preserve
-per-step decision certificates.
+The offline result-ready path is implemented:
 
-M2 now supplies strict versioned YAML scenarios, deterministic trace/result
-schemas, scripted and in-memory providers, a confined dry-run filesystem
-executor, native `sled run`, and an installed `argparse` CLI. Commands whose
-M4/M6/M7 backends do not yet exist fail closed with a documented unavailable
-status.
+- alternatives and ordered plans use certificate-bound execution;
+- open-ended plans use authenticated catalogues, immutable patches, explicit
+  loops, subplans, bounded continuation, and action-time re-authorisation;
+- generated code is data submitted to a capability-constrained container
+  operation and fails closed when the sandbox is unavailable;
+- native SLED explores deterministic finite states, retains bounds, and emits
+  shortest counterexamples;
+- the serialisable verification IR has interpreter conformance, optional Z3
+  bounded checking, and a nuXmv adapter that returns `UNKNOWN` when unsupported;
+- deterministic scenarios, traces, schemas, manifests, smoke evidence,
+  negative controls, planning comparison aggregation, and resumable jobs are
+  tested offline;
+- the current manuscript is separate from the checksummed paper archive.
 
-M3 is complete for offline scripted evidence. Legacy-reproduction and
-canonical suites are explicitly separated; five real negative-control engines
-each yield a minimal witness while canonical ITES remains safe; and
-`runs/smoke/` retains an authorised case, blocked attack, vulnerable control,
-raw trace, result, generated table, manifest, rerun command, and checksums.
+The pinned AgentDojo `0.1.35` / benchmark `v1.2.2` boundary translates exact
+upstream suite and trace structures, preserves IDs and native metrics, retains
+a raw upstream fixture, and rejects schema/version drift. The CLI can perform
+that translation offline. A credentialed no-defence-versus-ITES run is
+externally gated and is not claimed.
 
-M4 model adapters are implemented and offline-tested: strict
-OpenAI-compatible structured output with environment-only secrets and redacted
-retention, plus one pinned optional Hugging Face causal-model path. Interactive
-chat preserves turn state and mediates every effect. Live endpoint and
-model-weight evidence remains externally gated and is not claimed.
+Likewise, OpenAI-compatible and Hugging Face adapters, Z3, nuXmv, Docker code
+execution, AgentDojo execution, and scheduler submission are optional
+capabilities. Their absence produces an explicit unavailable or `UNKNOWN`
+outcome. No live model, solver-binary, cluster, or AgentDojo efficacy result has
+been fabricated.
 
-Production PDPs, complete mediation of real frameworks, real external
-benchmarks, formal delegation, role-sensitive effects, persistent memory,
-symbolic verification, and paper revision remain post-migration work.
+`docs/task-registry.json` is the machine-readable programme status. Remaining
+research includes live comparative evidence, production policy/framework
+integrations, formal delegation, role-sensitive effects, persistent-memory
+authority, and symbolic reasoning about arbitrary generated programs.

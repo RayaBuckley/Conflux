@@ -108,10 +108,13 @@ monotonicity, absence of implicit delegation and bounded resource use. Bounded
 SMT results retain solver artefacts; unbounded claims require an
 IC3/PDR-capable backend and runtime-to-IR conformance.
 
-Authority-constrained planning represents typed operations, preconditions,
-outcomes, required reads and permissions. Security is a hard constraint.
-Selection may then minimise authority footprint, sensitive observations,
-calls, latency and irreversible effects.
+Authority-constrained planning uses authenticated operation catalogues,
+immutable open-ended plan graphs, explicit bounded loops, typed continuations
+and value bindings. Generated code is treated as input to a mediated capability
+envelope rather than as trusted control flow. Every grounded effect is
+re-authorised at execution time. Security is a hard selection constraint;
+eligible plans are then ordered by utility, authority footprint, sensitive
+observations, irreversible effects, cost and a deterministic fingerprint.
 
 \section{Results}
 \textbf{Repository validation:} \emph{generated result pending}.\\
@@ -130,7 +133,9 @@ Principal and does not guarantee subjective intent alignment. Conservative
 contexts can over-approximate influence. Delegation remains unsupported.
 Authorised-read safety is not noninterference. Formal results are scoped to
 their model, backend and conformance evidence. Provider adapters are research
-prototypes, not production isolation boundaries.
+prototypes, not production isolation boundaries. Real-model, AgentDojo and
+four-mode planning comparisons remain pending until gated runs produce retained
+evidence; the raw upstream AgentDojo fixture validates translation only.
 
 \section{Conclusion}
 Conflux now has one tested security semantics and a bounded state-exploration

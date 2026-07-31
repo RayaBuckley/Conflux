@@ -67,6 +67,26 @@ Every task ends in one of four dispositions:
 | EXP-003, EXP-004 | implemented | minimal control witnesses and `runs/smoke/` |
 | MODEL-001, MODEL-002 | partial / externally gated | offline adapters pass; live endpoint and weights unavailable |
 
+## Completion update (31 July 2026)
+
+The report's remaining executable surfaces are now present:
+
+- SLED-MC canonical-state exploration and deterministic comparison;
+- callback-free verification IR, interpreter conformance, Z3 BMC, and nuXmv
+  `UNKNOWN` handling;
+- authenticated open-ended plan graphs, typed continuations, action-time
+  mediation, bounded generated-code capability envelopes, replay, worst-case
+  planning SLED, outcome validation, and deterministic authority minimisation;
+- AgentDojo `0.1.35` pin, exact suite/log translation, raw upstream fixture,
+  failure taxonomy, and gated smoke manifest;
+- hardware discovery and checksum-validated resumable job materialisation;
+- strict four-mode planning comparison aggregation.
+
+Live model, AgentDojo, solver-binary, sandbox, and cluster results remain
+externally gated where the corresponding dependency is unavailable. The
+authoritative item-by-item disposition is `docs/task-registry.json`; raw
+`reports/New/` and `reports/new-v2/` files remain immutable evidence.
+
 ## Milestone acceptance
 
 Milestones M0 through M8 use the exit criteria in the source report. A milestone

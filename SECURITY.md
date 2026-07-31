@@ -12,10 +12,18 @@ providers, and incorrect provenance annotations are outside guarantees.
 
 Provider and model adapters are research prototypes. Filesystem effects are
 dry-run by default; live writes require confinement and a precondition hash.
+Generated code is passed as data to a pinned container invocation with no host
+shell interpolation, no network by default, read-only inputs/root filesystem,
+explicit output mounts, and resource limits. Container-runtime compromise and
+kernel escape remain outside the model.
 External model secrets are read from environment variables only and must not
 be committed to manifests, logs, fixtures, or retained responses. Keep Docker,
 model, solver, benchmark, and cluster workflows optional and credential-free
 by default.
+
+Open-ended plan approval never grants authority. The authenticated catalogue
+constrains operation identity and schema; every grounded effect is mediated and
+re-authorised immediately before execution. Unsupported delegation is denied.
 
 Supported security fixes target the current default branch. There is no stable
 0.1 API compatibility promise yet.

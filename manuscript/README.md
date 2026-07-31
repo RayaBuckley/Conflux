@@ -8,6 +8,12 @@ Numerical result placeholders must be replaced only by files generated from
 versioned `runs/*/result.json` evidence. Do not copy archived trace counts into
 current-result tables.
 
+The implementation now includes bounded native and solver-facing verification,
+open-ended dynamic planning, and a pinned AgentDojo translation boundary.
+These are implementation statements, not empirical findings. The planning and
+AgentDojo numerical placeholders remain until the gated manifests produce
+retained result JSON with verified checksums.
+
 ## Build
 
 The pinned Linux CI job installs TeX Live and runs:
