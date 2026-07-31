@@ -9,7 +9,8 @@
 - Validation evidence: `artifacts/validation/26213bf042c5/`
 
 The source commit is the canonical-migration commit sequence rebased onto the
-new report package. The working tree was clean, and `reports/New/` matched
+new report package. The working tree was clean, and the source package now
+archived under `reports/archive/2026-07-29-implementation-programme/` matched
 `origin/main` byte for byte.
 
 ## Commands

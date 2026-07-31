@@ -1,0 +1,320 @@
+{
+    "schema_version":  "1",
+    "integrity_scope":  "exact repository blob bytes",
+    "hash_algorithm":  "sha256",
+    "git_object_format":  "sha1",
+    "artifact_count":  18,
+    "packages":  [
+                     {
+                         "id":  "2026-07-27-engineering-and-sled",
+                         "title":  "Engineering and SLED reviews",
+                         "snapshot_date":  "2026-07-27",
+                         "source_commits":  [
+                                                "3c91bd5b9cb6f8d701d749a7f2bcaf4f03819a83"
+                                            ],
+                         "status":  "design_input",
+                         "supersedes":  [
+
+                                        ],
+                         "superseded_by":  [
+                                               "2026-07-29-implementation-programme"
+                                           ],
+                         "canonical_successors":  [
+                                                      "docs/specifications/008-canonical-migration-and-p0-repair.md",
+                                                      "docs/SLED.md"
+                                                  ],
+                         "limitations":  [
+                                             "Predates the completed canonical migration and current verification implementation."
+                                         ]
+                     },
+                     {
+                         "id":  "2026-07-27-literature-review-v1",
+                         "title":  "Initial comprehensive literature review",
+                         "snapshot_date":  "2026-07-27",
+                         "source_commits":  [
+                                                "95b513375bc6151b88de14b52d99d5eb31114d3b"
+                                            ],
+                         "status":  "superseded",
+                         "supersedes":  [
+
+                                        ],
+                         "superseded_by":  [
+                                               "2026-07-27-research-landscape-v2"
+                                           ],
+                         "canonical_successors":  [
+                                                      "docs/RELATED_WORK.md"
+                                                  ],
+                         "limitations":  [
+                                             "Explicitly corrected and superseded by the research-landscape package."
+                                         ]
+                     },
+                     {
+                         "id":  "2026-07-27-research-landscape-v2",
+                         "title":  "Research landscape and related-work package",
+                         "snapshot_date":  "2026-07-27",
+                         "source_commits":  [
+                                                "074a84dbbee07bd3629f438f8456272c9272a874"
+                                            ],
+                         "status":  "citation_validation_required",
+                         "supersedes":  [
+                                            "2026-07-27-literature-review-v1"
+                                        ],
+                         "superseded_by":  [
+
+                                           ],
+                         "canonical_successors":  [
+                                                      "docs/RELATED_WORK.md",
+                                                      "docs/CLAIMS.md",
+                                                      "manuscript/references.bib"
+                                                  ],
+                         "limitations":  [
+                                             "Recent citations, metadata, and reported results require primary-source validation before publication."
+                                         ]
+                     },
+                     {
+                         "id":  "2026-07-29-implementation-programme",
+                         "title":  "Implementation programme and manuscript proposal",
+                         "snapshot_date":  "2026-07-29",
+                         "source_commits":  [
+                                                "19cb6846d7eebfc5fc32671ef5a0e5f59f33f51e"
+                                            ],
+                         "status":  "historical_input",
+                         "supersedes":  [
+                                            "2026-07-27-engineering-and-sled"
+                                        ],
+                         "superseded_by":  [
+
+                                           ],
+                         "canonical_successors":  [
+                                                      "docs/specifications/009-report-driven-programme.md",
+                                                      "docs/task-registry.json",
+                                                      "manuscript/conflux_fourth_year_2026.tex"
+                                                  ],
+                         "limitations":  [
+                                             "Implementation status is historical; the supplied manuscript source is superseded by manuscript/."
+                                         ]
+                     },
+                     {
+                         "id":  "2026-07-30-dynamic-planning-programme",
+                         "title":  "Progress assessment and dynamic-planning supplement",
+                         "snapshot_date":  "2026-07-30",
+                         "source_commits":  [
+                                                "a7c08d095d99a2fbf7740dbd9aa376e54201d532"
+                                            ],
+                         "status":  "historical_input",
+                         "supersedes":  [
+
+                                        ],
+                         "superseded_by":  [
+
+                                           ],
+                         "canonical_successors":  [
+                                                      "docs/specifications/010-open-ended-dynamic-planning.md",
+                                                      "docs/task-registry.json"
+                                                  ],
+                         "limitations":  [
+                                             "The assessment inspected the public repository without executing a checkout; its implementation status is stale."
+                                         ]
+                     }
+                 ],
+    "artifacts":  [
+                      {
+                          "package_id":  "2026-07-27-engineering-and-sled",
+                          "original_path":  "reports/REPO_REVIEW",
+                          "archive_path":  "reports/archive/2026-07-27-engineering-and-sled/REPO_REVIEW",
+                          "media_type":  "text/plain",
+                          "size_bytes":  48748,
+                          "sha256_bytes":  "9edbe694aa057d04fa2ed7a726624a6d355740f8a60446843d2a1fa865eabffb",
+                          "git_blob_oid":  "722cd0f7f598c9ca165084d93089013857c0356f",
+                          "role":  "engineering_assessment",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-engineering-and-sled",
+                          "original_path":  "reports/SLED_REVIEW",
+                          "archive_path":  "reports/archive/2026-07-27-engineering-and-sled/SLED_REVIEW",
+                          "media_type":  "text/plain",
+                          "size_bytes":  44662,
+                          "sha256_bytes":  "8d1a698dec73d0e27eff2246797f9dd82b06de89c9fe6041a4620b790587740a",
+                          "git_blob_oid":  "0ee9f8da2b978f92c9c7f6b19b9b7916f3ca99f8",
+                          "role":  "verification_assessment",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-literature-review-v1",
+                          "original_path":  "reports/Conflux_Comprehensive_Literature_Review.md",
+                          "archive_path":  "reports/archive/2026-07-27-literature-review-v1/Conflux_Comprehensive_Literature_Review.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  105812,
+                          "sha256_bytes":  "1bd3a96b04865e369f12168385e584dc438f2d3da8d11c960c8d26308516baa8",
+                          "git_blob_oid":  "5b45ecfa41b4331f2906eae7bf046a024f3a7802",
+                          "role":  "literature_review",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-literature-review-v1",
+                          "original_path":  "reports/Conflux_Codex_Action_Manifest.json",
+                          "archive_path":  "reports/archive/2026-07-27-literature-review-v1/Conflux_Codex_Action_Manifest.json",
+                          "media_type":  "application/json",
+                          "size_bytes":  16774,
+                          "sha256_bytes":  "c2d128d2324b2266a2f9827eabbe5f8cc835185a211890b41f79330fc65f2e13",
+                          "git_blob_oid":  "9aad364541316c72b4262d8660460d375016d190",
+                          "role":  "task_source",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-research-landscape-v2",
+                          "original_path":  "reports/Conflux_Codex_Research_Backlog.json",
+                          "archive_path":  "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json",
+                          "media_type":  "application/json",
+                          "size_bytes":  30377,
+                          "sha256_bytes":  "18041295981d4664dedecf01cc80b192ed41ffa59d4837ddec79b477084a100c",
+                          "git_blob_oid":  "b4a9b177e7400c8f6261b80170d4bf817f08c742",
+                          "role":  "task_source",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-research-landscape-v2",
+                          "original_path":  "reports/Conflux_Literature_Matrix.csv",
+                          "archive_path":  "reports/archive/2026-07-27-research-landscape-v2/Conflux_Literature_Matrix.csv",
+                          "media_type":  "text/csv",
+                          "size_bytes":  42008,
+                          "sha256_bytes":  "43c368d7f8dc1e6c61e5dc823c3a736a0f7d843ee083f3103d950a62d9cd92bc",
+                          "git_blob_oid":  "74fcf1bbe779f5fc141b09403f6a20fbd92037e0",
+                          "role":  "literature_evidence",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-research-landscape-v2",
+                          "original_path":  "reports/Conflux_Related_Work_Rewrite.md",
+                          "archive_path":  "reports/archive/2026-07-27-research-landscape-v2/Conflux_Related_Work_Rewrite.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  9925,
+                          "sha256_bytes":  "be1ca4e7ef1344c8c28db16bea02d8992ee205b12a7ba759bcb4921efcae89a0",
+                          "git_blob_oid":  "54abf140366d1ae71bb67462362ef119b478120b",
+                          "role":  "manuscript_input",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-research-landscape-v2",
+                          "original_path":  "reports/Conflux_Research_Landscape_2026.md",
+                          "archive_path":  "reports/archive/2026-07-27-research-landscape-v2/Conflux_Research_Landscape_2026.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  129712,
+                          "sha256_bytes":  "4c14af35584f58c8a6f34d232b76e3f61ab0994d92933d2ae9cfe2b30f51829e",
+                          "git_blob_oid":  "2e54eb072d8307e5841227571f5240ad44fab999",
+                          "role":  "literature_review",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-27-research-landscape-v2",
+                          "original_path":  "reports/Conflux_Search_Protocol_and_Evidence_Manifest.json",
+                          "archive_path":  "reports/archive/2026-07-27-research-landscape-v2/Conflux_Search_Protocol_and_Evidence_Manifest.json",
+                          "media_type":  "application/json",
+                          "size_bytes":  5271,
+                          "sha256_bytes":  "60fc4994142385d2b96b1e04873c2b20fcfcbe4b54baedf27812263b885f6caa",
+                          "git_blob_oid":  "9709070b61a20d8bbde1345ebb6bc50aa0fb1f5e",
+                          "role":  "evidence_manifest",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-29-implementation-programme",
+                          "original_path":  "reports/New/Conflux_Codex_Implementation_Backlog.json",
+                          "archive_path":  "reports/archive/2026-07-29-implementation-programme/Conflux_Codex_Implementation_Backlog.json",
+                          "media_type":  "application/json",
+                          "size_bytes":  60774,
+                          "sha256_bytes":  "850e39bf2b449c06b1f68557a95df1f2221d5a08fe7b12fd2d926a1f5210ec1f",
+                          "git_blob_oid":  "18acfccb64b5910e778ee4ac50673dfe036a4964",
+                          "role":  "task_source",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-29-implementation-programme",
+                          "original_path":  "reports/New/conflux_fourth_year_2026.tex",
+                          "archive_path":  "reports/archive/2026-07-29-implementation-programme/conflux_fourth_year_2026.tex",
+                          "media_type":  "application/x-tex",
+                          "size_bytes":  13735,
+                          "sha256_bytes":  "f84fc95f15a4c93bc0240430ae76bcb74eaa23f391d5ca6264410abdc05816b0",
+                          "git_blob_oid":  "c34f06e2020378954d5353d7517f0eef05318179",
+                          "role":  "manuscript_source",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-29-implementation-programme",
+                          "original_path":  "reports/New/Conflux_Fourth_Year_Paper_Draft.md",
+                          "archive_path":  "reports/archive/2026-07-29-implementation-programme/Conflux_Fourth_Year_Paper_Draft.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  24453,
+                          "sha256_bytes":  "09e52e7cd92b4fe45513d8c50eca20f78dbcc08c1cb7b4c5da1956cbcfc81ac8",
+                          "git_blob_oid":  "84d0f1d70fa14027c6ebfa2eeb3d885675f0d9ab",
+                          "role":  "manuscript_source",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-29-implementation-programme",
+                          "original_path":  "reports/New/Conflux_Implementation_Technical_Specification.md",
+                          "archive_path":  "reports/archive/2026-07-29-implementation-programme/Conflux_Implementation_Technical_Specification.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  33709,
+                          "sha256_bytes":  "485ff775a1e18fcfda6dd49091ffb1fec44bf43124af15880d34dd2747b44874",
+                          "git_blob_oid":  "76c4dc929d386247e12eb9161ef3075a9bde6d74",
+                          "role":  "implementation_specification",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-29-implementation-programme",
+                          "original_path":  "reports/New/README.md",
+                          "archive_path":  "reports/archive/2026-07-29-implementation-programme/README.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  1215,
+                          "sha256_bytes":  "a44f78c91c33f37fe3363aae4d9609b3ad985f3bdef806e54f26c84be0a9e248",
+                          "git_blob_oid":  "9141deef8565950e4e090d5a75ad57105aa31155",
+                          "role":  "navigation",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-29-implementation-programme",
+                          "original_path":  "reports/New/README_FIRST.md",
+                          "archive_path":  "reports/archive/2026-07-29-implementation-programme/README_FIRST.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  1215,
+                          "sha256_bytes":  "a44f78c91c33f37fe3363aae4d9609b3ad985f3bdef806e54f26c84be0a9e248",
+                          "git_blob_oid":  "9141deef8565950e4e090d5a75ad57105aa31155",
+                          "role":  "navigation",
+                          "duplicate_of":  "reports/archive/2026-07-29-implementation-programme/README.md"
+                      },
+                      {
+                          "package_id":  "2026-07-29-implementation-programme",
+                          "original_path":  "reports/New/references.bib",
+                          "archive_path":  "reports/archive/2026-07-29-implementation-programme/references.bib",
+                          "media_type":  "application/x-bibtex",
+                          "size_bytes":  2070,
+                          "sha256_bytes":  "c9619dd0325e4c5ab59009190d905ea0d9a4aa91096373eb1cac7801d4411645",
+                          "git_blob_oid":  "8902fbcca1db0adb7f4f7065746e92445085c7c4",
+                          "role":  "bibliography",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-30-dynamic-planning-programme",
+                          "original_path":  "reports/new-v2/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
+                          "archive_path":  "reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
+                          "media_type":  "application/json",
+                          "size_bytes":  35910,
+                          "sha256_bytes":  "68bac363258ca28faeab94b597ba3e2fbe9b55e99119b1c2528f6c9f69c15885",
+                          "git_blob_oid":  "3f83ed11ec2253c0aea4d4f067b0c7befeb1904e",
+                          "role":  "task_source",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-30-dynamic-planning-programme",
+                          "original_path":  "reports/new-v2/Conflux_Progress_and_Dynamic_Planning_Review_2026-07-30.md",
+                          "archive_path":  "reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Progress_and_Dynamic_Planning_Review_2026-07-30.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  21332,
+                          "sha256_bytes":  "441e1d03877a37db7f538fa3c923363484f398ab4ce9d50085dbe3b9a159930b",
+                          "git_blob_oid":  "b8ded396108cff8a126486a4c1d22c06a528e0df",
+                          "role":  "progress_assessment",
+                          "duplicate_of":  null
+                      }
+                  ]
+}

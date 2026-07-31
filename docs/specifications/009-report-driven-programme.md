@@ -4,7 +4,9 @@ Status: accepted for staged implementation
 
 ## Source and evidence policy
 
-The immutable source package is `reports/New/` at upstream commit `19cb684`.
+The immutable source package is archived under
+`reports/archive/2026-07-29-implementation-programme/` from upstream commit
+`19cb684`.
 This specification reconciles that report with the canonical migration at
 `26213bf`. Raw reports are never edited, and archived-paper results are never
 promoted as current evidence.
@@ -84,8 +86,8 @@ The report's remaining executable surfaces are now present:
 
 Live model, AgentDojo, solver-binary, sandbox, and cluster results remain
 externally gated where the corresponding dependency is unavailable. The
-authoritative item-by-item disposition is `docs/task-registry.json`; raw
-`reports/New/` and `reports/new-v2/` files remain immutable evidence.
+authoritative item-by-item disposition is `docs/task-registry.json`; raw report
+packages under `reports/archive/` remain immutable evidence.
 
 ## Milestone acceptance
 

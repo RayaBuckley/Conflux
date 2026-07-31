@@ -127,15 +127,14 @@ def check_reports(errors: list[str]) -> None:
     for identifier in ("BUG-001", "BUG-002", "BUG-003", "BUG-004", "SLED-001", "TRACE-001"):
         if identifier not in catalogue:
             errors.append(f"change catalogue missing report identifier {identifier}")
-    expected = {
-        "REPO_REVIEW",
-        "SLED_REVIEW",
-        "Conflux_Codex_Action_Manifest.json",
-        "Conflux_Codex_Research_Backlog.json",
+    required = {
+        ROOT / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "REPO_REVIEW",
+        ROOT / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "SLED_REVIEW",
+        ROOT / "reports" / "archive" / "MANIFEST.json",
     }
-    missing = expected - {path.name for path in (ROOT / "reports").iterdir()}
+    missing = sorted(path.relative_to(ROOT).as_posix() for path in required if not path.is_file())
     if missing:
-        errors.append(f"missing report artifacts: {sorted(missing)}")
+        errors.append(f"missing report artifacts: {missing}")
     check_task_registry(errors)
     check_evidence_sources(errors)
 
@@ -180,15 +179,20 @@ def check_task_registry(errors: list[str]) -> None:
                 registered.add(identifier)
 
     backlog = json.loads(
-        (ROOT / "reports" / "New" / "Conflux_Codex_Implementation_Backlog.json").read_text(
-            encoding="utf-8"
-        )
+        (
+            ROOT
+            / "reports"
+            / "archive"
+            / "2026-07-29-implementation-programme"
+            / "Conflux_Codex_Implementation_Backlog.json"
+        ).read_text(encoding="utf-8")
     )
     dynamic = json.loads(
         (
             ROOT
             / "reports"
-            / "new-v2"
+            / "archive"
+            / "2026-07-30-dynamic-planning-programme"
             / "Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json"
         ).read_text(encoding="utf-8")
     )
@@ -215,7 +219,7 @@ def check_evidence_sources(errors: list[str]) -> None:
             errors.append("evidence source entry is not an object")
             continue
         path = ROOT / str(source.get("path"))
-        expected = source.get("sha256")
+        expected = source.get("canonical_text_sha256")
         if not path.is_file() or not isinstance(expected, str):
             errors.append(f"invalid evidence source entry: {source}")
             continue

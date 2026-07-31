@@ -10,7 +10,7 @@ nodes, branches, loops, subplans, or a model request for the next plan
 fragment. Treating those behaviours as an enlarged action subtype would mix
 untrusted planning with the ITES security boundary.
 
-The 30 July 2026 assessment in `reports/new-v2/` requires realistic dynamic
+The archived 30 July 2026 dynamic-planning assessment requires realistic
 planning while preserving action-time mediation and honest verification
 claims.
 

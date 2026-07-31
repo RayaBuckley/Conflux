@@ -2,18 +2,18 @@
   "schema_version": "1",
   "sources": [
     {
-      "path": "reports/new-v2/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
-      "sha256": "46c39220ceaca219ac05eb4cfded6c881725308dcc1383eb290cba9a3eb84250",
+      "path": "reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
+      "canonical_text_sha256": "46c39220ceaca219ac05eb4cfded6c881725308dcc1383eb290cba9a3eb84250",
       "role": "immutable report-derived task source"
     },
     {
-      "path": "reports/new-v2/Conflux_Progress_and_Dynamic_Planning_Review_2026-07-30.md",
-      "sha256": "98044149bd54d7195b9c7398bf5fd53e42103937f24067f74d28e6fe8a36872d",
+      "path": "reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Progress_and_Dynamic_Planning_Review_2026-07-30.md",
+      "canonical_text_sha256": "98044149bd54d7195b9c7398bf5fd53e42103937f24067f74d28e6fe8a36872d",
       "role": "immutable progress assessment"
     },
     {
       "path": "tests/fixtures/agentdojo/v0.1.35/workspace-user_task_17-injection_task_1.json",
-      "sha256": "af5742b5af892d2896cc74daf3dc13b926507aebd163fe3d8553c1c9eaf621c9",
+      "canonical_text_sha256": "af5742b5af892d2896cc74daf3dc13b926507aebd163fe3d8553c1c9eaf621c9",
       "role": "raw upstream AgentDojo fixture"
     }
   ]
