@@ -3,17 +3,32 @@
 from __future__ import annotations
 
 import hashlib
+import tomllib
 from pathlib import Path
 
 import pytest
 
 from scripts.audit_repository import (
+    ROOT,
     archive_digest,
     check_archived_paper,
     check_report_archive,
     check_report_crosswalk,
     supersession_has_cycle,
 )
+
+
+def test_development_install_contains_nonisolated_build_requirements() -> None:
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    build_requirements = {
+        requirement.split(">=")[0]
+        for requirement in project["build-system"]["requires"]
+    }
+    development_requirements = {
+        requirement.split(">=")[0]
+        for requirement in project["project"]["optional-dependencies"]["dev"]
+    }
+    assert build_requirements <= development_requirements
 
 
 def test_canonical_archive_digest_ignores_checkout_line_endings(tmp_path: Path) -> None:
