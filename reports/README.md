@@ -3,14 +3,14 @@
 This directory separates immutable research input from maintained analysis:
 
 - `archive/` preserves every original report as repository evidence;
-- `analysis/PROJECT_ANALYSIS.md` will provide the cohesive current synthesis;
-- `analysis/AI_CONTEXT.md` will provide compact agent navigation;
-- `analysis/task-crosswalk.json` will namespace historical task IDs.
+- [Project analysis](analysis/PROJECT_ANALYSIS.md) provides the cohesive current synthesis;
+- [AI context](analysis/AI_CONTEXT.md) provides compact agent navigation;
+- `analysis/task-crosswalk.json` namespaces historical task IDs.
 
-Until analysis is present, use [current project status](../docs/STATUS.md) and
-the [machine-readable task registry](../docs/task-registry.json) for
-implementation state. Reports do not override code, tests, schemas, accepted
-specifications, ADRs, or retained evidence.
+Use [current project status](../docs/STATUS.md) and the
+[machine-readable task registry](../docs/task-registry.json) for implementation
+state. Reports do not override code, tests, schemas, accepted specifications,
+ADRs, or retained evidence.
 
 ## Why preserve and interpret separately?
 
