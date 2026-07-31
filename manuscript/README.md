@@ -4,6 +4,11 @@ This is the work-in-progress fourth-year paper. The canonical source is
 `conflux_fourth_year_2026.tex`; the previous-year paper remains immutable under
 `paper/`.
 
+The 31 July snapshot describes the completed canonical security migration,
+offline runtime and CLI, native SLED, authenticated open-ended planning,
+serialisable verification subset, and pinned AgentDojo translation. Its
+implementation-status table states the evidence boundary for each surface.
+
 Numerical result placeholders must be replaced only by files generated from
 versioned `runs/*/result.json` evidence. Do not copy archived trace counts into
 current-result tables.
@@ -13,6 +18,11 @@ open-ended dynamic planning, and a pinned AgentDojo translation boundary.
 These are implementation statements, not empirical findings. The planning and
 AgentDojo numerical placeholders remain until the gated manifests produce
 retained result JSON with verified checksums.
+
+Use the [claim ledger](../docs/CLAIMS.md) for claim strength, the
+[task registry](../docs/task-registry.json) for current programme status, and
+the [report analysis](../reports/analysis/PROJECT_ANALYSIS.md) for historical
+reconciliation. Do not infer current claims from archived manuscript sources.
 
 ## Build
 

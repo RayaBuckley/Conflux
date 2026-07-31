@@ -9,7 +9,7 @@
 
 \title{Conflux: Principal-Context Security, Evaluation and Verification for LLM Agents\\\large Work-in-progress fourth-year paper}
 \author{Raya Buckley}
-\date{29 July 2026}
+\date{31 July 2026}
 
 \begin{document}
 \maketitle
@@ -22,9 +22,10 @@ System-Level Evaluator for Defences (SLED). Conflux develops those ideas into a
 provider- and benchmark-independent research framework. The current repository
 has one canonical, fail-closed security kernel with immutable provenance,
 independent read, authorisation, visibility and consent decisions, versioned
-decision evidence, and bounded explicit-state verification. Architectural
-repair is tested, but real-model, external-benchmark and solver-backed claims
-remain gated on reproducible result artefacts. This paper distinguishes
+decision evidence, bounded explicit-state verification, authenticated dynamic
+planning, and an offline result-producing CLI. Architectural repair and the
+credential-free vertical slice are tested, but real-model, external-benchmark
+and solver-binary claims remain gated on reproducible result artefacts. This paper distinguishes
 archived evidence, current implementation evidence and planned experiments;
 numerical placeholders are filled only by generated artefacts.
 \end{abstract}
@@ -84,6 +85,40 @@ and incomplete actions. Policy errors, malformed proposals, missing provenance
 and exhausted bounds are explicit fail-closed outcomes. Securely blocked
 attacks are diagnostics, not executed invariant failures.
 
+\section{Implementation status at this snapshot}
+
+\begin{tabular}{p{0.24\linewidth}p{0.32\linewidth}p{0.35\linewidth}}
+\toprule
+Area & Implemented boundary & Evidence limitation \\
+\midrule
+Security kernel & Immutable domain values, independent policy ports, one ITES
+kernel, isolated alternatives, ordered plans, and certificate-bound execution
+& Assumes complete mediation, authenticated provenance, and faithful policy
+adapters \\
+Runtime and CLI & Strict scenarios, deterministic providers and traces,
+reporting, chat boundary, planning demo, SLED and formal commands & Live
+effects and models remain optional; filesystem writes default to dry-run \\
+Native verification & Breadth-first SLED with canonical state, explicit bounds,
+deduplication, retained bound states, and shortest counterexamples & Verdicts
+apply only to the finite operational model and declared properties \\
+Dynamic planning & Authenticated catalogues, typed bindings, immutable patches,
+bounded loops and continuations, subplans, mediated code capabilities, outcome
+validation, and authority-minimising selection & Comparative real-model utility
+evidence is not yet retained \\
+Formal subset & Serializable IR, reference interpreter, runtime differential
+tests, optional Z3 BMC, and nuXmv Boolean subset & Solver binaries and unbounded
+runtime equivalence are not established \\
+AgentDojo & Exact package 0.1.35 / benchmark v1.2.2 translation with preserved
+IDs, native metrics, failure categories, and raw fixture & The fixture proves
+translation only; a live no-defence-versus-ITES comparison is pending \\
+\bottomrule
+\end{tabular}
+
+This table states repository capabilities rather than empirical efficacy. The
+claim ledger, task registry, schemas, tests, and retained artefacts are the
+sources of current evidence. Archived reports and the previous paper record
+project history but do not define this snapshot.
+
 \section{Evaluation methodology}
 The deterministic semantic corpus covers empty and mixed contexts,
 author/reader inversions, derivation, nested accumulation, branch isolation,
@@ -117,7 +152,7 @@ eligible plans are then ordered by utility, authority footprint, sensitive
 observations, irreversible effects, cost and a deterministic fingerprint.
 
 \section{Results}
-\textbf{Repository validation:} \emph{generated result pending}.\\
+\textbf{Repository validation:} \emph{retained final-revision result pending}.\\
 \textbf{Semantic conformance:} \emph{generated result pending}.\\
 \textbf{Native SLED:} \emph{generated result pending}.\\
 \textbf{SLED-MC/SLED-V:} \emph{generated result pending}.\\
@@ -125,6 +160,21 @@ observations, irreversible effects, cost and a deterministic fingerprint.
 
 No numerical claim is entered manually. Tables and figures are generated from
 retained, versioned result JSON and include input checksums.
+
+\section{Prioritised future work}
+
+The immediate priority is reproducible evidence: run credentialed real-model
+and pinned AgentDojo comparisons, retain native and Conflux metrics, and
+generate paper tables solely from those result records. The next engineering
+priority is differential validation against a production policy decision point
+and an agent-framework boundary without moving benchmark behavior into ITES.
+
+The next security-model extensions are scoped attenuating delegation,
+role-sensitive argument effects, and origin-bound persistent-memory authority.
+They remain denied or conservative until their semantics, revocation behavior,
+and counterexample properties are specified. Formal work should then extend
+the solver subset, relational properties, and independent implementation
+conformance while keeping bounded and unbounded claims distinct.
 
 \section{Limitations}
 Conflux assumes sound authentication, provenance, policy state and complete
@@ -138,10 +188,12 @@ four-mode planning comparisons remain pending until gated runs produce retained
 evidence; the raw upstream AgentDojo fixture validates translation only.
 
 \section{Conclusion}
-Conflux now has one tested security semantics and a bounded state-exploration
-foundation. The remaining contribution is evidence: reproducible native,
-real-model, external-benchmark and formal-verification artefacts whose claims
-remain tied to explicit assumptions and bounds.
+Conflux now has one tested security semantics, a runnable offline vertical
+slice, authenticated bounded planning, and native plus solver-facing
+verification foundations. The remaining research contribution is stronger
+evidence and carefully specified extensions: real-model, external-benchmark,
+policy-integration and formal artefacts whose claims remain tied to explicit
+assumptions, models, and bounds.
 
 \bibliographystyle{plainnat}
 \bibliography{references}

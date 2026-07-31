@@ -10,7 +10,15 @@ being the first system-level defence, provenance guardrail, or privilege
 control mechanism. Whole-action ITES is presently a conservative special case;
 role-sensitive arguments remain proposed work.
 
-The detailed taxonomy and literature matrix remain in `reports/`. Very recent
-preprints, titles, author lists, and reported numbers must be checked against
-primary sources before publication. This document does not revise the archived
-paper.
+The [current report analysis](../reports/analysis/PROJECT_ANALYSIS.md) explains
+how the detailed archived taxonomy and literature matrix relate to the current
+repository. Very recent preprints, titles, author lists, and reported numbers
+must be checked against primary sources before publication. This document does
+not revise the archived paper.
+
+## Rationale
+
+Precise positioning is narrower but more defensible than claiming novelty for
+all system-level mediation or provenance. Separating mechanism comparison from
+implementation status also prevents a related-work update from silently
+changing security or empirical claims.
