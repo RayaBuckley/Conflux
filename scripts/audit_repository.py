@@ -9,12 +9,14 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src" / "conflux"
 DOCS = ROOT / "docs"
 CANONICAL_DOCS = {
     "README.md",
+    "AI_AGENT_GUIDE.md",
     "ARCHITECTURE.md",
     "SECURITY_MODEL.md",
     "REFERENCE.md",
@@ -39,6 +41,10 @@ MANUSCRIPT = ROOT / "manuscript"
 SMOKE = ROOT / "runs" / "smoke"
 TASK_REGISTRY = DOCS / "task-registry.json"
 EVIDENCE_SOURCES = DOCS / "evidence-sources.json"
+REPORTS = ROOT / "reports"
+REPORT_ARCHIVE = REPORTS / "archive"
+REPORT_MANIFEST = REPORT_ARCHIVE / "MANIFEST.json"
+REPORT_CROSSWALK = REPORTS / "analysis" / "task-crosswalk.json"
 
 
 def imports(path: Path) -> set[str]:
@@ -110,8 +116,23 @@ def check_docs(errors: list[str]) -> None:
         if not (DOCS / name).exists():
             errors.append(f"missing canonical document docs/{name}")
     link_pattern = re.compile(r"\[[^]]+\]\(([^)#]+)(?:#[^)]+)?\)")
-    for path in (ROOT / "README.md", *DOCS.rglob("*.md")):
-        text = path.read_text(encoding="utf-8")
+    current_markdown = (
+        ROOT / "README.md",
+        ROOT / "AGENTS.md",
+        ROOT / "CONTRIBUTING.md",
+        ROOT / "SECURITY.md",
+        *DOCS.rglob("*.md"),
+        *MANUSCRIPT.glob("*.md"),
+        REPORTS / "README.md",
+        REPORT_ARCHIVE / "README.md",
+        *(REPORTS / "analysis").rglob("*.md"),
+    )
+    for path in current_markdown:
+        try:
+            text = path.read_bytes().decode("utf-8")
+        except UnicodeDecodeError:
+            errors.append(f"{path.relative_to(ROOT)} is not valid UTF-8")
+            continue
         if "â" in text:
             errors.append(f"{path.relative_to(ROOT)} contains probable mojibake")
         for line, content in enumerate(text.splitlines(), 1):
@@ -120,6 +141,32 @@ def check_docs(errors: list[str]) -> None:
                     continue
                 if not (path.parent / target).resolve().exists():
                     errors.append(f"{path.relative_to(ROOT)}:{line}: missing link {target}")
+
+    rationale_docs = {
+        ROOT / "README.md",
+        ROOT / "CONTRIBUTING.md",
+        ROOT / "SECURITY.md",
+        DOCS / "ARCHITECTURE.md",
+        DOCS / "SECURITY_MODEL.md",
+        DOCS / "RUNTIME.md",
+        DOCS / "SLED.md",
+        DOCS / "EVALUATION.md",
+        DOCS / "CLI.md",
+        DOCS / "DEVELOPMENT.md",
+        DOCS / "integrations" / "models.md",
+        DOCS / "integrations" / "agentdojo.md",
+        REPORTS / "README.md",
+        REPORT_ARCHIVE / "README.md",
+    }
+    for path in rationale_docs:
+        text = path.read_text(encoding="utf-8")
+        if not re.search(r"(?im)^#{2,3} (?:rationale\b|why\b)", text):
+            errors.append(f"{path.relative_to(ROOT)} has no explicit rationale section")
+
+    stale_paths = re.compile(r"reports/(?:New|new-v2)/")
+    for path in current_markdown:
+        if stale_paths.search(path.read_text(encoding="utf-8")):
+            errors.append(f"{path.relative_to(ROOT)} references an obsolete report path")
 
 
 def check_reports(errors: list[str]) -> None:
@@ -135,8 +182,275 @@ def check_reports(errors: list[str]) -> None:
     missing = sorted(path.relative_to(ROOT).as_posix() for path in required if not path.is_file())
     if missing:
         errors.append(f"missing report artifacts: {missing}")
+    check_report_archive(errors)
+    check_report_crosswalk(errors)
     check_task_registry(errors)
     check_evidence_sources(errors)
+
+
+def supersession_has_cycle(edges: dict[str, set[str]]) -> bool:
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(identifier: str) -> bool:
+        if identifier in visiting:
+            return True
+        if identifier in visited:
+            return False
+        visiting.add(identifier)
+        if any(visit(child) for child in edges.get(identifier, set())):
+            return True
+        visiting.remove(identifier)
+        visited.add(identifier)
+        return False
+
+    return any(visit(identifier) for identifier in edges)
+
+
+def check_report_archive(errors: list[str]) -> None:
+    if not REPORT_MANIFEST.is_file():
+        errors.append("missing report archive manifest")
+        return
+    manifest: Any = json.loads(REPORT_MANIFEST.read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != "1":
+        errors.append("report archive manifest has an unsupported schema version")
+        return
+    package_records = manifest.get("packages")
+    artifact_records = manifest.get("artifacts")
+    if not isinstance(package_records, list) or not isinstance(artifact_records, list):
+        errors.append("report archive manifest has invalid package or artifact records")
+        return
+
+    packages: dict[str, Any] = {}
+    valid_statuses = {
+        "superseded",
+        "historical_input",
+        "design_input",
+        "citation_validation_required",
+    }
+    for record in package_records:
+        if not isinstance(record, dict) or not isinstance(record.get("id"), str):
+            errors.append("report archive contains an invalid package")
+            continue
+        identifier = record["id"]
+        if identifier in packages:
+            errors.append(f"report archive duplicates package {identifier}")
+        packages[identifier] = record
+        if record.get("status") not in valid_statuses:
+            errors.append(f"report package {identifier} has an invalid status")
+        if not record.get("limitations"):
+            errors.append(f"report package {identifier} has no limitations")
+        for successor in record.get("canonical_successors", []):
+            if not isinstance(successor, str) or not (ROOT / successor).exists():
+                errors.append(f"report package {identifier} has missing successor {successor}")
+
+    edges: dict[str, set[str]] = {}
+    for identifier, record in packages.items():
+        supersedes = record.get("supersedes", [])
+        superseded_by = record.get("superseded_by", [])
+        if not isinstance(supersedes, list) or not isinstance(superseded_by, list):
+            errors.append(f"report package {identifier} has invalid supersession metadata")
+            continue
+        edges[identifier] = {item for item in supersedes if isinstance(item, str)}
+        for older in supersedes:
+            if older not in packages:
+                errors.append(f"report package {identifier} supersedes unknown package {older}")
+            elif identifier not in packages[older].get("superseded_by", []):
+                errors.append(f"report package {identifier} has inconsistent supersession of {older}")
+        for newer in superseded_by:
+            if newer not in packages:
+                errors.append(f"report package {identifier} is superseded by unknown package {newer}")
+            elif identifier not in packages[newer].get("supersedes", []):
+                errors.append(f"report package {identifier} has inconsistent successor {newer}")
+    if supersession_has_cycle(edges):
+        errors.append("report package supersession contains a cycle")
+
+    archive_paths: set[str] = set()
+    original_paths: set[str] = set()
+    artifacts_by_path: dict[str, Any] = {}
+    hashes: dict[str, list[Any]] = {}
+    for index, record in enumerate(artifact_records):
+        if not isinstance(record, dict):
+            errors.append(f"report artifact {index} is not an object")
+            continue
+        archive_path = record.get("archive_path")
+        original_path = record.get("original_path")
+        package_id = record.get("package_id")
+        expected_size = record.get("size_bytes")
+        expected_hash = record.get("sha256_bytes")
+        expected_blob = record.get("git_blob_oid")
+        if (
+            not isinstance(archive_path, str)
+            or not isinstance(original_path, str)
+            or not isinstance(package_id, str)
+            or not isinstance(expected_hash, str)
+            or not isinstance(expected_blob, str)
+        ):
+            errors.append(f"report artifact {index} has incomplete identity metadata")
+            continue
+        if not isinstance(expected_size, int):
+            errors.append(f"report artifact {archive_path} has invalid size metadata")
+            continue
+        if archive_path in archive_paths or original_path in original_paths:
+            errors.append(f"report archive duplicates a path at {archive_path}")
+        archive_paths.add(archive_path)
+        original_paths.add(original_path)
+        artifacts_by_path[archive_path] = record
+        hashes.setdefault(expected_hash, []).append(record)
+        if package_id not in packages:
+            errors.append(f"report artifact {archive_path} has unknown package {package_id}")
+        if not archive_path.startswith(f"reports/archive/{package_id}/"):
+            errors.append(f"report artifact {archive_path} is outside its package")
+        path = ROOT / archive_path
+        if not path.is_file():
+            errors.append(f"archived report is missing: {archive_path}")
+            continue
+        payload = path.read_bytes()
+        if len(payload) != expected_size or hashlib.sha256(payload).hexdigest() != expected_hash:
+            errors.append(f"archived report bytes changed: {archive_path}")
+        if index_blob_oid(path) != expected_blob:
+            errors.append(f"archived report Git object changed: {archive_path}")
+
+    if manifest.get("artifact_count") != len(artifact_records):
+        errors.append("report archive artifact count does not match its records")
+    actual_files = {
+        path.relative_to(ROOT).as_posix()
+        for path in REPORT_ARCHIVE.rglob("*")
+        if path.is_file() and path not in {REPORT_MANIFEST, REPORT_ARCHIVE / "README.md"}
+    }
+    if archive_paths != actual_files:
+        errors.append("report archive files and manifest entries differ")
+    for digest, duplicates in hashes.items():
+        if len(duplicates) < 2:
+            continue
+        declared = [record for record in duplicates if record.get("duplicate_of")]
+        if len(declared) != len(duplicates) - 1:
+            errors.append(f"report duplicate content {digest} is not explicitly declared")
+    for archive_name, record in artifacts_by_path.items():
+        duplicate_of = record.get("duplicate_of")
+        if duplicate_of is None:
+            continue
+        target = artifacts_by_path.get(duplicate_of)
+        if target is None or target.get("sha256_bytes") != record.get("sha256_bytes"):
+            errors.append(f"report artifact {archive_name} has an invalid duplicate reference")
+
+
+def check_report_crosswalk(errors: list[str]) -> None:
+    if not REPORT_CROSSWALK.is_file():
+        errors.append("missing report task crosswalk")
+        return
+    crosswalk: Any = json.loads(REPORT_CROSSWALK.read_text(encoding="utf-8"))
+    sources = crosswalk.get("sources")
+    entries = crosswalk.get("entries")
+    if (
+        crosswalk.get("schema_version") != "1"
+        or not isinstance(sources, list)
+        or not isinstance(entries, list)
+    ):
+        errors.append("report task crosswalk has an invalid schema")
+        return
+
+    expected: set[str] = set()
+    raw_counts: dict[str, int] = {}
+    namespaces: set[str] = set()
+    for source in sources:
+        if not isinstance(source, dict):
+            errors.append("report task crosswalk has an invalid source")
+            continue
+        namespace = source.get("namespace")
+        source_path = source.get("path")
+        lists = source.get("lists")
+        if (
+            not isinstance(namespace, str)
+            or namespace in namespaces
+            or not isinstance(source_path, str)
+            or not isinstance(lists, list)
+        ):
+            errors.append(f"report task crosswalk source is invalid: {source}")
+            continue
+        namespaces.add(namespace)
+        path = ROOT / source_path
+        if not path.is_file() or not path.is_relative_to(REPORT_ARCHIVE):
+            errors.append(f"report task crosswalk source is missing or not archived: {source_path}")
+            continue
+        data: Any = json.loads(path.read_text(encoding="utf-8"))
+        for list_name in lists:
+            records = data.get(list_name, []) if isinstance(list_name, str) else []
+            if not isinstance(records, list):
+                errors.append(f"report task source {source_path} has invalid list {list_name}")
+                continue
+            for record in records:
+                identifier = record.get("id") if isinstance(record, dict) else None
+                if not isinstance(identifier, str):
+                    errors.append(f"report task source {source_path} has an invalid task")
+                    continue
+                expected.add(f"{namespace}:{identifier}")
+                raw_counts[identifier] = raw_counts.get(identifier, 0) + 1
+
+    registry: Any = json.loads(TASK_REGISTRY.read_text(encoding="utf-8"))
+    canonical_ids = {
+        identifier
+        for group in registry.get("groups", [])
+        if isinstance(group, dict)
+        for identifier in group.get("ids", [])
+        if isinstance(identifier, str)
+    }
+    actual: set[str] = set()
+    qualified_records: dict[str, Any] = {}
+    allowed_relationships = {
+        "canonical_task",
+        "research_catalogue",
+        "historical_recommendation",
+        "superseded_by_research_v2",
+    }
+    for record in entries:
+        if not isinstance(record, dict):
+            errors.append("report task crosswalk contains a non-object entry")
+            continue
+        qualified = record.get("qualified_id")
+        namespace = record.get("source_namespace")
+        raw_id = record.get("raw_id")
+        if (
+            not isinstance(qualified, str)
+            or not isinstance(namespace, str)
+            or not isinstance(raw_id, str)
+            or qualified != f"{namespace}:{raw_id}"
+        ):
+            errors.append(f"report task crosswalk entry has invalid identity: {record}")
+            continue
+        if qualified in actual:
+            errors.append(f"report task crosswalk duplicates {qualified}")
+        actual.add(qualified)
+        qualified_records[qualified] = record
+        if record.get("relationship") not in allowed_relationships:
+            errors.append(f"report task {qualified} has an invalid relationship")
+        canonical = record.get("canonical_task_id")
+        if record.get("relationship") == "canonical_task" and canonical not in canonical_ids:
+            errors.append(f"report task {qualified} has no canonical registry task")
+        covered_by = record.get("covered_by")
+        if (
+            not isinstance(covered_by, list)
+            or not covered_by
+            or any(
+                not isinstance(item, str) or not (ROOT / item).exists()
+                for item in covered_by
+            )
+        ):
+            errors.append(f"report task {qualified} has missing coverage evidence")
+        if record.get("raw_id_collision") != (raw_counts.get(raw_id, 0) > 1):
+            errors.append(f"report task {qualified} has incorrect collision metadata")
+
+    if actual != expected or crosswalk.get("entry_count") != len(entries):
+        errors.append("report task crosswalk does not cover every source task exactly once")
+    expected_collisions = sorted(
+        identifier for identifier, count in raw_counts.items() if count > 1
+    )
+    if crosswalk.get("raw_id_collisions") != expected_collisions:
+        errors.append("report task crosswalk collision index is stale")
+    for qualified, record in qualified_records.items():
+        superseded_by = record.get("superseded_by")
+        if superseded_by is not None and superseded_by not in qualified_records:
+            errors.append(f"report task {qualified} has unknown successor {superseded_by}")
 
 
 def check_task_registry(errors: list[str]) -> None:

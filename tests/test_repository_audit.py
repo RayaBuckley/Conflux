@@ -7,7 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from scripts.audit_repository import archive_digest, check_archived_paper
+from scripts.audit_repository import (
+    archive_digest,
+    check_archived_paper,
+    check_report_archive,
+    check_report_crosswalk,
+    supersession_has_cycle,
+)
 
 
 def test_canonical_archive_digest_ignores_checkout_line_endings(tmp_path: Path) -> None:
@@ -46,3 +52,20 @@ def test_current_paper_manifest_matches_content_and_index() -> None:
     errors: list[str] = []
     check_archived_paper(errors)
     assert errors == []
+
+
+def test_current_report_archive_matches_manifest_and_index() -> None:
+    errors: list[str] = []
+    check_report_archive(errors)
+    assert errors == []
+
+
+def test_report_crosswalk_covers_every_source_task() -> None:
+    errors: list[str] = []
+    check_report_crosswalk(errors)
+    assert errors == []
+
+
+def test_supersession_cycle_detection() -> None:
+    assert not supersession_has_cycle({"new": {"old"}, "old": set()})
+    assert supersession_has_cycle({"first": {"second"}, "second": {"first"}})

@@ -1,28 +1,39 @@
 # Repository Audit Ledger
 
-| Area | Owner | Required evidence | Risk |
-|---|---|---|---|
-| `src/conflux/domain` | security values | domain/property tests | provenance or identity drift |
-| `src/conflux/ports` | dependency inversion | AST import audit and mypy | authority bypass |
-| `src/conflux/application` | use-case composition | policy/integration tests | decision conflation |
-| `src/conflux/ites` | sole transition kernel | invariant, branch, trace tests | semantic divergence |
-| `src/conflux/evaluation` | SLED verification | checker and mutation tests | overstated bounds |
-| `src/conflux/planning` | authenticated dynamic plans | grounding, continuation, sandbox, replay tests | authority laundering |
-| `src/conflux/verification` | serialisable formal subset | schema and differential tests | proof overstatement |
-| `src/conflux/experiments` | evidence aggregation/jobs | schema, regeneration, resume tests | result omission or duplication |
-| `src/conflux/adapters` | external translation | failure and schema tests | external drift |
-| `tests` | executable evidence | pytest and coverage | assertion gaps |
-| `docs` | human/agent contract | link and terminology audit | claim drift |
-| `reports` | immutable research input | change-catalog traceability | unverified sources |
-| `paper` | archived artifact | no silent edits | claim divergence |
-| `scripts` and CI | validation | cross-platform execution | guardrail drift |
+| Area | Required evidence | Principal risk |
+|---|---|---|
+| `domain` | immutable-value and property tests | identity or provenance drift |
+| ports/application/ITES | AST boundaries and policy/integration tests | authority bypass or decision conflation |
+| evaluation/planning/verification | conformance, bounds, mutants, and replay tests | proof or capability overstatement |
+| adapters/experiments | strict translation, failure, and regeneration tests | external drift or biased evidence |
+| documentation | ownership, rationale, terminology, UTF-8, and link checks | competing or stale sources of truth |
+| report archive | exact bytes, Git objects, lineage, duplicate, and task-crosswalk checks | historical evidence mutation |
+| archived paper | canonical text/raw binary hashes and Git object checks | silent claim revision |
+| scripts and CI | portable validation and installed-wheel smoke | guardrail or packaging drift |
 
-The automated audit parses imports, verifies public boundaries, checks every
-report task has one disposition and an existing evidence path, checksum-locks
-the new-v2 report and raw AgentDojo fixture, rejects legacy modules, and checks
-terminology and local links.
-The portable validator also validates all versioned JSON Schemas, exercises the
-CLI and deterministic runtime, enforces branch coverage, and verifies that the
-built wheel contains its schema data.
-Curated smoke evidence is checksum-verified and deterministically regenerated
-from its committed manifest during the portable validation gate.
+`python scripts/audit_repository.py` is dependency-free. It enforces the AST
+import direction and legacy-module removal; small public benchmark exports;
+canonical documentation presence, links, encoding, rationale, and report-path
+migration; every report task's source-qualified crosswalk; complete registry
+dispositions and evidence paths; report and paper archive integrity; manuscript
+separation; curated smoke checksums; and required schemas.
+
+The report archive manifest covers every original artefact exactly once. It
+checks repository-blob size, SHA-256, Git object identity, package ownership,
+declared duplicate content, resolvable canonical successors, and acyclic
+supersession. Archived prose is excluded from terminology and link rewriting;
+current analysis remains subject to documentation checks.
+
+The portable validator adds JSON Schema validation, deterministic smoke
+regeneration, pytest with at least 90% branch coverage, Ruff, strict mypy,
+wheel construction, and clean-environment CLI runs for doctor, mediation,
+planning, SLED, and report rendering.
+
+## Rationale
+
+Text searches alone cannot distinguish imports from examples, archive evidence
+from current claims, or secure blocks from failures. Structural and manifest-
+driven checks make those boundaries explicit. The audit remains dependency-
+free so it can fail early in a fresh checkout before optional tooling is
+available; deeper behavioral evidence belongs in pytest and the installed-
+wheel smoke.
