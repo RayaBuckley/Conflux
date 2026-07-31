@@ -1,0 +1,20 @@
+{
+  "schema_version": "1",
+  "source_commit": "6fe6b584500e84f2cbc3d15876865243c4f01440",
+  "captured_at": "2026-07-31",
+  "python": "CPython 3.12.12",
+  "platform": "Windows",
+  "command": ".\\.test-venv\\Scripts\\python.exe scripts\\validate.py",
+  "result": "passed",
+  "tests": 220,
+  "branch_coverage_percent": 90.25,
+  "schemas": 13,
+  "wheel": "conflux-0.1.0-py3-none-any.whl",
+  "installed_cli_smoke": [
+    "doctor",
+    "demo",
+    "plan demo",
+    "sled run",
+    "report"
+  ]
+}

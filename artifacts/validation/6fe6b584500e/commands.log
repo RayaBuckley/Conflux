@@ -1,0 +1,14 @@
+$ .\.test-venv\Scripts\python.exe scripts\validate.py
+Repository audit passed
+Validated 13 JSON Schemas
+Smoke evidence regeneration check passed
+220 tests passed
+Required test coverage of 90% reached. Total coverage: 90.25%
+All checks passed! (Ruff)
+Strict mypy validation passed
+Successfully built conflux-0.1.0-py3-none-any.whl
+Installed CLI smoke passed: conflux-0.1.0-py3-none-any.whl
+[validate] all checks passed
+
+$ git diff --check
+(no output; exit 0)
