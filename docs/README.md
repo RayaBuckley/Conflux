@@ -39,7 +39,7 @@ owner; linked documents should reference that owner rather than restating it.
 - [Change catalogue](CHANGE_CATALOG.md): report-derived work grouped by theme.
 - [Status](STATUS.md): concise current capability summary.
 - [Task registry](task-registry.json): authoritative machine-readable status.
-- [Report sources](../reports/): historical inputs pending canonical analysis.
+- [Report sources and analysis](../reports/README.md): reconciled historical inputs.
 - [Current manuscript](../manuscript/README.md): publication source and evidence policy.
 
 ## Ownership and rationale

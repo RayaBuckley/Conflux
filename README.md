@@ -66,7 +66,7 @@ also run `.\scripts\validate.ps1`.
 - [Security model](docs/SECURITY_MODEL.md)
 - [Current capabilities and limitations](docs/STATUS.md)
 - [Current fourth-year manuscript](manuscript/README.md)
-- [Historical report sources](reports/)
+- [Historical report sources and analysis](reports/README.md)
 
 The previous paper under `paper/` and the original reports are integrity-
 protected historical evidence. They do not define current behavior.
