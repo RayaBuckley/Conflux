@@ -4,14 +4,42 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from collections import deque
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _workflow_escape(value: str) -> str:
+    return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
 def run(*arguments: str) -> None:
     print(f"[validate] {' '.join(arguments)}", flush=True)
-    subprocess.run((sys.executable, *arguments), cwd=ROOT, check=True)
+    process = subprocess.Popen(
+        (sys.executable, *arguments),
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    assert process.stdout is not None
+    tail: deque[str] = deque(maxlen=30)
+    for line in process.stdout:
+        print(line, end="", flush=True)
+        tail.append(line.rstrip())
+    return_code = process.wait()
+    if return_code:
+        command = " ".join(arguments)
+        detail = "\n".join(tail)
+        print(
+            f"::error title=Conflux validation failed ({_workflow_escape(command)})::"
+            f"{_workflow_escape(detail)}",
+            flush=True,
+        )
+        raise subprocess.CalledProcessError(return_code, (sys.executable, *arguments))
 
 
 def main() -> int:
