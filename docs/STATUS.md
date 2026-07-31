@@ -34,7 +34,24 @@ capabilities. Their absence produces an explicit unavailable or `UNKNOWN`
 outcome. No live model, solver-binary, cluster, or AgentDojo efficacy result has
 been fabricated.
 
+## Validated baseline
+
+The 31 July 2026 retained run at commit `6fe6b584500e` passed 220 tests with
+90.25% branch coverage, all 13 schemas, deterministic regeneration, Ruff,
+strict mypy, wheel build, and installed `doctor`, `demo`, `plan demo`,
+`sled run`, and `report` smoke checks. The authoritative record is
+`artifacts/validation/6fe6b584500e/`; [the baseline](BASELINE_2026-07.md)
+defines what that result does and does not support. The matching GitHub run
+passed all four supported operating-system/Python combinations.
+
 `docs/task-registry.json` is the machine-readable programme status. Remaining
 research includes live comparative evidence, production policy/framework
 integrations, formal delegation, role-sensitive effects, persistent-memory
 authority, and symbolic reasoning about arbitrary generated programs.
+
+## Rationale
+
+This page intentionally summarizes capability rather than reproducing task
+rows, test output, or research claims. The task registry owns programme status,
+retained artifacts own measurements, and the claim ledger owns claim strength;
+keeping those roles separate makes drift visible.

@@ -9,9 +9,10 @@ offline runtime and CLI, native SLED, authenticated open-ended planning,
 serialisable verification subset, and pinned AgentDojo translation. Its
 implementation-status table states the evidence boundary for each surface.
 
-Numerical result placeholders must be replaced only by files generated from
-versioned `runs/*/result.json` evidence. Do not copy archived trace counts into
-current-result tables.
+The repository-validation result is sourced from the retained
+`artifacts/validation/6fe6b584500e/` record. Research-result placeholders must
+be replaced only by files generated from versioned `runs/*/result.json`
+evidence. Do not copy archived trace counts into current-result tables.
 
 The implementation now includes bounded native and solver-facing verification,
 open-ended dynamic planning, and a pinned AgentDojo translation boundary.

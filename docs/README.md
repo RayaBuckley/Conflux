@@ -9,6 +9,7 @@ owner; linked documents should reference that owner rather than restating it.
 - [CLI](CLI.md): commands, outputs, failures, and exit codes.
 - [Development](DEVELOPMENT.md): setup, testing ladder, and validation.
 - [Contributing](../CONTRIBUTING.md): human review and change workflow.
+- [Changelog](../CHANGELOG.md): review-level repository history.
 - [AI agent guide](AI_AGENT_GUIDE.md): trust order and drift controls.
 - [Security policy](../SECURITY.md): trust boundary and private reporting.
 

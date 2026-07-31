@@ -8,7 +8,7 @@
 | Branches are isolated alternatives | Implemented | one transition kernel and branch-parent tests |
 | Native SLED returns minimal counterexamples | Implemented within finite model | breadth-first checker tests |
 | Dynamic effects are re-authorised at execution time | Implemented | planning runtime, revocation, certificate, and provider tests |
-| The installed offline vertical slice is runnable without credentials | Implemented | clean-wheel doctor, demo, planning, SLED, and report smoke validation |
+| The installed offline vertical slice is runnable without credentials | Implemented | `artifacts/validation/6fe6b584500e/`: clean-wheel doctor, demo, planning, SLED, and report smoke validation |
 | Generated code cannot exceed the declared envelope | Implemented at adapter boundary | container arguments, mount/path checks, and fail-closed sandbox tests; host/container implementation remains in the TCB |
 | Solver results match the supported runtime subset | Bounded evidence | serialisable IR, interpreter differential tests, optional Z3 backend |
 | Conflux is secure for unbounded deployments | Not claimed | finite bounds and abstractions do not prove unbounded deployments |
@@ -23,3 +23,10 @@ sources of truth. `reports/analysis/` reconciles them without promoting their
 snapshot claims.
 The M3 smoke result is pipeline-readiness evidence only; it is not promoted to
 a deployment-security or external-utility claim.
+
+## Rationale
+
+Claim strength is kept separate from implementation status because passing
+code tests can establish behavior without establishing deployment security or
+empirical utility. Every numerical statement therefore points to retained
+evidence, and missing live evidence remains visible rather than inferred.

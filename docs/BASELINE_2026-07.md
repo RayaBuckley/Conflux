@@ -1,40 +1,44 @@
-# Conflux baseline: July 2026
+# Conflux validated baseline: July 2026
 
-## Snapshot
+## Current snapshot
 
-- Source commit: `26213bf042c5a94b5d8428974637c4abdcbc22c1`
-- Python: CPython 3.12.12
-- Platform: Windows
-- Captured: 29 July 2026
-- Validation evidence: `artifacts/validation/26213bf042c5/`
+| Field | Value |
+|---|---|
+| Source commit | `6fe6b584500e84f2cbc3d15876865243c4f01440` |
+| Captured | 31 July 2026 |
+| Runtime | CPython 3.12.12 on Windows |
+| Retained evidence | `artifacts/validation/6fe6b584500e/` |
+| Cross-platform CI | [run 30659302041](https://github.com/RayaBuckley/Conflux/actions/runs/30659302041): all four matrix jobs passed |
+| Manuscript CI | [run 30659302028](https://github.com/RayaBuckley/Conflux/actions/runs/30659302028): passed |
+| Result | 220 tests; 90.25% branch coverage; all validation stages passed |
 
-The source commit is the canonical-migration commit sequence rebased onto the
-new report package. The working tree was clean, and the source package now
-archived under `reports/archive/2026-07-29-implementation-programme/` matched
-`origin/main` byte for byte.
+The snapshot includes the portable archive checks, consolidated documentation
+and report archive, and synchronized current manuscript. The evidence records
+the exact source commit tested; later documentation-only commits do not alter
+that historical result.
 
-## Commands
+## Reproduce it
 
 ```powershell
-python -m pytest -q
-python -m mypy src tests --no-error-summary
-python -m ruff check src tests
-python scripts/audit_repository.py
-.\scripts\validate.ps1 -Python .\.test-venv\Scripts\python.exe
+.\.test-venv\Scripts\python.exe scripts\validate.py
 ```
 
-All commands passed. The complete validator reported 54 passing tests and
-90.64% branch-aware coverage.
+The portable validator runs the repository audit, all 13 JSON Schema checks,
+deterministic smoke regeneration, pytest with the 90% coverage floor, Ruff,
+strict mypy, wheel build, and clean installed-wheel CLI smoke. Use
+`scripts/validate.ps1` as the PowerShell wrapper or `python scripts/validate.py`
+on any supported platform.
 
-## Known incomplete work
+## Evidence boundary
 
-- Ordered-plan proposal semantics are not yet implemented.
-- Trace and result JSON Schemas, supported CLI, scenario loader, experiment
-  manifests, and current-code result bundles do not yet exist.
-- Model and benchmark integrations have no live pinned evidence.
-- The explicit-state checker exists, but solver-backed verification,
-  runtime-to-IR conformance, and state/trace performance comparison remain.
-- Formal delegation remains unsupported and denied.
-- The archived paper is not evidence for the canonical implementation.
+This baseline proves that the offline implementation and repository contracts
+passed on the recorded platform and commit. It is not evidence of production
+deployment security, live-model utility, external AgentDojo efficacy, solver
+binary availability, Docker isolation, or cluster execution. Those claims need
+their own retained, versioned results.
 
-These gaps are tracked in Feature Specification 009 and the change catalogue.
+## Rationale
+
+A commit-addressed baseline prevents mutable documentation from becoming the
+evidence for its own claims. One portable command also keeps local, installed-
+wheel, and CI behavior aligned while optional infrastructure remains explicit.

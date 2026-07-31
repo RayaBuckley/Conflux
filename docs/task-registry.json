@@ -76,7 +76,7 @@
     {
       "ids": ["CI-001", "CI-002", "PAPER-001"],
       "status": "implemented",
-      "evidence": ["scripts/validate.py", "scripts/validate.ps1", ".github/workflows/validate.yml", "paper/ARCHIVE_MANIFEST.json", "manuscript/"]
+      "evidence": ["scripts/validate.py", "scripts/validate.ps1", ".github/workflows/validate.yml", "artifacts/validation/6fe6b584500e/", "paper/ARCHIVE_MANIFEST.json", "manuscript/"]
     },
     {
       "ids": ["PAPER-002"],
