@@ -1,37 +1,44 @@
 # Evaluation
 
-Security verification and empirical utility are separate results. ITES reports
-what was proposed, authorised, blocked, incomplete, executed, or failed.
-Rejected adversarial proposals do not make an executed-safety property fail.
+Security and utility are separate outcomes. ITES records what was proposed,
+authorised, blocked, incomplete, executed, or provider-failed. A rejected
+adversarial proposal is defence evidence, not an executed invariant failure.
 
-## Versioned evidence records
+## Versioned evidence
 
-Schemas in `schemas/` define proposal batches, scenarios, trace events, run
-results, experiment manifests, and native-verification results. Schema versions
-are strings and are rejected when unknown.
+Schemas under `schemas/` define proposal batches, scenarios, trace events, run
+results, experiment manifests, plans, and verification results. Unknown
+versions and fields fail closed.
 
-Trace event version 2 records deterministic event and causal-parent IDs for run,
-branch, proposal, each independent policy decision, action, provider, and bound
-outcomes. An injected clock supplies presentation timestamps. Timestamps are
-excluded from event fingerprints, so the same semantic run has the same IDs.
-JSONL traces and result JSON are written with canonical ordering and SHA-256
-linkage. Security assessments and utility outcomes remain distinct fields.
-Action counters count lifecycle events, so an executed action remains visible
-in both the authorised and executed totals.
+Trace event version 2 records deterministic event and causal-parent IDs for
+runs, branches, proposals, independent policy decisions, actions, providers,
+and bounds. An injected clock provides presentation timestamps, which are
+excluded from semantic fingerprints. Canonically ordered JSONL traces and
+result JSON are linked by SHA-256.
 
-SLED uses adversarial typed choices and reports finite bounds. Planning SLED
-models any schema-valid continuation and any code effect permitted by its
-capability envelope. It abstracts program semantics and records that assumption
-instead of claiming arbitrary-code verification.
-
-Planning comparison observations use four fixed modes—reactive, static,
-dynamic, and dynamic with code—and retain blocked, failed, and bound-reached
-runs. Aggregation requires identical task IDs and reports security separately
-from utility, calls, tokens, latency, replans, plan growth, sensitive reads, and
-maximum context size.
+Native and planning SLED retain their finite bounds and abstractions. Planning
+comparison uses the fixed reactive, static, dynamic, and dynamic-with-code
+modes. Aggregation requires matching task IDs and keeps blocked, failed, and
+bound-reached cases alongside completed cases. It reports security separately
+from utility, calls, tokens, latency, replans, plan growth, sensitive reads,
+and maximum context size.
 
 AgentDojo translation is pinned to package `0.1.35` and benchmark `v1.2.2`.
-Exact upstream IDs, injections, messages, errors, utility, and security are
-preserved. Conflux Principal Context and policy annotations are an explicit
-benchmark augmentation. The raw fixture validates translation only; a real
-comparative efficacy claim still requires a retained live result.
+Upstream IDs, messages, errors, utility, and security remain native evidence;
+Conflux Principal Context and policy annotations are an explicit augmentation.
+The raw fixture validates translation only. A live comparative efficacy claim
+requires a separately retained result.
+
+## Rationale
+
+| Evidence decision | Why |
+|---|---|
+| Separate security and utility | A safe block can reduce completion, while a useful action can be unsafe |
+| Retain blocked, failed, and incomplete runs | Exclusion would bias aggregates toward successful cases |
+| Hash semantic records | Reproducibility should not depend on wall-clock presentation |
+| Preserve native benchmark metrics | Conflux annotations must not overwrite upstream meaning |
+| Execute negative controls | A harness that misses a known defect is not defence evidence |
+| Gate live claims on retained results | Adapter code and fixtures do not establish empirical efficacy |
+
+See the [claim ledger](CLAIMS.md), [negative controls](NEGATIVE_CONTROLS.md),
+and [smoke evidence](MVP_RESULTS.md) for the strength of current claims.

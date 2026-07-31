@@ -27,3 +27,12 @@ re-authorised immediately before execution. Unsupported delegation is denied.
 
 Supported security fixes target the current default branch. There is no stable
 0.1 API compatibility promise yet.
+
+## Rationale
+
+The trusted computing base is published because mediation cannot protect
+effects that bypass it or inputs whose provenance is false. Fail-closed
+optional integrations keep unavailable research infrastructure from weakening
+the deterministic core. Dry-run defaults, environment-only secrets, bounded
+capabilities, and action-time re-authorisation reduce configuration risk while
+leaving residual host and provider trust explicit.

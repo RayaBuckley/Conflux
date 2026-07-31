@@ -52,3 +52,11 @@ The comparison must retain upstream JSON and report:
 AgentDojo has no organisational Principal Context or access-control data.
 Conflux annotations are therefore a declared benchmark augmentation, not
 upstream ground truth. No live comparative result is currently claimed.
+
+## Rationale
+
+One exact upstream version and translation is easier to audit than permissive
+field probing. Preserving upstream identifiers, raw records, and native metrics
+makes translation errors visible and supports later re-analysis. Keeping
+Principal Context annotations separate acknowledges that AgentDojo does not
+supply organisational access-control ground truth.

@@ -31,3 +31,15 @@ when the adapter loads a real generator, keeping the core install light.
 The model is treated as untrusted: generated text still passes the same strict
 proposal parser and resource allowlist. A real local-model smoke is externally
 gated by model-weight access and suitable compute and is not claimed here.
+
+## Rationale
+
+The HTTP adapter is vendor-neutral because the security boundary is structured
+output, not a provider brand. Exact schemas and resource allowlists keep free-
+form model text from selecting undeclared authority. Environment-only secrets,
+redacted evidence, and bounded retries make confidentiality and availability
+policy explicit.
+
+The local adapter is optional and revision-pinned so core validation remains
+small, offline, and deterministic. Both paths share the same untrusted-output
+parser and ITES mediation.

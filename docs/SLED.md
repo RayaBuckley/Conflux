@@ -1,32 +1,42 @@
 # SLED Native Verification
 
-SLED explores a typed transition system breadth-first. It memoises canonical
-state keys, retains predecessor edges, and returns the shortest discovered
-counterexample.
+SLED explores a typed transition system breadth-first, memoises canonical
+future-relevant state, retains predecessor edges, and reports a shortest
+discovered counterexample.
 
 | Verdict | Meaning |
 |---|---|
 | `SAFE` | The finite reachable state space was exhausted without violation |
 | `BOUNDED_SAFE` | No violation was found, but a configured bound truncated work |
-| `UNSAFE` | A safety property failed and has a counterexample |
-| `UNKNOWN` | The model, property, or adapter failed |
+| `UNSAFE` | A safety property failed with a counterexample |
+| `UNKNOWN` | Modelling, property, or adapter evaluation failed |
 
-Bounds cover depth, states, transitions, and model calls. Results report unique
-states, transitions, duplicates, truncation, and counterexample length.
-Initial ITES properties cover unauthorised authorisation, forbidden
-observation, provenance preservation, and Principal Context monotonicity.
-The planning transition system additionally models nondeterministic
-schema-valid continuations and worst-case effects permitted by generated-code
-capabilities. Plan, continuation, effect, and model-call bounds are retained in
-the verdict.
-The semantic corpus differentially checks direct policy composition and kernel
-outcomes. Test-only defective variants implement empty-context allowance,
-permission union, provenance-as-ACL, stale context, sibling leakage, and
-rejected-proposal misclassification; SLED finds a one-transition witness for
-each.
+Depth, state, transition, and model-call bounds are explicit. Results retain
+unique states, transitions, duplicates, truncation, and counterexample length.
+ITES properties cover unauthorised execution, forbidden observation,
+provenance preservation, Principal Context monotonicity, branch isolation, and
+bounded resource use.
+
+Planning SLED models any schema-valid continuation and worst-case effects
+within a generated-code capability envelope. Plan, continuation, effect, and
+model-call bounds remain part of the verdict. A shared semantic corpus checks
+policy composition against the kernel. Executable defective variants cover
+empty-context allowance, permission union, provenance-as-ACL, stale context,
+sibling leakage, and rejected-proposal misclassification.
 
 `conflux.verification` is a separate callback-free IR with a reference
-interpreter, runtime differential checks, optional Z3 bounded checking, and a
-nuXmv Boolean-subset adapter. Missing binaries and unsupported semantics return
-`UNKNOWN`. Reductions, hyperproperties, arbitrary-program proofs, and
-unbounded deployment claims remain future stages.
+interpreter, runtime differential tests, optional Z3 bounded checking, and a
+nuXmv Boolean-subset adapter. Missing or unsupported backends return `UNKNOWN`.
+Reductions, hyperproperties, arbitrary-program proofs, and unbounded deployment
+claims remain future work.
+
+## Rationale
+
+Breadth-first search produces small diagnostic witnesses. Canonical state and
+deduplication control repeated exploration without erasing distinctions that
+can affect later security decisions.
+
+`SAFE` is reserved for an exhausted finite state space. Bounds weaken the
+verdict to `BOUNDED_SAFE`, while modelling failures yield `UNKNOWN`; neither is
+silently promoted to proof. Native SLED stays close to the operational kernel,
+while solver IR stays separate so automation cannot hide abstraction costs.

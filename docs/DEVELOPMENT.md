@@ -1,25 +1,49 @@
 # Development
 
-Use Python 3.12 or newer.
+Use Python 3.12 or newer. Windows users can run `.\scripts\setup.ps1`; the
+[root quick start](../README.md#run-the-offline-system) gives portable manual
+setup. Local environments and ordinary run output are ignored.
 
-```powershell
-.\scripts\setup.ps1
-.\scripts\validate.ps1
-```
+## Testing ladder
 
-The portable validator runs audit, pytest with branch coverage, Ruff, strict
-mypy, schema/regeneration checks, and package build/install/import checks.
-Every security change requires allowed,
-denied, empty, mixed-Principal Context, provenance, immutability, nested,
-failure, and deterministic trace cases where applicable.
+Use the narrowest useful feedback first, then finish with the repository gate.
+
+1. Run the affected unit or integration file with `python -m pytest -q`.
+2. Run Ruff and strict mypy over changed Python boundaries.
+3. Run `python scripts/audit_repository.py` after architecture, evidence, or
+   documentation changes.
+4. Run `python scripts/validate.py` before every review boundary. PowerShell
+   users may call `.\scripts\validate.ps1`.
+5. Review `git diff --check`, the staged diff, and the resulting evidence.
+
+The portable validator checks the AST import graph, documentation and archive
+integrity, JSON Schemas, deterministic smoke regeneration, pytest with branch
+coverage, Ruff, strict mypy, wheel build/install, and installed CLI commands.
+
+Security changes need explicit allow, deny, empty and mixed Principal Context,
+provenance, immutability, nesting, revocation, failure, and deterministic-trace
+cases where applicable. External boundaries need malformed, unsupported,
+missing-dependency, timeout, and redaction tests. The semantic corpus and
+executable mutants test system-wide invariants rather than implementation
+details.
+
+## Offline and optional evidence
 
 The 90% branch-coverage gate measures the credential-free offline core.
-Optional process/network/binary boundaries—live model clients, AgentDojo,
-container code execution, Z3, and nuXmv—are excluded from that aggregate
-because their exhaustive paths require manual external jobs. They still have
-offline contract, failure, parser, command-construction, or mock-runner tests.
-Manual workflows retain their own logs and artefacts.
+Network, model, benchmark, container, solver, and cluster boundaries have
+offline contract and failure tests, but their live results belong in explicit
+optional workflows with retained manifests and logs. Missing optional access
+is recorded as unavailable, not converted into a passing empirical claim.
 
-Read the architecture and security model, write a feature specification, make
-one coherent change, update evidence/status, run validation, and review the
-diff. Raw experiment outputs and local environments are not committed.
+## Rationale
+
+Focused tests provide fast diagnosis; the full gate detects cross-boundary
+drift that a local unit test cannot. Branch coverage is a floor rather than a
+security guarantee, so adversarial cases and negative controls remain
+mandatory. Building and running the installed wheel catches packaging and CLI
+failures that editable-source tests can hide.
+
+Read the relevant contract, write a decision-complete specification, implement
+one coherent change, update the existing evidence and documentation owners,
+then validate and review. Generated evidence is committed after the code that
+produces it so the measured revision is unambiguous.
