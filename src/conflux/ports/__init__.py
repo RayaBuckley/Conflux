@@ -1,7 +1,14 @@
 """Ports used by canonical application and ITES services."""
 
 from .environment import EnvironmentPort
-from .model import ModelPort
+from .model import (
+    LocalModelPort,
+    LocalModelPreflight,
+    LocalModelRequest,
+    LocalModelResponse,
+    LocalModelSpec,
+    ModelPort,
+)
 from .planner import (
     ContinuationResponse,
     InitialPlanResponse,
@@ -19,6 +26,11 @@ __all__ = [
     "ConsentPolicyPort",
     "EnvironmentPort",
     "ExecutorPort",
+    "LocalModelPort",
+    "LocalModelPreflight",
+    "LocalModelRequest",
+    "LocalModelResponse",
+    "LocalModelSpec",
     "ModelPort",
     "ContinuationResponse",
     "InitialPlanResponse",

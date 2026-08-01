@@ -13,52 +13,11 @@ from yaml import YAMLError
 
 from conflux.adapters.scenarios import load_schema
 from conflux.domain import canonical_json, fingerprint
+from conflux.ports import LocalModelSpec
 
 
 def _frozen(value: Mapping[str, object]) -> Mapping[str, object]:
     return MappingProxyType(dict(value))
-
-
-@dataclass(frozen=True, slots=True)
-class LocalModelSpec:
-    backend: str
-    model_id: str
-    revision: str
-    weight_manifest_sha256: str
-    tokenizer_id: str
-    tokenizer_revision: str
-    prompt_template_version: str
-    seed: int
-    temperature: float
-    top_p: float
-    max_output_tokens: int
-    context_limit: int
-    device: str
-    dtype: str
-    runtime_version: str
-    endpoint: str | None = None
-    allow_private_remote: bool = False
-
-    def to_dict(self) -> dict[str, object]:
-        return {
-            "backend": self.backend,
-            "model_id": self.model_id,
-            "revision": self.revision,
-            "weight_manifest_sha256": self.weight_manifest_sha256,
-            "tokenizer_id": self.tokenizer_id,
-            "tokenizer_revision": self.tokenizer_revision,
-            "prompt_template_version": self.prompt_template_version,
-            "seed": self.seed,
-            "temperature": self.temperature,
-            "top_p": self.top_p,
-            "max_output_tokens": self.max_output_tokens,
-            "context_limit": self.context_limit,
-            "device": self.device,
-            "dtype": self.dtype,
-            "runtime_version": self.runtime_version,
-            "endpoint": self.endpoint,
-            "allow_private_remote": self.allow_private_remote,
-        }
 
 
 @dataclass(frozen=True, slots=True)
