@@ -29,6 +29,7 @@ class AgentDojoFailure(StrEnum):
     PARSER = "parser"
     POLICY = "policy"
     SECURITY = "security"
+    TOOL = "tool"
     UTILITY = "utility"
 
 
@@ -274,7 +275,7 @@ def classify_conflux_outcome(
     if policy_blocked:
         failures.append(AgentDojoFailure.POLICY)
     if provider_failed:
-        failures.append(AgentDojoFailure.SETUP)
+        failures.append(AgentDojoFailure.TOOL)
     if native_security is False:
         failures.append(AgentDojoFailure.SECURITY)
     if native_utility is False:
@@ -288,6 +289,8 @@ def _classify_upstream_error(error: str) -> AgentDojoFailure:
         return AgentDojoFailure.PARSER
     if "model" in lowered or "context_length" in lowered or "api" in lowered:
         return AgentDojoFailure.MODEL
+    if "tool execution" in lowered or "runtime" in lowered:
+        return AgentDojoFailure.TOOL
     return AgentDojoFailure.SETUP
 
 

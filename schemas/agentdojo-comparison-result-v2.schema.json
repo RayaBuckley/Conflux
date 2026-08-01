@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/agentdojo-comparison-result-v2.json",
+  "title": "Conflux AgentDojo comparison result v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "protocol_fingerprint", "complete", "model_id", "cells", "failure_counts"],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "protocol_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "complete": {"type": "boolean"},
+    "model_id": {"type": "string", "minLength": 1},
+    "cells": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id", "attacked", "defence", "repetition", "seed", "status",
+          "native_utility", "native_security", "raw_log", "raw_sha256",
+          "augmentation", "failures", "model_calls", "prompt_tokens",
+          "output_tokens", "latency_ms"
+        ],
+        "properties": {
+          "case_id": {"type": "string"},
+          "attacked": {"type": "boolean"},
+          "defence": {"enum": ["no_defence", "ites"]},
+          "repetition": {"type": "integer", "minimum": 0},
+          "seed": {"type": "integer", "minimum": 0},
+          "status": {"enum": ["complete", "setup_failed", "model_failed", "parser_failed", "policy_blocked", "tool_failed", "incomplete"]},
+          "native_utility": {"type": ["boolean", "null"]},
+          "native_security": {"type": ["boolean", "null"]},
+          "raw_log": {"type": ["string", "null"]},
+          "raw_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "augmentation": {"type": "array", "items": {"type": "object"}},
+          "failures": {"type": "array", "items": {"enum": ["setup", "model", "parser", "policy", "security", "tool", "utility", "bound", "adapter", "unknown"]}},
+          "model_calls": {"type": "integer", "minimum": 0},
+          "prompt_tokens": {"type": ["integer", "null"], "minimum": 0},
+          "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+          "latency_ms": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "failure_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["setup", "model", "parser", "policy", "security", "tool", "utility", "bound", "adapter", "unknown"],
+      "properties": {
+        "setup": {"type": "integer", "minimum": 0},
+        "model": {"type": "integer", "minimum": 0},
+        "parser": {"type": "integer", "minimum": 0},
+        "policy": {"type": "integer", "minimum": 0},
+        "security": {"type": "integer", "minimum": 0},
+        "tool": {"type": "integer", "minimum": 0},
+        "utility": {"type": "integer", "minimum": 0},
+        "bound": {"type": "integer", "minimum": 0},
+        "adapter": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

@@ -122,3 +122,9 @@ def test_failure_taxonomy_keeps_policy_security_and_utility_separate() -> None:
         AgentDojoFailure.SECURITY,
         AgentDojoFailure.UTILITY,
     )
+    assert classify_conflux_outcome(
+        policy_blocked=False,
+        provider_failed=True,
+        native_security=True,
+        native_utility=True,
+    ) == (AgentDojoFailure.TOOL,)
