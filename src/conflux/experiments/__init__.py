@@ -7,6 +7,13 @@ from .planning_comparison import (
     aggregate_planning_comparison,
     generate_planning_report,
 )
+from .protocol import (
+    ExperimentProtocol,
+    LocalModelSpec,
+    ResolvedRunManifest,
+    RunFailure,
+    load_protocol,
+)
 from .resume import (
     ExperimentCase,
     ResumePlan,
@@ -21,15 +28,20 @@ __all__ = [
     "BUNDLE_FILES",
     "ExperimentCase",
     "ExperimentManifest",
+    "ExperimentProtocol",
+    "LocalModelSpec",
     "PlanningMode",
     "PlanningObservation",
     "ResumePlan",
+    "ResolvedRunManifest",
+    "RunFailure",
     "aggregate_planning_comparison",
     "completion_marker",
     "expand_cases",
     "generate_smoke_bundle",
     "generate_planning_report",
     "load_manifest",
+    "load_protocol",
     "materialise_jobs",
     "plan_resume",
 ]

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/experiment-run-manifest-v2.json",
+  "title": "Conflux resolved experiment run manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "run_id", "track", "protocol_fingerprint",
+    "source_commit", "status", "complete", "exclusions", "failures",
+    "environment", "checksums"
+  ],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "run_id": {"type": "string", "minLength": 1},
+    "track": {"enum": ["native_sled", "agentdojo", "planning"]},
+    "protocol_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"},
+    "status": {"enum": ["complete", "incomplete", "unavailable", "failed"]},
+    "complete": {"type": "boolean"},
+    "exclusions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["category", "detail", "case_id"],
+        "properties": {
+          "category": {
+            "enum": [
+              "setup", "model", "parser", "policy", "security", "tool",
+              "utility", "bound", "adapter", "unknown"
+            ]
+          },
+          "detail": {"type": "string", "minLength": 1},
+          "case_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "propertyNames": {"minLength": 1},
+      "additionalProperties": {"type": "string"}
+    },
+    "checksums": {
+      "type": "object",
+      "propertyNames": {"minLength": 1},
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    }
+  }
+}
