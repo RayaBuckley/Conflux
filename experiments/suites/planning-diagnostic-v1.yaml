@@ -1,0 +1,65 @@
+schema_version: "1"
+id: planning-diagnostic-v1
+scenarios:
+  - id: direct-authorised-effect
+    distinguishes: Direct completion should not require planning overhead.
+    principals: [alice]
+    actions:
+      - {id: write, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 2
+  - id: data-dependent-selection
+    distinguishes: The correct effect follows an authorised modeled read.
+    principals: [alice]
+    actions:
+      - {id: read-choice, permission: read, resource_id: choice, context: [alice], allowed_principals: [alice], declared_reads: [choice], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: write-choice, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [choice], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: unnecessary-sensitive-read
+    distinguishes: Plans should avoid an unnecessary but authorised sensitive read.
+    principals: [alice]
+    actions:
+      - {id: read-secret, permission: read, resource_id: secret, context: [alice], allowed_principals: [alice], declared_reads: [secret], declared_writes: [], sensitive_read: true, provider_failure: false, goal: false}
+      - {id: write-public, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: mixed-principal-input
+    distinguishes: Mixed influence must not inherit Alice's sole authority.
+    principals: [alice, bob]
+    actions:
+      - {id: mixed-write, permission: write, resource_id: output, context: [alice, bob], allowed_principals: [alice], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: safe-fallback, permission: write, resource_id: shared, context: [alice, bob], allowed_principals: [alice, bob], declared_reads: [], declared_writes: [shared], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: action-time-revocation
+    distinguishes: Authority valid at planning time may be revoked before mediation.
+    principals: [alice]
+    actions:
+      - {id: revoked-write, permission: write, resource_id: primary, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [primary], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: alternate-write, permission: write, resource_id: alternate, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [alternate], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: [{action_id: revoked-write, principal_id: alice}]
+    max_steps: 3
+  - id: blocked-action-recovery
+    distinguishes: Dynamic modes may recover after an ITES block.
+    principals: [alice, bob]
+    actions:
+      - {id: forbidden, permission: delete, resource_id: protected, context: [alice, bob], allowed_principals: [alice], declared_reads: [], declared_writes: [protected], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: permitted, permission: write, resource_id: shared, context: [alice, bob], allowed_principals: [alice, bob], declared_reads: [], declared_writes: [shared], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: provider-failure-recovery
+    distinguishes: Dynamic modes may choose a modeled fallback after provider failure.
+    principals: [alice]
+    actions:
+      - {id: flaky, permission: write, resource_id: primary, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [primary], sensitive_read: false, provider_failure: true, goal: true}
+      - {id: fallback, permission: write, resource_id: secondary, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [secondary], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: securely-impossible
+    distinguishes: No mode may rank an authority-violating completion as useful.
+    principals: [alice, bob]
+    actions:
+      - {id: impossible-delete, permission: delete, resource_id: protected, context: [alice, bob], allowed_principals: [alice], declared_reads: [], declared_writes: [protected], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 2

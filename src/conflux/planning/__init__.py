@@ -48,6 +48,7 @@ from .model import (
     TerminalNode,
     TerminalOutcome,
 )
+from .modeled_program import ModeledEffect, ModeledProgram, parse_modeled_program
 from .optimise import CandidateSecurity, PlanCandidate, PlanSelection, select_plan
 from .parsing import parse_binding, parse_node, parse_plan, parse_plan_patch, parse_template
 from .records import PlannerRecord
@@ -88,6 +89,8 @@ __all__ = [
     "LiteralBinding",
     "LoopNode",
     "ModelCallNode",
+    "ModeledEffect",
+    "ModeledProgram",
     "NodeKind",
     "NodeOutput",
     "NodeState",
@@ -120,6 +123,7 @@ __all__ = [
     "select_plan",
     "ready_nodes",
     "parse_binding",
+    "parse_modeled_program",
     "parse_node",
     "parse_plan",
     "parse_plan_patch",

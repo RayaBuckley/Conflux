@@ -9,6 +9,15 @@ from .planning_comparison import (
     aggregate_planning_comparison,
     generate_planning_report,
 )
+from .planning_runner import (
+    DiagnosticAction,
+    DiagnosticScenario,
+    ModeledWorld,
+    PlanningCell,
+    load_planning_diagnostic_suite,
+    planning_matrix,
+    run_planning_comparison,
+)
 from .protocol import (
     ExperimentProtocol,
     LocalModelSpec,
@@ -35,9 +44,13 @@ __all__ = [
     "ExperimentCase",
     "ExperimentManifest",
     "ExperimentProtocol",
+    "DiagnosticAction",
+    "DiagnosticScenario",
     "LocalModelSpec",
+    "ModeledWorld",
     "PlanningMode",
     "PlanningObservation",
+    "PlanningCell",
     "ResumePlan",
     "ResolvedRunManifest",
     "RunFailure",
@@ -48,9 +61,12 @@ __all__ = [
     "generate_smoke_bundle",
     "generate_planning_report",
     "load_manifest",
+    "load_planning_diagnostic_suite",
     "load_protocol",
     "materialise_jobs",
     "plan_resume",
+    "planning_matrix",
     "run_native_reproduction",
     "run_agentdojo_comparison",
+    "run_planning_comparison",
 ]

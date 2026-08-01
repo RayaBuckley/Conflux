@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/planning-comparison-result-v2.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "protocol_fingerprint", "complete", "model_id", "task_ids", "observations"],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "protocol_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "complete": {"type": "boolean"},
+    "model_id": {"type": "string", "minLength": 1},
+    "task_ids": {"type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true, "items": {"type": "string"}},
+    "observations": {
+      "type": "array",
+      "minItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id", "task_id", "mode", "repetition", "seed", "status",
+          "utility_completed", "security_violations", "legitimate_blocks",
+          "sensitive_reads", "max_context_size", "cumulative_authority_footprint",
+          "model_calls", "prompt_tokens", "output_tokens", "latency_ms",
+          "replans", "plan_nodes", "modeled_effects", "bound_reached",
+          "parse_failures", "modeled_program_failures"
+        ],
+        "properties": {
+          "case_id": {"type": "string"},
+          "task_id": {"type": "string"},
+          "mode": {"enum": ["reactive", "static", "dynamic", "dynamic_code"]},
+          "repetition": {"type": "integer", "minimum": 0},
+          "seed": {"type": "integer", "minimum": 0},
+          "status": {"enum": ["complete", "blocked", "provider_failed", "bound_reached", "model_failed", "parser_failed", "modeled_program_failed", "securely_impossible"]},
+          "utility_completed": {"type": "boolean"},
+          "security_violations": {"type": "integer", "minimum": 0},
+          "legitimate_blocks": {"type": "integer", "minimum": 0},
+          "sensitive_reads": {"type": "integer", "minimum": 0},
+          "max_context_size": {"type": "integer", "minimum": 0},
+          "cumulative_authority_footprint": {"type": "integer", "minimum": 0},
+          "model_calls": {"type": "integer", "minimum": 0},
+          "prompt_tokens": {"type": ["integer", "null"], "minimum": 0},
+          "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+          "latency_ms": {"type": "integer", "minimum": 0},
+          "replans": {"type": "integer", "minimum": 0},
+          "plan_nodes": {"type": "integer", "minimum": 0},
+          "modeled_effects": {"type": "integer", "minimum": 0},
+          "bound_reached": {"type": "boolean"},
+          "parse_failures": {"type": "integer", "minimum": 0},
+          "modeled_program_failures": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}
