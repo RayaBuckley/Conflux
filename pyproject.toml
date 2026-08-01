@@ -85,3 +85,4 @@ package-dir = { "" = "src" }
 where = ["src"]
 [tool.setuptools.data-files]
 "share/conflux/schemas" = ["schemas/*.json"]
+"share/conflux/experiments" = ["experiments/suites/planning-diagnostic-v1.yaml"]

@@ -12,12 +12,18 @@ from typing import Any, cast
 
 from jsonschema import Draft202012Validator, ValidationError
 
+from conflux.adapters.benchmarks.agentdojo_local import PinnedAgentDojoCellExecutor
 from conflux.adapters.benchmarks.agentdojo_v1 import (
     load_pinned_suite,
     parse_upstream_log,
     write_translation,
 )
-from conflux.adapters.models import OpenAICompatibleModel, ScriptedModel
+from conflux.adapters.models import (
+    OpenAICompatibleModel,
+    ScriptedModel,
+    SelfHostedOpenAIModel,
+    TransformersLocalModel,
+)
 from conflux.adapters.providers import InMemoryExecutor
 from conflux.adapters.scenarios import load_scenario, load_schema
 from conflux.application import CapabilityReport, ChatRuntime, MediationService
@@ -38,8 +44,19 @@ from conflux.evaluation import (
     write_result,
     write_trace,
 )
-from conflux.experiments import load_manifest
+from conflux.experiments import (
+    ExperimentProtocol,
+    agentdojo_matrix,
+    load_default_planning_diagnostic_suite,
+    load_manifest,
+    load_protocol,
+    planning_matrix,
+    run_agentdojo_comparison,
+    run_native_reproduction,
+    run_planning_comparison,
+)
 from conflux.ites import BranchState, MediatingITES, TransitionKernel
+from conflux.ports import LocalModelPreflight
 from conflux.verification import NuXmvBackend, VerificationIR, verify_with_z3
 
 EXIT_OK = 0
@@ -71,6 +88,10 @@ def _parser() -> argparse.ArgumentParser:
     plan_commands = plan.add_subparsers(dest="plan_command", required=True)
     plan_demo = plan_commands.add_parser("demo", help="run the scripted recovery plan")
     plan_demo.add_argument("--output", type=Path, default=Path("runs/plan-demo"))
+    plan_compare = plan_commands.add_parser("compare", help="preflight or run the four-mode modeled comparison")
+    plan_compare.add_argument("--config", type=Path, required=True)
+    plan_compare.add_argument("--output", type=Path)
+    plan_compare.add_argument("--execute-local", action="store_true")
 
     sled = commands.add_parser("sled", help="native bounded verification")
     sled_commands = sled.add_subparsers(dest="sled_command", required=True)
@@ -81,6 +102,9 @@ def _parser() -> argparse.ArgumentParser:
     sled_run.add_argument("--max-states", type=int, default=10_000)
     sled_run.add_argument("--max-transitions", type=int, default=50_000)
     sled_run.add_argument("--max-model-calls", type=int, default=8)
+    sled_reproduce = sled_commands.add_parser("reproduce", help="run paired legacy/canonical native SLED")
+    sled_reproduce.add_argument("--protocol", type=Path, required=True)
+    sled_reproduce.add_argument("--output", type=Path)
 
     verify = commands.add_parser("verify", help="solver-facing verification (M7)")
     verify.add_argument("--model", type=Path)
@@ -97,6 +121,7 @@ def _parser() -> argparse.ArgumentParser:
     agentdojo.add_argument("--config", type=Path, required=True)
     agentdojo.add_argument("--upstream-log", type=Path)
     agentdojo.add_argument("--output", type=Path)
+    agentdojo.add_argument("--execute-local", action="store_true")
 
     report = commands.add_parser("report", help="render a result JSON")
     report.add_argument("result", type=Path)
@@ -104,6 +129,7 @@ def _parser() -> argparse.ArgumentParser:
 
     doctor = commands.add_parser("doctor", help="inspect local capabilities")
     doctor.add_argument("--json", action="store_true")
+    doctor.add_argument("--local-model-config", type=Path)
     return parser
 
 
@@ -205,6 +231,18 @@ def _demo(arguments: argparse.Namespace) -> int:
 
 
 def _sled(arguments: argparse.Namespace) -> int:
+    if str(arguments.sled_command) == "reproduce":
+        protocol = load_protocol(cast(Path, arguments.protocol))
+        reproduction = run_native_reproduction(protocol)
+        output = cast(Path | None, arguments.output) or Path(protocol.output_directory)
+        output.mkdir(parents=True, exist_ok=True)
+        protocol.materialise(output)
+        path = output / "result.json"
+        path.write_text(canonical_json(reproduction) + "\n", encoding="utf-8", newline="\n")
+        print(canonical_json({"complete": reproduction["complete"], "output": str(path)}))
+        return EXIT_OK if reproduction["complete"] else EXIT_RUNTIME
+    if str(arguments.sled_command) != "run":
+        return _unavailable(f"unsupported_sled_command:{arguments.sled_command}")
     scenario = load_scenario(cast(Path, arguments.suite))
     system = ITESVerificationSystem(
         (BranchState.initial(scenario.environment.artifacts()),),
@@ -219,7 +257,7 @@ def _sled(arguments: argparse.Namespace) -> int:
         int(arguments.max_transitions),
         int(arguments.max_model_calls),
     )
-    result = ExplicitStateChecker().verify(
+    verification = ExplicitStateChecker().verify(
         system,
         (
             NoUnauthorisedAuthorisation(),
@@ -232,9 +270,9 @@ def _sled(arguments: argparse.Namespace) -> int:
     output = cast(Path, arguments.output)
     output.mkdir(parents=True, exist_ok=True)
     path = output / "verification.json"
-    path.write_text(canonical_json(result.to_dict()) + "\n", encoding="utf-8")
-    print(canonical_json({"verdict": result.verdict.value, "output": str(path)}))
-    return EXIT_RUNTIME if result.verdict.value == "unknown" else EXIT_OK
+    path.write_text(canonical_json(verification.to_dict()) + "\n", encoding="utf-8")
+    print(canonical_json({"verdict": verification.verdict.value, "output": str(path)}))
+    return EXIT_RUNTIME if verification.verdict.value == "unknown" else EXIT_OK
 
 
 def _report(arguments: argparse.Namespace) -> int:
@@ -242,8 +280,9 @@ def _report(arguments: argparse.Namespace) -> int:
         dict[str, Any],
         json.loads(cast(Path, arguments.result).read_text(encoding="utf-8")),
     )
-    Draft202012Validator(load_schema("result.schema.json")).validate(payload)
-    print(canonical_json(payload) if arguments.json else _render_result(payload))
+    schema = _result_schema(payload)
+    Draft202012Validator(load_schema(schema)).validate(payload)
+    print(canonical_json(payload) if arguments.json else _render_any_result(payload))
     return EXIT_OK
 
 
@@ -297,14 +336,35 @@ def _render_result(payload: dict[str, Any]) -> str:
 
 def _doctor(arguments: argparse.Namespace) -> int:
     report = CapabilityReport.discover()
+    local_config = cast(Path | None, arguments.local_model_config)
+    local = None
+    if local_config is not None:
+        protocol = load_protocol(local_config)
+        if protocol.model is None:
+            raise ValueError("local_model_config_requires_model")
+        local = _local_model(protocol).preflight()
+    payload = report.to_dict()
+    if local is not None:
+        payload["local_model"] = {
+            "backend": local.backend,
+            "model_id": local.model_id,
+            "available": local.available,
+            "network_scope": local.network_scope,
+            "reason": local.reason,
+        }
     if arguments.json:
-        print(canonical_json(report.to_dict()))
+        print(canonical_json(payload))
     else:
         print(f"Conflux doctor: Python {report.python} on {report.os}")
         print(f"CPU count: {report.cpu_count or 'unknown'}")
         print(f"Container: {report.container or 'unavailable'}")
         print(f"GPU probe: {report.gpu_probe or 'unavailable'}")
         print(f"Schedulers: {', '.join(report.schedulers) or 'unavailable'}")
+        if local is not None:
+            print(
+                f"Local model: {local.model_id} ({local.backend}, {local.network_scope}) - "
+                f"{'available' if local.available else local.reason}"
+            )
     return EXIT_OK
 
 
@@ -366,62 +426,172 @@ def _chat(arguments: argparse.Namespace) -> int:
 
 
 def _plan(arguments: argparse.Namespace) -> int:
+    if str(arguments.plan_command) == "compare":
+        protocol = load_protocol(cast(Path, arguments.config))
+        scenarios = load_default_planning_diagnostic_suite()
+        model = _local_model(protocol)
+        matrix = planning_matrix(protocol, scenarios)
+        if not bool(arguments.execute_local):
+            print(
+                canonical_json(
+                    {
+                        "execute_local": False,
+                        "preflight": _preflight_dict(model.preflight()),
+                        "bounds": dict(protocol.bounds),
+                        "matrix": [cell.id for cell in matrix],
+                    }
+                )
+            )
+            return EXIT_OK
+        comparison = run_planning_comparison(protocol, model, scenarios)
+        output = cast(Path | None, arguments.output) or Path(protocol.output_directory)
+        _write_protocol_result(protocol, comparison, output)
+        print(canonical_json({"complete": comparison["complete"], "output": str(output / "result.json")}))
+        return EXIT_OK if comparison["complete"] else EXIT_RUNTIME
     if str(arguments.plan_command) != "demo":
         return _unavailable(f"unsupported_plan_command:{arguments.plan_command}")
-    result = run_dynamic_planning_demo()
+    plan_result = run_dynamic_planning_demo()
     output = cast(Path, arguments.output)
     output.mkdir(parents=True, exist_ok=True)
-    trace_hash = write_plan_trace(result.state, output / "trace.jsonl")
-    write_plan_result(result, output / "result.json")
+    trace_hash = write_plan_trace(plan_result.state, output / "trace.jsonl")
+    write_plan_result(plan_result, output / "result.json")
     print(
         canonical_json(
             {
-                "run_id": result.state.run_id,
-                "status": result.state.status.value,
-                "completed": result.completed,
+                "run_id": plan_result.state.run_id,
+                "status": plan_result.state.status.value,
+                "completed": plan_result.completed,
                 "blocked": sum(
-                    report.blocked_count for report in result.mediation_reports
+                    report.blocked_count for report in plan_result.mediation_reports
                 ),
                 "executed": sum(
-                    report.executed_count for report in result.mediation_reports
+                    report.executed_count for report in plan_result.mediation_reports
                 ),
                 "trace_sha256": trace_hash,
                 "output": str(output),
             }
         )
     )
-    return EXIT_OK if result.completed else EXIT_RUNTIME
+    return EXIT_OK if plan_result.completed else EXIT_RUNTIME
 
 
 def _benchmark(arguments: argparse.Namespace) -> int:
     if str(arguments.benchmark_command) != "agentdojo":
         return _unavailable(f"unsupported_benchmark:{arguments.benchmark_command}")
-    manifest = load_manifest(cast(Path, arguments.config))
     upstream_log = cast(Path | None, arguments.upstream_log)
     output = cast(Path | None, arguments.output)
     if upstream_log is not None:
-        result = parse_upstream_log(upstream_log)
+        load_manifest(cast(Path, arguments.config))
+        translation = parse_upstream_log(upstream_log)
         destination = output or Path("runs") / "agentdojo-translation.json"
-        write_translation(result, destination)
+        write_translation(translation, destination)
         print(
             canonical_json(
                 {
-                    "suite_id": result.suite_id,
-                    "user_task_id": result.user_task_id,
-                    "injection_task_id": result.injection_task_id,
-                    "native_security": result.native_security,
-                    "native_utility": result.native_utility,
+                    "suite_id": translation.suite_id,
+                    "user_task_id": translation.user_task_id,
+                    "injection_task_id": translation.injection_task_id,
+                    "native_security": translation.native_security,
+                    "native_utility": translation.native_utility,
                     "output": str(destination),
                 }
             )
         )
         return EXIT_OK
-    suite_id = manifest.suite.removeprefix("agentdojo-")
-    suite = load_pinned_suite(suite_id)
-    print(canonical_json(suite.to_dict()))
-    return _unavailable(
-        "agentdojo_live_comparison_requires_explicit_model_runner:"
-        "offline_translation_and_suite_validation_succeeded"
+    try:
+        protocol = load_protocol(cast(Path, arguments.config))
+    except ValueError as protocol_error:
+        if bool(arguments.execute_local):
+            raise protocol_error
+        manifest = load_manifest(cast(Path, arguments.config))
+        suite_id = manifest.suite.removeprefix("agentdojo-")
+        suite = load_pinned_suite(suite_id)
+        print(canonical_json(suite.to_dict()))
+        return _unavailable(
+            "agentdojo_legacy_manifest_has_no_self_hosted_model_protocol:"
+            "offline_suite_validation_succeeded"
+        )
+    model = _local_model(protocol)
+    matrix = agentdojo_matrix(protocol)
+    if not bool(arguments.execute_local):
+        print(
+            canonical_json(
+                {
+                    "execute_local": False,
+                    "preflight": _preflight_dict(model.preflight()),
+                    "bounds": dict(protocol.bounds),
+                    "matrix": [cell.to_dict() for cell in matrix],
+                }
+            )
+        )
+        return EXIT_OK
+    destination = output or Path(protocol.output_directory)
+    comparison = run_agentdojo_comparison(
+        protocol,
+        model,
+        PinnedAgentDojoCellExecutor(destination / "raw-upstream"),
+    )
+    _write_protocol_result(protocol, comparison, destination)
+    print(canonical_json({"complete": comparison["complete"], "output": str(destination / "result.json")}))
+    return EXIT_OK if comparison["complete"] else EXIT_RUNTIME
+
+
+def _local_model(protocol: ExperimentProtocol) -> SelfHostedOpenAIModel | TransformersLocalModel:
+    if protocol.model is None:
+        raise ValueError("self_hosted_model_protocol_required")
+    if protocol.model.backend == "openai_compatible":
+        return SelfHostedOpenAIModel(protocol.model)
+    if protocol.model.backend == "transformers":
+        return TransformersLocalModel(protocol.model)
+    raise ValueError(f"unsupported_local_model_backend:{protocol.model.backend}")
+
+
+def _preflight_dict(preflight: LocalModelPreflight) -> dict[str, object]:
+    return {
+        "backend": preflight.backend,
+        "model_id": preflight.model_id,
+        "available": preflight.available,
+        "network_scope": preflight.network_scope,
+        "reason": preflight.reason,
+    }
+
+
+def _write_protocol_result(
+    protocol: ExperimentProtocol,
+    result: dict[str, object],
+    output: Path,
+) -> None:
+    output.mkdir(parents=True, exist_ok=True)
+    protocol.materialise(output)
+    (output / "result.json").write_text(canonical_json(result) + "\n", encoding="utf-8", newline="\n")
+
+
+def _result_schema(payload: dict[str, Any]) -> str:
+    if payload.get("schema_version") != "2":
+        return "result.schema.json"
+    if "pairs" in payload:
+        return "native-sled-result-v2.schema.json"
+    if "cells" in payload:
+        return "agentdojo-comparison-result-v2.schema.json"
+    if "observations" in payload:
+        return "planning-comparison-result-v2.schema.json"
+    raise ValueError("unknown_version_two_result_kind")
+
+
+def _render_any_result(payload: dict[str, Any]) -> str:
+    if payload.get("schema_version") != "2":
+        return _render_result(payload)
+    kind = "native SLED" if "pairs" in payload else "AgentDojo" if "cells" in payload else "planning"
+    count = len(cast(list[object], payload.get("pairs") or payload.get("cells") or payload.get("observations") or []))
+    return "\n".join(
+        (
+            f"# Conflux {kind} result",
+            "",
+            f"- Complete: {payload.get('complete', False)}",
+            f"- Records: {count}",
+            f"- Protocol: {payload.get('protocol_fingerprint', 'unknown')}",
+            "",
+        )
     )
 
 

@@ -25,6 +25,46 @@ AGENTDOJO_FIXTURE = (
 AGENTDOJO_MANIFEST = ROOT / "experiments" / "manifests" / "agentdojo-smoke.yaml"
 
 
+def _write_protocol(path: Path, track: str, *, model: bool) -> None:
+    payload: dict[str, object] = {
+        "schema_version": "2",
+        "id": f"cli-{track}",
+        "track": track,
+        "suite": {"id": f"{track}-test", "version": "1"},
+        "source_commit": "abcdef0",
+        "inputs": {},
+        "model": None,
+        "prompts": {},
+        "seeds": [7],
+        "repetitions": 1,
+        "bounds": {"max_model_calls": 2, "max_steps": 4, "max_depth": 3},
+        "environment": {"class": "test"},
+        "output_directory": str(path.parent / "default-output"),
+        "rerun_command": ["conflux", track],
+    }
+    if model:
+        payload["model"] = {
+            "backend": "transformers",
+            "model_id": "locally-cached-test-model",
+            "revision": "immutable-test-revision",
+            "weight_manifest_sha256": "0" * 64,
+            "tokenizer_id": "locally-cached-test-tokenizer",
+            "tokenizer_revision": "immutable-test-revision",
+            "prompt_template_version": "test-v1",
+            "seed": 7,
+            "temperature": 0,
+            "top_p": 1,
+            "max_output_tokens": 128,
+            "context_limit": 2048,
+            "device": "cpu",
+            "dtype": "float32",
+            "runtime_version": "test",
+            "endpoint": None,
+            "allow_private_remote": False,
+        }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
 def test_demo_writes_linked_trace_result_and_report(
     tmp_path: Path,
     capsys: object,
@@ -240,3 +280,55 @@ def test_live_agentdojo_gate_reports_missing_optional_package() -> None:
         )
         == 3
     )
+
+
+def test_model_dependent_commands_preflight_without_model_invocation(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    planning = tmp_path / "planning.json"
+    _write_protocol(planning, "planning", model=True)
+    assert main(["plan", "compare", "--config", str(planning)]) == EXIT_OK
+    plan_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
+    assert plan_preflight["execute_local"] is False
+    assert len(plan_preflight["matrix"]) == 32
+
+    agentdojo = tmp_path / "agentdojo.json"
+    _write_protocol(agentdojo, "agentdojo", model=True)
+    assert main(["benchmark", "agentdojo", "--config", str(agentdojo)]) == EXIT_OK
+    benchmark_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
+    assert benchmark_preflight["execute_local"] is False
+    assert len(benchmark_preflight["matrix"]) == 4
+
+    assert main(["doctor", "--local-model-config", str(planning), "--json"]) == EXIT_OK
+    doctor = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
+    assert doctor["local_model"]["network_scope"] == "none"
+
+
+def test_native_reproduction_cli_and_version_two_report(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    protocol = tmp_path / "native.json"
+    output = tmp_path / "native-output"
+    _write_protocol(protocol, "native_sled", model=False)
+    assert (
+        main(
+            [
+                "sled",
+                "reproduce",
+                "--protocol",
+                str(protocol),
+                "--output",
+                str(output),
+            ]
+        )
+        == EXIT_OK
+    )
+    result = json.loads((output / "result.json").read_text(encoding="utf-8"))
+    assert result["complete"] is True
+    assert len(result["negative_controls"]) == 5
+    assert all(control["killed"] for control in result["negative_controls"])
+    capsys.readouterr()  # type: ignore[attr-defined]
+    assert main(["report", str(output / "result.json")]) == EXIT_OK
+    assert "# Conflux native SLED result" in capsys.readouterr().out  # type: ignore[attr-defined]

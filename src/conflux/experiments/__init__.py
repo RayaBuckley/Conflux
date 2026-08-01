@@ -1,7 +1,7 @@
 """Reproducible experiment definitions and retained-run metadata."""
 
-from .manifest import ExperimentManifest, load_manifest
 from .agentdojo import AgentDojoCell, AgentDojoCellResult, agentdojo_matrix, run_agentdojo_comparison
+from .manifest import ExperimentManifest, load_manifest
 from .native_sled import AbstractExecutionState, CanonicalExecutionOracle, run_native_reproduction
 from .planning_comparison import (
     PlanningMode,
@@ -14,6 +14,7 @@ from .planning_runner import (
     DiagnosticScenario,
     ModeledWorld,
     PlanningCell,
+    load_default_planning_diagnostic_suite,
     load_planning_diagnostic_suite,
     planning_matrix,
     run_planning_comparison,
@@ -61,6 +62,7 @@ __all__ = [
     "generate_smoke_bundle",
     "generate_planning_report",
     "load_manifest",
+    "load_default_planning_diagnostic_suite",
     "load_planning_diagnostic_suite",
     "load_protocol",
     "materialise_jobs",

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sysconfig
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
@@ -31,6 +32,23 @@ from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy, P
 from conflux.ports import LocalModelPort, LocalModelRequest, LocalModelResponse
 
 ROOT = Path(__file__).resolve().parents[3]
+
+
+def load_default_planning_diagnostic_suite() -> tuple[DiagnosticScenario, ...]:
+    """Load the packaged suite without assuming the current working directory."""
+
+    candidates = (
+        ROOT / "experiments" / "suites" / "planning-diagnostic-v1.yaml",
+        Path(sysconfig.get_path("data"))
+        / "share"
+        / "conflux"
+        / "experiments"
+        / "planning-diagnostic-v1.yaml",
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return load_planning_diagnostic_suite(candidate)
+    raise ValueError("planning_diagnostic_suite_unavailable")
 
 
 @dataclass(frozen=True, slots=True)
@@ -163,7 +181,7 @@ def run_planning_comparison(
     model: LocalModelPort,
     scenarios: tuple[DiagnosticScenario, ...] | None = None,
 ) -> dict[str, object]:
-    selected = scenarios or load_planning_diagnostic_suite(ROOT / "experiments" / "suites" / "planning-diagnostic-v1.yaml")
+    selected = scenarios or load_default_planning_diagnostic_suite()
     preflight = model.preflight()
     if not preflight.available or protocol.model is None or preflight.model_id != protocol.model.model_id:
         raise ValueError(preflight.reason or "local_model_identity_mismatch")
