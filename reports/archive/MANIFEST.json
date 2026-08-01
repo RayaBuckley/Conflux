@@ -3,7 +3,7 @@
     "integrity_scope":  "exact repository blob bytes",
     "hash_algorithm":  "sha256",
     "git_object_format":  "sha1",
-    "artifact_count":  18,
+    "artifact_count":  19,
     "packages":  [
                      {
                          "id":  "2026-07-27-engineering-and-sled",
@@ -114,6 +114,29 @@
                                                   ],
                          "limitations":  [
                                              "The assessment inspected the public repository without executing a checkout; its implementation status is stale."
+                                         ]
+                     },
+                     {
+                         "id":  "2026-07-31-evidence-first-evaluation",
+                         "title":  "Evidence-first evaluation and research exploration",
+                         "snapshot_date":  "2026-07-31",
+                         "source_commits":  [
+                                                "1f49ce377b7457858d027e6840c06d1f28abe0e5"
+                                            ],
+                         "status":  "historical_input",
+                         "supersedes":  [
+
+                                        ],
+                         "superseded_by":  [
+
+                                           ],
+                         "canonical_successors":  [
+                                                      "docs/specifications/012-evidence-first-evaluation.md",
+                                                      "docs/EVALUATION.md",
+                                                      "docs/task-registry.json"
+                                                  ],
+                         "limitations":  [
+                                             "Its hosted credentialed-run and executable generated-code assumptions are superseded by specification 012; live model evidence remains deliberately deferred."
                                          ]
                      }
                  ],
@@ -314,6 +337,17 @@
                           "sha256_bytes":  "98044149bd54d7195b9c7398bf5fd53e42103937f24067f74d28e6fe8a36872d",
                           "git_blob_oid":  "b8ded396108cff8a126486a4c1d22c06a528e0df",
                           "role":  "progress_assessment",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-07-31-evidence-first-evaluation",
+                          "original_path":  "reports/not_yet_processed/012-evidence-first-evaluation-and-research-exploration.md",
+                          "archive_path":  "reports/archive/2026-07-31-evidence-first-evaluation/012-evidence-first-evaluation-and-research-exploration.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  16129,
+                          "sha256_bytes":  "6fb13a4e499d9c719d467f865ab7c6076b4d866361c6dd42628d607510d66e09",
+                          "git_blob_oid":  "7798e17f957b6ab33b84f4efe8c3b7975bfecb60",
+                          "role":  "evaluation_programme",
                           "duplicate_of":  null
                       }
                   ]

@@ -3,6 +3,8 @@
   "verified_at": "2026-07-31",
   "status_definitions": {
     "implemented": "Acceptance behavior and offline evidence exist in the repository.",
+    "evaluation_ready": "A tested runner and offline protocol exist, but no empirical model run is retained.",
+    "bounded_evidence": "A finite retained run supports only its recorded configuration and bounds.",
     "partial": "A coherent subset exists; the named evidence gap remains.",
     "externally_gated": "Offline integration exists; a live claim requires an unavailable external dependency.",
     "deferred": "Explicitly outside the completed implementation scope."
