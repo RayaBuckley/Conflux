@@ -1,6 +1,7 @@
 """Reproducible experiment definitions and retained-run metadata."""
 
 from .manifest import ExperimentManifest, load_manifest
+from .native_sled import AbstractExecutionState, CanonicalExecutionOracle, run_native_reproduction
 from .planning_comparison import (
     PlanningMode,
     PlanningObservation,
@@ -26,6 +27,8 @@ from .smoke import BUNDLE_FILES, generate_smoke_bundle
 
 __all__ = [
     "BUNDLE_FILES",
+    "AbstractExecutionState",
+    "CanonicalExecutionOracle",
     "ExperimentCase",
     "ExperimentManifest",
     "ExperimentProtocol",
@@ -44,4 +47,5 @@ __all__ = [
     "load_protocol",
     "materialise_jobs",
     "plan_resume",
+    "run_native_reproduction",
 ]

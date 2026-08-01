@@ -1,0 +1,19 @@
+{
+  "schema_version": "1",
+  "id": "archived-paper-sled-approximately-1.5m",
+  "source": "paper/iclr2026_conference.tex",
+  "source_section": "SLED evaluation",
+  "claim_status": "historical_unverified",
+  "explored_traces_approximate": 1500000,
+  "goal_actions_approximate": 500000,
+  "adversarial_actions_approximate": 1200000,
+  "genuine_subtasks_approximate": 7000000,
+  "exfiltration_subtasks_approximate": 180000,
+  "depth_bound": 3,
+  "bound_reached_fraction_approximate": 0.15,
+  "limitations": [
+    "Original fixtures and executable experiment code were not available for independent reconstruction.",
+    "The archived paper reports trace enumeration; current native SLED explores deduplicated states.",
+    "Approximate historical quantities are not acceptance targets for the canonical implementation."
+  ]
+}

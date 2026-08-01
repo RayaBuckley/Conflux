@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/native-sled-result-v2.json",
+  "title": "Conflux native SLED reproduction result v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "protocol_fingerprint", "complete", "pairs",
+    "negative_controls", "historical_comparison", "performance"
+  ],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "protocol_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "complete": {"type": "boolean"},
+    "pairs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/pair"}
+    },
+    "negative_controls": {
+      "type": "array",
+      "minItems": 5,
+      "items": {"$ref": "#/$defs/control"}
+    },
+    "historical_comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline_id", "historical_trace_claim", "current_transitions", "classification", "comparable"],
+      "properties": {
+        "baseline_id": {"type": "string"},
+        "historical_trace_claim": {"type": "integer", "minimum": 0},
+        "current_transitions": {"type": "integer", "minimum": 0},
+        "classification": {"enum": ["matched", "implementation_change", "semantic_change", "enumeration_change", "unrecoverable"]},
+        "comparable": {"type": "boolean"}
+      }
+    },
+    "performance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_ms", "peak_memory_bytes", "measurement_status"],
+      "properties": {
+        "runtime_ms": {"type": ["integer", "null"], "minimum": 0},
+        "peak_memory_bytes": {"type": ["integer", "null"], "minimum": 0},
+        "measurement_status": {"enum": ["measured", "omitted_from_deterministic_fixture"]}
+      }
+    }
+  },
+  "$defs": {
+    "statistics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unique_states", "transitions", "duplicate_states", "truncated", "counterexample_length"],
+      "properties": {
+        "unique_states": {"type": "integer", "minimum": 0},
+        "transitions": {"type": "integer", "minimum": 0},
+        "duplicate_states": {"type": "integer", "minimum": 0},
+        "truncated": {"type": "boolean"},
+        "counterexample_length": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposed", "authorised", "blocked", "modeled_executed", "provider_failed", "incomplete", "unauthorised_effects"],
+      "properties": {
+        "proposed": {"type": "integer", "minimum": 0},
+        "authorised": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "modeled_executed": {"type": "integer", "minimum": 0},
+        "provider_failed": {"type": "integer", "minimum": 0},
+        "incomplete": {"type": "integer", "minimum": 0},
+        "unauthorised_effects": {"type": "integer", "minimum": 0}
+      }
+    },
+    "defenceResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["suite", "defence", "verdict", "statistics", "outcomes"],
+      "properties": {
+        "suite": {"enum": ["legacy_reproduction", "canonical"]},
+        "defence": {"enum": ["ites", "no_defence", "union_permissions", "initiator_only", "latest_input_only", "no_read_check"]},
+        "verdict": {"enum": ["safe", "bounded_safe", "unsafe", "unknown"]},
+        "statistics": {"$ref": "#/$defs/statistics"},
+        "outcomes": {"$ref": "#/$defs/outcomes"}
+      }
+    },
+    "pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pair_id", "legacy_fixture", "canonical_fixture", "results"],
+      "properties": {
+        "pair_id": {"type": "string"},
+        "legacy_fixture": {"type": "string"},
+        "canonical_fixture": {"type": "string"},
+        "results": {"type": "array", "minItems": 12, "items": {"$ref": "#/$defs/defenceResult"}}
+      }
+    },
+    "control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defence", "killed", "canonical_safe", "counterexample_length"],
+      "properties": {
+        "defence": {"enum": ["no_defence", "union_permissions", "initiator_only", "latest_input_only", "no_read_check"]},
+        "killed": {"type": "boolean"},
+        "canonical_safe": {"type": "boolean"},
+        "counterexample_length": {"type": ["integer", "null"], "minimum": 0}
+      }
+    }
+  }
+}
