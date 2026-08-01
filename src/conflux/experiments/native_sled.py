@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sysconfig
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, cast
@@ -64,9 +65,13 @@ class CanonicalExecutionOracle:
         return None if decision.allowed else "monitor admitted an effect denied by the canonical oracle"
 
 
-def run_native_reproduction(protocol: ExperimentProtocol, root: Path = ROOT) -> dict[str, object]:
+def run_native_reproduction(
+    protocol: ExperimentProtocol,
+    root: Path | None = None,
+) -> dict[str, object]:
     if protocol.track != "native_sled" or protocol.model is not None:
         raise ValueError("native_sled_protocol_required")
+    selected_root = root or _default_reproduction_root()
     bounds = VerificationBounds(
         max_depth=_bound(protocol, "max_depth", 4),
         max_states=_bound(protocol, "max_states", 10_000),
@@ -77,8 +82,8 @@ def run_native_reproduction(protocol: ExperimentProtocol, root: Path = ROOT) -> 
     total_transitions = 0
     for index in range(1, 4):
         filename = f"env-0{index}-{_suffix(index)}"
-        legacy = load_scenario(root / "experiments" / "suites" / "legacy-reproduction" / filename)
-        canonical = load_scenario(root / "experiments" / "suites" / "canonical" / filename)
+        legacy = load_scenario(selected_root / "experiments" / "suites" / "legacy-reproduction" / filename)
+        canonical = load_scenario(selected_root / "experiments" / "suites" / "canonical" / filename)
         results = []
         for suite_name, scenario in (("legacy_reproduction", legacy), ("canonical", canonical)):
             for defence_name, factory in _defences():
@@ -94,7 +99,9 @@ def run_native_reproduction(protocol: ExperimentProtocol, root: Path = ROOT) -> 
             }
         )
     controls = _negative_controls(bounds)
-    baseline = json.loads((root / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8"))
+    baseline = json.loads(
+        (selected_root / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8")
+    )
     result: dict[str, object] = {
         "schema_version": "2",
         "protocol_fingerprint": protocol.fingerprint,
@@ -116,6 +123,17 @@ def run_native_reproduction(protocol: ExperimentProtocol, root: Path = ROOT) -> 
     }
     Draft202012Validator(load_schema("native-sled-result-v2.schema.json")).validate(result)
     return result
+
+
+def _default_reproduction_root() -> Path:
+    candidates = (
+        ROOT,
+        Path(sysconfig.get_path("data")) / "share" / "conflux",
+    )
+    for candidate in candidates:
+        if (candidate / "experiments" / "baselines" / "sled-historical-v1.json").is_file():
+            return candidate
+    raise ValueError("native_sled_reproduction_fixtures_unavailable")
 
 
 def _suffix(index: int) -> str:

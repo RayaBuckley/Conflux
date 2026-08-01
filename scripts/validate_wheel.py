@@ -14,6 +14,53 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _write_protocol(path: Path, track: str, output: Path) -> None:
+    model: dict[str, object] | None = None
+    if track != "native_sled":
+        model = {
+            "backend": "transformers",
+            "model_id": "wheel-smoke-local-model",
+            "revision": "wheel-smoke-revision",
+            "weight_manifest_sha256": "0" * 64,
+            "tokenizer_id": "wheel-smoke-tokenizer",
+            "tokenizer_revision": "wheel-smoke-revision",
+            "prompt_template_version": "wheel-smoke-v1",
+            "seed": 0,
+            "temperature": 0,
+            "top_p": 1,
+            "max_output_tokens": 64,
+            "context_limit": 1024,
+            "device": "cpu",
+            "dtype": "float32",
+            "runtime_version": "wheel-smoke",
+            "endpoint": None,
+            "allow_private_remote": False,
+        }
+    payload = {
+        "schema_version": "2",
+        "id": f"wheel-{track}",
+        "track": track,
+        "suite": {"id": f"wheel-{track}", "version": "1"},
+        "source_commit": "abcdef0",
+        "inputs": {},
+        "model": model,
+        "prompts": {},
+        "seeds": [0],
+        "repetitions": 1,
+        "bounds": {
+            "max_model_calls": 2,
+            "max_steps": 4,
+            "max_depth": 4,
+            "max_states": 1000,
+            "max_transitions": 5000,
+        },
+        "environment": {"class": "wheel-smoke"},
+        "output_directory": str(output),
+        "rerun_command": ["conflux", track],
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
 def main() -> int:
     wheels = sorted((ROOT / "dist").glob("conflux-*.whl"), key=lambda path: path.stat().st_mtime)
     if not wheels:
@@ -114,6 +161,66 @@ def main() -> int:
         )
         if verification["verdict"] != "safe":
             raise RuntimeError("installed SLED smoke did not exhaust the finite fixture")
+
+        native_protocol = Path(temporary) / "native-protocol.json"
+        native_output = Path(temporary) / "native-reproduction"
+        _write_protocol(native_protocol, "native_sled", native_output)
+        subprocess.run(
+            (
+                str(command),
+                "sled",
+                "reproduce",
+                "--protocol",
+                str(native_protocol),
+                "--output",
+                str(native_output),
+            ),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        native = json.loads((native_output / "result.json").read_text(encoding="utf-8"))
+        if not native["complete"]:
+            raise RuntimeError("installed native reproduction was incomplete")
+
+        planning_protocol = Path(temporary) / "planning-protocol.json"
+        _write_protocol(planning_protocol, "planning", Path(temporary) / "planning-comparison")
+        planning = subprocess.run(
+            (str(command), "plan", "compare", "--config", str(planning_protocol)),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        if len(json.loads(planning.stdout)["matrix"]) != 32:
+            raise RuntimeError("installed planning preflight matrix is incomplete")
+
+        agentdojo_protocol = Path(temporary) / "agentdojo-protocol.json"
+        _write_protocol(agentdojo_protocol, "agentdojo", Path(temporary) / "agentdojo")
+        agentdojo = subprocess.run(
+            (str(command), "benchmark", "agentdojo", "--config", str(agentdojo_protocol)),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        if len(json.loads(agentdojo.stdout)["matrix"]) != 4:
+            raise RuntimeError("installed AgentDojo preflight matrix is incomplete")
+
+        local_doctor = subprocess.run(
+            (str(command), "doctor", "--local-model-config", str(planning_protocol), "--json"),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        if json.loads(local_doctor.stdout)["local_model"]["network_scope"] != "none":
+            raise RuntimeError("installed local-model preflight reported the wrong scope")
     print(f"Installed CLI smoke passed: {wheels[-1].name}")
     return 0
 
