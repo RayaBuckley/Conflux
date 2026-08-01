@@ -35,9 +35,12 @@ results/
 runs/*
 !runs/smoke/
 !runs/smoke/**
+!runs/native-sled-reproduction-v1/
+!runs/native-sled-reproduction-v1/**
 data/
 *.jsonl
 !runs/smoke/*.jsonl
+!runs/native-sled-reproduction-v1/*.jsonl
 dist/
 build/
 
