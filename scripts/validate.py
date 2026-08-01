@@ -51,6 +51,12 @@ def main() -> int:
         "runs/smoke",
         "--check",
     )
+    if (ROOT / "runs" / "native-sled-reproduction-v1").is_dir():
+        run(
+            "scripts/generate_native_sled_evidence.py",
+            "runs/native-sled-reproduction-v1",
+            "--check",
+        )
     run(
         "-m",
         "pytest",

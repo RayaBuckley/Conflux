@@ -2,6 +2,12 @@
 
 from .agentdojo import AgentDojoCell, AgentDojoCellResult, agentdojo_matrix, run_agentdojo_comparison
 from .manifest import ExperimentManifest, load_manifest
+from .native_evidence import (
+    NATIVE_EVIDENCE_FILES,
+    compare_native_sled_bundle,
+    generate_native_sled_bundle,
+    verify_native_sled_checksums,
+)
 from .native_sled import AbstractExecutionState, CanonicalExecutionOracle, run_native_reproduction
 from .planning_comparison import (
     PlanningMode,
@@ -48,6 +54,7 @@ __all__ = [
     "DiagnosticAction",
     "DiagnosticScenario",
     "LocalModelSpec",
+    "NATIVE_EVIDENCE_FILES",
     "ModeledWorld",
     "PlanningMode",
     "PlanningObservation",
@@ -58,8 +65,10 @@ __all__ = [
     "aggregate_planning_comparison",
     "agentdojo_matrix",
     "completion_marker",
+    "compare_native_sled_bundle",
     "expand_cases",
     "generate_smoke_bundle",
+    "generate_native_sled_bundle",
     "generate_planning_report",
     "load_manifest",
     "load_default_planning_diagnostic_suite",
@@ -71,4 +80,5 @@ __all__ = [
     "run_native_reproduction",
     "run_agentdojo_comparison",
     "run_planning_comparison",
+    "verify_native_sled_checksums",
 ]

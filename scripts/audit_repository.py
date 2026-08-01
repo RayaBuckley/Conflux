@@ -39,6 +39,7 @@ FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
 PAPER = ROOT / "paper"
 MANUSCRIPT = ROOT / "manuscript"
 SMOKE = ROOT / "runs" / "smoke"
+NATIVE_SLED = ROOT / "runs" / "native-sled-reproduction-v1"
 TASK_REGISTRY = DOCS / "task-registry.json"
 EVIDENCE_SOURCES = DOCS / "evidence-sources.json"
 REPORTS = ROOT / "reports"
@@ -498,7 +499,14 @@ def check_task_registry(errors: list[str]) -> None:
         errors.append("task registry has no groups")
         return
     registered: set[str] = set()
-    valid_statuses = {"implemented", "partial", "externally_gated", "deferred"}
+    valid_statuses = {
+        "implemented",
+        "evaluation_ready",
+        "bounded_evidence",
+        "partial",
+        "externally_gated",
+        "deferred",
+    }
     for index, group in enumerate(groups):
         if not isinstance(group, dict):
             errors.append(f"task registry group {index} is not an object")
@@ -511,7 +519,7 @@ def check_task_registry(errors: list[str]) -> None:
             continue
         if status not in valid_statuses:
             errors.append(f"task registry group {index} has invalid status {status}")
-        if status in {"partial", "externally_gated"} and not group.get("gap"):
+        if status in {"evaluation_ready", "partial", "externally_gated"} and not group.get("gap"):
             errors.append(f"task registry group {index} has no explicit evidence gap")
         if not isinstance(evidence, list) or not evidence:
             errors.append(f"task registry group {index} has no evidence")
@@ -547,7 +555,7 @@ def check_task_registry(errors: list[str]) -> None:
     )
     expected = {task["id"] for task in backlog["tasks"]}
     expected.update(task["id"] for task in dynamic["recommended_planning_tasks"])
-    expected.add("SEC-008")
+    expected.update(("SEC-008", "SLEDMC-004"))
     for identifier in sorted(expected - registered):
         errors.append(f"task registry missing report task {identifier}")
     for identifier in sorted(registered - expected):
@@ -661,6 +669,38 @@ def check_smoke_evidence(errors: list[str]) -> None:
             errors.append(f"smoke evidence checksum changed: runs/smoke/{name}")
 
 
+def check_native_sled_evidence(errors: list[str]) -> None:
+    if not NATIVE_SLED.exists():
+        return
+    required = {
+        "CHECKSUMS.sha256",
+        "RERUN.txt",
+        "manifest.json",
+        "protocol.json",
+        "raw-events.jsonl",
+        "result.json",
+        "table.md",
+    }
+    actual = {path.name for path in NATIVE_SLED.glob("*") if path.is_file()}
+    if actual != required:
+        errors.append("native SLED evidence files differ from the canonical bundle")
+        return
+    names: set[str] = set()
+    lines = (NATIVE_SLED / "CHECKSUMS.sha256").read_text(encoding="utf-8").splitlines()
+    for line in lines:
+        expected, separator, name = line.partition("  ")
+        path = NATIVE_SLED / name
+        if not separator or name in names or not path.is_file():
+            errors.append(f"invalid native SLED checksum entry: {line}")
+            continue
+        names.add(name)
+        actual_hash = hashlib.sha256(canonical_text_bytes(path)).hexdigest()
+        if actual_hash != expected:
+            errors.append(f"native SLED evidence checksum changed: {name}")
+    if names != required - {"CHECKSUMS.sha256"}:
+        errors.append("native SLED checksum index is incomplete")
+
+
 def check_schemas(errors: list[str]) -> None:
     required = {
         "dynamic-plan-result.schema.json",
@@ -676,6 +716,13 @@ def check_schemas(errors: list[str]) -> None:
         "trace-event.schema.json",
         "verification-ir.schema.json",
         "verification-result.schema.json",
+        "agentdojo-comparison-result-v2.schema.json",
+        "experiment-protocol-v2.schema.json",
+        "experiment-run-manifest-v2.schema.json",
+        "modeled-program.schema.json",
+        "native-sled-result-v2.schema.json",
+        "planning-comparison-result-v2.schema.json",
+        "planning-diagnostic-suite.schema.json",
     }
     actual = {path.name for path in (ROOT / "schemas").glob("*.json")}
     for name in sorted(required - actual):
@@ -690,6 +737,7 @@ def main() -> int:
     check_archived_paper(errors)
     check_manuscript(errors)
     check_smoke_evidence(errors)
+    check_native_sled_evidence(errors)
     check_schemas(errors)
     if not (ROOT / "SECURITY.md").is_file():
         errors.append("missing repository security policy: SECURITY.md")

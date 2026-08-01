@@ -31,6 +31,12 @@
       "evidence": ["src/conflux/evaluation/model_checking.py", "src/conflux/experiments/sled_comparison.py", "tests/test_sled.py", "tests/test_sled_comparison.py"]
     },
     {
+      "ids": ["SLEDMC-004"],
+      "status": "evaluation_ready",
+      "evidence": ["src/conflux/experiments/native_evidence.py", "tests/test_native_sled_evidence.py"],
+      "gap": "The deterministic native reproduction bundle has not yet been retained."
+    },
+    {
       "ids": ["MODEL-001"],
       "status": "partial",
       "evidence": ["src/conflux/adapters/models/openai_compatible.py", "src/conflux/adapters/models/openai_compatible_planner.py", "tests/test_model_adapters.py", "tests/planning/test_openai_planner.py"],

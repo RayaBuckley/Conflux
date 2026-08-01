@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import dataclass, field
+from types import ModuleType
 
 import pytest
 
@@ -146,3 +148,27 @@ def test_transformers_dependency_is_optional_and_loading_is_fail_closed(monkeypa
     assert model.preflight().reason == "optional_dependency_unavailable:transformers"
     with pytest.raises(LocalModelFailure, match="dependency"):
         model.generate(_request())
+
+
+def test_transformers_direct_loading_forbids_downloads_and_remote_code(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[str, dict[str, object]]] = []
+
+    class Loader:
+        @classmethod
+        def from_pretrained(cls, model_id: str, **kwargs: object) -> object:
+            calls.append((model_id, kwargs))
+            return object()
+
+    fake = ModuleType("transformers")
+    fake.AutoModelForCausalLM = Loader  # type: ignore[attr-defined]
+    fake.AutoTokenizer = Loader  # type: ignore[attr-defined]
+    fake.set_seed = lambda seed: None  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "transformers", fake)
+
+    model = TransformersLocalModel(_spec("transformers", None))
+    model._load_generator()
+    assert len(calls) == 2
+    assert all(call[1]["local_files_only"] is True for call in calls)
+    assert all(call[1]["trust_remote_code"] is False for call in calls)
