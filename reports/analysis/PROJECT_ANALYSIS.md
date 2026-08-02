@@ -127,8 +127,8 @@ Priority work is staged evidence, not another broad architectural rewrite:
    retain original-versus-reduced evidence;
 2. run the deliberately small dual-backend laptop planning smoke, then stop
    for human review before wider model work;
-3. make trusted argument roles, audience disclosure, and conservative
-   attribution explicit before extending external policy integration;
+3. extend the implemented trusted argument roles, audience disclosure, and
+   conservative attribution with a pinned policy decision point;
 4. validate a pinned local Cedar subset against the in-memory oracle;
 5. model scoped attenuating delegation and keep runtime use disabled until all
    mutant, parity, visibility, attribution, and certificate gates pass;

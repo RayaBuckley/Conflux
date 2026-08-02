@@ -8,7 +8,8 @@ Conflux's defensible distinction is Principal identity provenance interpreted
 through an organisation's access-control decisions. This is narrower than
 being the first system-level defence, provenance guardrail, or privilege
 control mechanism. Whole-action ITES is presently a conservative special case;
-role-sensitive arguments remain proposed work.
+trusted selector roles and pointwise argument authorisation are implemented;
+richer operation-specific argument-effect semantics remain proposed work.
 
 The [current report analysis](../reports/analysis/PROJECT_ANALYSIS.md) explains
 how the detailed archived taxonomy and literature matrix relate to the current

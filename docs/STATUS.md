@@ -22,6 +22,12 @@ The offline result-ready path is implemented:
 - property-scoped COI reduction closes over transition dependencies, retains
   stable rule IDs, compares original and reduced reference verdicts, and has a
   checksummed two-fixture evidence bundle with one lifted unsafe witness;
+- trusted operation schemas assign immutable argument roles; authority-bearing
+  selectors are authorised pointwise for every Principal, and their provenance
+  is included in the action-time Principal Context;
+- event disclosure has audience-specific levels and deterministic redaction;
+  structured attribution derives from provenance and policy evidence, while
+  model explanations remain explicitly untrusted;
 - deterministic scenarios, traces, schemas, manifests, smoke evidence,
   negative controls, planning comparison aggregation, and resumable jobs are
   tested offline;
@@ -65,7 +71,7 @@ dimension; no optional formal backend was available for that retained run.
 
 `docs/task-registry.json` is the machine-readable programme status. Remaining
 research includes live comparative evidence, production policy/framework
-integrations, formal delegation, role-sensitive effects, persistent-memory
+integrations, formal delegation, richer argument-effect semantics, persistent-memory
 authority, and symbolic reasoning about arbitrary generated programs.
 
 ## Rationale

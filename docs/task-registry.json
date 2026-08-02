@@ -121,21 +121,18 @@
     },
     {
       "ids": ["DIR-ARGPOL-001"],
-      "status": "partial",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/planning/actions.py"],
-      "gap": "Canonical actions do not yet carry trusted role-labelled argument values or pointwise argument decisions."
+      "status": "implemented",
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/policy/argument_policy.py", "src/conflux/application/policy.py", "tests/test_argument_visibility_attribution.py"]
     },
     {
       "ids": ["DIR-VIS-001"],
-      "status": "partial",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py"],
-      "gap": "Visibility decisions are action-level and do not yet project event fields by audience and disclosure level."
+      "status": "implemented",
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py", "tests/test_argument_visibility_attribution.py"]
     },
     {
       "ids": ["DIR-ATTR-001"],
-      "status": "partial",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/evaluation/records.py"],
-      "gap": "Trace inputs exist, but there is no canonical structured attribution record and deterministic audience projection."
+      "status": "implemented",
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ites/state.py", "src/conflux/evaluation/disclosure_verification.py", "tests/test_argument_visibility_attribution.py"]
     },
     {
       "ids": ["DIR-SLED-001"],
@@ -162,7 +159,7 @@
   ],
   "deferred_research": [
     "formal delegation and scoped attenuating capabilities",
-    "role-sensitive argument effects",
+    "operation-specific argument effect semantics beyond selector authorisation",
     "persistent-memory authority",
     "symbolic arbitrary-program verification",
     "production PDP/framework integrations",

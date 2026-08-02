@@ -1,15 +1,18 @@
 # Public API Reference
 
 - `conflux.domain`: Principal, PrincipalContext, Provenance, Artifact,
-  ResourceRef, typed actions, `ProposalBatch`, independent decisions, sessions,
-  and snapshots.
-- `conflux.ports`: model, policy, environment, executor, and trace protocols.
-- `conflux.policy`: deterministic offline policies.
+  ResourceRef, trusted `OperationArgumentSchema`, immutable `ActionArgument`,
+  typed actions, `ProposalBatch`, disclosure and attribution records,
+  independent decisions, sessions, and snapshots.
+- `conflux.ports`: model, action/argument/read/visibility/consent policy,
+  environment, executor, and trace protocols.
+- `conflux.policy`: deterministic offline policies, including pointwise
+  argument grants and audience disclosure levels.
 - `conflux.application`: DecisionPipeline and MediationService.
 - `conflux.ites`: TransitionKernel, MediatingITES, branch state, traces,
   per-step certificates, authorised plans, assessments, and reports.
 - `conflux.evaluation`: ExplicitStateChecker, bounds, verdicts, properties, and
-  evaluation services.
+  evaluation services, including selector/disclosure/attribution mutants.
 - `conflux.verification`: serialisable finite-state IR, reference interpreter,
   `reduce_cone_of_influence`, checked reduction comparisons, and optional Z3
   and nuXmv backends.
