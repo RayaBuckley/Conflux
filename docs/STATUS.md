@@ -19,6 +19,9 @@ The offline result-ready path is implemented:
   detects all five seeded monitor defects, and records historical discrepancies;
 - the serialisable verification IR has interpreter conformance, optional Z3
   bounded checking, and a nuXmv adapter that returns `UNKNOWN` when unsupported;
+- property-scoped COI reduction closes over transition dependencies, retains
+  stable rule IDs, compares original and reduced reference verdicts, and has a
+  checksummed two-fixture evidence bundle with one lifted unsafe witness;
 - deterministic scenarios, traces, schemas, manifests, smoke evidence,
   negative controls, planning comparison aggregation, and resumable jobs are
   tested offline;
@@ -55,6 +58,10 @@ passed all four supported operating-system/Python combinations.
 Native evidence added after that baseline is independently retained under
 `runs/native-sled-reproduction-v1/`, linked to implementation commit
 `d6d9857954ac7c7702fff64642d3ea9e7836948f`, and regenerates byte-for-byte.
+COI-reduction evidence is retained under `runs/sled-coi-reduction-v1/`, linked
+to generator commit `3c4e9884a93f84b62ddb5b1c7e52da84be073b97`. Its two
+reference-interpreter fixtures agree and reduce at least one measured model
+dimension; no optional formal backend was available for that retained run.
 
 `docs/task-registry.json` is the machine-readable programme status. Remaining
 research includes live comparative evidence, production policy/framework

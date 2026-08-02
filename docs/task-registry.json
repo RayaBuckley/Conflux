@@ -139,9 +139,8 @@
     },
     {
       "ids": ["DIR-SLED-001"],
-      "status": "partial",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/verification/", "tests/test_verification_ir.py"],
-      "gap": "Cone-of-influence reduction and a retained equivalence bundle are not yet implemented."
+      "status": "bounded_evidence",
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/verification/reduction.py", "tests/test_verification_reduction.py", "runs/sled-coi-reduction-v1/manifest.json", "runs/sled-coi-reduction-v1/result.json"]
     },
     {
       "ids": ["DIR-BENCH-001"],
