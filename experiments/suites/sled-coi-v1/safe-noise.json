@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "id": "safe-noise",
+  "bound": 4,
+  "assumptions": ["noise is independent of the selected safety property"],
+  "variables": [
+    {"name": "safe", "sort": "boolean", "initial": true, "minimum": null, "maximum": null},
+    {"name": "noise", "sort": "boolean", "initial": false, "minimum": null, "maximum": null}
+  ],
+  "transitions": [
+    {
+      "id": "toggle-noise",
+      "guard": {"kind": "constant", "value": true, "arguments": []},
+      "assignments": [
+        {
+          "variable": "noise",
+          "expression": {
+            "kind": "not",
+            "value": null,
+            "arguments": [{"kind": "variable", "value": "noise", "arguments": []}]
+          }
+        }
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "safe-remains-true",
+      "expression": {"kind": "variable", "value": "safe", "arguments": []},
+      "description": "Independent noise cannot falsify the safety bit."
+    }
+  ]
+}

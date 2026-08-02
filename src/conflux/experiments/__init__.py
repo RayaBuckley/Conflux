@@ -1,6 +1,12 @@
 """Reproducible experiment definitions and retained-run metadata."""
 
 from .agentdojo import AgentDojoCell, AgentDojoCellResult, agentdojo_matrix, run_agentdojo_comparison
+from .coi_evidence import (
+    COI_EVIDENCE_ROOT_FILES,
+    compare_coi_evidence_bundle,
+    generate_coi_evidence_bundle,
+    verify_coi_evidence_checksums,
+)
 from .manifest import ExperimentManifest, load_manifest
 from .native_evidence import (
     NATIVE_EVIDENCE_FILES,
@@ -44,6 +50,7 @@ from .smoke import BUNDLE_FILES, generate_smoke_bundle
 
 __all__ = [
     "BUNDLE_FILES",
+    "COI_EVIDENCE_ROOT_FILES",
     "AbstractExecutionState",
     "AgentDojoCell",
     "AgentDojoCellResult",
@@ -66,9 +73,11 @@ __all__ = [
     "agentdojo_matrix",
     "completion_marker",
     "compare_native_sled_bundle",
+    "compare_coi_evidence_bundle",
     "expand_cases",
     "generate_smoke_bundle",
     "generate_native_sled_bundle",
+    "generate_coi_evidence_bundle",
     "generate_planning_report",
     "load_manifest",
     "load_default_planning_diagnostic_suite",
@@ -81,4 +90,5 @@ __all__ = [
     "run_agentdojo_comparison",
     "run_planning_comparison",
     "verify_native_sled_checksums",
+    "verify_coi_evidence_checksums",
 ]

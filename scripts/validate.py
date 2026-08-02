@@ -57,6 +57,12 @@ def main() -> int:
             "runs/native-sled-reproduction-v1",
             "--check",
         )
+    if (ROOT / "runs" / "sled-coi-reduction-v1").is_dir():
+        run(
+            "scripts/generate_coi_evidence.py",
+            "runs/sled-coi-reduction-v1",
+            "--check",
+        )
     run(
         "-m",
         "pytest",

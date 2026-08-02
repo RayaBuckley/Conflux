@@ -1,0 +1,58 @@
+{
+  "schema_version": "1",
+  "id": "unsafe-control",
+  "bound": 4,
+  "assumptions": ["the control bit is an exact unsafe-effect abstraction"],
+  "variables": [
+    {"name": "safe", "sort": "boolean", "initial": true, "minimum": null, "maximum": null},
+    {"name": "control", "sort": "boolean", "initial": true, "minimum": null, "maximum": null},
+    {"name": "noise", "sort": "integer", "initial": 0, "minimum": 0, "maximum": 2}
+  ],
+  "transitions": [
+    {
+      "id": "apply-control",
+      "guard": {"kind": "constant", "value": true, "arguments": []},
+      "assignments": [
+        {
+          "variable": "safe",
+          "expression": {
+            "kind": "not",
+            "value": null,
+            "arguments": [{"kind": "variable", "value": "control", "arguments": []}]
+          }
+        }
+      ]
+    },
+    {
+      "id": "increment-noise",
+      "guard": {
+        "kind": "less_equal",
+        "value": null,
+        "arguments": [
+          {"kind": "variable", "value": "noise", "arguments": []},
+          {"kind": "constant", "value": 1, "arguments": []}
+        ]
+      },
+      "assignments": [
+        {
+          "variable": "noise",
+          "expression": {
+            "kind": "add",
+            "value": null,
+            "arguments": [
+              {"kind": "variable", "value": "noise", "arguments": []},
+              {"kind": "constant", "value": 1, "arguments": []}
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "safe-remains-true",
+      "expression": {"kind": "variable", "value": "safe", "arguments": []},
+      "description": "The unsafe control transition must produce a witness."
+    }
+  ]
+}

@@ -40,6 +40,16 @@ PAPER = ROOT / "paper"
 MANUSCRIPT = ROOT / "manuscript"
 SMOKE = ROOT / "runs" / "smoke"
 NATIVE_SLED = ROOT / "runs" / "native-sled-reproduction-v1"
+COI_EVIDENCE = ROOT / "runs" / "sled-coi-reduction-v1"
+COI_EVIDENCE_ROOT_FILES = (
+    "CHECKSUMS.sha256",
+    "RERUN.txt",
+    "manifest.json",
+    "protocol.json",
+    "raw-results.jsonl",
+    "result.json",
+    "table.md",
+)
 TASK_REGISTRY = DOCS / "task-registry.json"
 EVIDENCE_SOURCES = DOCS / "evidence-sources.json"
 REPORTS = ROOT / "reports"
@@ -765,6 +775,49 @@ def check_native_sled_evidence(errors: list[str]) -> None:
         errors.append("native SLED checksum index is incomplete")
 
 
+def check_coi_evidence(errors: list[str]) -> None:
+    if not COI_EVIDENCE.exists():
+        return
+    required = set(COI_EVIDENCE_ROOT_FILES)
+    actual_root = {
+        path.name for path in COI_EVIDENCE.glob("*") if path.is_file()
+    }
+    if actual_root != required:
+        errors.append("COI evidence root files differ from the canonical bundle")
+        return
+    names: set[str] = set()
+    lines = (COI_EVIDENCE / "CHECKSUMS.sha256").read_text(
+        encoding="utf-8"
+    ).splitlines()
+    for line in lines:
+        expected, separator, name = line.partition("  ")
+        path = COI_EVIDENCE / name
+        if not separator or name in names or not path.is_file():
+            errors.append(f"invalid COI checksum entry: {line}")
+            continue
+        names.add(name)
+        if hashlib.sha256(canonical_text_bytes(path)).hexdigest() != expected:
+            errors.append(f"COI evidence checksum changed: {name}")
+    actual_content = {
+        path.relative_to(COI_EVIDENCE).as_posix()
+        for path in COI_EVIDENCE.rglob("*")
+        if path.is_file() and path.name != "CHECKSUMS.sha256"
+    }
+    if names != actual_content:
+        errors.append("COI evidence checksum index is incomplete")
+    result: Any = json.loads(
+        (COI_EVIDENCE / "result.json").read_text(encoding="utf-8")
+    )
+    summary = result.get("summary", {}) if isinstance(result, dict) else {}
+    if (
+        result.get("complete") is not True
+        or summary.get("fixtures") != summary.get("reference_verdict_agreements")
+        or not isinstance(summary.get("fixtures_with_measurable_reduction"), int)
+        or summary["fixtures_with_measurable_reduction"] < 1
+    ):
+        errors.append("COI evidence does not support its bounded equivalence claim")
+
+
 def check_schemas(errors: list[str]) -> None:
     required = {
         "dynamic-plan-result.schema.json",
@@ -781,6 +834,7 @@ def check_schemas(errors: list[str]) -> None:
         "verification-ir.schema.json",
         "verification-result.schema.json",
         "verification-reduction.schema.json",
+        "verification-reduction-result.schema.json",
         "agentdojo-comparison-result-v2.schema.json",
         "experiment-protocol-v2.schema.json",
         "experiment-run-manifest-v2.schema.json",
@@ -804,6 +858,7 @@ def main() -> int:
     check_manuscript(errors)
     check_smoke_evidence(errors)
     check_native_sled_evidence(errors)
+    check_coi_evidence(errors)
     check_schemas(errors)
     if not (ROOT / "SECURITY.md").is_file():
         errors.append("missing repository security policy: SECURITY.md")

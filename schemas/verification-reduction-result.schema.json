@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/verification-reduction-result-v1.json",
+  "title": "Conflux retained verification-reduction result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "protocol_fingerprint", "complete", "summary", "fixtures", "failures"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"const": "sled-coi-reduction-v1"},
+    "protocol_fingerprint": {"type": "string", "minLength": 64, "maxLength": 64},
+    "complete": {"type": "boolean"},
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixtures", "reference_verdict_agreements", "fixtures_with_measurable_reduction", "available_formal_backends"],
+      "properties": {
+        "fixtures": {"type": "integer", "minimum": 1},
+        "reference_verdict_agreements": {"type": "integer", "minimum": 0},
+        "fixtures_with_measurable_reduction": {"type": "integer", "minimum": 0},
+        "available_formal_backends": {"type": "array", "uniqueItems": true, "items": {"enum": ["z3", "nuxmv"]}}
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fixture_id", "reference", "formal_backends", "metrics"],
+        "properties": {
+          "fixture_id": {"type": "string", "minLength": 1},
+          "reference": {"type": "object"},
+          "formal_backends": {"type": "object"},
+          "metrics": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["original_variables", "reduced_variables", "original_rules", "reduced_rules", "original_states", "reduced_states"],
+            "properties": {
+              "original_variables": {"type": "integer", "minimum": 1},
+              "reduced_variables": {"type": "integer", "minimum": 1},
+              "original_rules": {"type": "integer", "minimum": 0},
+              "reduced_rules": {"type": "integer", "minimum": 0},
+              "original_states": {"type": "integer", "minimum": 1},
+              "reduced_states": {"type": "integer", "minimum": 1}
+            }
+          }
+        }
+      }
+    },
+    "failures": {"type": "array", "items": {"type": "object"}}
+  }
+}
