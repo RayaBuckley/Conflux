@@ -268,6 +268,90 @@ def test_verify_cli_retains_unknown_optional_backend_result(
     )
 
 
+def test_verify_cli_emits_cone_reduction_comparison(tmp_path: Path) -> None:
+    model = tmp_path / "reducible.json"
+    model.write_text(
+        json.dumps(
+            {
+                "schema_version": "1",
+                "id": "reducible",
+                "bound": 2,
+                "assumptions": [],
+                "variables": [
+                    {
+                        "name": name,
+                        "sort": "boolean",
+                        "initial": name == "safe",
+                        "minimum": None,
+                        "maximum": None,
+                    }
+                    for name in ("safe", "noise")
+                ],
+                "transitions": [
+                    {
+                        "id": "noise-only",
+                        "guard": {
+                            "kind": "constant",
+                            "value": True,
+                            "arguments": [],
+                        },
+                        "assignments": [
+                            {
+                                "variable": "noise",
+                                "expression": {
+                                    "kind": "not",
+                                    "value": None,
+                                    "arguments": [
+                                        {
+                                            "kind": "variable",
+                                            "value": "noise",
+                                            "arguments": [],
+                                        }
+                                    ],
+                                },
+                            }
+                        ],
+                    }
+                ],
+                "invariants": [
+                    {
+                        "id": "safe",
+                        "expression": {
+                            "kind": "variable",
+                            "value": "safe",
+                            "arguments": [],
+                        },
+                        "description": "",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "reduced"
+    assert (
+        main(
+            [
+                "verify",
+                "--model",
+                str(model),
+                "--property",
+                "safe",
+                "--reduce",
+                "cone_of_influence",
+                "--output",
+                str(output),
+            ]
+        )
+        == 3
+    )
+    report = json.loads((output / "verification-reduction.json").read_text())
+    assert report["comparison"]["equivalent"] is True
+    assert report["comparison"]["reduction"]["removed_variables"] == ["noise"]
+    assert report["backend"]["failure"] == "backend_unavailable_or_failed"
+    assert (output / "formal-verification-original.json").is_file()
+
+
 def test_live_agentdojo_gate_reports_missing_optional_package() -> None:
     assert (
         main(

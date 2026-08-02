@@ -57,7 +57,13 @@ from conflux.experiments import (
 )
 from conflux.ites import BranchState, MediatingITES, TransitionKernel
 from conflux.ports import LocalModelPreflight
-from conflux.verification import NuXmvBackend, VerificationIR, verify_with_z3
+from conflux.verification import (
+    FormalVerdict,
+    NuXmvBackend,
+    VerificationIR,
+    compare_cone_of_influence,
+    verify_with_z3,
+)
 
 EXIT_OK = 0
 EXIT_USAGE = 2
@@ -110,6 +116,7 @@ def _parser() -> argparse.ArgumentParser:
     verify.add_argument("--model", type=Path)
     verify.add_argument("--property")
     verify.add_argument("--backend", choices=("z3", "nuxmv"), default="z3")
+    verify.add_argument("--reduce", choices=("cone_of_influence",))
     verify.add_argument("--output", type=Path)
 
     benchmark = commands.add_parser("benchmark", help="external benchmarks")
@@ -293,16 +300,47 @@ def _verify(arguments: argparse.Namespace) -> int:
     payload = json.loads(model_path.read_text(encoding="utf-8"))
     ir = VerificationIR.from_dict(payload)
     property_id = str(arguments.property) if arguments.property else None
+    invariant_ids = tuple(item.id for item in ir.invariants)
     if property_id is not None:
         selected = tuple(item for item in ir.invariants if item.id == property_id)
         if not selected:
             raise ValueError(f"unknown_verification_property:{property_id}")
-        ir = replace(ir, invariants=selected)
-    result = (
-        verify_with_z3(ir)
-        if str(arguments.backend) == "z3"
-        else NuXmvBackend().verify(ir)
+        invariant_ids = (property_id,)
+    selected_ir = replace(
+        ir,
+        invariants=tuple(item for item in ir.invariants if item.id in invariant_ids),
     )
+    backend = (
+        verify_with_z3
+        if str(arguments.backend) == "z3"
+        else NuXmvBackend().verify
+    )
+    reduction_name = cast(str | None, arguments.reduce)
+    if reduction_name == "cone_of_influence":
+        comparison = compare_cone_of_influence(ir, invariant_ids)
+        original_result = backend(selected_ir)
+        result = backend(comparison.reduction.reduced_ir)
+        backend_failure = None
+        if FormalVerdict.UNKNOWN in {original_result.verdict, result.verdict}:
+            backend_failure = "backend_unavailable_or_failed"
+        elif original_result.verdict != result.verdict:
+            backend_failure = "backend_verdict_disagreement"
+        report: dict[str, object] = {
+            "schema_version": "1",
+            "comparison": comparison.to_dict(),
+            "backend": {
+                "original": original_result.to_dict(),
+                "reduced": result.to_dict(),
+                "equivalent": backend_failure is None,
+                "failure": backend_failure,
+            },
+        }
+    else:
+        result = backend(selected_ir)
+        original_result = None
+        comparison = None
+        backend_failure = None
+        report = result.to_dict()
     output = cast(Path | None, arguments.output)
     if output is not None:
         output.mkdir(parents=True, exist_ok=True)
@@ -311,8 +349,24 @@ def _verify(arguments: argparse.Namespace) -> int:
             encoding="utf-8",
             newline="\n",
         )
-    print(canonical_json(result.to_dict()))
-    return EXIT_RUNTIME if result.verdict.value == "unknown" else EXIT_OK
+        if original_result is not None and comparison is not None:
+            (output / "formal-verification-original.json").write_text(
+                canonical_json(original_result.to_dict()) + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            (output / "verification-reduction.json").write_text(
+                canonical_json(report) + "\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+    print(canonical_json(report))
+    failed = (
+        result.verdict == FormalVerdict.UNKNOWN
+        or backend_failure is not None
+        or (comparison is not None and not comparison.equivalent)
+    )
+    return EXIT_RUNTIME if failed else EXIT_OK
 
 
 def _render_result(payload: dict[str, Any]) -> str:

@@ -26,9 +26,13 @@ sibling leakage, and rejected-proposal misclassification.
 
 `conflux.verification` is a separate callback-free IR with a reference
 interpreter, runtime differential tests, optional Z3 bounded checking, and a
-nuXmv Boolean-subset adapter. Missing or unsupported backends return `UNKNOWN`.
-Reductions, hyperproperties, arbitrary-program proofs, and unbounded deployment
-claims remain future work.
+nuXmv Boolean-subset adapter. Its property-scoped cone-of-influence reducer
+closes over guards and assignment dependencies, projects synchronous updates,
+and preserves rule IDs for witness replay. The comparison API checks original
+and reduced reference verdicts and rejects an unliftable reduced witness.
+Missing or unsupported backends return `UNKNOWN`. Partial-order reduction,
+Principal symmetry, hyperproperties, arbitrary-program proofs, and unbounded
+deployment claims remain future work.
 
 ## Rationale
 
@@ -40,3 +44,7 @@ can affect later security decisions.
 verdict to `BOUNDED_SAFE`, while modelling failures yield `UNKNOWN`; neither is
 silently promoted to proof. Native SLED stays close to the operational kernel,
 while solver IR stays separate so automation cannot hide abstraction costs.
+COI reduction is property-scoped because variables irrelevant to one safety
+claim may be essential to another. It is accepted only with explicit
+assumptions and original-versus-reduced comparison; a smaller model alone is
+not evidence of preservation.

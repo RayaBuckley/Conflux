@@ -780,6 +780,7 @@ def check_schemas(errors: list[str]) -> None:
         "trace-event.schema.json",
         "verification-ir.schema.json",
         "verification-result.schema.json",
+        "verification-reduction.schema.json",
         "agentdojo-comparison-result-v2.schema.json",
         "experiment-protocol-v2.schema.json",
         "experiment-run-manifest-v2.schema.json",

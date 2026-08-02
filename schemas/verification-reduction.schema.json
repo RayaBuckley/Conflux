@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/verification-reduction-v1.json",
+  "title": "Conflux cone-of-influence verification reduction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "original_fingerprint",
+    "reduced_fingerprint",
+    "invariant_ids",
+    "retained_variables",
+    "removed_variables",
+    "retained_rules",
+    "removed_rules",
+    "assumptions",
+    "applicable",
+    "reason",
+    "witness_lifting",
+    "reduced_ir"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "original_fingerprint": {"type": "string", "minLength": 64, "maxLength": 64},
+    "reduced_fingerprint": {"type": "string", "minLength": 64, "maxLength": 64},
+    "invariant_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "retained_variables": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "removed_variables": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "retained_rules": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "removed_rules": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "assumptions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "applicable": {"type": "boolean"},
+    "reason": {"type": ["string", "null"]},
+    "witness_lifting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "rule_ids_preserved", "projected_variables", "validated", "reason"],
+      "properties": {
+        "strategy": {"type": "string", "minLength": 1},
+        "rule_ids_preserved": {"const": true},
+        "projected_variables": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "validated": {"type": ["boolean", "null"]},
+        "reason": {"type": ["string", "null"]}
+      }
+    },
+    "reduced_ir": {"type": "object"}
+  }
+}

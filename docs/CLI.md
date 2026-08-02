@@ -11,6 +11,7 @@ conflux sled run --suite examples/basic.yaml --output runs/sled
 conflux report runs/demo/result.json
 conflux chat --scenario examples/basic.yaml --endpoint URL --model MODEL
 conflux verify --model examples/verification.json --backend z3 --output runs/verify
+conflux verify --model MODEL --property PROPERTY --reduce cone_of_influence --output runs/verify-reduced
 conflux benchmark agentdojo --config experiments/manifests/agentdojo-smoke.yaml --upstream-log FIXTURE --output runs/agentdojo.json
 ```
 
@@ -25,7 +26,10 @@ validates result JSON before rendering it. `doctor` reports capabilities
 without invoking models, containers, solvers, GPUs, or clusters.
 
 `verify` invokes a supported finite IR backend; unavailable or unsupported
-behavior returns `UNKNOWN`. `benchmark agentdojo --upstream-log` strictly
+behavior returns `UNKNOWN`. With `--reduce cone_of_influence`, it writes the
+reduced result, the original backend result, and a reference comparison. A
+backend failure, verdict disagreement, or unliftable witness exits with code
+3 rather than promoting a reduced claim. `benchmark agentdojo --upstream-log` strictly
 translates one pinned upstream record. Without the fixture it validates the
 installed pinned suite, then stops at the explicit live-runner gate. `chat`
 uses the optional OpenAI-compatible adapter but routes every proposed effect

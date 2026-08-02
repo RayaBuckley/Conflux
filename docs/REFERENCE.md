@@ -10,6 +10,9 @@
   per-step certificates, authorised plans, assessments, and reports.
 - `conflux.evaluation`: ExplicitStateChecker, bounds, verdicts, properties, and
   evaluation services.
+- `conflux.verification`: serialisable finite-state IR, reference interpreter,
+  `reduce_cone_of_influence`, checked reduction comparisons, and optional Z3
+  and nuXmv backends.
 - `conflux.adapters`: provider, policy, and benchmark translations.
 
 Stable offline adapters are `ScriptedModel`, `load_scenario`,
