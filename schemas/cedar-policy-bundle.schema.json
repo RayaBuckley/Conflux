@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/cedar-policy-bundle-v1.json",
+  "title": "Pinned local Cedar policy bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "bundle_id", "schema", "policies", "entities", "binary", "supported_features"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "schema": {"type": "object"},
+    "policies": {"type": "string", "minLength": 1},
+    "entities": {"type": "array"},
+    "binary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "commit", "sha256"],
+      "properties": {
+        "version": {"const": "4.11.0"},
+        "commit": {"const": "d86ed2ee47cbe5a30e6b70a3d8414bc66ce88ae3"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "supported_features": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["parc", "json_schema", "entities_json", "request_context", "explicit_forbid"]
+      }
+    }
+  }
+}

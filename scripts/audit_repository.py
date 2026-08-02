@@ -822,6 +822,7 @@ def check_coi_evidence(errors: list[str]) -> None:
 
 def check_schemas(errors: list[str]) -> None:
     required = {
+        "cedar-policy-bundle.schema.json",
         "dynamic-plan-result.schema.json",
         "experiment-manifest.schema.json",
         "formal-verification-result.schema.json",
