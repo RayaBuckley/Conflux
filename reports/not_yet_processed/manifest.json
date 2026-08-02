@@ -1,0 +1,38 @@
+{
+  "00_INDEX.md": {
+    "path": "/mnt/data/conflux_direction_package/00_INDEX.md",
+    "lines": 39
+  },
+  "01_planning_optimisation.md": {
+    "path": "/mnt/data/conflux_direction_package/01_planning_optimisation.md",
+    "lines": 81
+  },
+  "02_delegation_and_consent.md": {
+    "path": "/mnt/data/conflux_direction_package/02_delegation_and_consent.md",
+    "lines": 72
+  },
+  "03_fine_grained_policy_languages_tool_arguments.md": {
+    "path": "/mnt/data/conflux_direction_package/03_fine_grained_policy_languages_tool_arguments.md",
+    "lines": 81
+  },
+  "04_visibility_tracking_confidentiality.md": {
+    "path": "/mnt/data/conflux_direction_package/04_visibility_tracking_confidentiality.md",
+    "lines": 79
+  },
+  "05_attribution_tracking_reporting.md": {
+    "path": "/mnt/data/conflux_direction_package/05_attribution_tracking_reporting.md",
+    "lines": 76
+  },
+  "06_sled_optimisation_and_symbolic_verification.md": {
+    "path": "/mnt/data/conflux_direction_package/06_sled_optimisation_and_symbolic_verification.md",
+    "lines": 79
+  },
+  "07_benchmarks_and_real_world_policy_integration.md": {
+    "path": "/mnt/data/conflux_direction_package/07_benchmarks_and_real_world_policy_integration.md",
+    "lines": 70
+  },
+  "08_repository_structure_and_agent_governance.md": {
+    "path": "/mnt/data/conflux_direction_package/08_repository_structure_and_agent_governance.md",
+    "lines": 72
+  }
+}
