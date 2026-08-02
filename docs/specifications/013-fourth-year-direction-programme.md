@@ -1,6 +1,6 @@
 # Specification 013: Fourth-Year Direction Programme
 
-Status: accepted, staged implementation  
+Status: accepted, staged implementation
 Source snapshot: `reports/archive/2026-08-02-fourth-year-direction/`
 
 ## Goal and success criteria
