@@ -10,7 +10,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Protocol
 
-from conflux.domain import Decision, canonical_json, fingerprint
+from conflux.domain import Decision, EventClass, canonical_json, fingerprint
 from conflux.ites import ActionOutcome, ITESReport, TraceEvent
 from conflux.planning.state import PlanExecutionState, PlanTraceEvent
 
@@ -168,6 +168,7 @@ def _record(
     return {
         "schema_version": schema_version,
         "event_type": event_type,
+        "event_class": _event_class(event_type).value,
         "event_id": event_id,
         "run_id": run_id,
         "branch_id": branch_id,
@@ -180,8 +181,22 @@ def _record(
 
 def _policy_event_type(decision: Decision) -> str:
     if decision.category.value == "authorisation":
+        if "argument" in decision.reason:
+            return "policy.argument_decided"
         return "policy.action_decided"
     return f"policy.{decision.category.value}_decided"
+
+
+def _event_class(event_type: str) -> EventClass:
+    if event_type in {"proposal.observed", "run.started", "branch.created"}:
+        return EventClass.DECLARATION
+    if event_type.startswith("policy.") or event_type in {"action.allowed", "action.blocked"}:
+        return EventClass.DECISION
+    if event_type.endswith("failed") or event_type in {"model.parse_failed", "bound.reached"}:
+        return EventClass.ERROR
+    if event_type in {"action.executed", "code.completed", "model.responded"}:
+        return EventClass.OUTPUT
+    return EventClass.OUTCOME
 
 
 def trace_records(
@@ -320,8 +335,9 @@ def plan_trace_records(
     """Convert planner events to the common timestamped trace envelope."""
     return tuple(
         {
-            "schema_version": "2",
+            "schema_version": "3",
             "event_type": event.event_type,
+            "event_class": _event_class(event.event_type).value,
             "event_id": event.id,
             "run_id": event.run_id,
             "plan_id": event.plan_id,

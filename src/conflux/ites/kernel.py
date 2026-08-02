@@ -14,6 +14,7 @@ from conflux.domain import (
     ProposalBatch,
     ProposalMode,
     Session,
+    action_provenance,
     action_sort_key,
     provenance_union,
 )
@@ -92,26 +93,29 @@ class TransitionKernel:
         model_calls: int,
     ) -> BranchState:
         branch_id = f"{parent.branch_id}.{index}"
+        has_action_influence = bool(action.inputs or getattr(action, "arguments", ()))
+        action_context = action_provenance(action).context
+        decision_context = parent.context.merge(action_context) if has_action_influence else parent.context
         proposed = TraceEvent(
             sequence=len(parent.trace),
             branch_id=branch_id,
             parent_branch_id=parent.branch_id,
             depth=parent.depth,
             outcome=ActionOutcome.PROPOSED,
-            context=parent.context,
+            context=decision_context,
             action=action,
             reason="model_proposal",
         )
         decision = self.decisions.decide(
             session=session,
             action=action,
-            context=parent.context,
+            context=decision_context,
             environment=environment,
         )
         allowed = decision.allowed
         status = BranchStatus.AUTHORISED if allowed else BranchStatus.BLOCKED
         inputs = parent.inputs
-        context = parent.context
+        context = decision_context
         depth = parent.depth
         if allowed and isinstance(action, NestedExecutionAction):
             provenance = provenance_union(*(artifact.provenance for artifact in action.inputs))

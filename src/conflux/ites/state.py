@@ -12,12 +12,13 @@ from conflux.domain import (
     Artifact,
     PrincipalContext,
     action_fingerprint,
+    attribution_for_action,
     fingerprint,
     provenance_union,
 )
 
-TRACE_SCHEMA_VERSION = "2"
-CERTIFICATE_SCHEMA_VERSION = "1"
+TRACE_SCHEMA_VERSION = "3"
+CERTIFICATE_SCHEMA_VERSION = "2"
 
 
 class BranchStatus(StrEnum):
@@ -65,6 +66,7 @@ class TraceEvent:
         )
 
     def to_dict(self) -> dict[str, object]:
+        attribution = attribution_for_action(self.action, self.context, self.decision) if self.action is not None else None
         return {
             "schema_version": self.schema_version,
             "id": self.id,
@@ -77,6 +79,7 @@ class TraceEvent:
             "action_id": self.action.id if self.action else None,
             "action_fingerprint": action_fingerprint(self.action) if self.action else None,
             "decision": self.decision.to_dict() if self.decision else None,
+            "attribution": attribution.to_dict() if attribution is not None else None,
             "reason": self.reason,
         }
 
@@ -100,9 +103,7 @@ class DecisionCertificate:
         branch_id: str,
         decision: ActionDecision,
     ) -> "DecisionCertificate":
-        policy_versions = tuple(
-            f"{item.policy_id}@{item.policy_version}" for item in decision.decisions
-        )
+        policy_versions = tuple(f"{item.policy_id}@{item.policy_version}" for item in decision.decisions)
         action_hash = action_fingerprint(action)
         context_hash = context.fingerprint
         payload = {
@@ -250,51 +251,27 @@ class ITESReport:
 
     @property
     def proposed_count(self) -> int:
-        return sum(
-            event.outcome == ActionOutcome.PROPOSED
-            for branch in self.branches
-            for event in branch.trace
-        )
+        return sum(event.outcome == ActionOutcome.PROPOSED for branch in self.branches for event in branch.trace)
 
     @property
     def blocked_count(self) -> int:
-        return sum(
-            event.outcome == ActionOutcome.BLOCKED
-            for branch in self.branches
-            for event in branch.trace
-        )
+        return sum(event.outcome == ActionOutcome.BLOCKED for branch in self.branches for event in branch.trace)
 
     @property
     def authorised_count(self) -> int:
-        return sum(
-            event.outcome == ActionOutcome.AUTHORISED
-            for branch in self.branches
-            for event in branch.trace
-        )
+        return sum(event.outcome == ActionOutcome.AUTHORISED for branch in self.branches for event in branch.trace)
 
     @property
     def executed_count(self) -> int:
-        return sum(
-            event.outcome == ActionOutcome.EXECUTED
-            for branch in self.branches
-            for event in branch.trace
-        )
+        return sum(event.outcome == ActionOutcome.EXECUTED for branch in self.branches for event in branch.trace)
 
     @property
     def provider_failed_count(self) -> int:
-        return sum(
-            event.outcome == ActionOutcome.PROVIDER_FAILED
-            for branch in self.branches
-            for event in branch.trace
-        )
+        return sum(event.outcome == ActionOutcome.PROVIDER_FAILED for branch in self.branches for event in branch.trace)
 
     @property
     def incomplete_count(self) -> int:
-        return sum(
-            event.outcome == ActionOutcome.INCOMPLETE
-            for branch in self.branches
-            for event in branch.trace
-        )
+        return sum(event.outcome == ActionOutcome.INCOMPLETE for branch in self.branches for event in branch.trace)
 
     def record_execution(
         self,
@@ -367,8 +344,7 @@ class ITESReport:
             raise ValueError(f"unknown branch: {branch_id}")
         branches = tuple(updated)
         assessments = tuple(
-            _execution_assessment(branches) if item.name == "no_unauthorised_execution" else item
-            for item in self.assessments
+            _execution_assessment(branches) if item.name == "no_unauthorised_execution" else item for item in self.assessments
         )
         return replace(self, branches=branches, assessments=assessments)
 
@@ -412,12 +388,7 @@ class ITESReport:
 
 
 def _execution_assessment(branches: tuple[BranchState, ...]) -> SafetyAssessment:
-    events = tuple(
-        event
-        for branch in branches
-        for event in branch.trace
-        if event.outcome == ActionOutcome.EXECUTED
-    )
+    events = tuple(event for branch in branches for event in branch.trace if event.outcome == ActionOutcome.EXECUTED)
     holds = all(event.decision is not None and event.decision.allowed for event in events)
     return SafetyAssessment(
         "no_unauthorised_execution",

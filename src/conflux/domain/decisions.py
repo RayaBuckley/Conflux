@@ -46,22 +46,25 @@ class ActionDecision:
     read: Decision
     visibility: Decision
     consent: Decision
+    argument_authorisation: Decision | None = None
 
     @property
     def allowed(self) -> bool:
-        return all(
-            decision.allowed
-            for decision in (self.authorisation, self.read, self.visibility, self.consent)
-        )
+        return all(decision.allowed for decision in self.decisions)
 
     @property
     def decisions(self) -> tuple[Decision, ...]:
-        return (self.authorisation, self.read, self.visibility, self.consent)
+        return (
+            (self.authorisation, self.argument_authorisation, self.read, self.visibility, self.consent)
+            if self.argument_authorisation is not None
+            else (self.authorisation, self.read, self.visibility, self.consent)
+        )
 
     def to_dict(self) -> dict[str, object]:
         return {
             "context": self.context.to_dict(),
             "allowed": self.allowed,
+            "argument_authorisation": (self.argument_authorisation.to_dict() if self.argument_authorisation is not None else None),
             "decisions": [decision.to_dict() for decision in self.decisions],
         }
 

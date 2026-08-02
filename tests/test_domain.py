@@ -98,8 +98,9 @@ def test_proposal_batch_is_immutable_and_serialisable() -> None:
     batch = ProposalBatch.ordered_plan(action)
     assert batch.mode is ProposalMode.ORDERED_PLAN
     assert batch.to_dict()["proposals"] == [
-        {
-            "id": "noop",
+            {
+                "schema_version": "2",
+                "id": "noop",
             "kind": "no_op",
             "visibility": "internal",
             "input_ids": [],
@@ -107,5 +108,6 @@ def test_proposal_batch_is_immutable_and_serialisable() -> None:
         }
     ]
     assert batch.fingerprint == ProposalBatch.ordered_plan(action).fingerprint
+    assert batch.schema_version == "2"
     with pytest.raises(ValueError, match="at least one"):
         ProposalBatch(ProposalMode.ORDERED_PLAN, ())

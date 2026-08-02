@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/attribution-record-v1.json",
+  "title": "Conflux structured attribution record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "verified_input_ids", "conservative_influence",
+    "policy_evidence", "uncertainty_reasons", "redaction_requirements",
+    "model_explanation", "model_explanation_trusted"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "verified_input_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "conservative_influence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_ids", "unknown"],
+      "properties": {
+        "principal_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "unknown": {"type": "boolean"}
+      }
+    },
+    "policy_evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "uncertainty_reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "redaction_requirements": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "model_explanation": {"type": ["string", "null"]},
+    "model_explanation_trusted": {"const": false}
+  }
+}

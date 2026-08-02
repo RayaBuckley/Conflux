@@ -52,7 +52,7 @@ def test_smoke_bundle_is_deterministic_linked_and_schema_valid(tmp_path: Path) -
     }
     raw = (first / "raw.jsonl").read_bytes()
     assert result["trace"]["sha256"] == hashlib.sha256(raw).hexdigest()
-    trace_validator = Draft202012Validator(load_schema("trace-event.schema.json"))
+    trace_validator = Draft202012Validator(load_schema("trace-event-v3.schema.json"))
     for line in raw.decode("utf-8").splitlines():
         trace_validator.validate(json.loads(line))
 

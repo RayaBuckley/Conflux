@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from conflux.domain import (
     Action,
+    ActionArgument,
     EnvironmentSnapshot,
     NestedExecutionAction,
     ProposalBatch,
@@ -108,8 +109,31 @@ class ProvenancePreserved:
         return None
 
 
+@dataclass(frozen=True, slots=True)
+class ArgumentSelectorsAuthorised:
+    name: str = "argument_selectors_authorised"
+
+    def violation(self, transition: Transition[BranchState, Action]) -> str | None:
+        arguments = tuple(
+            item
+            for item in getattr(transition.action, "arguments", ())
+            if isinstance(item, ActionArgument) and item.authority_bearing
+        )
+        if not arguments or transition.target.status != BranchStatus.AUTHORISED:
+            return None
+        decision = transition.target.decision
+        if (
+            decision is None
+            or decision.argument_authorisation is None
+            or not decision.argument_authorisation.allowed
+        ):
+            return "an authority-bearing selector was authorised without argument policy"
+        return None
+
+
 __all__ = [
     "ITESVerificationSystem",
+    "ArgumentSelectorsAuthorised",
     "NoForbiddenObservation",
     "NoUnauthorisedAuthorisation",
     "PrincipalContextMonotonicity",

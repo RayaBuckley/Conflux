@@ -7,6 +7,7 @@ from typing import Callable
 
 from conflux.domain import (
     Action,
+    ActionArgument,
     ActionDecision,
     Decision,
     DecisionCategory,
@@ -18,7 +19,13 @@ from conflux.domain import (
     Session,
     StopAction,
 )
-from conflux.ports import AuthorisationPort, ConsentPolicyPort, ReadPolicyPort, VisibilityPolicyPort
+from conflux.ports import (
+    ArgumentAuthorisationPort,
+    AuthorisationPort,
+    ConsentPolicyPort,
+    ReadPolicyPort,
+    VisibilityPolicyPort,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,6 +34,7 @@ class DecisionPipeline:
     read: ReadPolicyPort
     visibility: VisibilityPolicyPort
     consent: ConsentPolicyPort
+    argument_authorisation: ArgumentAuthorisationPort | None = None
 
     def decide(
         self,
@@ -41,6 +49,7 @@ class DecisionPipeline:
             return _context_denial(context)
 
         authorisation = self._authorise(action, context, environment)
+        argument_authorisation = self._authorise_arguments(action, context, environment)
         read = self._read(action, context, environment)
         visibility = _guarded(
             DecisionCategory.VISIBILITY,
@@ -54,7 +63,64 @@ class DecisionPipeline:
             self.consent.policy_version,
             lambda: self.consent.decide(session, action, context),
         )
-        return ActionDecision(context, authorisation, read, visibility, consent)
+        return ActionDecision(
+            context,
+            authorisation,
+            read,
+            visibility,
+            consent,
+            argument_authorisation,
+        )
+
+    def _authorise_arguments(
+        self,
+        action: Action,
+        context: PrincipalContext,
+        environment: EnvironmentSnapshot,
+    ) -> Decision | None:
+        arguments = tuple(
+            argument for argument in getattr(action, "arguments", ()) if isinstance(argument, ActionArgument) and argument.authority_bearing
+        )
+        if not arguments:
+            return None
+        policy = self.argument_authorisation
+        if policy is None:
+            return Decision(
+                DecisionCategory.AUTHORISATION,
+                False,
+                "argument_policy_unconfigured",
+                "ites-kernel",
+                "2",
+                evidence=tuple(argument.name for argument in arguments),
+            )
+        results: list[Decision] = []
+        for principal in sorted(context.principals):
+            for argument in arguments:
+                try:
+                    decision = policy.decide(
+                        principal,
+                        action,
+                        argument,
+                        environment,
+                    )
+                except Exception as error:
+                    decision = Decision(
+                        DecisionCategory.AUTHORISATION,
+                        False,
+                        "policy_error",
+                        policy.policy_id,
+                        policy.policy_version,
+                        evidence=(type(error).__name__, argument.name),
+                    )
+                results.append(decision)
+        return _compose(
+            DecisionCategory.AUTHORISATION,
+            tuple(results),
+            policy.policy_id,
+            policy.policy_version,
+            "all_arguments_authorised",
+            "argument_denied",
+        )
 
     def _authorise(
         self,

@@ -9,9 +9,12 @@ from conflux.domain import (
     Action,
     ActionVisibility,
     Artifact,
+    AudienceVisibilityDecision,
     Decision,
     DecisionCategory,
+    DisclosureLevel,
     EnvironmentSnapshot,
+    EventClass,
     NoOpAction,
     Principal,
     PrincipalContext,
@@ -88,6 +91,47 @@ class ExplicitConsentPolicy:
 
 
 @dataclass(frozen=True, slots=True)
+class SessionAudienceVisibilityPolicy:
+    """Conservative field-disclosure policy for one recipient and event class."""
+
+    policy_id: str = "session-audience-visibility-policy"
+    policy_version: str = "1"
+
+    def decide(
+        self,
+        session: Session,
+        audience: Principal,
+        event_class: EventClass,
+        action: Action | None,
+        context: PrincipalContext,
+    ) -> AudienceVisibilityDecision:
+        _ = action
+        if audience not in session.participants:
+            level = DisclosureLevel.NONE
+            reason = "audience_not_participant"
+        elif event_class in {EventClass.DECISION, EventClass.ERROR}:
+            level = DisclosureLevel.REDACTED
+            reason = "sensitive_decision_details_redacted"
+        elif audience in context.principals:
+            level = DisclosureLevel.FULL
+            reason = "influencing_principal"
+        elif event_class == EventClass.DECLARATION:
+            level = DisclosureLevel.EXISTENCE
+            reason = "participant_declaration_exists"
+        else:
+            level = DisclosureLevel.REDACTED
+            reason = "participant_not_in_context"
+        return AudienceVisibilityDecision(
+            audience,
+            event_class,
+            level,
+            reason,
+            self.policy_id,
+            self.policy_version,
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class AllowInternalReadPolicy:
     """Allow already-active internal values; useful for model-checking fixtures."""
 
@@ -114,5 +158,6 @@ __all__ = [
     "AllowInternalReadPolicy",
     "ExplicitConsentPolicy",
     "SessionVisibilityPolicy",
+    "SessionAudienceVisibilityPolicy",
     "SnapshotReadPolicy",
 ]

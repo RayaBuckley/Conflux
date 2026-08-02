@@ -17,12 +17,21 @@ from .planner import (
     ValueRequest,
     ValueResponse,
 )
-from .policy import AuthorisationPort, ConsentPolicyPort, ReadPolicyPort, VisibilityPolicyPort
+from .policy import (
+    ArgumentAuthorisationPort,
+    AudienceVisibilityPolicyPort,
+    AuthorisationPort,
+    ConsentPolicyPort,
+    ReadPolicyPort,
+    VisibilityPolicyPort,
+)
 from .resources import ExecutorPort, ProviderResult
 from .tracing import TraceSink
 
 __all__ = [
     "AuthorisationPort",
+    "ArgumentAuthorisationPort",
+    "AudienceVisibilityPolicyPort",
     "ConsentPolicyPort",
     "EnvironmentPort",
     "ExecutorPort",

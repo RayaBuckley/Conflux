@@ -252,6 +252,8 @@ def check_reports(errors: list[str]) -> None:
         if identifier not in catalogue:
             errors.append(f"change catalogue missing report identifier {identifier}")
     required = {
+        ROOT / "schemas" / "attribution-record.schema.json",
+        ROOT / "schemas" / "decision-certificate.schema.json",
         ROOT / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "REPO_REVIEW",
         ROOT / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "SLED_REVIEW",
         ROOT / "reports" / "archive" / "MANIFEST.json",
@@ -828,9 +830,11 @@ def check_schemas(errors: list[str]) -> None:
         "planning-comparison-result.schema.json",
         "planning-observation.schema.json",
         "proposal-batch.schema.json",
+        "proposal-batch-v2.schema.json",
         "result.schema.json",
         "scenario.schema.json",
         "trace-event.schema.json",
+        "trace-event-v3.schema.json",
         "verification-ir.schema.json",
         "verification-result.schema.json",
         "verification-reduction.schema.json",

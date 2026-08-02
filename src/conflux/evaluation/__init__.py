@@ -1,5 +1,14 @@
 """Benchmark-independent evaluation and native bounded verification."""
 
+from .disclosure_verification import (
+    CompleteAttribution,
+    DisclosureMutation,
+    DisclosureState,
+    DisclosureVerificationSystem,
+    NoHiddenDecisionLeakage,
+    NoUnauthorisedSelector,
+    SafeRedaction,
+)
 from .evaluator import EvaluationResult, Evaluator, VerificationEvaluator
 from .model_checking import (
     Counterexample,
@@ -24,6 +33,7 @@ from .planning import (
     WorstCasePlanningSystem,
 )
 from .properties import (
+    ArgumentSelectorsAuthorised,
     ITESVerificationSystem,
     NoForbiddenObservation,
     NoUnauthorisedAuthorisation,
@@ -46,17 +56,24 @@ from .records import (
 
 __all__ = [
     "Counterexample",
+    "ArgumentSelectorsAuthorised",
     "AbstractEffect",
     "AbstractPatchKind",
     "AbstractPlanPatch",
     "AbstractPlanStatus",
     "CodeCapabilityPreserved",
+    "CompleteAttribution",
     "DeterministicClock",
     "EvaluationResult",
+    "DisclosureMutation",
+    "DisclosureState",
+    "DisclosureVerificationSystem",
     "Evaluator",
     "ExplicitStateChecker",
     "ITESVerificationSystem",
     "NoForbiddenObservation",
+    "NoHiddenDecisionLeakage",
+    "NoUnauthorisedSelector",
     "NoUnauthorisedPlanningEffect",
     "NoUnauthorisedAuthorisation",
     "PrincipalContextMonotonicity",
@@ -67,6 +84,7 @@ __all__ = [
     "RunResult",
     "RunStatus",
     "SafetyProperty",
+    "SafeRedaction",
     "Transition",
     "TransitionSystem",
     "UtilityOutcome",

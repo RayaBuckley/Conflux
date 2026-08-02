@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/decision-certificate-v2.json",
+  "title": "Conflux decision certificate v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "action_fingerprint", "context_fingerprint", "branch_id", "policy_versions", "decision"],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "action_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "branch_id": {"type": "string", "minLength": 1},
+    "policy_versions": {"type": "array", "minItems": 4, "items": {"type": "string", "minLength": 3}},
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context", "allowed", "argument_authorisation", "decisions"],
+      "properties": {
+        "context": {"type": "object"},
+        "allowed": {"type": "boolean"},
+        "argument_authorisation": {"type": ["object", "null"]},
+        "decisions": {"type": "array", "minItems": 4, "items": {"type": "object"}}
+      }
+    }
+  }
+}

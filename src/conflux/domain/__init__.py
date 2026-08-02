@@ -1,23 +1,38 @@
 """Canonical immutable security-domain values."""
 
 from .actions import (
+    AUTHORITY_BEARING_ARGUMENT_ROLES,
     Action,
+    ActionArgument,
     ActionKind,
     ActionVisibility,
+    ArgumentRole,
     DelegationAction,
     MessageAction,
     NestedExecutionAction,
     NoOpAction,
+    OperationArgumentSchema,
     PrimitiveAction,
     Proposal,
     ProposalBatch,
     ProposalMode,
     StopAction,
     action_fingerprint,
+    action_provenance,
     action_sort_key,
+    action_to_dict,
 )
 from .artifacts import Artifact
 from .decisions import ActionDecision, Decision, DecisionCategory
+from .disclosure import (
+    AttributionRecord,
+    AudienceVisibilityDecision,
+    DisclosureLevel,
+    EventClass,
+    attribution_for_action,
+    explain_attribution,
+    project_record,
+)
 from .environment import DataItem, EnvironmentSnapshot
 from .identity import Principal, PrincipalContext
 from .permissions import (
@@ -36,20 +51,28 @@ from .session import Session
 
 __all__ = [
     "Action",
+    "ActionArgument",
     "ActionDecision",
     "ActionKind",
     "ActionVisibility",
+    "ArgumentRole",
+    "AUTHORITY_BEARING_ARGUMENT_ROLES",
     "Artifact",
+    "AttributionRecord",
+    "AudienceVisibilityDecision",
     "DELEGATE",
     "DELETE",
     "DataItem",
     "Decision",
     "DecisionCategory",
+    "DisclosureLevel",
     "DelegationAction",
     "EnvironmentSnapshot",
+    "EventClass",
     "MessageAction",
     "NestedExecutionAction",
     "NoOpAction",
+    "OperationArgumentSchema",
     "Permission",
     "Principal",
     "PrincipalContext",
@@ -66,9 +89,14 @@ __all__ = [
     "StopAction",
     "WRITE",
     "action_fingerprint",
+    "action_provenance",
     "action_sort_key",
+    "action_to_dict",
+    "attribution_for_action",
     "canonical_json",
     "fingerprint",
+    "explain_attribution",
     "normalise_permission",
     "provenance_union",
+    "project_record",
 ]

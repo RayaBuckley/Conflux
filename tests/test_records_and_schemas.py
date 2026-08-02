@@ -45,7 +45,7 @@ def test_checked_in_schemas_are_valid() -> None:
 
 
 def test_proposal_and_verification_records_validate() -> None:
-    Draft202012Validator(_schema("proposal-batch.schema.json")).validate(
+    Draft202012Validator(_schema("proposal-batch-v2.schema.json")).validate(
         ProposalBatch.alternatives(NoOpAction("noop")).to_dict()
     )
     result: VerificationResult[object, object] = VerificationResult(
@@ -88,7 +88,7 @@ def test_trace_and_result_writers_are_deterministic(
     second_hash = write_trace(report, second)
     assert first_hash == second_hash
     assert first.read_bytes() == second.read_bytes()
-    validator = Draft202012Validator(_schema("trace-event.schema.json"))
+    validator = Draft202012Validator(_schema("trace-event-v3.schema.json"))
     records = trace_records(report)
     for record in records:
         validator.validate(record)

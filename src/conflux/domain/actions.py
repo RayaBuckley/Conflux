@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Any, TypeAlias
+from types import MappingProxyType
+from typing import Any, Mapping, TypeAlias
 
 from .artifacts import Artifact
 from .permissions import Permission, normalise_permission
+from .provenance import Provenance, provenance_union
 from .resources import ResourceRef
-from .serialization import fingerprint
+from .serialization import canonical_value, fingerprint
 
 
 class ActionKind(StrEnum):
@@ -32,6 +34,111 @@ class ProposalMode(StrEnum):
     ORDERED_PLAN = "ordered_plan"
 
 
+class ArgumentRole(StrEnum):
+    CONTENT = "content"
+    RESOURCE = "resource"
+    RECIPIENT = "recipient"
+    DESTINATION = "destination"
+    VALUE = "value"
+    CREDENTIAL_REFERENCE = "credential_reference"
+
+
+AUTHORITY_BEARING_ARGUMENT_ROLES = frozenset(
+    {
+        ArgumentRole.RESOURCE,
+        ArgumentRole.RECIPIENT,
+        ArgumentRole.DESTINATION,
+        ArgumentRole.CREDENTIAL_REFERENCE,
+    }
+)
+
+
+@dataclass(frozen=True, slots=True)
+class ActionArgument:
+    name: str
+    role: ArgumentRole
+    value_fingerprint: str
+    provenance: Provenance
+    redacted_value: object | None = None
+
+    def __post_init__(self) -> None:
+        if not self.name:
+            raise ValueError("action argument name must be non-empty")
+        if len(self.value_fingerprint) != 64 or any(character not in "0123456789abcdef" for character in self.value_fingerprint):
+            raise ValueError("action argument fingerprint must be lowercase SHA-256")
+        object.__setattr__(self, "redacted_value", canonical_value(self.redacted_value))
+
+    @classmethod
+    def bind(
+        cls,
+        *,
+        name: str,
+        role: ArgumentRole,
+        value: object,
+        provenance: Provenance,
+        redacted_value: object | None = None,
+    ) -> "ActionArgument":
+        return cls(
+            name,
+            role,
+            fingerprint(value),
+            provenance,
+            canonical_value(redacted_value),
+        )
+
+    @property
+    def authority_bearing(self) -> bool:
+        return self.role in AUTHORITY_BEARING_ARGUMENT_ROLES
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "name": self.name,
+            "role": self.role.value,
+            "value_fingerprint": self.value_fingerprint,
+            "provenance": self.provenance.to_dict(),
+            "redacted_value": self.redacted_value,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class OperationArgumentSchema:
+    operation: str
+    version: str
+    roles: Mapping[str, ArgumentRole]
+
+    def __post_init__(self) -> None:
+        if not self.operation or not self.version or not self.roles:
+            raise ValueError("operation argument schema requires identity and roles")
+        if any(not name for name in self.roles):
+            raise ValueError("operation argument names must be non-empty")
+        object.__setattr__(self, "roles", MappingProxyType(dict(self.roles)))
+
+    def bind(
+        self,
+        values: Mapping[str, tuple[object, Provenance]],
+        *,
+        redacted_values: Mapping[str, object] | None = None,
+    ) -> tuple[ActionArgument, ...]:
+        missing = set(self.roles) - set(values)
+        unknown = set(values) - set(self.roles)
+        if missing or unknown:
+            raise ValueError(f"operation argument binding mismatch: missing={sorted(missing)}, unknown={sorted(unknown)}")
+        safe_values = redacted_values or {}
+        unknown_redactions = set(safe_values) - set(self.roles)
+        if unknown_redactions:
+            raise ValueError(f"unknown redacted argument values: {sorted(unknown_redactions)}")
+        return tuple(
+            ActionArgument.bind(
+                name=name,
+                role=role,
+                value=values[name][0],
+                provenance=values[name][1],
+                redacted_value=safe_values.get(name),
+            )
+            for name, role in sorted(self.roles.items())
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class PrimitiveAction:
     id: str
@@ -40,6 +147,7 @@ class PrimitiveAction:
     resource: ResourceRef | None = None
     inputs: tuple[Artifact[Any], ...] = ()
     visibility: ActionVisibility = ActionVisibility.INTERNAL
+    arguments: tuple[ActionArgument, ...] = ()
     kind: ActionKind = field(default=ActionKind.PRIMITIVE, init=False)
 
     def __post_init__(self) -> None:
@@ -47,6 +155,12 @@ class PrimitiveAction:
             raise ValueError("PrimitiveAction id and operation must be non-empty")
         object.__setattr__(self, "permission", normalise_permission(self.permission))
         object.__setattr__(self, "inputs", tuple(self.inputs))
+        object.__setattr__(self, "arguments", tuple(self.arguments))
+        if any(not isinstance(argument, ActionArgument) for argument in self.arguments):
+            raise TypeError("PrimitiveAction.arguments must contain ActionArgument values")
+        names = [argument.name for argument in self.arguments]
+        if len(names) != len(set(names)):
+            raise ValueError("action argument names must be unique")
 
 
 @dataclass(frozen=True, slots=True)
@@ -116,14 +230,7 @@ class NoOpAction:
             raise ValueError("NoOpAction.id must be non-empty")
 
 
-Action: TypeAlias = (
-    PrimitiveAction
-    | NestedExecutionAction
-    | MessageAction
-    | DelegationAction
-    | StopAction
-    | NoOpAction
-)
+Action: TypeAlias = PrimitiveAction | NestedExecutionAction | MessageAction | DelegationAction | StopAction | NoOpAction
 Proposal: TypeAlias = Action
 
 
@@ -131,7 +238,7 @@ Proposal: TypeAlias = Action
 class ProposalBatch:
     mode: ProposalMode
     proposals: tuple[Action, ...]
-    schema_version: str = "1"
+    schema_version: str = "2"
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "proposals", tuple(self.proposals))
@@ -162,8 +269,16 @@ def action_inputs(action: Action) -> tuple[Artifact[Any], ...]:
     return action.inputs
 
 
+def action_provenance(action: Action) -> Provenance:
+    provenances = tuple(item.provenance for item in action.inputs)
+    if isinstance(action, PrimitiveAction):
+        provenances += tuple(argument.provenance for argument in action.arguments)
+    return provenance_union(*provenances)
+
+
 def action_to_dict(action: Action) -> dict[str, object]:
     result: dict[str, object] = {
+        "schema_version": "2",
         "id": action.id,
         "kind": action.kind.value,
         "visibility": action.visibility.value,
@@ -174,6 +289,7 @@ def action_to_dict(action: Action) -> dict[str, object]:
             operation=action.operation,
             permission=action.permission.name,
             resource=action.resource.to_dict() if action.resource else None,
+            arguments=[argument.to_dict() for argument in action.arguments],
         )
     elif isinstance(action, MessageAction):
         result["message"] = action.message
@@ -197,11 +313,15 @@ def action_sort_key(action: Action) -> tuple[str, str, str]:
 __all__ = [
     "Action",
     "ActionKind",
+    "ActionArgument",
     "ActionVisibility",
+    "ArgumentRole",
+    "AUTHORITY_BEARING_ARGUMENT_ROLES",
     "DelegationAction",
     "MessageAction",
     "NestedExecutionAction",
     "NoOpAction",
+    "OperationArgumentSchema",
     "PrimitiveAction",
     "Proposal",
     "ProposalBatch",
@@ -209,6 +329,7 @@ __all__ = [
     "StopAction",
     "action_fingerprint",
     "action_inputs",
+    "action_provenance",
     "action_sort_key",
     "action_to_dict",
 ]
