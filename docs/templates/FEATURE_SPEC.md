@@ -18,6 +18,14 @@ delegation, and failure behaviour as applicable.
 
 ## Implementation sequence
 
+## Expected file set and change budget
+
+List every file expected to be added, changed, moved, or generated. Explain
+why each new file needs a distinct owner instead of extending an existing
+one. New top-level directories and new status, roadmap, rationale, claim, or
+architecture documents require explicit maintainer approval before work
+begins.
+
 ## Tests and acceptance criteria
 
 ## Documentation and paper synchronisation

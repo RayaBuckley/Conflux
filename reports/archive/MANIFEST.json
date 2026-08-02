@@ -3,7 +3,7 @@
     "integrity_scope":  "exact repository blob bytes",
     "hash_algorithm":  "sha256",
     "git_object_format":  "sha1",
-    "artifact_count":  19,
+    "artifact_count":  29,
     "packages":  [
                      {
                          "id":  "2026-07-27-engineering-and-sled",
@@ -137,6 +137,30 @@
                                                   ],
                          "limitations":  [
                                              "Its hosted credentialed-run and executable generated-code assumptions are superseded by specification 012; live model evidence remains deliberately deferred."
+                                         ]
+                     },
+                     {
+                         "id":  "2026-08-02-fourth-year-direction",
+                         "title":  "Fourth-year direction programme",
+                         "snapshot_date":  "2026-08-02",
+                         "source_commits":  [
+                                                "f0cb6c584d6427b3ef0eedd04eb5e789ca099d7a"
+                                            ],
+                         "status":  "historical_input",
+                         "supersedes":  [
+
+                                        ],
+                         "superseded_by":  [
+
+                                           ],
+                         "canonical_successors":  [
+                                                      "docs/specifications/013-fourth-year-direction-programme.md",
+                                                      "docs/task-registry.json",
+                                                      "reports/analysis/PROJECT_ANALYSIS.md"
+                                                  ],
+                         "limitations":  [
+                                             "The package contains unresolved filecite markers and open design questions; specification 013 records the accepted choices.",
+                                             "Some recommendations overlap implementation that predates the snapshot; docs/task-registry.json owns current status."
                                          ]
                      }
                  ],
@@ -348,6 +372,116 @@
                           "sha256_bytes":  "6fb13a4e499d9c719d467f865ab7c6076b4d866361c6dd42628d607510d66e09",
                           "git_blob_oid":  "7798e17f957b6ab33b84f4efe8c3b7975bfecb60",
                           "role":  "evaluation_programme",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/00_INDEX.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/00_INDEX.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  2851,
+                          "sha256_bytes":  "1d567540e41413c1ce886a8f6380286c459951d059336fb60e85e99936f6fb74",
+                          "git_blob_oid":  "c41d789da339097fe8dbdd61994bb5cf020f6a4e",
+                          "role":  "navigation",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/01_planning_optimisation.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/01_planning_optimisation.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  4517,
+                          "sha256_bytes":  "b6b1067f7a9166899583a04280e4bfcb414aa1f38abe982216f1e716e2f92025",
+                          "git_blob_oid":  "962ac43cc9377d915bb2809f49700134be735166",
+                          "role":  "planning_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/02_delegation_and_consent.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/02_delegation_and_consent.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  3874,
+                          "sha256_bytes":  "c03bf4115c24e434eb1099b1c1feb470183eb684be5b3a444eb2833430eb0a7a",
+                          "git_blob_oid":  "2bfff7396225b84b9d993ee4ec3d4ca11b7517d7",
+                          "role":  "delegation_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/03_fine_grained_policy_languages_tool_arguments.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/03_fine_grained_policy_languages_tool_arguments.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  3692,
+                          "sha256_bytes":  "7b4022cf7e8ca9d0101631c9ca73f21ac57b4eddf7271198b1ef1af0e978a44e",
+                          "git_blob_oid":  "23c2520be5f58a253400b186e560cacc6ae52968",
+                          "role":  "argument_policy_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/04_visibility_tracking_confidentiality.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/04_visibility_tracking_confidentiality.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  3323,
+                          "sha256_bytes":  "6e5a6e0066b65088e93f923e6e0a91164b2fe54e5243a172ec3294f578aa2777",
+                          "git_blob_oid":  "897079ac47be6bc521c9474bc74540a46d9278b9",
+                          "role":  "visibility_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/05_attribution_tracking_reporting.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/05_attribution_tracking_reporting.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  3074,
+                          "sha256_bytes":  "3b45edbb316185ee5b35b859a35c24648e7ee6042b50534906e1240b6e7631ac",
+                          "git_blob_oid":  "470212788ce829657a057eb96b0f6736e561ce92",
+                          "role":  "attribution_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/06_sled_optimisation_and_symbolic_verification.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/06_sled_optimisation_and_symbolic_verification.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  3358,
+                          "sha256_bytes":  "1b5eea2921b86c3de658974fb490dcdfa565cccd632ac0525602754ad820f88e",
+                          "git_blob_oid":  "296ca7ba9e0b053196fb2b1add26081e708fd7e2",
+                          "role":  "verification_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/07_benchmarks_and_real_world_policy_integration.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/07_benchmarks_and_real_world_policy_integration.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  3181,
+                          "sha256_bytes":  "96c685b94c317a7f2c4bf2e77140c637c07e61fa739df1fd7ddff2a3609b0384",
+                          "git_blob_oid":  "c2aab506c12ab2439763495285fbff277855a942",
+                          "role":  "benchmark_policy_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/08_repository_structure_and_agent_governance.md",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/08_repository_structure_and_agent_governance.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  2976,
+                          "sha256_bytes":  "cefa159cd2191dfbc5d05e74daaf8c8a790c66f167e3bfcbe5d688f511c93cc2",
+                          "git_blob_oid":  "54803a798a0afe4f58c90ea46bdc796a6282041e",
+                          "role":  "repository_governance_direction",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-02-fourth-year-direction",
+                          "original_path":  "reports/not_yet_processed/manifest.json",
+                          "archive_path":  "reports/archive/2026-08-02-fourth-year-direction/manifest.json",
+                          "media_type":  "application/json",
+                          "size_bytes":  1409,
+                          "sha256_bytes":  "6fdf1481d73eeee8f9f352fceeb01ac0f3e7ac7558a579de3e5f40431047e7cd",
+                          "git_blob_oid":  "b95ba714f92cc79eb9b6c89012f7aca1e0bb44bf",
+                          "role":  "source_manifest",
                           "duplicate_of":  null
                       }
                   ]

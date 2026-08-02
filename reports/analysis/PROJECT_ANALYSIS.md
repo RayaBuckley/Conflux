@@ -1,8 +1,9 @@
 # Conflux Project Analysis
 
-Snapshot: 31 July 2026. This document reconciles the archived report corpus
-with the repository after the canonical migration and dynamic-planning
-programme. It is analysis, not a normative specification or status registry.
+Snapshot: 2 August 2026. This document reconciles the archived report corpus
+with the repository after the canonical migration, dynamic-planning, and
+evidence-first evaluation programmes. It is analysis, not a normative
+specification or status registry.
 
 ## Evidence and authority
 
@@ -27,6 +28,8 @@ reconcile, not permission to promote a historical or convenient statement.
 | 27 July research landscape v2 | Positioned Conflux and expanded the research backlog | Primary related-work input; recent citations still need source validation |
 | 29 July implementation programme | Defined M0–M8, paper separation, runtime, schemas, and evidence gates | Implemented programme surfaces; historical task status is superseded by the registry |
 | 30 July planning supplement | Assessed progress and specified open-ended planning | Planning design is implemented; the report did not execute the repository and is not current evidence |
+| 31 July evidence-first evaluation | Required self-hosted model protocols and retained native SLED evidence | Native evidence is retained; model-dependent runners are evaluation-ready without empirical efficacy claims |
+| 2 August fourth-year direction | Proposed planning, delegation, argument policy, disclosure, attribution, verification reduction, benchmark, PDP, and governance work | Reconciled by specification 013; COI reduction is first, delegation stays disabled until its gates pass |
 
 The package metadata and exact source files are in
 [the archive manifest](../archive/MANIFEST.json).
@@ -72,8 +75,11 @@ truncation produces `BOUNDED_SAFE` and modelling failure produces `UNKNOWN`.
 The serialisable verification IR, reference interpreter, runtime differential
 tests, optional Z3 bounded backend, and nuXmv Boolean subset are implemented.
 This is bounded and conformance-scoped evidence, not an unbounded proof of the
-Python runtime or arbitrary generated programs. Hyperproperties, reductions,
-and stronger unbounded models remain research work.
+Python runtime or arbitrary generated programs. Hyperproperties and stronger
+unbounded models remain research work. Property-preserving cone-of-influence
+reduction is the selected next verification increment; partial-order and
+Principal-symmetry reductions remain deferred until their stronger
+independence assumptions are explicit.
 
 ## Evaluation and integrations
 
@@ -115,17 +121,18 @@ The [claim ledger](../../docs/CLAIMS.md) is authoritative.
 
 ## Remaining programme
 
-Priority work is evidence rather than another architectural rewrite:
+Priority work is staged evidence, not another broad architectural rewrite:
 
-1. run reproducible real-model and pinned AgentDojo comparisons when access is
-   available, retaining native and Conflux metrics;
-2. validate a production policy decision point and framework boundary against
-   the canonical ports;
-3. formalise scoped attenuating delegation, role-sensitive argument effects,
-   and origin-bound persistent memory before enabling them;
-4. extend solver models and independent conformance without overstating their
-   relationship to deployment behavior;
-5. generate manuscript tables and figures only from retained result JSON.
+1. reduce the serialisable verification IR by a checked cone of influence and
+   retain original-versus-reduced evidence;
+2. run the deliberately small dual-backend laptop planning smoke, then stop
+   for human review before wider model work;
+3. make trusted argument roles, audience disclosure, and conservative
+   attribution explicit before extending external policy integration;
+4. validate a pinned local Cedar subset against the in-memory oracle;
+5. model scoped attenuating delegation and keep runtime use disabled until all
+   mutant, parity, visibility, attribution, and certificate gates pass;
+6. generate manuscript tables and figures only from retained result JSON.
 
 Unavailable credentials, model weights, container engines, solver binaries, or
 cluster schedulers remain explicit gates. They do not justify simulated live

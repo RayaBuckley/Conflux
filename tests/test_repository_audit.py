@@ -14,6 +14,7 @@ from scripts.audit_repository import (
     check_archived_paper,
     check_report_archive,
     check_report_crosswalk,
+    check_repository_governance,
     supersession_has_cycle,
 )
 
@@ -78,6 +79,12 @@ def test_current_report_archive_matches_manifest_and_index() -> None:
 def test_report_crosswalk_covers_every_source_task() -> None:
     errors: list[str] = []
     check_report_crosswalk(errors)
+    assert errors == []
+
+
+def test_repository_governance_accepts_only_registered_owners() -> None:
+    errors: list[str] = []
+    check_repository_governance(errors)
     assert errors == []
 
 

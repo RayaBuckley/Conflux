@@ -25,6 +25,10 @@ easier.
 - Alternative exploration is isolated and side-effect free.
 - Unsupported delegation and unknown external schemas fail closed.
 - Security, utility, incompleteness, and provider failure are separate.
+- Generated programs remain inert data; this programme does not execute model
+  source code.
+- Delegation remains unsupported at runtime until every gate in specification
+  013 passes in a separate activation change.
 
 ## Routing
 
@@ -47,3 +51,10 @@ matching retained evidence. Extend an existing canonical owner and link to it.
 After a new evidence package or material implementation change, refresh the
 archive manifest, task crosswalk, project analysis, canonical registry and
 claim ledger as applicable; then run audit, full validation, and diff review.
+
+## Current research sequence
+
+Specification 013 deliberately orders work as COI reduction, a small
+operator-gated local-model smoke, argument/disclosure/attribution foundations,
+pinned Cedar parity, then modeled delegation. Do not reorder these stages or
+promote a later capability merely because its type or adapter is easy to add.

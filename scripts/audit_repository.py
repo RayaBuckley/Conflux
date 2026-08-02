@@ -46,6 +46,33 @@ REPORTS = ROOT / "reports"
 REPORT_ARCHIVE = REPORTS / "archive"
 REPORT_MANIFEST = REPORT_ARCHIVE / "MANIFEST.json"
 REPORT_CROSSWALK = REPORTS / "analysis" / "task-crosswalk.json"
+DIRECTION_TASK_IDS = {
+    "DIR-PLAN-001",
+    "DIR-DELEG-001",
+    "DIR-ARGPOL-001",
+    "DIR-VIS-001",
+    "DIR-ATTR-001",
+    "DIR-SLED-001",
+    "DIR-BENCH-001",
+    "DIR-PDP-001",
+    "DIR-GOV-001",
+}
+APPROVED_TOP_LEVEL_DIRECTORIES = {
+    ".github",
+    "artifacts",
+    "docs",
+    "examples",
+    "experiments",
+    "external",
+    "manuscript",
+    "paper",
+    "reports",
+    "runs",
+    "schemas",
+    "scripts",
+    "src",
+    "tests",
+}
 
 
 def imports(path: Path) -> set[str]:
@@ -183,6 +210,31 @@ def check_docs(errors: list[str]) -> None:
         if stale_paths.search(path.read_text(encoding="utf-8")):
             errors.append(f"{path.relative_to(ROOT)} references an obsolete report path")
 
+
+def check_repository_governance(errors: list[str]) -> None:
+    result = subprocess.run(
+        ("git", "ls-files"), cwd=ROOT, check=False, capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        errors.append("cannot inspect tracked top-level paths")
+        return
+    tracked_directories = {
+        path.split("/", maxsplit=1)[0]
+        for path in result.stdout.splitlines()
+        if "/" in path
+    }
+    unexpected = tracked_directories - APPROVED_TOP_LEVEL_DIRECTORIES
+    if unexpected:
+        errors.append(
+            "unapproved tracked top-level directories: " + ", ".join(sorted(unexpected))
+        )
+    if (REPORTS / "not_yet_processed").exists():
+        errors.append("reports/not_yet_processed must be reconciled into the archive")
+    template = DOCS / "templates" / "FEATURE_SPEC.md"
+    if not template.is_file() or "## Expected file set and change budget" not in (
+        template.read_text(encoding="utf-8")
+    ):
+        errors.append("feature specifications do not require an expected file set")
 
 def check_reports(errors: list[str]) -> None:
     catalogue = (DOCS / "CHANGE_CATALOG.md").read_text(encoding="utf-8")
@@ -396,11 +448,13 @@ def check_report_crosswalk(errors: list[str]) -> None:
         namespace = source.get("namespace")
         source_path = source.get("path")
         lists = source.get("lists")
+        items = source.get("items")
         if (
             not isinstance(namespace, str)
             or namespace in namespaces
             or not isinstance(source_path, str)
-            or not isinstance(lists, list)
+            or (not isinstance(lists, list) and not isinstance(items, list))
+            or (isinstance(lists, list) and isinstance(items, list))
         ):
             errors.append(f"report task crosswalk source is invalid: {source}")
             continue
@@ -409,19 +463,28 @@ def check_report_crosswalk(errors: list[str]) -> None:
         if not path.is_file() or not path.is_relative_to(REPORT_ARCHIVE):
             errors.append(f"report task crosswalk source is missing or not archived: {source_path}")
             continue
-        data: Any = json.loads(path.read_text(encoding="utf-8"))
-        for list_name in lists:
-            records = data.get(list_name, []) if isinstance(list_name, str) else []
-            if not isinstance(records, list):
-                errors.append(f"report task source {source_path} has invalid list {list_name}")
-                continue
-            for record in records:
-                identifier = record.get("id") if isinstance(record, dict) else None
-                if not isinstance(identifier, str):
-                    errors.append(f"report task source {source_path} has an invalid task")
+        identifiers: list[Any] = []
+        if isinstance(items, list):
+            identifiers.extend(items)
+        else:
+            data: Any = json.loads(path.read_text(encoding="utf-8"))
+            for list_name in lists:
+                records = data.get(list_name, []) if isinstance(list_name, str) else []
+                if not isinstance(records, list):
+                    errors.append(
+                        f"report task source {source_path} has invalid list {list_name}"
+                    )
                     continue
-                expected.add(f"{namespace}:{identifier}")
-                raw_counts[identifier] = raw_counts.get(identifier, 0) + 1
+                identifiers.extend(
+                    record.get("id") if isinstance(record, dict) else None
+                    for record in records
+                )
+        for identifier in identifiers:
+            if not isinstance(identifier, str):
+                errors.append(f"report task source {source_path} has an invalid task")
+                continue
+            expected.add(f"{namespace}:{identifier}")
+            raw_counts[identifier] = raw_counts.get(identifier, 0) + 1
 
     registry: Any = json.loads(TASK_REGISTRY.read_text(encoding="utf-8"))
     canonical_ids = {
@@ -556,6 +619,7 @@ def check_task_registry(errors: list[str]) -> None:
     expected = {task["id"] for task in backlog["tasks"]}
     expected.update(task["id"] for task in dynamic["recommended_planning_tasks"])
     expected.update(("SEC-008", "SLEDMC-004"))
+    expected.update(DIRECTION_TASK_IDS)
     for identifier in sorted(expected - registered):
         errors.append(f"task registry missing report task {identifier}")
     for identifier in sorted(registered - expected):
@@ -733,6 +797,7 @@ def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
     check_docs(errors)
+    check_repository_governance(errors)
     check_reports(errors)
     check_archived_paper(errors)
     check_manuscript(errors)
