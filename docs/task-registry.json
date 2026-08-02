@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "verified_at": "2026-07-31",
+  "verified_at": "2026-08-01",
   "status_definitions": {
     "implemented": "Acceptance behavior and offline evidence exist in the repository.",
     "evaluation_ready": "A tested runner and offline protocol exist, but no empirical model run is retained.",
@@ -32,21 +32,20 @@
     },
     {
       "ids": ["SLEDMC-004"],
-      "status": "evaluation_ready",
-      "evidence": ["src/conflux/experiments/native_evidence.py", "tests/test_native_sled_evidence.py"],
-      "gap": "The deterministic native reproduction bundle has not yet been retained."
+      "status": "bounded_evidence",
+      "evidence": ["src/conflux/experiments/native_evidence.py", "tests/test_native_sled_evidence.py", "runs/native-sled-reproduction-v1/manifest.json", "runs/native-sled-reproduction-v1/result.json"]
     },
     {
       "ids": ["MODEL-001"],
-      "status": "partial",
-      "evidence": ["src/conflux/adapters/models/openai_compatible.py", "src/conflux/adapters/models/openai_compatible_planner.py", "tests/test_model_adapters.py", "tests/planning/test_openai_planner.py"],
-      "gap": "No credentialed live endpoint result is retained."
+      "status": "evaluation_ready",
+      "evidence": ["src/conflux/ports/model.py", "src/conflux/adapters/models/local_openai.py", "src/conflux/cli.py", "tests/test_local_models.py"],
+      "gap": "No deliberate self-hosted llama.cpp, vLLM, or equivalent run is retained."
     },
     {
       "ids": ["MODEL-002"],
-      "status": "partial",
-      "evidence": ["src/conflux/adapters/models/huggingface.py", "tests/test_model_adapters.py"],
-      "gap": "Model weights are not available in core CI; no live local-model result is claimed."
+      "status": "evaluation_ready",
+      "evidence": ["src/conflux/ports/model.py", "src/conflux/adapters/models/local_transformers.py", "src/conflux/cli.py", "tests/test_local_models.py"],
+      "gap": "Weights remain an operator-managed local artifact; no in-process model result is retained."
     },
     {
       "ids": ["AGENTDOJO-001", "AGENTDOJO-002"],
@@ -55,9 +54,9 @@
     },
     {
       "ids": ["AGENTDOJO-003"],
-      "status": "externally_gated",
-      "evidence": ["experiments/manifests/agentdojo-smoke.yaml", "src/conflux/cli.py"],
-      "gap": "The optional package/model credential is unavailable; no live no-defence-versus-ITES result is claimed."
+      "status": "evaluation_ready",
+      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py"],
+      "gap": "The four-cell self-hosted-model comparison has not been deliberately executed and retained."
     },
     {
       "ids": ["SLEDV-001", "SLEDV-002", "SLEDV-003"],
@@ -99,15 +98,15 @@
     },
     {
       "ids": ["PLAN-DYN-012"],
-      "status": "partial",
-      "evidence": ["src/conflux/adapters/models/openai_compatible_planner.py", "tests/planning/test_openai_planner.py"],
-      "gap": "Offline structured-output and repair fixtures pass; a live planner run is not retained."
+      "status": "evaluation_ready",
+      "evidence": ["src/conflux/ports/model.py", "src/conflux/adapters/models/local_openai.py", "src/conflux/adapters/models/local_transformers.py", "tests/test_local_models.py"],
+      "gap": "The local-model planning protocol is tested, but no model-generated planning evidence is retained."
     },
     {
       "ids": ["PLAN-DYN-016"],
-      "status": "externally_gated",
-      "evidence": ["experiments/manifests/planning-comparison.yaml", "src/conflux/experiments/planning_comparison.py", "scripts/generate_planning_report.py", "tests/test_planning_comparison.py"],
-      "gap": "The four-way real-model comparison requires a configured endpoint; no numerical comparison is claimed."
+      "status": "evaluation_ready",
+      "evidence": ["experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py"],
+      "gap": "All 32 protocol cells are available, but no self-hosted-model comparison is retained."
     }
   ],
   "deferred_research": [
