@@ -111,7 +111,7 @@
     {
       "ids": ["DIR-PLAN-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/experiments/planning_runner.py", "tests/test_planning_runner.py"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "experiments/manifests/planning-laptop-smoke-v1.json", "src/conflux/experiments/laptop_smoke.py", "scripts/prepare_laptop_smoke.py", "tests/test_laptop_planning_smoke.py"],
       "gap": "The fixed 16-cell dual-backend laptop smoke has not been deliberately run and retained."
     },
     {

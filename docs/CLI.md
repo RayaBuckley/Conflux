@@ -7,6 +7,7 @@ not inspect credentials.
 conflux doctor --json
 conflux demo --scenario examples/basic.yaml --output runs/demo
 conflux plan demo --output runs/plan-demo
+conflux plan laptop-smoke --plan experiments/manifests/planning-laptop-smoke-v1.json --transformers-config LOCAL_TRANSFORMERS.json --llama-config LOCAL_LLAMA.json
 conflux sled run --suite examples/basic.yaml --output runs/sled
 conflux report runs/demo/result.json
 conflux chat --scenario examples/basic.yaml --endpoint URL --model MODEL
@@ -34,6 +35,13 @@ translates one pinned upstream record. Without the fixture it validates the
 installed pinned suite, then stops at the explicit live-runner gate. `chat`
 uses the optional OpenAI-compatible adapter but routes every proposed effect
 through the same ITES and certificate-bound executor.
+
+`plan laptop-smoke` validates two separately identified local runtimes and
+prints the fixed 16-cell matrix without invoking either model. Adding
+`--execute-local` deliberately runs both eight-cell halves, writes distinct
+backend results plus a combined checksummed bundle, and sets a mandatory human-
+review stop. Local protocol creation is described in the
+[model integration guide](integrations/models.md).
 
 ## Exit codes
 

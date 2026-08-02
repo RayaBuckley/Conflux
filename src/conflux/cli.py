@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections.abc import Sequence
@@ -45,15 +46,20 @@ from conflux.evaluation import (
     write_trace,
 )
 from conflux.experiments import (
+    BACKEND_LLAMA_CPP,
+    BACKEND_TRANSFORMERS,
     ExperimentProtocol,
     agentdojo_matrix,
     load_default_planning_diagnostic_suite,
+    load_laptop_planning_smoke,
     load_manifest,
     load_protocol,
     planning_matrix,
     run_agentdojo_comparison,
+    run_laptop_planning_smoke,
     run_native_reproduction,
     run_planning_comparison,
+    validate_laptop_protocols,
 )
 from conflux.ites import BranchState, MediatingITES, TransitionKernel
 from conflux.ports import LocalModelPreflight
@@ -98,6 +104,15 @@ def _parser() -> argparse.ArgumentParser:
     plan_compare.add_argument("--config", type=Path, required=True)
     plan_compare.add_argument("--output", type=Path)
     plan_compare.add_argument("--execute-local", action="store_true")
+    laptop_smoke = plan_commands.add_parser(
+        "laptop-smoke",
+        help="preflight or run the fixed dual-backend laptop matrix",
+    )
+    laptop_smoke.add_argument("--plan", type=Path, required=True)
+    laptop_smoke.add_argument("--transformers-config", type=Path, required=True)
+    laptop_smoke.add_argument("--llama-config", type=Path, required=True)
+    laptop_smoke.add_argument("--output", type=Path)
+    laptop_smoke.add_argument("--execute-local", action="store_true")
 
     sled = commands.add_parser("sled", help="native bounded verification")
     sled_commands = sled.add_subparsers(dest="sled_command", required=True)
@@ -480,6 +495,8 @@ def _chat(arguments: argparse.Namespace) -> int:
 
 
 def _plan(arguments: argparse.Namespace) -> int:
+    if str(arguments.plan_command) == "laptop-smoke":
+        return _laptop_smoke(arguments)
     if str(arguments.plan_command) == "compare":
         protocol = load_protocol(cast(Path, arguments.config))
         scenarios = load_default_planning_diagnostic_suite()
@@ -527,6 +544,120 @@ def _plan(arguments: argparse.Namespace) -> int:
         )
     )
     return EXIT_OK if plan_result.completed else EXIT_RUNTIME
+
+
+def _laptop_smoke(arguments: argparse.Namespace) -> int:
+    plan = load_laptop_planning_smoke(cast(Path, arguments.plan))
+    protocols = {
+        BACKEND_TRANSFORMERS: load_protocol(
+            cast(Path, arguments.transformers_config)
+        ),
+        BACKEND_LLAMA_CPP: load_protocol(cast(Path, arguments.llama_config)),
+    }
+    validate_laptop_protocols(plan, protocols)
+    models = {backend: _local_model(protocol) for backend, protocol in protocols.items()}
+    preflights = {
+        backend: _preflight_dict(model.preflight())
+        for backend, model in models.items()
+    }
+    matrix = [cell.id for cell in plan.matrix()]
+    if not bool(arguments.execute_local):
+        print(
+            canonical_json(
+                {
+                    "execute_local": False,
+                    "plan_fingerprint": plan.fingerprint,
+                    "operator_gates": list(plan.operator_gates),
+                    "stop_after_bundle": plan.stop_after_bundle,
+                    "bounds": dict(plan.bounds),
+                    "preflight": preflights,
+                    "matrix": matrix,
+                }
+            )
+        )
+        return EXIT_OK
+    unavailable = [
+        backend
+        for backend, preflight in preflights.items()
+        if preflight["available"] is not True
+    ]
+    if unavailable:
+        return _unavailable(
+            "laptop_smoke_runtime_unavailable:" + ",".join(sorted(unavailable))
+        )
+    result = run_laptop_planning_smoke(plan, protocols, models)
+    output = cast(Path | None, arguments.output) or Path("runs/laptop-planning-smoke-v1")
+    output.mkdir(parents=True, exist_ok=True)
+    for backend, protocol in protocols.items():
+        backend_result = {
+            "schema_version": "2",
+            "protocol_fingerprint": protocol.fingerprint,
+            "complete": result["complete"],
+            "model_id": protocol.model.model_id if protocol.model is not None else "missing",
+            "task_ids": sorted(plan.scenario_ids),
+            "observations": [
+                {key: value for key, value in observation.items() if key != "backend_id"}
+                for observation in cast(list[dict[str, object]], result["observations"])
+                if observation["backend_id"] == backend
+            ],
+        }
+        _write_protocol_result(protocol, backend_result, output / backend)
+    (output / "result.json").write_text(
+        canonical_json(result) + "\n", encoding="utf-8", newline="\n"
+    )
+    (output / "raw-results.jsonl").write_text(
+        "".join(
+            canonical_json({"sequence": index, **observation}) + "\n"
+            for index, observation in enumerate(
+                cast(list[dict[str, object]], result["observations"])
+            )
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    (output / "manifest.json").write_text(
+        canonical_json(
+            {
+                "schema_version": "1",
+                "plan_fingerprint": plan.fingerprint,
+                "protocol_fingerprints": {
+                    backend: protocol.fingerprint
+                    for backend, protocol in protocols.items()
+                },
+                "source_commits": sorted(
+                    {protocol.source_commit for protocol in protocols.values()}
+                ),
+                "complete": result["complete"],
+                "stop_for_human_review": True,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    content = tuple(
+        sorted(path for path in output.rglob("*") if path.is_file())
+    )
+    (output / "CHECKSUMS.sha256").write_text(
+        "".join(
+            f"{_text_sha256(path)}  "
+            f"{path.relative_to(output).as_posix()}\n"
+            for path in content
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    print(
+        canonical_json(
+            {
+                "complete": result["complete"],
+                "cells": len(matrix),
+                "stop_for_human_review": True,
+                "output": str(output / "result.json"),
+            }
+        )
+    )
+    return EXIT_OK if result["complete"] else EXIT_RUNTIME
 
 
 def _benchmark(arguments: argparse.Namespace) -> int:
@@ -610,6 +741,11 @@ def _preflight_dict(preflight: LocalModelPreflight) -> dict[str, object]:
     }
 
 
+def _text_sha256(path: Path) -> str:
+    content = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
 def _write_protocol_result(
     protocol: ExperimentProtocol,
     result: dict[str, object],
@@ -621,6 +757,8 @@ def _write_protocol_result(
 
 
 def _result_schema(payload: dict[str, Any]) -> str:
+    if "model_identities" in payload and "observations" in payload:
+        return "planning-laptop-smoke-result.schema.json"
     if payload.get("schema_version") != "2":
         return "result.schema.json"
     if "pairs" in payload:

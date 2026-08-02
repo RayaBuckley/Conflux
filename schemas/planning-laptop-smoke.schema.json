@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/planning-laptop-smoke-v1.json",
+  "title": "Conflux dual-backend laptop planning smoke",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "id", "source_model_id", "source_revision",
+    "generated_llama_model_id", "tokenizer_id", "tokenizer_revision",
+    "prompt_template_version", "seed", "repetitions", "scenario_ids",
+    "modes", "backends", "llama_cpp_release", "quantization", "bounds",
+    "operator_gates", "stop_after_bundle"
+  ],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"const": "planning-laptop-smoke-v1"},
+    "source_model_id": {"const": "HuggingFaceTB/SmolLM2-360M-Instruct"},
+    "source_revision": {"const": "c38281e01d0c0b0c36eac2f5bcb5b51fa2e803fc"},
+    "generated_llama_model_id": {"type": "string", "minLength": 1},
+    "tokenizer_id": {"type": "string", "minLength": 1},
+    "tokenizer_revision": {"type": "string", "minLength": 1},
+    "prompt_template_version": {"type": "string", "minLength": 1},
+    "seed": {"type": "integer", "minimum": 0},
+    "repetitions": {"const": 1},
+    "scenario_ids": {
+      "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+      "items": {"enum": ["direct-authorised-effect", "blocked-action-recovery"]}
+    },
+    "modes": {
+      "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true,
+      "items": {"enum": ["reactive", "static", "dynamic", "dynamic_code"]}
+    },
+    "backends": {
+      "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+      "items": {"enum": ["transformers", "llama_cpp_q8_0"]}
+    },
+    "llama_cpp_release": {"const": "b9637"},
+    "quantization": {"const": "Q8_0"},
+    "bounds": {
+      "type": "object", "additionalProperties": false,
+      "required": ["max_model_calls", "max_steps"],
+      "properties": {
+        "max_model_calls": {"type": "integer", "minimum": 1},
+        "max_steps": {"type": "integer", "minimum": 1}
+      }
+    },
+    "operator_gates": {
+      "type": "array", "minItems": 4, "uniqueItems": true,
+      "items": {"enum": ["model_acquisition", "licence_review", "gguf_conversion", "local_invocation"]}
+    },
+    "stop_after_bundle": {"const": true}
+  }
+}

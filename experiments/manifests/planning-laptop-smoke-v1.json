@@ -1,0 +1,20 @@
+{
+  "schema_version": "1",
+  "id": "planning-laptop-smoke-v1",
+  "source_model_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+  "source_revision": "c38281e01d0c0b0c36eac2f5bcb5b51fa2e803fc",
+  "generated_llama_model_id": "HuggingFaceTB/SmolLM2-360M-Instruct@c38281e01d0c0b0c36eac2f5bcb5b51fa2e803fc:Q8_0:llama.cpp-b9637",
+  "tokenizer_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+  "tokenizer_revision": "c38281e01d0c0b0c36eac2f5bcb5b51fa2e803fc",
+  "prompt_template_version": "planning-diagnostic-v1",
+  "seed": 0,
+  "repetitions": 1,
+  "scenario_ids": ["direct-authorised-effect", "blocked-action-recovery"],
+  "modes": ["reactive", "static", "dynamic", "dynamic_code"],
+  "backends": ["transformers", "llama_cpp_q8_0"],
+  "llama_cpp_release": "b9637",
+  "quantization": "Q8_0",
+  "bounds": {"max_model_calls": 4, "max_steps": 4},
+  "operator_gates": ["model_acquisition", "licence_review", "gguf_conversion", "local_invocation"],
+  "stop_after_bundle": true
+}

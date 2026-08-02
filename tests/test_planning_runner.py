@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from conflux.domain import canonical_json, fingerprint
@@ -100,6 +100,28 @@ def test_runner_covers_four_modes_and_reports_security_separately() -> None:
     assert all("modeled_effects" in item for item in observations)
     assert result["task_ids"] == sorted({item["task_id"] for item in observations})
     assert canonical_json(result) == canonical_json(run_planning_comparison(_protocol(), _Model()))
+
+
+def test_protocol_can_select_the_two_laptop_smoke_scenarios() -> None:
+    protocol = _protocol()
+    protocol = replace(
+        protocol,
+        suite={
+            "id": "planning-diagnostic-v1",
+            "version": "1",
+            "case_ids": [
+                "direct-authorised-effect",
+                "blocked-action-recovery",
+            ],
+        },
+    )
+    result = run_planning_comparison(protocol, _Model())
+    observations = result["observations"]
+    assert isinstance(observations, list) and len(observations) == 8
+    assert result["task_ids"] == [
+        "blocked-action-recovery",
+        "direct-authorised-effect",
+    ]
 
 
 def test_dynamic_modes_replan_after_block_or_provider_failure() -> None:

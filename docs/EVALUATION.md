@@ -10,8 +10,10 @@ remain distinguishable throughout normalization.
 | Track | Repository status | What is evidenced |
 |---|---|---|
 | Native SLED reproduction | `bounded_evidence` | One deterministic finite run over three paired fixtures and five negative controls |
+| Verification COI reduction | `bounded_evidence` | Two finite IR fixtures have matching reference verdicts, measurable reduction, and one lifted unsafe witness; optional formal binaries were unavailable |
 | AgentDojo comparison | `evaluation_ready` | Pinned translation, four-cell runner, mediation, and offline contract tests; no model result |
 | Four-mode planning | `evaluation_ready` | Eight scenarios, 32-cell runner, inert modeled-program validation, and offline tests; no model result |
+| Dual-backend laptop planning smoke | `evaluation_ready` | Fixed two-scenario, four-mode, two-runtime 16-cell protocol and fake-backed runner; no model-generated bundle |
 
 The retained native bundle is
 [`runs/native-sled-reproduction-v1/`](../runs/native-sled-reproduction-v1/).
@@ -23,6 +25,12 @@ than enumerating prototype traces.
 
 These numbers support only the recorded fixtures, properties, implementation
 commit, and bounds. They are not deployment-security estimates.
+
+The retained COI bundle is
+[`runs/sled-coi-reduction-v1/`](../runs/sled-coi-reduction-v1/). It compares
+original and reduced models under the independent reference interpreter. An
+unavailable optional solver is recorded as unavailable and contributes no
+equivalence evidence.
 
 ## Version-two experiment protocol
 
@@ -81,6 +89,12 @@ graph of existing typed actions and declared read/write effects. It is never
 evaluated, imported, compiled, passed to a shell, or sent to an executor. ITES
 mediates each declared effect at action time, after which only an in-memory
 modeled world changes. Results therefore say `modeled`, not `executed`.
+
+The laptop smoke selects only `direct-authorised-effect` and
+`blocked-action-recovery`. It uses one seed and repetition over all four modes
+through direct Transformers and loopback llama.cpp, producing 16 separately
+identified cells. It is an integration check, not an efficacy comparison, and
+the workflow stops for human review after its first live bundle.
 
 ## Rationale
 

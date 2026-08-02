@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/planning-laptop-smoke-result-v1.json",
+  "title": "Conflux dual-backend laptop planning smoke result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "plan_fingerprint", "complete", "model_identities", "observations"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "plan_fingerprint": {"type": "string", "minLength": 64, "maxLength": 64},
+    "complete": {"type": "boolean"},
+    "model_identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transformers", "llama_cpp_q8_0"],
+      "properties": {
+        "transformers": {"type": "object"},
+        "llama_cpp_q8_0": {"type": "object"}
+      }
+    },
+    "observations": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": ["backend_id", "case_id", "task_id", "mode", "status", "security_violations", "model_calls"],
+        "properties": {
+          "backend_id": {"enum": ["transformers", "llama_cpp_q8_0"]},
+          "case_id": {"type": "string"},
+          "task_id": {"enum": ["direct-authorised-effect", "blocked-action-recovery"]},
+          "mode": {"enum": ["reactive", "static", "dynamic", "dynamic_code"]},
+          "status": {"type": "string"},
+          "security_violations": {"type": "integer", "minimum": 0},
+          "model_calls": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}

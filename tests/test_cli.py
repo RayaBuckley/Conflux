@@ -23,6 +23,7 @@ AGENTDOJO_FIXTURE = (
     / "workspace-user_task_17-injection_task_1.json"
 )
 AGENTDOJO_MANIFEST = ROOT / "experiments" / "manifests" / "agentdojo-smoke.yaml"
+LAPTOP_SMOKE_PLAN = ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
 
 
 def _write_protocol(path: Path, track: str, *, model: bool) -> None:
@@ -62,6 +63,54 @@ def _write_protocol(path: Path, track: str, *, model: bool) -> None:
             "endpoint": None,
             "allow_private_remote": False,
         }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def _write_laptop_protocol(path: Path, backend: str) -> None:
+    plan = json.loads(LAPTOP_SMOKE_PLAN.read_text(encoding="utf-8"))
+    is_llama = backend == "openai_compatible"
+    payload = {
+        "schema_version": "2",
+        "id": f"laptop-{'llama' if is_llama else 'transformers'}",
+        "track": "planning",
+        "suite": {
+            "id": "planning-diagnostic-v1",
+            "version": "1",
+            "case_ids": plan["scenario_ids"],
+        },
+        "source_commit": "abcdef0",
+        "inputs": {},
+        "model": {
+            "backend": backend,
+            "model_id": (
+                plan["generated_llama_model_id"]
+                if is_llama
+                else plan["source_model_id"]
+            ),
+            "revision": plan["source_revision"],
+            "weight_manifest_sha256": ("b" if is_llama else "a") * 64,
+            "tokenizer_id": plan["tokenizer_id"],
+            "tokenizer_revision": plan["tokenizer_revision"],
+            "prompt_template_version": plan["prompt_template_version"],
+            "seed": plan["seed"],
+            "temperature": 0,
+            "top_p": 1,
+            "max_output_tokens": 128,
+            "context_limit": 2048,
+            "device": "cpu",
+            "dtype": "Q8_0" if is_llama else "float32",
+            "runtime_version": "llama.cpp-b9637-test" if is_llama else "test",
+            "endpoint": "http://127.0.0.1:8080/v1" if is_llama else None,
+            "allow_private_remote": False,
+        },
+        "prompts": {"planner": plan["prompt_template_version"]},
+        "seeds": [plan["seed"]],
+        "repetitions": 1,
+        "bounds": plan["bounds"],
+        "environment": {"class": "operator-configured"},
+        "output_directory": str(path.parent / "laptop-output"),
+        "rerun_command": ["conflux", "plan", "laptop-smoke", "--execute-local"],
+    }
     path.write_text(json.dumps(payload), encoding="utf-8")
 
 
@@ -376,6 +425,30 @@ def test_model_dependent_commands_preflight_without_model_invocation(
     plan_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert plan_preflight["execute_local"] is False
     assert len(plan_preflight["matrix"]) == 32
+
+    transformers = tmp_path / "laptop-transformers.json"
+    llama = tmp_path / "laptop-llama.json"
+    _write_laptop_protocol(transformers, "transformers")
+    _write_laptop_protocol(llama, "openai_compatible")
+    assert (
+        main(
+            [
+                "plan",
+                "laptop-smoke",
+                "--plan",
+                str(LAPTOP_SMOKE_PLAN),
+                "--transformers-config",
+                str(transformers),
+                "--llama-config",
+                str(llama),
+            ]
+        )
+        == EXIT_OK
+    )
+    laptop_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
+    assert laptop_preflight["execute_local"] is False
+    assert laptop_preflight["stop_after_bundle"] is True
+    assert len(laptop_preflight["matrix"]) == 16
 
     agentdojo = tmp_path / "agentdojo.json"
     _write_protocol(agentdojo, "agentdojo", model=True)

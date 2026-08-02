@@ -842,6 +842,8 @@ def check_schemas(errors: list[str]) -> None:
         "native-sled-result-v2.schema.json",
         "planning-comparison-result-v2.schema.json",
         "planning-diagnostic-suite.schema.json",
+        "planning-laptop-smoke.schema.json",
+        "planning-laptop-smoke-result.schema.json",
     }
     actual = {path.name for path in (ROOT / "schemas").glob("*.json")}
     for name in sorted(required - actual):

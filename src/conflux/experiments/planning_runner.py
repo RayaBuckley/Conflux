@@ -167,6 +167,7 @@ def load_planning_diagnostic_suite(path: Path) -> tuple[DiagnosticScenario, ...]
 def planning_matrix(protocol: ExperimentProtocol, scenarios: tuple[DiagnosticScenario, ...]) -> tuple[PlanningCell, ...]:
     if protocol.track != "planning" or protocol.model is None:
         raise ValueError("planning_protocol_with_model_required")
+    scenarios = select_planning_scenarios(protocol, scenarios)
     return tuple(
         PlanningCell(scenario, mode, repetition, seed)
         for scenario in scenarios
@@ -181,7 +182,10 @@ def run_planning_comparison(
     model: LocalModelPort,
     scenarios: tuple[DiagnosticScenario, ...] | None = None,
 ) -> dict[str, object]:
-    selected = scenarios or load_default_planning_diagnostic_suite()
+    selected = select_planning_scenarios(
+        protocol,
+        scenarios or load_default_planning_diagnostic_suite(),
+    )
     preflight = model.preflight()
     if not preflight.available or protocol.model is None or preflight.model_id != protocol.model.model_id:
         raise ValueError(preflight.reason or "local_model_identity_mismatch")
@@ -423,6 +427,26 @@ def _validate_scenario_references(scenario: DiagnosticScenario) -> None:
             raise ValueError(f"unknown_planning_revocation:{scenario.id}")
 
 
+def select_planning_scenarios(
+    protocol: ExperimentProtocol,
+    scenarios: tuple[DiagnosticScenario, ...],
+) -> tuple[DiagnosticScenario, ...]:
+    """Apply an optional, ordered, strict scenario selection from the protocol."""
+
+    configured = protocol.suite.get("case_ids")
+    if configured is None:
+        return scenarios
+    if not isinstance(configured, list) or not all(
+        isinstance(identifier, str) for identifier in configured
+    ):
+        raise ValueError("planning_case_ids_invalid")
+    by_id = {scenario.id: scenario for scenario in scenarios}
+    unknown = tuple(identifier for identifier in configured if identifier not in by_id)
+    if unknown:
+        raise ValueError(f"unknown_planning_cases:{','.join(unknown)}")
+    return tuple(by_id[identifier] for identifier in configured)
+
+
 __all__ = [
     "DiagnosticAction",
     "DiagnosticScenario",
@@ -431,4 +455,5 @@ __all__ = [
     "load_planning_diagnostic_suite",
     "planning_matrix",
     "run_planning_comparison",
+    "select_planning_scenarios",
 ]

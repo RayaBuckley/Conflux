@@ -7,6 +7,15 @@ from .coi_evidence import (
     generate_coi_evidence_bundle,
     verify_coi_evidence_checksums,
 )
+from .laptop_smoke import (
+    BACKEND_LLAMA_CPP,
+    BACKEND_TRANSFORMERS,
+    LaptopPlanningSmokePlan,
+    LaptopSmokeCell,
+    load_laptop_planning_smoke,
+    run_laptop_planning_smoke,
+    validate_laptop_protocols,
+)
 from .manifest import ExperimentManifest, load_manifest
 from .native_evidence import (
     NATIVE_EVIDENCE_FILES,
@@ -50,6 +59,8 @@ from .smoke import BUNDLE_FILES, generate_smoke_bundle
 
 __all__ = [
     "BUNDLE_FILES",
+    "BACKEND_LLAMA_CPP",
+    "BACKEND_TRANSFORMERS",
     "COI_EVIDENCE_ROOT_FILES",
     "AbstractExecutionState",
     "AgentDojoCell",
@@ -61,6 +72,8 @@ __all__ = [
     "DiagnosticAction",
     "DiagnosticScenario",
     "LocalModelSpec",
+    "LaptopPlanningSmokePlan",
+    "LaptopSmokeCell",
     "NATIVE_EVIDENCE_FILES",
     "ModeledWorld",
     "PlanningMode",
@@ -80,6 +93,7 @@ __all__ = [
     "generate_coi_evidence_bundle",
     "generate_planning_report",
     "load_manifest",
+    "load_laptop_planning_smoke",
     "load_default_planning_diagnostic_suite",
     "load_planning_diagnostic_suite",
     "load_protocol",
@@ -87,8 +101,10 @@ __all__ = [
     "plan_resume",
     "planning_matrix",
     "run_native_reproduction",
+    "run_laptop_planning_smoke",
     "run_agentdojo_comparison",
     "run_planning_comparison",
     "verify_native_sled_checksums",
+    "validate_laptop_protocols",
     "verify_coi_evidence_checksums",
 ]
