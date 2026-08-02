@@ -37,10 +37,13 @@ runs/*
 !runs/smoke/**
 !runs/native-sled-reproduction-v1/
 !runs/native-sled-reproduction-v1/**
+!runs/sled-coi-reduction-v1/
+!runs/sled-coi-reduction-v1/**
 data/
 *.jsonl
 !runs/smoke/*.jsonl
 !runs/native-sled-reproduction-v1/*.jsonl
+!runs/sled-coi-reduction-v1/*.jsonl
 dist/
 build/
 
