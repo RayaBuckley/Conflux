@@ -12,8 +12,11 @@ from jsonschema import Draft202012Validator
 from conflux.adapters.scenarios import load_schema
 from conflux.experiments import (
     cedar_differential_preflight,
+    compare_cedar_preflight_bundle,
+    generate_cedar_preflight_bundle,
     load_cedar_bundle,
     load_cedar_corpus,
+    verify_cedar_preflight_checksums,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -92,3 +95,15 @@ def test_unknown_bundle_version_and_feature_fail_closed(tmp_path: Path) -> None:
     invalid_feature.write_text(json.dumps(feature), encoding="utf-8")
     with pytest.raises(ValueError):
         load_cedar_bundle(invalid_feature)
+
+
+def test_cedar_preflight_bundle_regenerates_byte_for_byte(tmp_path: Path) -> None:
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    generate_cedar_preflight_bundle("f38f1fd3b65238cb2200484c80402664cfe85833", first)
+    generate_cedar_preflight_bundle("f38f1fd3b65238cb2200484c80402664cfe85833", second)
+    assert compare_cedar_preflight_bundle(first, second) == ()
+    assert verify_cedar_preflight_checksums(first) == ()
+    manifest = json.loads((first / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["status"] == "unavailable"
+    assert manifest["complete"] is False
