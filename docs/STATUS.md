@@ -28,6 +28,10 @@ The offline result-ready path is implemented:
 - event disclosure has audience-specific levels and deterministic redaction;
   structured attribution derives from provenance and policy evidence, while
   model explanations remain explicitly untrusted;
+- scoped delegation is represented by exact, expiring, revocable, one-use
+  grants with deterministic lifecycle evidence and mutation-tested bounds;
+  operational delegation remains unconditionally denied pending activation
+  evidence;
 - deterministic scenarios, traces, schemas, manifests, smoke evidence,
   negative controls, planning comparison aggregation, and resumable jobs are
   tested offline;
@@ -71,7 +75,7 @@ dimension; no optional formal backend was available for that retained run.
 
 `docs/task-registry.json` is the machine-readable programme status. Remaining
 research includes live comparative evidence, production policy/framework
-integrations, formal delegation, richer argument-effect semantics, persistent-memory
+integrations, delegation activation, richer argument-effect semantics, persistent-memory
 authority, and symbolic reasoning about arbitrary generated programs.
 
 ## Rationale

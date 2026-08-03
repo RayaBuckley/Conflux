@@ -130,8 +130,8 @@ Priority work is staged evidence, not another broad architectural rewrite:
 3. extend the implemented trusted argument roles, audience disclosure, and
    conservative attribution with a pinned policy decision point;
 4. validate a pinned local Cedar subset against the in-memory oracle;
-5. model scoped attenuating delegation and keep runtime use disabled until all
-   mutant, parity, visibility, attribution, and certificate gates pass;
+5. retain the implemented scoped delegation model while runtime use stays
+   disabled until parity, visibility, attribution, and certificate gates pass;
 6. generate manuscript tables and figures only from retained result JSON.
 
 Unavailable credentials, model weights, container engines, solver binaries, or

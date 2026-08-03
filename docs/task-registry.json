@@ -116,8 +116,9 @@
     },
     {
       "ids": ["DIR-DELEG-001"],
-      "status": "deferred",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "docs/decisions/009-branch-and-consent-semantics.md"]
+      "status": "implemented",
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/delegation.py", "src/conflux/evaluation/delegation_records.py", "src/conflux/evaluation/delegation_verification.py", "tests/test_delegation_foundation.py"],
+      "gap": "The scoped one-use model is implemented and runtime consumption remains deliberately disabled pending live Cedar parity and activation-gate evidence."
     },
     {
       "ids": ["DIR-ARGPOL-001"],
@@ -158,7 +159,7 @@
     }
   ],
   "deferred_research": [
-    "formal delegation and scoped attenuating capabilities",
+    "runtime activation of the modeled scoped delegation capability",
     "operation-specific argument effect semantics beyond selector authorisation",
     "persistent-memory authority",
     "symbolic arbitrary-program verification",

@@ -14,6 +14,7 @@ remain distinguishable throughout normalization.
 | AgentDojo comparison | `evaluation_ready` | Pinned translation, four-cell runner, mediation, and offline contract tests; no model result |
 | Four-mode planning | `evaluation_ready` | Eight scenarios, 32-cell runner, inert modeled-program validation, and offline tests; no model result |
 | Dual-backend laptop planning smoke | `evaluation_ready` | Fixed two-scenario, four-mode, two-runtime 16-cell protocol and fake-backed runner; no model-generated bundle |
+| Scoped delegation model | `implemented` | Exact one-use grants, lifecycle evidence, atomic consumption, and seven killed mutants; operational ITES consumption remains denied |
 
 The retained native bundle is
 [`runs/native-sled-reproduction-v1/`](../runs/native-sled-reproduction-v1/).
@@ -76,6 +77,11 @@ Native SLED evaluates legacy and corrected fixtures separately from identical
 parent states. A canonical safety oracle judges every monitor, so a defective
 monitor cannot define its own success. Effects are applied only to an abstract
 evaluation state; the production executor is never invoked.
+
+The delegation model checks scope, beneficiary, ordering, expiry, revocation,
+one-use consumption, non-redelegation, and unchanged Principal Context. Its
+SLED results are model evidence only: no grant is accepted by the operational
+ITES pipeline while the independent Cedar-parity gate is absent.
 
 AgentDojo fixes benign/attacked and no-defence/ITES cells under one model
 specification. Raw upstream logs remain unchanged, while Principal Context,

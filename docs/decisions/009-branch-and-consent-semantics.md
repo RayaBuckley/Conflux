@@ -10,5 +10,6 @@ deterministic. Ordered workflows require a future explicit plan type.
 
 All observable, nested, effectful, and delegation proposals require an explicit
 consent decision. Missing consent denies. Internal stop and no-op transitions
-are the only exceptions. Delegation remains unsupported and denied until an
-attenuating capability model exists.
+are the only exceptions. A scoped attenuating capability model now exists,
+but runtime delegation remains unsupported and denied until its independent
+policy-parity and activation evidence gates pass.

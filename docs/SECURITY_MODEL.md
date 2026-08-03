@@ -36,7 +36,9 @@ evaluates current policy state again.
   or change them. Missing roles and unconfigured argument policy deny.
 - Provenance describes influence; read policy decides observation.
 - Missing consent denies. Only internal stop and no-op can omit consent.
-- Delegation is denied until scoped, attenuating capabilities are implemented.
+- Delegation remains denied at runtime. Its scoped, one-use grant model is
+  implemented, but activation requires independent policy parity and all
+  certificate, visibility, attribution, expiry, and revocation gates.
 - Policy errors, unsupported inputs, category mismatches, stale certificates,
   provider failures, and exhausted bounds remain explicit fail-closed outcomes.
 - Rejected proposals are diagnostics, not executed security violations.
@@ -65,7 +67,7 @@ operation-specific effect semantics remain future work in the
 | Derive attribution from evidence | Fluent model explanations are not proof of influence or authority |
 | Keep consent restrictive only | Approval cannot substitute for organisational authority |
 | Bind certificates to exact decisions | Stale or branch-mismatched approval cannot authorise another effect |
-| Deny unsupported delegation | Safe delegation requires attenuation, scope, and revocation |
+| Model delegation before activation | Authority transfer adds attenuation, ordering, expiry, revocation, and atomic-use obligations that must be evidenced before runtime use |
 | Fail closed on errors | Infrastructure uncertainty is not evidence of permission |
 
 These rules prevent authority amplification; they do not prove that every
