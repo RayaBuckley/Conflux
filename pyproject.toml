@@ -60,7 +60,6 @@ source = ["src/conflux"]
 omit = [
     "src/conflux/adapters/benchmarks/agentdojo_v1.py",
     "src/conflux/adapters/benchmarks/agentdojo_local.py",
-    "src/conflux/adapters/models/huggingface.py",
     "src/conflux/adapters/models/openai_compatible.py",
     "src/conflux/adapters/models/openai_compatible_planner.py",
     "src/conflux/adapters/providers/code_sandbox.py",

@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 import json
-import sys
 from dataclasses import dataclass, field
 
 import pytest
 
 from conflux.adapters.models import (
-    HuggingFaceCausalModel,
     ModelOutputError,
     ModelProviderError,
     OpenAICompatibleModel,
@@ -230,67 +228,6 @@ def test_openai_configuration_transport_failures_and_known_resource(
     )
     with pytest.raises(ModelProviderError, match="transport_error"):
         failed.propose(())
-
-
-def test_huggingface_path_is_lazy_strict_and_records_compute_metadata() -> None:
-    prompt_seen = ""
-
-    def generate(
-        prompt: str,
-        *,
-        max_new_tokens: int,
-        do_sample: bool,
-    ) -> list[dict[str, object]]:
-        nonlocal prompt_seen
-        prompt_seen = prompt
-        assert max_new_tokens == 32
-        assert not do_sample
-        return [{"generated_text": prompt + _proposal()}]
-
-    model = HuggingFaceCausalModel(
-        frozenset(),
-        device="cpu",
-        dtype="auto",
-        max_new_tokens=32,
-        generator=generate,
-    )
-    assert model.propose(()).proposals[0].id == "noop"
-    assert "proposal-batch schema version 1" in prompt_seen
-    assert model.metadata()["device"] == "cpu"
-    assert model.metadata()["dtype"] == "auto"
-
-    model.generator = lambda prompt, **kwargs: [{"generated_text": prompt + "not-json"}]
-    with pytest.raises(ModelOutputError):
-        model.propose(())
-
-
-def test_huggingface_configuration_resource_and_dependency_fail_closed(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    with pytest.raises(ValueError, match="configuration"):
-        HuggingFaceCausalModel(frozenset(), max_new_tokens=0)
-    artifact = Artifact("input", "x", Provenance.unknown())
-
-    def resource_generator(
-        prompt: str,
-        *,
-        max_new_tokens: int,
-        do_sample: bool,
-    ) -> list[dict[str, object]]:
-        _ = max_new_tokens, do_sample
-        return [{"generated_text": prompt + _proposal(resource=True)}]
-
-    allowed = HuggingFaceCausalModel(
-        frozenset({("filesystem", "document", "out.txt")}),
-        generator=resource_generator,
-    )
-    assert allowed.propose((artifact,)).proposals[0].id == "write"
-    blocked = HuggingFaceCausalModel(frozenset(), generator=resource_generator)
-    with pytest.raises(ModelOutputError, match="unknown_resource"):
-        blocked.propose((artifact,))
-    monkeypatch.setitem(sys.modules, "transformers", None)
-    with pytest.raises(RuntimeError, match="optional_dependency"):
-        HuggingFaceCausalModel(frozenset()).propose(())
 
 
 def test_malformed_model_output_is_explicit_failed_trace_evidence(
