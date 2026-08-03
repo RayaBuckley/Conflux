@@ -154,7 +154,7 @@ def test_delegation_is_unsupported(
 ) -> None:
     decision = pipeline.decide(
         session=session,
-        action=DelegationAction("delegate", "write:*"),
+        action=DelegationAction("delegate"),
         context=PrincipalContext(frozenset({alice})),
         environment=environment,
     )

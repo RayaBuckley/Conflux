@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/delegation-trace-v1.json",
+  "title": "Audience-projectable delegation lifecycle event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_type", "event_class", "event_id", "run_id", "branch_id", "sequence", "timestamp", "payload"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "event_type": {"enum": ["delegation.issued", "delegation.used", "delegation.denied", "delegation.expired", "delegation.revoked", "delegation.idempotent_retry"]},
+    "event_class": {"enum": ["declaration", "outcome", "error"]},
+    "event_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "branch_id": {"const": "delegation"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grant_id", "issuer_id", "beneficiary_id", "operation_id", "operation_version", "resource_fingerprint", "allowed", "reason", "certificate_binding", "attribution"],
+      "properties": {
+        "grant_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "issuer_id": {"type": "string", "minLength": 1},
+        "beneficiary_id": {"type": "string", "minLength": 1},
+        "operation_id": {"type": "string", "minLength": 1},
+        "operation_version": {"type": "string", "minLength": 1},
+        "resource_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "allowed": {"type": "boolean"},
+        "reason": {"type": "string", "minLength": 1},
+        "certificate_binding": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "attribution": {"type": "object"}
+      }
+    }
+  }
+}

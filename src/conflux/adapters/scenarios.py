@@ -227,7 +227,9 @@ def _action(payload: dict[str, Any], by_id: dict[str, Artifact[Any]]) -> Action:
     if kind == "message":
         return MessageAction(identifier, str(payload["message"]), inputs, visibility)
     if kind == "delegation":
-        return DelegationAction(identifier, str(payload["scope"]), inputs, visibility)
+        # Historical v1 scenarios can contain free-form delegation text. It is
+        # deliberately discarded rather than promoted into a trusted grant.
+        return DelegationAction(identifier, None, inputs, visibility)
     if kind == "stop":
         return StopAction(identifier, str(payload["reason"]), inputs, visibility)
     if kind == "no_op":

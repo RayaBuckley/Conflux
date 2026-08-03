@@ -103,7 +103,7 @@ def _cases(
         SemanticCase(
             "delegation_unsupported",
             PrincipalContext(frozenset({alice})),
-            DelegationAction("delegation", "write:*"),
+            DelegationAction("delegation"),
             False,
             "delegation_unsupported",
         ),

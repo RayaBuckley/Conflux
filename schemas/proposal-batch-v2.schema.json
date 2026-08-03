@@ -136,14 +136,14 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["schema_version", "id", "kind", "visibility", "input_ids", "scope"],
+          "required": ["schema_version", "id", "kind", "visibility", "input_ids", "request_fingerprint"],
           "properties": {
             "schema_version": {"const": "2"},
             "id": {"type": "string", "minLength": 1},
             "kind": {"const": "delegation"},
             "visibility": {"enum": ["internal", "participants", "transcript"]},
             "input_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-            "scope": {"type": "string", "minLength": 1}
+            "request_fingerprint": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
           }
         }
       ]

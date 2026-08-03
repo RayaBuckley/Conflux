@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/delegation-grant-v1.json",
+  "title": "Disabled-runtime scoped one-use delegation grant",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "request", "issued_at", "issuance_certificate_id", "one_use_nonce"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "issuance_certificate_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "one_use_nonce": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "issuer_id", "beneficiary_id", "operation_id",
+        "operation_version", "resource", "argument_constraints", "expires_at",
+        "revocation_id", "remaining_use_count", "redelegable", "issuance_provenance"
+      ],
+      "properties": {
+        "schema_version": {"const": "1"},
+        "issuer_id": {"type": "string", "minLength": 1},
+        "beneficiary_id": {"type": "string", "minLength": 1},
+        "operation_id": {"type": "string", "minLength": 1},
+        "operation_version": {"type": "string", "minLength": 1},
+        "resource": {
+          "type": "object",
+          "required": ["provider", "resource_id", "resource_type", "attributes"]
+        },
+        "argument_constraints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "role", "value_fingerprint"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "role": {"enum": ["content", "resource", "recipient", "destination", "value", "credential_reference"]},
+              "value_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+            }
+          }
+        },
+        "expires_at": {"type": "string", "format": "date-time"},
+        "revocation_id": {"type": "string", "minLength": 1},
+        "remaining_use_count": {"const": 1},
+        "redelegable": {"const": false},
+        "issuance_provenance": {
+          "type": "object",
+          "required": ["principal_ids", "sources", "activities", "precision", "attested"]
+        }
+      }
+    }
+  }
+}

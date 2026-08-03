@@ -7,7 +7,9 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import Any, Mapping, TypeAlias
 
+from .actions_base import ArgumentRole
 from .artifacts import Artifact
+from .delegation import DelegationRequest
 from .permissions import Permission, normalise_permission
 from .provenance import Provenance, provenance_union
 from .resources import ResourceRef
@@ -32,15 +34,6 @@ class ActionVisibility(StrEnum):
 class ProposalMode(StrEnum):
     ALTERNATIVES = "alternatives"
     ORDERED_PLAN = "ordered_plan"
-
-
-class ArgumentRole(StrEnum):
-    CONTENT = "content"
-    RESOURCE = "resource"
-    RECIPIENT = "recipient"
-    DESTINATION = "destination"
-    VALUE = "value"
-    CREDENTIAL_REFERENCE = "credential_reference"
 
 
 AUTHORITY_BEARING_ARGUMENT_ROLES = frozenset(
@@ -193,14 +186,16 @@ class MessageAction:
 @dataclass(frozen=True, slots=True)
 class DelegationAction:
     id: str
-    scope: str
+    request: DelegationRequest | None = None
     inputs: tuple[Artifact[Any], ...] = ()
     visibility: ActionVisibility = ActionVisibility.PARTICIPANTS
     kind: ActionKind = field(default=ActionKind.DELEGATION, init=False)
 
     def __post_init__(self) -> None:
-        if not self.id or not self.scope:
-            raise ValueError("DelegationAction id and scope must be non-empty")
+        if not self.id:
+            raise ValueError("DelegationAction id must be non-empty")
+        if self.request is not None and not isinstance(self.request, DelegationRequest):
+            raise TypeError("DelegationAction.request must be a trusted DelegationRequest")
         object.__setattr__(self, "inputs", tuple(self.inputs))
 
 
@@ -294,7 +289,7 @@ def action_to_dict(action: Action) -> dict[str, object]:
     elif isinstance(action, MessageAction):
         result["message"] = action.message
     elif isinstance(action, DelegationAction):
-        result["scope"] = action.scope
+        result["request_fingerprint"] = action.request.fingerprint if action.request else None
     elif isinstance(action, StopAction):
         result["reason"] = action.reason
     elif isinstance(action, NoOpAction):

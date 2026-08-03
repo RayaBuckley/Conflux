@@ -478,7 +478,7 @@ def check_report_crosswalk(errors: list[str]) -> None:
         identifiers: list[Any] = []
         if isinstance(items, list):
             identifiers.extend(items)
-        else:
+        elif isinstance(lists, list):
             data: Any = json.loads(path.read_text(encoding="utf-8"))
             for list_name in lists:
                 records = data.get(list_name, []) if isinstance(list_name, str) else []
@@ -823,6 +823,8 @@ def check_coi_evidence(errors: list[str]) -> None:
 def check_schemas(errors: list[str]) -> None:
     required = {
         "cedar-policy-bundle.schema.json",
+        "delegation-grant.schema.json",
+        "delegation-trace.schema.json",
         "dynamic-plan-result.schema.json",
         "experiment-manifest.schema.json",
         "formal-verification-result.schema.json",
