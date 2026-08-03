@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import importlib.metadata
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -299,7 +301,9 @@ def test_text_modes_selection_and_optional_failures_are_explicit(
 
 def test_verify_cli_retains_unknown_optional_backend_result(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setitem(sys.modules, "z3", None)
     model = tmp_path / "model.json"
     model.write_text(
         json.dumps(
@@ -357,7 +361,11 @@ def test_verify_cli_retains_unknown_optional_backend_result(
     )
 
 
-def test_verify_cli_emits_cone_reduction_comparison(tmp_path: Path) -> None:
+def test_verify_cli_emits_cone_reduction_comparison(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setitem(sys.modules, "z3", None)
     model = tmp_path / "reducible.json"
     model.write_text(
         json.dumps(
@@ -441,7 +449,16 @@ def test_verify_cli_emits_cone_reduction_comparison(tmp_path: Path) -> None:
     assert (output / "formal-verification-original.json").is_file()
 
 
-def test_live_agentdojo_gate_reports_missing_optional_package() -> None:
+def test_live_agentdojo_gate_reports_missing_optional_package(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def missing(_: str) -> str:
+        raise importlib.metadata.PackageNotFoundError
+
+    monkeypatch.setattr(
+        "conflux.adapters.benchmarks.agentdojo_v1.importlib.metadata.version",
+        missing,
+    )
     assert (
         main(
             [

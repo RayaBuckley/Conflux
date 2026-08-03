@@ -12,7 +12,7 @@ from .results import FormalVerdict, FormalVerificationResult
 
 def verify_with_z3(ir: VerificationIR) -> FormalVerificationResult:
     try:
-        import z3  # type: ignore[import-not-found]
+        import z3  # type: ignore[import-not-found,import-untyped,unused-ignore]
     except ImportError:
         return _unknown(ir, "optional_dependency_unavailable:z3")
     try:
@@ -72,34 +72,53 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
             )
         )
         solver.add(z3.Or(*alternatives, stutter))
-    violations = [
-        z3.Not(_expression(invariant.expression, step, variables, z3))
-        for invariant in ir.invariants
-        for step in range(ir.bound + 1)
-    ]
-    solver.add(z3.Or(*violations))
-    query = solver.to_smt2()
-    query_hash = fingerprint(query)
+    query_hash = fingerprint(
+        {
+            "backend": "z3-bmc",
+            "encoding_version": "2",
+            "ir": ir.to_dict(),
+            "checked_steps": list(range(ir.bound + 1)),
+        }
+    )
     solver_hash = fingerprint(
         {
             "backend": "z3",
             "version": str(z3.get_version_string()),
         }
     )
-    result = solver.check()
-    if result == z3.unknown:
-        return FormalVerificationResult(
-            FormalVerdict.UNKNOWN,
-            "z3-bmc",
-            ir.fingerprint,
-            query_hash,
-            solver_hash,
-            None,
-            ir.bound,
-            ir.assumptions,
-            error=f"solver_unknown:{solver.reason_unknown()}",
+    model = None
+    failure_step = None
+    for step in range(ir.bound + 1):
+        solver.push()
+        solver.add(
+            z3.Or(
+                *(
+                    z3.Not(_expression(invariant.expression, step, variables, z3))
+                    for invariant in ir.invariants
+                )
+            )
         )
-    if result == z3.unsat:
+        result = solver.check()
+        if result == z3.unknown:
+            reason = solver.reason_unknown()
+            solver.pop()
+            return FormalVerificationResult(
+                FormalVerdict.UNKNOWN,
+                "z3-bmc",
+                ir.fingerprint,
+                query_hash,
+                solver_hash,
+                None,
+                ir.bound,
+                ir.assumptions,
+                error=f"solver_unknown:{reason}",
+            )
+        if result == z3.sat:
+            model = solver.model()
+            failure_step = step
+            break
+        solver.pop()
+    if model is None or failure_step is None:
         return FormalVerificationResult(
             FormalVerdict.BOUNDED_SAFE,
             "z3-bmc",
@@ -110,7 +129,6 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
             ir.bound,
             ir.assumptions,
         )
-    model = solver.model()
     trace = tuple(
         {
             "step": step,
@@ -126,7 +144,7 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
                 for variable in ir.variables
             },
         }
-        for step in range(ir.bound + 1)
+        for step in range(failure_step + 1)
     )
     return FormalVerificationResult(
         FormalVerdict.UNSAFE,

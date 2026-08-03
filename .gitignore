@@ -20,6 +20,8 @@ htmlcov/
 .mypy_cache/
 .pytype/
 .ruff_cache/
+.local/
+/pytest-full.log
 
 # Editors and operating systems
 .idea/

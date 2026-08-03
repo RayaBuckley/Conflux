@@ -1,5 +1,8 @@
 [CmdletBinding()]
-param()
+param(
+    [ValidateSet("core", "research")]
+    [string] $Profile = "core"
+)
 
 $ErrorActionPreference = "Stop"
 
@@ -104,8 +107,13 @@ if (-not (Test-Path -LiteralPath $venvPython)) {
 Write-Host "[setup] Upgrading packaging tools"
 Invoke-Python -Python $venvPython -Arguments @("-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel")
 
-Write-Host "[setup] Installing Conflux development dependencies"
-Invoke-Python -Python $venvPython -Arguments @("-m", "pip", "install", "-e", ".[dev]")
+$extras = if ($Profile -eq "research") {
+    ".[dev,verification,agentdojo,local-model,openai-compatible]"
+} else {
+    ".[dev]"
+}
+Write-Host "[setup] Installing Conflux $Profile dependencies"
+Invoke-Python -Python $venvPython -Arguments @("-m", "pip", "install", "-e", $extras)
 
 Write-Host "[setup] Installed versions"
 Invoke-Python -Python $venvPython -Arguments @("--version")
@@ -113,4 +121,4 @@ Invoke-Python -Python $venvPython -Arguments @("-m", "pytest", "--version")
 Invoke-Python -Python $venvPython -Arguments @("-m", "ruff", "--version")
 Invoke-Python -Python $venvPython -Arguments @("-m", "mypy", "--version")
 
-Write-Host "[setup] Complete. The environment is available at $venvPath"
+Write-Host "[setup] Complete ($Profile profile). The environment is available at $venvPath"

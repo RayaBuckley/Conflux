@@ -2,12 +2,38 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from collections import deque
 from pathlib import Path
+from shutil import rmtree
+from uuid import uuid4
 
 ROOT = Path(__file__).resolve().parents[1]
+SESSION_ROOT = ROOT / ".local" / "validation" / uuid4().hex
+
+
+def _validation_environment() -> dict[str, str]:
+    environment = dict(os.environ)
+    temporary = SESSION_ROOT / "temp"
+    hugging_face = SESSION_ROOT / "huggingface"
+    temporary.mkdir(parents=True, exist_ok=True)
+    hugging_face.mkdir(parents=True, exist_ok=True)
+    environment.update(
+        {
+            "TEMP": str(temporary),
+            "TMP": str(temporary),
+            "TMPDIR": str(temporary),
+            "HF_HOME": str(hugging_face),
+            "HF_HUB_OFFLINE": "1",
+            "TRANSFORMERS_OFFLINE": "1",
+        }
+    )
+    return environment
+
+
+VALIDATION_ENV = _validation_environment()
 
 
 def _workflow_escape(value: str) -> str:
@@ -24,6 +50,7 @@ def run(*arguments: str) -> None:
         text=True,
         encoding="utf-8",
         errors="replace",
+        env=VALIDATION_ENV,
     )
     assert process.stdout is not None
     tail: deque[str] = deque(maxlen=30)
@@ -84,11 +111,13 @@ def main() -> int:
         "--cov-branch",
         "--cov-report=term-missing",
         "--cov-fail-under=90",
+        f"--basetemp={SESSION_ROOT / 'pytest'}",
     )
     run("-m", "ruff", "check", "src", "tests", "scripts")
     run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
     run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
     run("scripts/validate_wheel.py")
+    rmtree(SESSION_ROOT)
     print("[validate] all checks passed")
     return 0
 

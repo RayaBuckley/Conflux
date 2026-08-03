@@ -145,6 +145,7 @@ def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
 def test_transformers_dependency_is_optional_and_loading_is_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     model = TransformersLocalModel(_spec("transformers", None))
     monkeypatch.setattr("conflux.adapters.models.local_transformers.find_spec", lambda name: None)
+    monkeypatch.setitem(sys.modules, "transformers", None)
     assert model.preflight().reason == "optional_dependency_unavailable:transformers"
     with pytest.raises(LocalModelFailure, match="dependency"):
         model.generate(_request())

@@ -53,7 +53,7 @@ dev = [
 ]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-p no:cacheprovider"
+addopts = "-p no:cacheprovider --basetemp=.local/pytest"
 [tool.coverage.run]
 branch = true
 source = ["src/conflux"]

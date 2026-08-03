@@ -89,7 +89,7 @@ class HuggingFaceCausalModel:
 
     def _load_generator(self) -> TextGenerator:
         try:
-            from transformers import pipeline  # type: ignore[import-not-found]
+            from transformers import pipeline  # type: ignore[import-not-found,unused-ignore]
         except ImportError as error:
             raise RuntimeError(
                 "optional_dependency_unavailable:transformers"

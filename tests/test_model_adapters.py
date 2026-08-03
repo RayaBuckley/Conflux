@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import dataclass, field
 
 import pytest
@@ -263,7 +264,9 @@ def test_huggingface_path_is_lazy_strict_and_records_compute_metadata() -> None:
         model.propose(())
 
 
-def test_huggingface_configuration_resource_and_dependency_fail_closed() -> None:
+def test_huggingface_configuration_resource_and_dependency_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     with pytest.raises(ValueError, match="configuration"):
         HuggingFaceCausalModel(frozenset(), max_new_tokens=0)
     artifact = Artifact("input", "x", Provenance.unknown())
@@ -285,6 +288,7 @@ def test_huggingface_configuration_resource_and_dependency_fail_closed() -> None
     blocked = HuggingFaceCausalModel(frozenset(), generator=resource_generator)
     with pytest.raises(ModelOutputError, match="unknown_resource"):
         blocked.propose((artifact,))
+    monkeypatch.setitem(sys.modules, "transformers", None)
     with pytest.raises(RuntimeError, match="optional_dependency"):
         HuggingFaceCausalModel(frozenset()).propose(())
 

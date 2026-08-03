@@ -7,7 +7,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from importlib.util import find_spec
-from typing import Callable, Protocol, cast
+from typing import Any, Callable, Protocol, cast
 
 from jsonschema import Draft202012Validator, ValidationError
 
@@ -75,7 +75,7 @@ class TransformersLocalModel:
 
     def _load_generator(self) -> LocalTextGenerator:
         try:
-            from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed  # type: ignore[import-not-found]
+            from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed  # type: ignore[import-not-found,unused-ignore]
         except ImportError as error:
             raise LocalModelFailure("dependency", "optional_dependency_unavailable:transformers") from error
         tokenizer = AutoTokenizer.from_pretrained(
@@ -96,7 +96,7 @@ class TransformersLocalModel:
         def generate(prompt: str, *, max_new_tokens: int, temperature: float, top_p: float, seed: int) -> str:
             set_seed(seed)
             encoded = tokenizer(prompt, return_tensors="pt")
-            output = model.generate(
+            output = cast(Any, model).generate(
                 **encoded,
                 max_new_tokens=max_new_tokens,
                 do_sample=temperature > 0,

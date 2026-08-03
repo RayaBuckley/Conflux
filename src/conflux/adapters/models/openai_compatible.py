@@ -208,7 +208,7 @@ class _HttpxTransport:
         timeout: float,
     ) -> HTTPResponse:
         try:
-            import httpx  # type: ignore[import-not-found]
+            import httpx  # type: ignore[import-not-found,unused-ignore]
         except ImportError as error:
             raise ModelProviderError("optional_dependency_unavailable:httpx") from error
         return cast(
