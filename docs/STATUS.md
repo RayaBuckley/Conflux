@@ -32,13 +32,17 @@ The offline result-ready path is implemented:
   grants with deterministic lifecycle evidence and mutation-tested bounds;
   operational delegation remains unconditionally denied pending activation
   evidence;
+- the optional Cedar 4.11.0 adapter, strict differential corpus, PARC
+  translation, binary-identity preflight, and offline readiness bundle are
+  implemented; Cedar was not invoked, so parity is not claimed;
 - deterministic scenarios, traces, schemas, manifests, smoke evidence,
   negative controls, planning comparison aggregation, and resumable jobs are
   tested offline;
 - self-hosted OpenAI-compatible and Transformers model ports have strict
   identity, network, local-cache, and structured-output contracts;
-- AgentDojo and four-mode planning runners expose complete preflight matrices
-  but have no retained model-generated results;
+- AgentDojo, four-mode planning, and the dual-backend laptop smoke have
+  checksummed preflight matrices whose cells remain explicitly unavailable;
+  they contain no model-generated results;
 - planning `dynamic_code` evaluation uses inert modeled actions and effects;
   it never invokes the operational code adapter or another executor;
 - the current manuscript is separate from the checksummed paper archive.
@@ -72,6 +76,12 @@ COI-reduction evidence is retained under `runs/sled-coi-reduction-v1/`, linked
 to generator commit `3c4e9884a93f84b62ddb5b1c7e52da84be073b97`. Its two
 reference-interpreter fixtures agree and reduce at least one measured model
 dimension; no optional formal backend was available for that retained run.
+
+Offline direction evidence is retained under `runs/direction-readiness-v1/`.
+It supplies bounded native mutation evidence and readiness-only planning and
+AgentDojo matrices. Cedar readiness is separately retained under
+`runs/cedar-differential-preflight-v1/`; its incomplete manifest and
+`unavailable` Cedar cells are deliberate claim boundaries.
 
 `docs/task-registry.json` is the machine-readable programme status. Remaining
 research includes live comparative evidence, production policy/framework

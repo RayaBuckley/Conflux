@@ -15,6 +15,8 @@ remain distinguishable throughout normalization.
 | Four-mode planning | `evaluation_ready` | Eight scenarios, 32-cell runner, inert modeled-program validation, and offline tests; no model result |
 | Dual-backend laptop planning smoke | `evaluation_ready` | Fixed two-scenario, four-mode, two-runtime 16-cell protocol and fake-backed runner; no model-generated bundle |
 | Scoped delegation model | `implemented` | Exact one-use grants, lifecycle evidence, atomic consumption, and seven killed mutants; operational ITES consumption remains denied |
+| Cedar differential | `evaluation_ready` | Strict corpus, PARC translation, oracle decisions, and binary preflight; Cedar remains unavailable and parity is not evidenced |
+| Direction security mutants | `bounded_evidence` | Canonical argument/disclosure/attribution and delegation models exhaust safely; all seeded defects have shortest native witnesses |
 
 The retained native bundle is
 [`runs/native-sled-reproduction-v1/`](../runs/native-sled-reproduction-v1/).
@@ -68,8 +70,10 @@ acquisition, licensing, storage, and server access. Core CI uses fakes and
 never downloads weights or contacts a server.
 
 Without `--execute-local`, AgentDojo and planning commands validate the
-protocol and print the complete matrix, bounds, and adapter preflight. This is
-readiness evidence, not an empirical result.
+protocol and print or write the complete matrix, bounds, and adapter preflight.
+The retained readiness package is
+[`runs/direction-readiness-v1/`](../runs/direction-readiness-v1/). Its
+`unavailable` cells are readiness evidence, not empirical results.
 
 ## Track semantics
 
@@ -82,6 +86,13 @@ The delegation model checks scope, beneficiary, ordering, expiry, revocation,
 one-use consumption, non-redelegation, and unchanged Principal Context. Its
 SLED results are model evidence only: no grant is accepted by the operational
 ITES pipeline while the independent Cedar-parity gate is absent.
+
+The Cedar preflight validates the pinned bundle and differential corpus,
+translates pointwise PARC requests, computes the deterministic in-memory
+oracle result, and checks a supplied binary's bytes against the configured
+identity. It never invokes Cedar. The retained
+[`cedar-differential-preflight-v1`](../runs/cedar-differential-preflight-v1/)
+bundle therefore establishes evaluation readiness only.
 
 AgentDojo fixes benign/attacked and no-defence/ITES cells under one model
 specification. Raw upstream logs remain unchanged, while Principal Context,

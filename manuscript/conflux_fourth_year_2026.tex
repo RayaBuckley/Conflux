@@ -95,12 +95,20 @@ Security kernel & Immutable domain values, independent policy ports, one ITES
 kernel, isolated alternatives, ordered plans, and certificate-bound execution
 & Assumes complete mediation, authenticated provenance, and faithful policy
 adapters \\
+Argument and disclosure & Trusted action-argument roles, pointwise selector
+policy, audience-specific disclosure, deterministic redaction, and structured
+attribution & Retained native mutants exercise finite monitor models, not all
+deployment observers \\
 Runtime and CLI & Strict scenarios, deterministic providers and traces,
 reporting, chat boundary, planning demo, SLED and formal commands & Live
 effects and models remain optional; filesystem writes default to dry-run \\
 Native verification & Breadth-first SLED with canonical state, explicit bounds,
 deduplication, retained bound states, and shortest counterexamples & Verdicts
 apply only to the finite operational model and declared properties \\
+Verification reduction & Property-scoped cone-of-influence closure, stable rule
+identity, reference comparison, and counterexample lifting & Retained evidence
+covers checked finite fixtures; partial-order and symmetry reduction remain
+future work \\
 Dynamic planning & Authenticated catalogues, typed bindings, immutable patches,
 bounded loops and continuations, subplans, mediated code capabilities, outcome
 validation, and authority-minimising selection & Comparative real-model utility
@@ -111,6 +119,10 @@ runtime equivalence are not established \\
 AgentDojo & Exact package 0.1.35 / benchmark v1.2.2 translation with preserved
 IDs, native metrics, failure categories, and raw fixture & The fixture proves
 translation only; a live no-defence-versus-ITES comparison is pending \\
+Policy and delegation & Optional pinned Cedar adapter plus exact, expiring,
+revocable, one-use delegation records and disabled runtime consumption & Cedar
+preflight does not establish live parity; delegation transfers no runtime
+authority \\
 \bottomrule
 \end{tabular}
 
@@ -143,11 +155,19 @@ monotonicity, absence of implicit delegation and bounded resource use. Bounded
 SMT results retain solver artefacts; unbounded claims require an
 IC3/PDR-capable backend and runtime-to-IR conformance.
 
+Property-scoped cone-of-influence reduction closes transitively over guards and
+right-hand-side dependencies that may update an invariant variable. Reduction
+claims require matching reference verdicts and a liftable unsafe witness; an
+unsupported expression or disagreement fails the comparison. The retained
+bundle records matching finite-fixture verdicts and measurable reduction, while
+unavailable optional solver binaries contribute no equivalence evidence.
+
 Authority-constrained planning uses authenticated operation catalogues,
 immutable open-ended plan graphs, explicit bounded loops, typed continuations
-and value bindings. Generated code is treated as input to a mediated capability
-envelope rather than as trusted control flow. Every grounded effect is
-re-authorised at execution time. Security is a hard selection constraint;
+and value bindings. The evaluation's dynamic-code mode emits an inert
+\texttt{ModeledProgram} graph; it is not compiled, evaluated, or sent to an
+executor. Every declared effect is re-authorised at modeled action time.
+Security is a hard selection constraint;
 eligible plans are then ordered by utility, authority footprint, sensitive
 observations, irreversible effects, cost and a deterministic fingerprint.
 
@@ -160,6 +180,13 @@ and installed-CLI smoke. The record is
 \textbf{Semantic conformance:} \emph{generated result pending}.\\
 \textbf{Native SLED:} \emph{generated result pending}.\\
 \textbf{SLED-MC/SLED-V:} \emph{generated result pending}.\\
+\textbf{Direction security models:} the retained checksummed bundle reports
+safe exhaustion for the canonical finite disclosure and delegation models and
+minimal witnesses for every seeded selector, disclosure, attribution, and
+delegation defect. Delegation remains disabled at runtime.\\
+\textbf{Cedar differential:} \emph{evaluation ready; Cedar unavailable and not
+invoked}. The retained preflight contains translated PARC requests and
+in-memory-oracle decisions but no parity result.\\
 \textbf{Real models and AgentDojo:} \emph{generated result pending}.
 
 No numerical claim is entered manually. Tables and figures are generated from
@@ -167,16 +194,23 @@ retained, versioned result JSON and include input checksums.
 
 \section{Prioritised future work}
 
-The immediate priority is reproducible evidence: run credentialed real-model
-and pinned AgentDojo comparisons, retain native and Conflux metrics, and
-generate paper tables solely from those result records. The next engineering
-priority is differential validation against a production policy decision point
-and an agent-framework boundary without moving benchmark behavior into ITES.
+The immediate priority is operator-reviewed evidence: run the deliberately
+small dual-backend laptop smoke, stop for review, then consider the full
+planning and pinned AgentDojo protocols. Each live run must retain its exact
+model and runtime identities, failures, native and Conflux metrics, and input
+checksums. Paper tables must be generated solely from those result records.
 
-The next security-model extensions are scoped attenuating delegation,
-role-sensitive argument effects, and origin-bound persistent-memory authority.
-They remain denied or conservative until their semantics, revocation behavior,
-and counterexample properties are specified. Formal work should then extend
+The next policy milestone is executing the pinned Cedar differential corpus.
+Successful offline request translation is readiness evidence only. Delegation
+activation remains a later, separate gate and requires complete Cedar agreement
+plus certificate, disclosure, attribution, expiry, revocation, and atomic-use
+evidence.
+
+The next security-model extensions are richer operation-specific argument
+effects, any future activation of scoped attenuating delegation, and
+origin-bound persistent-memory authority. They remain denied or conservative
+until their semantics, revocation behavior, and counterexample properties are
+specified. Formal work should then extend
 the solver subset, relational properties, and independent implementation
 conformance while keeping bounded and unbounded claims distinct.
 
@@ -184,7 +218,9 @@ conformance while keeping bounded and unbounded claims distinct.
 Conflux assumes sound authentication, provenance, policy state and complete
 mediation. It does not prevent actions already authorised for every influencing
 Principal and does not guarantee subjective intent alignment. Conservative
-contexts can over-approximate influence. Delegation remains unsupported.
+contexts can over-approximate influence. Delegation has a bounded model and
+lifecycle representation but remains unsupported by operational ITES. Cedar
+request translation has not been compared with a live Cedar binary.
 Authorised-read safety is not noninterference. Formal results are scoped to
 their model, backend and conformance evidence. Provider adapters are research
 prototypes, not production isolation boundaries. Real-model, AgentDojo and
@@ -193,11 +229,12 @@ evidence; the raw upstream AgentDojo fixture validates translation only.
 
 \section{Conclusion}
 Conflux now has one tested security semantics, a runnable offline vertical
-slice, authenticated bounded planning, and native plus solver-facing
-verification foundations. The remaining research contribution is stronger
-evidence and carefully specified extensions: real-model, external-benchmark,
-policy-integration and formal artefacts whose claims remain tied to explicit
-assumptions, models, and bounds.
+slice, argument-aware disclosure and attribution, authenticated bounded
+planning, property-reduced verification, and a disabled scoped-delegation
+foundation. The remaining research contribution is stronger evidence and
+carefully gated activation: real-model, external-benchmark, Cedar-parity and
+formal artefacts whose claims remain tied to explicit assumptions, models, and
+bounds.
 
 \bibliographystyle{plainnat}
 \bibliography{references}

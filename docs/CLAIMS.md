@@ -13,15 +13,18 @@
 | Redacted event views do not copy hidden payload fields | Implemented | deterministic audience projection and unsafe-redaction/hidden-error mutants; assumes callers use the canonical projector |
 | Attribution is evidence-derived rather than model-asserted | Implemented | structured provenance/context/policy records and tests rejecting trusted model explanations |
 | Scoped one-use delegation is modeled without activating authority transfer | Implemented model, runtime disabled | exact issuer/beneficiary/operation/resource/argument bindings, expiry, revocation, atomic idempotent consumption, lifecycle projection, and seven one-step mutant witnesses; ITES still denies delegation |
+| The argument, disclosure, attribution, and delegation monitors reject their seeded defects | Bounded evidence | `runs/direction-readiness-v1/security-mutations.json`; the canonical finite models exhaust safely and every retained mutant has a one-transition witness under the recorded bounds |
 | The installed offline vertical slice is runnable without credentials | Implemented | `artifacts/validation/6fe6b584500e/`: clean-wheel doctor, demo, planning, SLED, and report smoke validation |
 | The planning comparison executes no generated code | Implemented | `ModeledProgram` is inert validated data; architecture tests exclude evaluation, compilation, shell, import, and executor paths |
 | The optional operational code adapter cannot exceed its declared envelope | Implemented at adapter boundary | container arguments, mount/path checks, and fail-closed sandbox tests; host/container implementation remains in the TCB and is not used by the planning comparison |
 | Solver results match the supported runtime subset | Bounded evidence | serialisable IR, interpreter differential tests, optional Z3 backend |
 | COI reduction preserves the selected fixture verdicts | Bounded evidence | `runs/sled-coi-reduction-v1/`: two finite IR fixtures agree under the independent reference interpreter; both reduce variables, rules, or reachable states, and the unsafe witness lifts; optional formal binaries were unavailable |
+| The Cedar adapter is ready for a pinned differential run | Evaluation ready | `runs/cedar-differential-preflight-v1/` validates the bundle and corpus, translates PARC requests, and records oracle decisions; Cedar cells are explicitly unavailable and establish no parity |
+| Cedar decisions match the in-memory oracle | Not yet evidenced | the exact 4.11.0 binary has not completed the retained differential matrix |
 | Conflux is secure for unbounded deployments | Not claimed | finite bounds and abstractions do not prove unbounded deployments |
 | AgentDojo integration preserves upstream semantics | Implemented for translation | pinned 0.1.35 structures and raw fixture; Conflux annotations are additional assumptions |
-| AgentDojo establishes Conflux utility or efficacy | Not yet evidenced | the self-hosted-model runner is evaluation-ready; no four-cell empirical bundle is retained |
-| Open-ended planning improves utility | Not yet evidenced | the 32-cell self-hosted-model protocol is evaluation-ready; offline modeled fixtures are mechanics evidence only |
+| AgentDojo establishes Conflux utility or efficacy | Not yet evidenced | `runs/direction-readiness-v1/agentdojo-preflight.json` retains the four unavailable cells; no empirical bundle exists |
+| Open-ended planning improves utility | Not yet evidenced | `runs/direction-readiness-v1/planning-preflight.json` retains all unavailable protocol cells; offline modeled fixtures are mechanics evidence only |
 | Self-hosted model output is reproducible across hardware or runtimes | Not claimed | identity and sampling are recorded, but no model-generated bundle or cross-hardware comparison is retained |
 | Cloud policy behaviour matches a provider | Not claimed | current AWS adapter is an explicit fail-closed subset |
 | The current evidence pipeline handles allow, block, and vulnerable-control cases | Bounded evidence | `runs/smoke/`, two scripted cases, one one-step negative-control witness |

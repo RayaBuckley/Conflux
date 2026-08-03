@@ -9,11 +9,13 @@ conflux demo --scenario examples/basic.yaml --output runs/demo
 conflux plan demo --output runs/plan-demo
 conflux plan laptop-smoke --plan experiments/manifests/planning-laptop-smoke-v1.json --transformers-config LOCAL_TRANSFORMERS.json --llama-config LOCAL_LLAMA.json
 conflux sled run --suite examples/basic.yaml --output runs/sled
+conflux sled delegation --output runs/delegation-check
 conflux report runs/demo/result.json
 conflux chat --scenario examples/basic.yaml --endpoint URL --model MODEL
 conflux verify --model examples/verification.json --backend z3 --output runs/verify
 conflux verify --model MODEL --property PROPERTY --reduce cone_of_influence --output runs/verify-reduced
 conflux benchmark agentdojo --config experiments/manifests/agentdojo-smoke.yaml --upstream-log FIXTURE --output runs/agentdojo.json
+conflux policy cedar preflight --bundle experiments/manifests/cedar-policy-bundle-v1.json --corpus experiments/suites/cedar-differential-v1.json --output runs/cedar-preflight
 ```
 
 `demo` validates a scenario, mediates its scripted proposals, executes one
@@ -42,6 +44,15 @@ prints the fixed 16-cell matrix without invoking either model. Adding
 backend results plus a combined checksummed bundle, and sets a mandatory human-
 review stop. Local protocol creation is described in the
 [model integration guide](integrations/models.md).
+
+`plan compare`, `plan laptop-smoke`, and model-dependent `benchmark agentdojo`
+write `preflight.json` when `--output` is supplied without `--execute-local`.
+`sled delegation` runs the canonical disabled-delegation model and its seven
+negative controls. `policy cedar preflight` validates and translates the
+corpus without invoking Cedar; optional `--binary` hashes the candidate bytes.
+`doctor --cedar-bundle BUNDLE [--cedar-binary BINARY]` reports the same pinned
+identity check without issuing a policy request. See the
+[Cedar integration guide](integrations/cedar.md).
 
 ## Exit codes
 

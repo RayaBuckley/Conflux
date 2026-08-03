@@ -23,7 +23,10 @@ by default.
 
 Open-ended plan approval never grants authority. The authenticated catalogue
 constrains operation identity and schema; every grounded effect is mediated and
-re-authorised immediately before execution. Unsupported delegation is denied.
+re-authorised immediately before execution. Scoped delegation is modeled and
+mutation-tested, but operational consumption remains unconditionally denied.
+The optional Cedar adapter is not a production authority source until a pinned
+live differential bundle exists; offline preflight is readiness evidence only.
 
 Supported security fixes target the current default branch. There is no stable
 0.1 API compatibility promise yet.

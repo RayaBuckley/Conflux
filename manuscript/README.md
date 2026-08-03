@@ -15,10 +15,13 @@ be replaced only by files generated from versioned `runs/*/result.json`
 evidence. Do not copy archived trace counts into current-result tables.
 
 The implementation now includes bounded native and solver-facing verification,
-open-ended dynamic planning, and a pinned AgentDojo translation boundary.
-These are implementation statements, not empirical findings. The planning and
-AgentDojo numerical placeholders remain until the gated manifests produce
-retained result JSON with verified checksums.
+property-scoped cone-of-influence reduction, argument-aware policy, audience
+disclosure, structured attribution, open-ended dynamic planning, a pinned
+AgentDojo translation boundary, an optional pinned Cedar adapter, and a scoped
+delegation model that is disabled at runtime. These are implementation or
+bounded-model statements, not live integration findings. Planning, AgentDojo,
+Cedar-parity, and delegation-activation claims remain pending until their
+gated protocols produce completed retained result JSON with verified checksums.
 
 Use the [claim ledger](../docs/CLAIMS.md) for claim strength, the
 [task registry](../docs/task-registry.json) for current programme status, and

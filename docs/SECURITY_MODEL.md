@@ -7,6 +7,7 @@
 | Authentication and provenance adapters | Attach complete origins; label uncertainty as unknown |
 | ITES kernel | Preserve context, isolate branches, compose decisions, and issue certificates |
 | Policy ports | Return faithful action, argument, read, visibility, and consent decisions |
+| Optional Cedar adapter | Validate its pinned local binary and translate trusted policy, entity, action, resource, and role facts without approximation |
 | Action schemas | Assign trusted roles to operation arguments and identify protected resources |
 | Application service and executor | Recheck and execute only the certificate-matching action |
 
@@ -68,6 +69,7 @@ operation-specific effect semantics remain future work in the
 | Keep consent restrictive only | Approval cannot substitute for organisational authority |
 | Bind certificates to exact decisions | Stale or branch-mismatched approval cannot authorise another effect |
 | Model delegation before activation | Authority transfer adds attenuation, ordering, expiry, revocation, and atomic-use obligations that must be evidenced before runtime use |
+| Require live differential evidence before Cedar-backed activation | Successful translation and an oracle expectation do not demonstrate that an unavailable PDP agrees |
 | Fail closed on errors | Infrastructure uncertainty is not evidence of permission |
 
 These rules prevent authority amplification; they do not prove that every

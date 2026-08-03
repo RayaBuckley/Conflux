@@ -35,7 +35,8 @@ owner; linked documents should reference that owner rather than restating it.
 ## Integrations and research
 
 - [Model integrations](integrations/models.md) and
-  [AgentDojo](integrations/agentdojo.md): optional external boundaries.
+  [AgentDojo](integrations/agentdojo.md): optional model and benchmark boundaries.
+- [Cedar](integrations/cedar.md): pinned local PDP contract and offline preflight.
 - [Related work](RELATED_WORK.md): positioning, not implementation status.
 - [Change catalogue](CHANGE_CATALOG.md): report-derived work grouped by theme.
 - [Status](STATUS.md): concise current capability summary.

@@ -77,9 +77,9 @@ tests, optional Z3 bounded backend, and nuXmv Boolean subset are implemented.
 This is bounded and conformance-scoped evidence, not an unbounded proof of the
 Python runtime or arbitrary generated programs. Hyperproperties and stronger
 unbounded models remain research work. Property-preserving cone-of-influence
-reduction is the selected next verification increment; partial-order and
-Principal-symmetry reductions remain deferred until their stronger
-independence assumptions are explicit.
+reduction is implemented with retained original-versus-reduced evidence and
+witness lifting. Partial-order and Principal-symmetry reductions remain
+deferred until their stronger independence assumptions are explicit.
 
 ## Evaluation and integrations
 
@@ -93,6 +93,14 @@ AgentDojo is pinned to package `0.1.35` and benchmark `v1.2.2`; its exact suite
 and trace structures translate without permissive aliases. The retained raw
 fixture proves translation behavior only. No live model or no-defence-versus-
 ITES efficacy result is claimed.
+
+The direction readiness package retains complete but unavailable matrices for
+the laptop planning smoke, full planning protocol, and AgentDojo comparison.
+The Cedar package retains a strict differential corpus, translated requests,
+and in-memory-oracle decisions while marking every Cedar cell unavailable.
+These artefacts make the future operator action reviewable; they do not turn an
+unrun dependency into a result. Native mutation evidence separately supports
+the finite argument, disclosure, attribution, and disabled-delegation models.
 
 ## Related-work position
 
@@ -123,16 +131,17 @@ The [claim ledger](../../docs/CLAIMS.md) is authoritative.
 
 Priority work is staged evidence, not another broad architectural rewrite:
 
-1. reduce the serialisable verification IR by a checked cone of influence and
-   retain original-versus-reduced evidence;
-2. run the deliberately small dual-backend laptop planning smoke, then stop
+1. review and run the deliberately small dual-backend laptop planning smoke,
+   then stop
    for human review before wider model work;
-3. extend the implemented trusted argument roles, audience disclosure, and
-   conservative attribution with a pinned policy decision point;
-4. validate a pinned local Cedar subset against the in-memory oracle;
-5. retain the implemented scoped delegation model while runtime use stays
+2. execute the pinned Cedar differential corpus and retain response hashes
+   before considering policy-adapter parity;
+3. retain the implemented scoped delegation model while runtime use stays
    disabled until parity, visibility, attribution, and certificate gates pass;
-6. generate manuscript tables and figures only from retained result JSON.
+4. run the pinned AgentDojo and full planning protocols only after their model
+   identity and resource envelope receive operator approval;
+5. generate manuscript tables and figures only from completed retained result
+   JSON.
 
 Unavailable credentials, model weights, container engines, solver binaries, or
 cluster schedulers remain explicit gates. They do not justify simulated live
