@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import subprocess
 import sys
 from collections.abc import Sequence
 from dataclasses import replace
@@ -25,6 +27,7 @@ from conflux.adapters.models import (
     ScriptedModel,
     SelfHostedOpenAIModel,
     TransformersLocalModel,
+    load_resolved_local_model,
     resolve_transformers_snapshot,
     write_resolved_local_model,
 )
@@ -33,7 +36,7 @@ from conflux.adapters.providers import InMemoryExecutor
 from conflux.adapters.scenarios import load_scenario, load_schema
 from conflux.application import CapabilityReport, ChatRuntime, MediationService
 from conflux.application.planning_demo import run_dynamic_planning_demo
-from conflux.domain import canonical_json
+from conflux.domain import canonical_json, fingerprint
 from conflux.evaluation import (
     DELEGATION_PROPERTIES,
     DelegationMutation,
@@ -56,6 +59,8 @@ from conflux.experiments import (
     BACKEND_LLAMA_CPP,
     BACKEND_TRANSFORMERS,
     ExperimentProtocol,
+    ResolvedRunManifest,
+    RunFailure,
     agentdojo_matrix,
     cedar_differential_preflight,
     load_cedar_bundle,
@@ -128,6 +133,14 @@ def _parser() -> argparse.ArgumentParser:
     plan_compare.add_argument("--config", type=Path, required=True)
     plan_compare.add_argument("--output", type=Path)
     plan_compare.add_argument("--execute-local", action="store_true")
+    plan_pilot = plan_commands.add_parser(
+        "pilot",
+        help="preflight or run the eight-cell single-backend CPU pilot",
+    )
+    plan_pilot.add_argument("--model-config", type=Path, required=True)
+    plan_pilot.add_argument("--source-commit")
+    plan_pilot.add_argument("--output", type=Path, required=True)
+    plan_pilot.add_argument("--execute-local", action="store_true")
     laptop_smoke = plan_commands.add_parser(
         "laptop-smoke",
         help="preflight or run the fixed dual-backend laptop matrix",
@@ -619,6 +632,8 @@ def _chat(arguments: argparse.Namespace) -> int:
 
 
 def _plan(arguments: argparse.Namespace) -> int:
+    if str(arguments.plan_command) == "pilot":
+        return _cpu_pilot(arguments)
     if str(arguments.plan_command) == "laptop-smoke":
         return _laptop_smoke(arguments)
     if str(arguments.plan_command) == "compare":
@@ -669,6 +684,92 @@ def _plan(arguments: argparse.Namespace) -> int:
         )
     )
     return EXIT_OK if plan_result.completed else EXIT_RUNTIME
+
+
+def _cpu_pilot(arguments: argparse.Namespace) -> int:
+    configuration = cast(Path, arguments.model_config)
+    resolved = load_resolved_local_model(configuration)
+    output = cast(Path, arguments.output)
+    source_commit = str(arguments.source_commit or _git_head())
+    suite_path = Path("experiments/suites/planning-diagnostic-v1.yaml")
+    protocol = ExperimentProtocol(
+        id="planning-cpu-pilot-v1",
+        track="planning",
+        suite={
+            "id": "planning-diagnostic-v1",
+            "version": "1",
+            "case_ids": ["direct-authorised-effect", "blocked-action-recovery"],
+        },
+        source_commit=source_commit,
+        inputs={
+            "experiments/suites/planning-diagnostic-v1.yaml": _text_sha256(
+                suite_path
+            ),
+            "local-artifact-manifest": resolved.manifest.fingerprint,
+        },
+        model=resolved.spec,
+        prompts={"planner": "planning-diagnostic-v1"},
+        seeds=(0,),
+        repetitions=1,
+        bounds={"max_model_calls": 4, "max_steps": 3},
+        environment={
+            "execution": "modeled_actions_only",
+            "device": "cpu",
+            "runtime": resolved.spec.runtime_version,
+        },
+        output_directory=str(output),
+        rerun_command=(
+            "conflux",
+            "plan",
+            "pilot",
+            "--model-config",
+            str(configuration),
+            "--output",
+            str(output),
+            "--execute-local",
+        ),
+    )
+    model = TransformersLocalModel(
+        resolved.spec,
+        snapshot_path=resolved.snapshot_path,
+        artifact_manifest=resolved.manifest,
+    )
+    scenarios = load_default_planning_diagnostic_suite()
+    matrix = planning_matrix(protocol, scenarios)
+    preflight = model.preflight()
+    payload = {
+        "schema_version": "1",
+        "classification": "evaluation_ready",
+        "complete": False,
+        "execute_local": bool(arguments.execute_local),
+        "preflight": _preflight_dict(preflight),
+        "bounds": dict(protocol.bounds),
+        "matrix": [cell.id for cell in matrix],
+        "model": resolved.spec.to_dict(),
+        "resources": {
+            "logical_cpus": os.cpu_count(),
+            "placement": "cpu",
+            "expected_available_memory": "at_least_6_gib",
+        },
+        "output": str(output),
+    }
+    if not bool(arguments.execute_local):
+        _emit_preflight(payload, output)
+        return EXIT_OK
+    if not preflight.available:
+        return _unavailable(preflight.reason or "local_model_unavailable")
+    result = run_planning_comparison(protocol, model, scenarios)
+    _write_cpu_pilot_bundle(protocol, result, model.records, output)
+    print(
+        canonical_json(
+            {
+                "complete": result["complete"],
+                "human_review_required": True,
+                "output": str(output / "result.json"),
+            }
+        )
+    )
+    return EXIT_OK if result["complete"] else EXIT_RUNTIME
 
 
 def _laptop_smoke(arguments: argparse.Namespace) -> int:
@@ -972,6 +1073,133 @@ def _cedar_identity_preflight(
 def _text_sha256(path: Path) -> str:
     content = path.read_text(encoding="utf-8").replace("\r\n", "\n")
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def _file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _git_head() -> str:
+    result = subprocess.run(
+        ("git", "rev-parse", "HEAD"),
+        check=False,
+        capture_output=True,
+        text=True,
+        shell=False,
+    )
+    commit = result.stdout.strip()
+    if result.returncode or not 7 <= len(commit) <= 40:
+        raise ValueError("source_commit_required_outside_git_checkout")
+    return commit
+
+
+def _write_cpu_pilot_bundle(
+    protocol: ExperimentProtocol,
+    result: dict[str, object],
+    records: list[dict[str, object]],
+    output: Path,
+) -> None:
+    output.mkdir(parents=True, exist_ok=True)
+    protocol.materialise(output)
+    (output / "result.json").write_text(
+        canonical_json(result) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    (output / "raw-model.jsonl").write_text(
+        "".join(canonical_json(record) + "\n" for record in records),
+        encoding="utf-8",
+        newline="\n",
+    )
+    observations = cast(list[dict[str, object]], result["observations"])
+    statuses: dict[str, int] = {}
+    for observation in observations:
+        status = cast(str, observation["status"])
+        statuses[status] = statuses.get(status, 0) + 1
+    table = [
+        "# CPU planning pilot v1",
+        "",
+        "| Measure | Value |",
+        "|---|---:|",
+        f"| Cells | {len(observations)} |",
+        f"| Model calls | {sum(cast(int, item['model_calls']) for item in observations)} |",
+        f"| Prompt tokens | {sum(cast(int, item['prompt_tokens'] or 0) for item in observations)} |",
+        f"| Output tokens | {sum(cast(int, item['output_tokens'] or 0) for item in observations)} |",
+        f"| Latency (ms) | {sum(cast(int, item['latency_ms']) for item in observations)} |",
+        "",
+        "## Cell outcomes",
+        "",
+        *(
+            f"- `{name}`: {count}"
+            for name, count in sorted(statuses.items())
+        ),
+        "",
+        "All effects were modeled in memory. Human review is required before claim promotion.",
+        "",
+    ]
+    (output / "table.md").write_text(
+        "\n".join(table),
+        encoding="utf-8",
+        newline="\n",
+    )
+    content_names = ("protocol.json", "RERUN.txt", "result.json", "raw-model.jsonl", "table.md")
+    checksums = {name: _file_sha256(output / name) for name in content_names}
+    failures = tuple(
+        RunFailure(
+            _planning_failure_category(cast(str, item["status"])),
+            cast(str, item["status"]),
+            cast(str, item["case_id"]),
+        )
+        for item in observations
+        if cast(str, item["status"]) not in {"complete", "securely_impossible"}
+    )
+    complete = bool(result["complete"])
+    manifest = ResolvedRunManifest(
+        run_id=fingerprint(
+            {"protocol": protocol.fingerprint, "result": checksums["result.json"]}
+        ),
+        track="planning",
+        protocol_fingerprint=protocol.fingerprint,
+        source_commit=protocol.source_commit,
+        status="complete" if complete else "incomplete",
+        complete=complete,
+        exclusions=(
+            "human review required before claim promotion",
+            "llama.cpp and GPU runtimes were not invoked",
+        ),
+        failures=failures,
+        environment={
+            "device": "cpu",
+            "execution": "modeled_actions_only",
+            "model_id": cast(str, result["model_id"]),
+        },
+        checksums=checksums,
+    )
+    (output / "manifest.json").write_text(
+        canonical_json(manifest.to_dict()) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    checksum_lines = {
+        **checksums,
+        "manifest.json": _file_sha256(output / "manifest.json"),
+    }
+    (output / "CHECKSUMS.sha256").write_text(
+        "".join(f"{digest}  {name}\n" for name, digest in sorted(checksum_lines.items())),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
+def _planning_failure_category(status: str) -> str:
+    return {
+        "parser_failed": "parser",
+        "modeled_program_failed": "parser",
+        "model_failed": "model",
+        "provider_failed": "tool",
+        "bound_reached": "bound",
+        "blocked": "policy",
+    }.get(status, "unknown")
 
 
 def _write_protocol_result(

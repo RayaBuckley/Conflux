@@ -10,7 +10,7 @@ from .artifacts import (
     write_resolved_local_model,
 )
 from .local_openai import LocalModelFailure, SelfHostedOpenAIModel
-from .local_transformers import TransformersLocalModel
+from .local_transformers import LocalTextGeneration, TransformersLocalModel
 from .openai_compatible import (
     ModelOutputError,
     ModelProviderError,
@@ -24,6 +24,7 @@ __all__ = [
     "LocalArtifactFile",
     "LocalArtifactManifest",
     "LocalModelFailure",
+    "LocalTextGeneration",
     "ModelOutputError",
     "ModelProviderError",
     "OpenAICompatibleModel",

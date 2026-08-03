@@ -20,7 +20,22 @@ from .local_openai import LocalModelFailure
 
 
 class LocalTextGenerator(Protocol):
-    def __call__(self, prompt: str, *, max_new_tokens: int, temperature: float, top_p: float, seed: int) -> str: ...
+    def __call__(
+        self,
+        prompt: str,
+        *,
+        max_new_tokens: int,
+        temperature: float,
+        top_p: float,
+        seed: int,
+    ) -> str | LocalTextGeneration: ...
+
+
+@dataclass(frozen=True, slots=True)
+class LocalTextGeneration:
+    content: str
+    prompt_tokens: int | None = None
+    output_tokens: int | None = None
 
 
 @dataclass(slots=True)
@@ -30,6 +45,7 @@ class TransformersLocalModel:
     clock: Callable[[], float] = field(default=time.monotonic, repr=False)
     snapshot_path: Path | None = None
     artifact_manifest: LocalArtifactManifest | None = None
+    records: list[dict[str, object]] = field(default_factory=list, repr=False)
 
     def __post_init__(self) -> None:
         if self.spec.backend != "transformers":
@@ -84,12 +100,27 @@ class TransformersLocalModel:
         prompt = f"{request.system_prompt}\n{request.user_prompt}\nReturn JSON only."
         started = self.clock()
         try:
-            content = generator(
+            generated = generator(
                 prompt,
                 max_new_tokens=self.spec.max_output_tokens,
                 temperature=self.spec.temperature,
                 top_p=self.spec.top_p,
                 seed=self.spec.seed,
+            )
+            generation = (
+                generated
+                if isinstance(generated, LocalTextGeneration)
+                else LocalTextGeneration(generated)
+            )
+            content = generation.content
+            self.records.append(
+                {
+                    "request_id": request.request_id,
+                    "content": content,
+                    "raw_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+                    "prompt_tokens": generation.prompt_tokens,
+                    "output_tokens": generation.output_tokens,
+                }
             )
             decoded = json.loads(content)
             if not isinstance(decoded, dict):
@@ -105,8 +136,8 @@ class TransformersLocalModel:
             request.request_id,
             self.spec.model_id,
             cast(dict[str, object], decoded),
-            None,
-            None,
+            generation.prompt_tokens,
+            generation.output_tokens,
             latency,
             raw_hash,
         )
@@ -136,7 +167,14 @@ class TransformersLocalModel:
             device_map=self.spec.device,
         )
 
-        def generate(prompt: str, *, max_new_tokens: int, temperature: float, top_p: float, seed: int) -> str:
+        def generate(
+            prompt: str,
+            *,
+            max_new_tokens: int,
+            temperature: float,
+            top_p: float,
+            seed: int,
+        ) -> LocalTextGeneration:
             set_seed(seed)
             encoded = tokenizer(prompt, return_tensors="pt")
             output = cast(Any, model).generate(
@@ -146,9 +184,21 @@ class TransformersLocalModel:
                 temperature=max(temperature, 1e-8),
                 top_p=top_p,
             )
-            return cast(str, tokenizer.decode(output[0][encoded["input_ids"].shape[-1] :], skip_special_tokens=True))
+            prompt_count = int(encoded["input_ids"].shape[-1])
+            content = cast(
+                str,
+                tokenizer.decode(
+                    output[0][prompt_count:],
+                    skip_special_tokens=True,
+                ),
+            )
+            return LocalTextGeneration(
+                content,
+                prompt_count,
+                int(output[0].shape[-1]) - prompt_count,
+            )
 
         return generate
 
 
-__all__ = ["LocalTextGenerator", "TransformersLocalModel"]
+__all__ = ["LocalTextGeneration", "LocalTextGenerator", "TransformersLocalModel"]

@@ -14,6 +14,7 @@ from conflux.adapters.models import (
     LocalArtifactFile,
     LocalArtifactManifest,
     LocalModelFailure,
+    LocalTextGeneration,
     SelfHostedOpenAIModel,
     TransformersLocalModel,
 )
@@ -129,7 +130,14 @@ def test_local_endpoint_scope_and_malformed_output_fail_closed() -> None:
 def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
     seen: dict[str, object] = {}
 
-    def generate(prompt: str, *, max_new_tokens: int, temperature: float, top_p: float, seed: int) -> str:
+    def generate(
+        prompt: str,
+        *,
+        max_new_tokens: int,
+        temperature: float,
+        top_p: float,
+        seed: int,
+    ) -> LocalTextGeneration:
         seen.update(
             prompt=prompt,
             max_new_tokens=max_new_tokens,
@@ -137,11 +145,14 @@ def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
             top_p=top_p,
             seed=seed,
         )
-        return '{"answer":"local"}'
+        return LocalTextGeneration('{"answer":"local"}', 11, 4)
 
     model = TransformersLocalModel(_spec("transformers", None), generator=generate, clock=lambda: 2.0)
     assert model.preflight().network_scope == "none"
-    assert model.generate(_request()).payload == {"answer": "local"}
+    response = model.generate(_request())
+    assert response.payload == {"answer": "local"}
+    assert (response.prompt_tokens, response.output_tokens) == (11, 4)
+    assert model.records[0]["content"] == '{"answer":"local"}'
     assert seen["seed"] == 3
     assert seen["max_new_tokens"] == 32
     model.generator = lambda *args, **kwargs: '{"wrong":true}'

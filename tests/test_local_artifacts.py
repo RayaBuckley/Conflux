@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
 import pytest
 
+import conflux.cli as cli_module
 from conflux.adapters.models import (
     ResolvedLocalModel,
     load_resolved_local_model,
@@ -14,7 +16,8 @@ from conflux.adapters.models import (
     write_resolved_local_model,
 )
 from conflux.cli import main
-from conflux.ports import LocalModelSpec
+from conflux.experiments import ExperimentProtocol
+from conflux.ports import LocalModelPreflight, LocalModelSpec
 
 MODEL_ID = "HuggingFaceTB/SmolLM2-360M-Instruct"
 REVISION = "c38281e01d0c0b0c36eac2f5bcb5b51fa2e803fc"
@@ -154,3 +157,103 @@ def test_model_resolve_cli_writes_reviewable_configuration(tmp_path: Path) -> No
     resolved = load_resolved_local_model(output / "transformers.json")
     assert resolved.spec.device == "cpu"
     assert resolved.spec.temperature == 0
+
+
+def test_cpu_pilot_preflights_eight_cells_and_retains_fake_bundle(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    snapshot = _snapshot(tmp_path)
+    manifest, _ = resolve_transformers_snapshot(
+        snapshot,
+        model_id=MODEL_ID,
+        revision=REVISION,
+    )
+    configuration = tmp_path / "transformers.json"
+    write_resolved_local_model(
+        ResolvedLocalModel(_spec(manifest.fingerprint), snapshot, manifest),
+        configuration,
+    )
+    output = tmp_path / "pilot"
+
+    class AvailableModel:
+        records = [{"request_id": "fake", "content": "{}", "raw_sha256": "a" * 64}]
+
+        def __init__(self, *args: object, **kwargs: object) -> None:
+            _ = args, kwargs
+
+        def preflight(self) -> LocalModelPreflight:
+            return LocalModelPreflight(
+                "transformers",
+                MODEL_ID,
+                True,
+                "none",
+                None,
+                True,
+                True,
+                True,
+                True,
+            )
+
+    def comparison(
+        protocol: ExperimentProtocol,
+        model: object,
+        scenarios: object,
+    ) -> dict[str, object]:
+        _ = model, scenarios
+        observations = []
+        for task in ("direct-authorised-effect", "blocked-action-recovery"):
+            for mode in ("reactive", "static", "dynamic", "dynamic_code"):
+                observations.append(
+                    {
+                        "case_id": f"{task}:{mode}:r0:s0",
+                        "task_id": task,
+                        "mode": mode,
+                        "repetition": 0,
+                        "seed": 0,
+                        "status": "complete",
+                        "utility_completed": True,
+                        "security_violations": 0,
+                        "legitimate_blocks": 0,
+                        "sensitive_reads": 0,
+                        "max_context_size": 1,
+                        "cumulative_authority_footprint": 1,
+                        "model_calls": 1,
+                        "prompt_tokens": 10,
+                        "output_tokens": 2,
+                        "latency_ms": 3,
+                        "replans": 0,
+                        "plan_nodes": 1,
+                        "modeled_effects": 1,
+                        "bound_reached": False,
+                        "parse_failures": 0,
+                        "modeled_program_failures": 0,
+                    }
+                )
+        return {
+            "schema_version": "2",
+            "protocol_fingerprint": protocol.fingerprint,
+            "complete": True,
+            "model_id": MODEL_ID,
+            "task_ids": ["blocked-action-recovery", "direct-authorised-effect"],
+            "observations": observations,
+        }
+
+    monkeypatch.setattr(cli_module, "TransformersLocalModel", AvailableModel)
+    monkeypatch.setattr(cli_module, "run_planning_comparison", comparison)
+    arguments = [
+        "plan",
+        "pilot",
+        "--model-config",
+        str(configuration),
+        "--source-commit",
+        "a" * 40,
+        "--output",
+        str(output),
+    ]
+    assert main(arguments) == 0
+    assert len(json.loads((output / "preflight.json").read_text())["matrix"]) == 8
+    assert main([*arguments, "--execute-local"]) == 0
+    assert len((output / "raw-model.jsonl").read_text().splitlines()) == 1
+    assert (output / "manifest.json").is_file()
+    assert (output / "CHECKSUMS.sha256").is_file()
