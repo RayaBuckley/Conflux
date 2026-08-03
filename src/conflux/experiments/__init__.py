@@ -20,6 +20,11 @@ from .coi_evidence import (
     generate_coi_evidence_bundle,
     verify_coi_evidence_checksums,
 )
+from .direction_evidence import (
+    DIRECTION_EVIDENCE_FILES,
+    compare_direction_evidence_bundle,
+    generate_direction_evidence_bundle,
+)
 from .laptop_smoke import (
     BACKEND_LLAMA_CPP,
     BACKEND_TRANSFORMERS,
@@ -87,6 +92,7 @@ __all__ = [
     "ExperimentProtocol",
     "DiagnosticAction",
     "DiagnosticScenario",
+    "DIRECTION_EVIDENCE_FILES",
     "LocalModelSpec",
     "LaptopPlanningSmokePlan",
     "LaptopSmokeCell",
@@ -102,6 +108,7 @@ __all__ = [
     "agentdojo_matrix",
     "cedar_differential_preflight",
     "compare_cedar_preflight_bundle",
+    "compare_direction_evidence_bundle",
     "completion_marker",
     "compare_native_sled_bundle",
     "compare_coi_evidence_bundle",
@@ -109,6 +116,7 @@ __all__ = [
     "generate_smoke_bundle",
     "generate_native_sled_bundle",
     "generate_coi_evidence_bundle",
+    "generate_direction_evidence_bundle",
     "generate_planning_report",
     "load_manifest",
     "load_laptop_planning_smoke",

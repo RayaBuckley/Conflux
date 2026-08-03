@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.local/schemas/direction-readiness-result.schema.json",
+  "type": "object",
+  "required": ["schema_version", "id", "classification", "complete", "prompt", "seeds", "repetitions", "bounds", "matrix", "expected_resources", "exclusions"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"type": "string", "minLength": 1},
+    "classification": {"const": "evaluation_ready"},
+    "complete": {"const": false},
+    "model": {"type": "object"},
+    "models": {"type": "object"},
+    "prompt": {"type": "object"},
+    "seeds": {"type": "array", "items": {"type": "integer"}, "minItems": 1},
+    "repetitions": {"type": "integer", "minimum": 1},
+    "bounds": {"type": "object"},
+    "matrix": {"type": "array", "items": {"type": "object"}, "minItems": 1},
+    "expected_resources": {"oneOf": [{"type": "array"}, {"type": "object"}]},
+    "operator_gates": {"type": "array"},
+    "suite": {"type": "object"},
+    "exclusions": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "oneOf": [{"required": ["model"]}, {"required": ["models"]}],
+  "additionalProperties": false
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.local/schemas/security-mutation-result.schema.json",
+  "type": "object",
+  "required": ["schema_version", "classification", "complete", "runtime_delegation_enabled", "bounds", "canonical", "mutants"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "classification": {"const": "bounded_evidence"},
+    "complete": {"const": true},
+    "runtime_delegation_enabled": {"const": false},
+    "bounds": {"type": "object"},
+    "canonical": {
+      "type": "object",
+      "required": ["disclosure", "delegation"],
+      "additionalProperties": false,
+      "properties": {"disclosure": {"type": "object"}, "delegation": {"type": "object"}}
+    },
+    "mutants": {
+      "type": "object",
+      "required": ["disclosure", "delegation"],
+      "additionalProperties": false,
+      "properties": {
+        "disclosure": {"type": "array", "minItems": 4, "maxItems": 4},
+        "delegation": {"type": "array", "minItems": 7, "maxItems": 7}
+      }
+    }
+  },
+  "additionalProperties": false
+}

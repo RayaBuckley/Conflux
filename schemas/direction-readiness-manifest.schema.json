@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.local/schemas/direction-readiness-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "id", "source_commit", "classification", "offline", "optional_runtimes_invoked", "inputs", "outputs", "rerun_command"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "id": {"const": "direction-readiness-v1"},
+    "source_commit": {"type": "string", "minLength": 7},
+    "classification": {"type": "object"},
+    "offline": {"const": true},
+    "optional_runtimes_invoked": {"type": "array", "maxItems": 0},
+    "inputs": {"type": "object"},
+    "outputs": {"type": "object"},
+    "rerun_command": {"type": "array", "items": {"type": "string"}, "minItems": 2}
+  },
+  "additionalProperties": false
+}
