@@ -25,12 +25,16 @@ from conflux.adapters.models import (
     SelfHostedOpenAIModel,
     TransformersLocalModel,
 )
+from conflux.adapters.policy import CedarPolicyBundle
 from conflux.adapters.providers import InMemoryExecutor
 from conflux.adapters.scenarios import load_scenario, load_schema
 from conflux.application import CapabilityReport, ChatRuntime, MediationService
 from conflux.application.planning_demo import run_dynamic_planning_demo
 from conflux.domain import canonical_json
 from conflux.evaluation import (
+    DELEGATION_PROPERTIES,
+    DelegationMutation,
+    DelegationVerificationSystem,
     ExplicitStateChecker,
     ITESVerificationSystem,
     NoForbiddenObservation,
@@ -50,6 +54,9 @@ from conflux.experiments import (
     BACKEND_TRANSFORMERS,
     ExperimentProtocol,
     agentdojo_matrix,
+    cedar_differential_preflight,
+    load_cedar_bundle,
+    load_cedar_corpus,
     load_default_planning_diagnostic_suite,
     load_laptop_planning_smoke,
     load_manifest,
@@ -126,6 +133,10 @@ def _parser() -> argparse.ArgumentParser:
     sled_reproduce = sled_commands.add_parser("reproduce", help="run paired legacy/canonical native SLED")
     sled_reproduce.add_argument("--protocol", type=Path, required=True)
     sled_reproduce.add_argument("--output", type=Path)
+    sled_delegation = sled_commands.add_parser(
+        "delegation", help="verify the disabled scoped-delegation model"
+    )
+    sled_delegation.add_argument("--output", type=Path, required=True)
 
     verify = commands.add_parser("verify", help="solver-facing verification (M7)")
     verify.add_argument("--model", type=Path)
@@ -145,6 +156,18 @@ def _parser() -> argparse.ArgumentParser:
     agentdojo.add_argument("--output", type=Path)
     agentdojo.add_argument("--execute-local", action="store_true")
 
+    policy = commands.add_parser("policy", help="optional policy-adapter tooling")
+    policy_commands = policy.add_subparsers(dest="policy_command", required=True)
+    cedar = policy_commands.add_parser("cedar", help="pinned local Cedar adapter")
+    cedar_commands = cedar.add_subparsers(dest="cedar_command", required=True)
+    cedar_preflight = cedar_commands.add_parser(
+        "preflight", help="translate a corpus without invoking Cedar"
+    )
+    cedar_preflight.add_argument("--bundle", type=Path, required=True)
+    cedar_preflight.add_argument("--corpus", type=Path, required=True)
+    cedar_preflight.add_argument("--binary", type=Path)
+    cedar_preflight.add_argument("--output", type=Path, required=True)
+
     report = commands.add_parser("report", help="render a result JSON")
     report.add_argument("result", type=Path)
     report.add_argument("--json", action="store_true")
@@ -152,6 +175,8 @@ def _parser() -> argparse.ArgumentParser:
     doctor = commands.add_parser("doctor", help="inspect local capabilities")
     doctor.add_argument("--json", action="store_true")
     doctor.add_argument("--local-model-config", type=Path)
+    doctor.add_argument("--cedar-bundle", type=Path)
+    doctor.add_argument("--cedar-binary", type=Path)
     return parser
 
 
@@ -175,6 +200,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _verify(arguments)
         if command == "benchmark":
             return _benchmark(arguments)
+        if command == "policy":
+            return _policy(arguments)
         return _unavailable(f"unsupported_command:{command}")
     except ValidationError as error:
         print(f"invalid_evidence:{error.message}", file=sys.stderr)
@@ -263,6 +290,8 @@ def _sled(arguments: argparse.Namespace) -> int:
         path.write_text(canonical_json(reproduction) + "\n", encoding="utf-8", newline="\n")
         print(canonical_json({"complete": reproduction["complete"], "output": str(path)}))
         return EXIT_OK if reproduction["complete"] else EXIT_RUNTIME
+    if str(arguments.sled_command) == "delegation":
+        return _sled_delegation(cast(Path, arguments.output))
     if str(arguments.sled_command) != "run":
         return _unavailable(f"unsupported_sled_command:{arguments.sled_command}")
     scenario = load_scenario(cast(Path, arguments.suite))
@@ -421,6 +450,12 @@ def _doctor(arguments: argparse.Namespace) -> int:
             "network_scope": local.network_scope,
             "reason": local.reason,
         }
+    cedar_bundle_path = cast(Path | None, arguments.cedar_bundle)
+    cedar_binary_path = cast(Path | None, arguments.cedar_binary)
+    if cedar_bundle_path is not None:
+        payload["cedar"] = _cedar_identity_preflight(
+            load_cedar_bundle(cedar_bundle_path), cedar_binary_path
+        )
     if arguments.json:
         print(canonical_json(payload))
     else:
@@ -433,6 +468,12 @@ def _doctor(arguments: argparse.Namespace) -> int:
             print(
                 f"Local model: {local.model_id} ({local.backend}, {local.network_scope}) - "
                 f"{'available' if local.available else local.reason}"
+            )
+        if "cedar" in payload:
+            cedar = cast(dict[str, object], payload["cedar"])
+            print(
+                f"Cedar: {cedar['expected_version']} - "
+                f"{'available' if cedar['available'] else cedar['reason']}"
             )
     return EXIT_OK
 
@@ -503,16 +544,17 @@ def _plan(arguments: argparse.Namespace) -> int:
         model = _local_model(protocol)
         matrix = planning_matrix(protocol, scenarios)
         if not bool(arguments.execute_local):
-            print(
-                canonical_json(
-                    {
-                        "execute_local": False,
-                        "preflight": _preflight_dict(model.preflight()),
-                        "bounds": dict(protocol.bounds),
-                        "matrix": [cell.id for cell in matrix],
-                    }
-                )
-            )
+            payload = {
+                "schema_version": "1",
+                "classification": "evaluation_ready",
+                "complete": False,
+                "execute_local": False,
+                "preflight": _preflight_dict(model.preflight()),
+                "bounds": dict(protocol.bounds),
+                "matrix": [cell.id for cell in matrix],
+                "exclusions": ["local model was not invoked"],
+            }
+            _emit_preflight(payload, cast(Path | None, arguments.output))
             return EXIT_OK
         comparison = run_planning_comparison(protocol, model, scenarios)
         output = cast(Path | None, arguments.output) or Path(protocol.output_directory)
@@ -562,19 +604,20 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
     }
     matrix = [cell.id for cell in plan.matrix()]
     if not bool(arguments.execute_local):
-        print(
-            canonical_json(
-                {
-                    "execute_local": False,
-                    "plan_fingerprint": plan.fingerprint,
-                    "operator_gates": list(plan.operator_gates),
-                    "stop_after_bundle": plan.stop_after_bundle,
-                    "bounds": dict(plan.bounds),
-                    "preflight": preflights,
-                    "matrix": matrix,
-                }
-            )
-        )
+        payload = {
+            "schema_version": "1",
+            "classification": "evaluation_ready",
+            "complete": False,
+            "execute_local": False,
+            "plan_fingerprint": plan.fingerprint,
+            "operator_gates": list(plan.operator_gates),
+            "stop_after_bundle": plan.stop_after_bundle,
+            "bounds": dict(plan.bounds),
+            "preflight": preflights,
+            "matrix": matrix,
+            "exclusions": ["local model runtimes were not invoked"],
+        }
+        _emit_preflight(payload, cast(Path | None, arguments.output))
         return EXIT_OK
     unavailable = [
         backend
@@ -699,16 +742,17 @@ def _benchmark(arguments: argparse.Namespace) -> int:
     model = _local_model(protocol)
     matrix = agentdojo_matrix(protocol)
     if not bool(arguments.execute_local):
-        print(
-            canonical_json(
-                {
-                    "execute_local": False,
-                    "preflight": _preflight_dict(model.preflight()),
-                    "bounds": dict(protocol.bounds),
-                    "matrix": [cell.to_dict() for cell in matrix],
-                }
-            )
-        )
+        payload = {
+            "schema_version": "1",
+            "classification": "evaluation_ready",
+            "complete": False,
+            "execute_local": False,
+            "preflight": _preflight_dict(model.preflight()),
+            "bounds": dict(protocol.bounds),
+            "matrix": [cell.to_dict() for cell in matrix],
+            "exclusions": ["AgentDojo and the local model were not invoked"],
+        }
+        _emit_preflight(payload, output)
         return EXIT_OK
     destination = output or Path(protocol.output_directory)
     comparison = run_agentdojo_comparison(
@@ -738,6 +782,102 @@ def _preflight_dict(preflight: LocalModelPreflight) -> dict[str, object]:
         "available": preflight.available,
         "network_scope": preflight.network_scope,
         "reason": preflight.reason,
+    }
+
+
+def _emit_preflight(payload: dict[str, object], output: Path | None) -> None:
+    if output is not None:
+        output.mkdir(parents=True, exist_ok=True)
+        path = output / "preflight.json"
+        path.write_text(canonical_json(payload) + "\n", encoding="utf-8", newline="\n")
+        payload = {**payload, "output": str(path)}
+    print(canonical_json(payload))
+
+
+def _sled_delegation(output: Path) -> int:
+    bounds = VerificationBounds(1, 4, 4, 1)
+    canonical = ExplicitStateChecker().verify(
+        DelegationVerificationSystem(), DELEGATION_PROPERTIES, bounds
+    )
+    mutants = []
+    for mutation in DelegationMutation:
+        if mutation is DelegationMutation.CANONICAL:
+            continue
+        result = ExplicitStateChecker().verify(
+            DelegationVerificationSystem(mutation), DELEGATION_PROPERTIES, bounds
+        )
+        mutants.append(
+            {
+                "mutation": mutation.value,
+                "killed": result.verdict.value == "unsafe"
+                and result.counterexample is not None
+                and result.counterexample.length == 1,
+                "verification": result.to_dict(),
+            }
+        )
+    payload = {
+        "schema_version": "1",
+        "classification": "bounded_evidence",
+        "complete": True,
+        "runtime_enabled": False,
+        "canonical": canonical.to_dict(),
+        "mutants": mutants,
+    }
+    output.mkdir(parents=True, exist_ok=True)
+    path = output / "delegation-verification.json"
+    path.write_text(canonical_json(payload) + "\n", encoding="utf-8", newline="\n")
+    print(canonical_json({"complete": True, "output": str(path)}))
+    return EXIT_OK
+
+
+def _policy(arguments: argparse.Namespace) -> int:
+    if (
+        str(arguments.policy_command) != "cedar"
+        or str(arguments.cedar_command) != "preflight"
+    ):
+        return _unavailable("unsupported_policy_command")
+    bundle = load_cedar_bundle(cast(Path, arguments.bundle))
+    corpus = load_cedar_corpus(cast(Path, arguments.corpus))
+    result = cedar_differential_preflight(bundle, corpus)
+    identity = _cedar_identity_preflight(bundle, cast(Path | None, arguments.binary))
+    payload = {**result, "binary_preflight": identity}
+    output = cast(Path, arguments.output)
+    output.mkdir(parents=True, exist_ok=True)
+    path = output / "preflight.json"
+    path.write_text(canonical_json(payload) + "\n", encoding="utf-8", newline="\n")
+    print(canonical_json({"classification": "evaluation_ready", "output": str(path)}))
+    return EXIT_OK
+
+
+def _cedar_identity_preflight(
+    bundle: CedarPolicyBundle, binary: Path | None
+) -> dict[str, object]:
+    expected = bundle.binary
+    available = binary is not None and binary.is_file()
+    actual_sha256 = None
+    matches = False
+    if available and binary is not None:
+        actual_sha256 = hashlib.sha256(binary.read_bytes()).hexdigest()
+        matches = actual_sha256 == expected.sha256
+    reason = (
+        "binary_not_supplied"
+        if binary is None
+        else "binary_not_found"
+        if not available
+        else "identity_match"
+        if matches
+        else "binary_checksum_mismatch"
+    )
+    return {
+        "available": available and matches,
+        "reason": reason,
+        "binary_path": str(binary) if binary is not None else None,
+        "expected_version": expected.version,
+        "expected_commit": expected.commit,
+        "expected_sha256": expected.sha256,
+        "actual_sha256": actual_sha256,
+        "supported_features": sorted(bundle.supported_features),
+        "invoked": False,
     }
 
 

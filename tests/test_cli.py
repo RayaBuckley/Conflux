@@ -24,6 +24,8 @@ AGENTDOJO_FIXTURE = (
 )
 AGENTDOJO_MANIFEST = ROOT / "experiments" / "manifests" / "agentdojo-smoke.yaml"
 LAPTOP_SMOKE_PLAN = ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
+CEDAR_BUNDLE = ROOT / "experiments/manifests/cedar-policy-bundle-v1.json"
+CEDAR_CORPUS = ROOT / "experiments/suites/cedar-differential-v1.json"
 
 
 def _write_protocol(path: Path, track: str, *, model: bool) -> None:
@@ -421,10 +423,24 @@ def test_model_dependent_commands_preflight_without_model_invocation(
 ) -> None:
     planning = tmp_path / "planning.json"
     _write_protocol(planning, "planning", model=True)
-    assert main(["plan", "compare", "--config", str(planning)]) == EXIT_OK
+    planning_output = tmp_path / "planning-output"
+    assert (
+        main(
+            [
+                "plan",
+                "compare",
+                "--config",
+                str(planning),
+                "--output",
+                str(planning_output),
+            ]
+        )
+        == EXIT_OK
+    )
     plan_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert plan_preflight["execute_local"] is False
     assert len(plan_preflight["matrix"]) == 32
+    assert json.loads((planning_output / "preflight.json").read_text())["complete"] is False
 
     transformers = tmp_path / "laptop-transformers.json"
     llama = tmp_path / "laptop-llama.json"
@@ -441,6 +457,8 @@ def test_model_dependent_commands_preflight_without_model_invocation(
                 str(transformers),
                 "--llama-config",
                 str(llama),
+                "--output",
+                str(tmp_path / "laptop-output"),
             ]
         )
         == EXIT_OK
@@ -449,17 +467,88 @@ def test_model_dependent_commands_preflight_without_model_invocation(
     assert laptop_preflight["execute_local"] is False
     assert laptop_preflight["stop_after_bundle"] is True
     assert len(laptop_preflight["matrix"]) == 16
+    assert (tmp_path / "laptop-output" / "preflight.json").is_file()
 
     agentdojo = tmp_path / "agentdojo.json"
     _write_protocol(agentdojo, "agentdojo", model=True)
-    assert main(["benchmark", "agentdojo", "--config", str(agentdojo)]) == EXIT_OK
+    benchmark_output = tmp_path / "agentdojo-output"
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "--config",
+                str(agentdojo),
+                "--output",
+                str(benchmark_output),
+            ]
+        )
+        == EXIT_OK
+    )
     benchmark_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert benchmark_preflight["execute_local"] is False
     assert len(benchmark_preflight["matrix"]) == 4
+    assert (benchmark_output / "preflight.json").is_file()
 
     assert main(["doctor", "--local-model-config", str(planning), "--json"]) == EXIT_OK
     doctor = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert doctor["local_model"]["network_scope"] == "none"
+
+
+def test_direction_security_preflight_commands_are_offline(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    delegation_output = tmp_path / "delegation"
+    assert main(["sled", "delegation", "--output", str(delegation_output)]) == EXIT_OK
+    delegation = json.loads(
+        (delegation_output / "delegation-verification.json").read_text()
+    )
+    assert delegation["runtime_enabled"] is False
+    assert delegation["canonical"]["verdict"] == "safe"
+    assert len(delegation["mutants"]) == 7
+    assert all(item["killed"] for item in delegation["mutants"])
+    capsys.readouterr()  # type: ignore[attr-defined]
+
+    cedar_output = tmp_path / "cedar"
+    assert (
+        main(
+            [
+                "policy",
+                "cedar",
+                "preflight",
+                "--bundle",
+                str(CEDAR_BUNDLE),
+                "--corpus",
+                str(CEDAR_CORPUS),
+                "--output",
+                str(cedar_output),
+            ]
+        )
+        == EXIT_OK
+    )
+    cedar = json.loads((cedar_output / "preflight.json").read_text())
+    assert cedar["classification"] == "evaluation_ready"
+    assert cedar["complete"] is False
+    assert cedar["binary_preflight"]["invoked"] is False
+    assert cedar["binary_preflight"]["reason"] == "binary_not_supplied"
+    capsys.readouterr()  # type: ignore[attr-defined]
+
+    assert (
+        main(
+            [
+                "doctor",
+                "--cedar-bundle",
+                str(CEDAR_BUNDLE),
+                "--json",
+            ]
+        )
+        == EXIT_OK
+    )
+    doctor = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
+    assert doctor["cedar"]["expected_version"] == "4.11.0"
+    assert doctor["cedar"]["available"] is False
+    assert doctor["cedar"]["invoked"] is False
 
 
 def test_native_reproduction_cli_and_version_two_report(

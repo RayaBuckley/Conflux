@@ -162,6 +162,25 @@ def main() -> int:
         if verification["verdict"] != "safe":
             raise RuntimeError("installed SLED smoke did not exhaust the finite fixture")
 
+        delegation_output = Path(temporary) / "delegation"
+        subprocess.run(
+            (str(command), "sled", "delegation", "--output", str(delegation_output)),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        delegation = json.loads(
+            (delegation_output / "delegation-verification.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if delegation["runtime_enabled"] or not all(
+            item["killed"] for item in delegation["mutants"]
+        ):
+            raise RuntimeError("installed delegation verification gates are incomplete")
+
         native_protocol = Path(temporary) / "native-protocol.json"
         native_output = Path(temporary) / "native-reproduction"
         _write_protocol(native_protocol, "native_sled", native_output)
@@ -187,8 +206,17 @@ def main() -> int:
 
         planning_protocol = Path(temporary) / "planning-protocol.json"
         _write_protocol(planning_protocol, "planning", Path(temporary) / "planning-comparison")
+        planning_preflight_output = Path(temporary) / "planning-preflight"
         planning = subprocess.run(
-            (str(command), "plan", "compare", "--config", str(planning_protocol)),
+            (
+                str(command),
+                "plan",
+                "compare",
+                "--config",
+                str(planning_protocol),
+                "--output",
+                str(planning_preflight_output),
+            ),
             cwd=temporary,
             check=True,
             capture_output=True,
@@ -197,11 +225,22 @@ def main() -> int:
         )
         if len(json.loads(planning.stdout)["matrix"]) != 32:
             raise RuntimeError("installed planning preflight matrix is incomplete")
+        if not (planning_preflight_output / "preflight.json").is_file():
+            raise RuntimeError("installed planning preflight was not retained")
 
         agentdojo_protocol = Path(temporary) / "agentdojo-protocol.json"
-        _write_protocol(agentdojo_protocol, "agentdojo", Path(temporary) / "agentdojo")
+        agentdojo_output = Path(temporary) / "agentdojo"
+        _write_protocol(agentdojo_protocol, "agentdojo", agentdojo_output)
         agentdojo = subprocess.run(
-            (str(command), "benchmark", "agentdojo", "--config", str(agentdojo_protocol)),
+            (
+                str(command),
+                "benchmark",
+                "agentdojo",
+                "--config",
+                str(agentdojo_protocol),
+                "--output",
+                str(agentdojo_output),
+            ),
             cwd=temporary,
             check=True,
             capture_output=True,
@@ -210,6 +249,31 @@ def main() -> int:
         )
         if len(json.loads(agentdojo.stdout)["matrix"]) != 4:
             raise RuntimeError("installed AgentDojo preflight matrix is incomplete")
+        if not (agentdojo_output / "preflight.json").is_file():
+            raise RuntimeError("installed AgentDojo preflight was not retained")
+
+        cedar_output = Path(temporary) / "cedar-preflight"
+        cedar = subprocess.run(
+            (
+                str(command),
+                "policy",
+                "cedar",
+                "preflight",
+                "--bundle",
+                str(ROOT / "experiments/manifests/cedar-policy-bundle-v1.json"),
+                "--corpus",
+                str(ROOT / "experiments/suites/cedar-differential-v1.json"),
+                "--output",
+                str(cedar_output),
+            ),
+            cwd=temporary,
+            check=True,
+            capture_output=True,
+            text=True,
+            env=smoke_environment,
+        )
+        if json.loads(cedar.stdout)["classification"] != "evaluation_ready":
+            raise RuntimeError("installed Cedar preflight overstated unavailable evidence")
 
         local_doctor = subprocess.run(
             (str(command), "doctor", "--local-model-config", str(planning_protocol), "--json"),
