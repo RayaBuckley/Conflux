@@ -5,11 +5,18 @@ from __future__ import annotations
 import json
 import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 from types import ModuleType
 
 import pytest
 
-from conflux.adapters.models import LocalModelFailure, SelfHostedOpenAIModel, TransformersLocalModel
+from conflux.adapters.models import (
+    LocalArtifactFile,
+    LocalArtifactManifest,
+    LocalModelFailure,
+    SelfHostedOpenAIModel,
+    TransformersLocalModel,
+)
 from conflux.adapters.models.openai_compatible import HTTPResponse
 from conflux.experiments import LocalModelSpec
 from conflux.ports import LocalModelRequest
@@ -168,7 +175,27 @@ def test_transformers_direct_loading_forbids_downloads_and_remote_code(
     fake.set_seed = lambda seed: None  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "transformers", fake)
 
-    model = TransformersLocalModel(_spec("transformers", None))
+    manifest = LocalArtifactManifest(
+        "local/model",
+        "revision",
+        "local/model",
+        "revision",
+        (
+            LocalArtifactFile("config.json", 0, "a" * 64),
+            LocalArtifactFile("model.safetensors", 0, "b" * 64),
+            LocalArtifactFile("tokenizer.json", 0, "c" * 64),
+        ),
+        0,
+    )
+    monkeypatch.setattr(
+        "conflux.adapters.models.local_transformers.verify_transformers_snapshot",
+        lambda path, value: (),
+    )
+    model = TransformersLocalModel(
+        _spec("transformers", None),
+        snapshot_path=Path("snapshot"),
+        artifact_manifest=manifest,
+    )
     model._load_generator()
     assert len(calls) == 2
     assert all(call[1]["local_files_only"] is True for call in calls)

@@ -189,8 +189,11 @@ class _LocalPipelineModel:
         messages: Sequence[dict[str, object]] = (),
         extra_args: dict[str, object] | None = None,
     ) -> tuple[str, object, object, Sequence[dict[str, object]], dict[str, object]]:
-        from agentdojo.functions_runtime import FunctionCall  # type: ignore[import-not-found]
-        from agentdojo.types import ChatAssistantMessage, text_content_block_from_string  # type: ignore[import-not-found]
+        from agentdojo.functions_runtime import FunctionCall  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        from agentdojo.types import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
+            ChatAssistantMessage,
+            text_content_block_from_string,
+        )
 
         functions = getattr(runtime, "functions")
         tools = [
@@ -240,7 +243,10 @@ class _MediatedToolExecutor:
         messages: Sequence[dict[str, object]] = (),
         extra_args: dict[str, object] | None = None,
     ) -> tuple[str, object, object, Sequence[dict[str, object]], dict[str, object]]:
-        from agentdojo.types import ChatToolResultMessage, text_content_block_from_string
+        from agentdojo.types import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
+            ChatToolResultMessage,
+            text_content_block_from_string,
+        )
 
         if not messages or messages[-1].get("role") != "assistant":
             return query, runtime, env, messages, dict(extra_args or {})
@@ -287,12 +293,20 @@ class PinnedAgentDojoCellExecutor:
             return _failed(cell, f"{category}_failed" if category in {"model", "parser", "setup"} else "incomplete", category)
 
     def _execute(self, cell: AgentDojoCell, model: LocalModelPort, max_model_calls: int) -> AgentDojoCellResult:
-        from agentdojo.agent_pipeline.agent_pipeline import AgentPipeline, load_system_message  # type: ignore[import-not-found]
-        from agentdojo.agent_pipeline.basic_elements import InitQuery, SystemMessage  # type: ignore[import-not-found]
-        from agentdojo.agent_pipeline.tool_execution import ToolsExecutionLoop  # type: ignore[import-not-found]
-        from agentdojo.attacks.attack_registry import load_attack  # type: ignore[import-not-found]
-        from agentdojo.logging import OutputLogger, TraceLogger  # type: ignore[import-not-found]
-        from agentdojo.task_suite.load_suites import get_suite  # type: ignore[import-not-found]
+        from agentdojo.agent_pipeline.agent_pipeline import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
+            AgentPipeline,
+            load_system_message,
+        )
+        from agentdojo.agent_pipeline.basic_elements import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
+            InitQuery,
+            SystemMessage,
+        )
+        from agentdojo.agent_pipeline.tool_execution import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
+            ToolsExecutionLoop,
+        )
+        from agentdojo.attacks.attack_registry import load_attack  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        from agentdojo.logging import OutputLogger, TraceLogger  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        from agentdojo.task_suite.load_suites import get_suite  # type: ignore[import-not-found,import-untyped,unused-ignore]
 
         suite = get_suite(BENCHMARK_VERSION, cell.suite_id)
         user_task = suite.get_user_task_by_id(cell.user_task_id)

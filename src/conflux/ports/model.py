@@ -120,6 +120,14 @@ class LocalModelPreflight:
     available: bool
     network_scope: str
     reason: str | None
+    dependency_available: bool | None = None
+    artifact_available: bool | None = None
+    identity_verified: bool | None = None
+    runtime_available: bool | None = None
+    warnings: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "warnings", tuple(self.warnings))
 
 
 class LocalModelPort(Protocol):

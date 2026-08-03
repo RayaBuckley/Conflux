@@ -21,9 +21,12 @@ from conflux.adapters.benchmarks.agentdojo_v1 import (
 )
 from conflux.adapters.models import (
     OpenAICompatibleModel,
+    ResolvedLocalModel,
     ScriptedModel,
     SelfHostedOpenAIModel,
     TransformersLocalModel,
+    resolve_transformers_snapshot,
+    write_resolved_local_model,
 )
 from conflux.adapters.policy import CedarPolicyBundle
 from conflux.adapters.providers import InMemoryExecutor
@@ -69,7 +72,7 @@ from conflux.experiments import (
     validate_laptop_protocols,
 )
 from conflux.ites import BranchState, MediatingITES, TransitionKernel
-from conflux.ports import LocalModelPreflight
+from conflux.ports import LocalModelPreflight, LocalModelSpec
 from conflux.verification import (
     FormalVerdict,
     NuXmvBackend,
@@ -87,6 +90,20 @@ EXIT_INVALID_EVIDENCE = 4
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="conflux")
     commands = parser.add_subparsers(dest="command", required=True)
+
+    model = commands.add_parser("model", help="resolve operator-owned local model artifacts")
+    model_commands = model.add_subparsers(dest="model_command", required=True)
+    model_resolve = model_commands.add_parser("resolve")
+    resolve_commands = model_resolve.add_subparsers(dest="resolve_command", required=True)
+    resolve_transformers = resolve_commands.add_parser("transformers")
+    resolve_transformers.add_argument("--model-id", required=True)
+    resolve_transformers.add_argument("--revision", required=True)
+    resolve_transformers.add_argument("--snapshot", type=Path, required=True)
+    resolve_transformers.add_argument("--tokenizer-id")
+    resolve_transformers.add_argument("--tokenizer-revision")
+    resolve_transformers.add_argument("--prompt-template", default="planning-diagnostic-v1")
+    resolve_transformers.add_argument("--runtime-version", required=True)
+    resolve_transformers.add_argument("--output", type=Path, required=True)
 
     demo = commands.add_parser("demo", help="run a deterministic scripted scenario")
     demo.add_argument("--scenario", type=Path, default=Path("examples/basic.yaml"))
@@ -202,6 +219,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _benchmark(arguments)
         if command == "policy":
             return _policy(arguments)
+        if command == "model":
+            return _model_artifacts(arguments)
         return _unavailable(f"unsupported_command:{command}")
     except ValidationError as error:
         print(f"invalid_evidence:{error.message}", file=sys.stderr)
@@ -212,6 +231,70 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (OSError, RuntimeError) as error:
         print(f"runtime_failure:{type(error).__name__}:{error}", file=sys.stderr)
         return EXIT_RUNTIME
+
+
+def _model_artifacts(arguments: argparse.Namespace) -> int:
+    if (
+        str(arguments.model_command) != "resolve"
+        or str(arguments.resolve_command) != "transformers"
+    ):
+        return _unavailable("unsupported_model_artifact_command")
+    model_id = str(arguments.model_id)
+    revision = str(arguments.revision)
+    tokenizer_id = str(arguments.tokenizer_id or model_id)
+    tokenizer_revision = str(arguments.tokenizer_revision or revision)
+    manifest, warnings = resolve_transformers_snapshot(
+        cast(Path, arguments.snapshot),
+        model_id=model_id,
+        revision=revision,
+        tokenizer_id=tokenizer_id,
+        tokenizer_revision=tokenizer_revision,
+    )
+    spec = LocalModelSpec(
+        backend="transformers",
+        model_id=model_id,
+        revision=revision,
+        weight_manifest_sha256=manifest.fingerprint,
+        tokenizer_id=tokenizer_id,
+        tokenizer_revision=tokenizer_revision,
+        prompt_template_version=str(arguments.prompt_template),
+        seed=0,
+        temperature=0.0,
+        top_p=1.0,
+        max_output_tokens=256,
+        context_limit=4096,
+        device="cpu",
+        dtype="float32",
+        runtime_version=str(arguments.runtime_version),
+    )
+    resolved = ResolvedLocalModel(
+        spec,
+        cast(Path, arguments.snapshot),
+        manifest,
+        warnings,
+    )
+    output = cast(Path, arguments.output)
+    write_resolved_local_model(resolved, output / "transformers.json")
+    (output / "artifact-manifest.json").write_text(
+        canonical_json(manifest.to_dict()) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    print(
+        canonical_json(
+            {
+                "available": True,
+                "configuration": str(output / "transformers.json"),
+                "files": len(manifest.files),
+                "manifest_sha256": manifest.fingerprint,
+                "model_id": model_id,
+                "revision": revision,
+                "total_size": manifest.total_size,
+                "warnings": list(warnings),
+            }
+        )
+    )
+    return EXIT_OK
 
 
 def _demo(arguments: argparse.Namespace) -> int:
@@ -782,6 +865,11 @@ def _preflight_dict(preflight: LocalModelPreflight) -> dict[str, object]:
         "available": preflight.available,
         "network_scope": preflight.network_scope,
         "reason": preflight.reason,
+        "dependency_available": preflight.dependency_available,
+        "artifact_available": preflight.artifact_available,
+        "identity_verified": preflight.identity_verified,
+        "runtime_available": preflight.runtime_available,
+        "warnings": list(preflight.warnings),
     }
 
 
