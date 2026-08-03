@@ -500,6 +500,18 @@ def _verify(arguments: argparse.Namespace) -> int:
                 encoding="utf-8",
                 newline="\n",
             )
+        (output / "summary.md").write_text(
+            _verification_summary(
+                result.to_dict(),
+                report,
+                model_path=model_path,
+                property_id=property_id or ",".join(invariant_ids),
+                backend=str(arguments.backend),
+                reduced=comparison is not None,
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
     print(canonical_json(report))
     failed = (
         result.verdict == FormalVerdict.UNKNOWN
@@ -507,6 +519,89 @@ def _verify(arguments: argparse.Namespace) -> int:
         or (comparison is not None and not comparison.equivalent)
     )
     return EXIT_RUNTIME if failed else EXIT_OK
+
+
+def _verification_summary(
+    result: dict[str, object],
+    report: dict[str, object],
+    *,
+    model_path: Path,
+    property_id: str,
+    backend: str,
+    reduced: bool,
+) -> str:
+    verdict = str(result["verdict"])
+    bound = int(cast(int, result["bound"]))
+    claim = {
+        "safe": "The finite state space was exhausted without a violation.",
+        "bounded_safe": (
+            f"No violation was found through the configured bound of {bound}; "
+            "this is not an unbounded proof."
+        ),
+        "unsafe": "A violating execution was found within the configured bound.",
+        "unknown": "No security conclusion can be drawn from this backend result.",
+    }.get(verdict, "The backend returned an unrecognised verdict.")
+    lines = [
+        "# Formal verification summary",
+        "",
+        f"- Property: `{property_id}`",
+        f"- Backend: `{backend}`",
+        f"- Verdict: `{verdict.upper()}`",
+        f"- Claim strength: {claim}",
+        f"- Configured bound: `{bound}`",
+        f"- Query hash: `{result['query_hash']}`",
+        f"- Solver hash: `{result['solver_hash']}`",
+    ]
+    counterexample = cast(list[dict[str, object]], result.get("counterexample", []))
+    if counterexample:
+        last = counterexample[-1]
+        failed = last.get("failed_invariant") or last.get("failed_property") or "unknown"
+        lines.extend(
+            (
+                "",
+                "## Counterexample",
+                "",
+                f"- First failing invariant: `{failed}`",
+                f"- Minimal witness transitions: `{max(0, len(counterexample) - 1)}`",
+                "- The complete machine-readable witness is in `formal-verification.json`.",
+            )
+        )
+    error = cast(str | None, result.get("error"))
+    if error is not None:
+        lines.extend(("", "## Incomplete result", "", f"- Reason: `{error}`"))
+        if error == "optional_binary_unavailable:nuXmv":
+            command = (
+                f"conflux verify --model {model_path} --property {property_id} "
+                "--backend nuxmv --output verification-output"
+            )
+            lines.extend(
+                (
+                    "- Meaning: optional binary unavailable; no conclusion.",
+                    f"- Rerun after installing nuXmv: `{command}`",
+                )
+            )
+    if reduced:
+        comparison = cast(dict[str, object], report["comparison"])
+        reduction = cast(dict[str, object], comparison["reduction"])
+        original = cast(dict[str, object], comparison["original"])
+        reduced_result = cast(dict[str, object], comparison["reduced"])
+        lines.extend(
+            (
+                "",
+                "## Cone-of-influence reduction",
+                "",
+                f"- Applicable: `{reduction['applicable']}`",
+                f"- Reference verdict agreement: `{comparison['equivalent']}`",
+                f"- Original/reduced states: `{original['states']} -> {reduced_result['states']}`",
+                "- Retained/removed variables: "
+                f"`{len(cast(list[object], reduction['retained_variables']))} / "
+                f"{len(cast(list[object], reduction['removed_variables']))}`",
+                "- Retained/removed rules: "
+                f"`{len(cast(list[object], reduction['retained_rules']))} / "
+                f"{len(cast(list[object], reduction['removed_rules']))}`",
+            )
+        )
+    return "\n".join((*lines, ""))
 
 
 def _render_result(payload: dict[str, Any]) -> str:

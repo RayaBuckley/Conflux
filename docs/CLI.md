@@ -12,7 +12,7 @@ conflux sled run --suite examples/basic.yaml --output runs/sled
 conflux sled delegation --output runs/delegation-check
 conflux report runs/demo/result.json
 conflux chat --scenario examples/basic.yaml --endpoint URL --model MODEL
-conflux verify --model examples/verification.json --backend z3 --output runs/verify
+conflux verify --model experiments/suites/sled-coi-v1/safe-noise.json --property safe --backend z3 --output runs/verify
 conflux verify --model MODEL --property PROPERTY --reduce cone_of_influence --output runs/verify-reduced
 conflux benchmark agentdojo --config experiments/manifests/agentdojo-smoke.yaml --upstream-log FIXTURE --output runs/agentdojo.json
 conflux policy cedar preflight --bundle experiments/manifests/cedar-policy-bundle-v1.json --corpus experiments/suites/cedar-differential-v1.json --output runs/cedar-preflight
@@ -32,7 +32,12 @@ without invoking models, containers, solvers, GPUs, or clusters.
 behavior returns `UNKNOWN`. With `--reduce cone_of_influence`, it writes the
 reduced result, the original backend result, and a reference comparison. A
 backend failure, verdict disagreement, or unliftable witness exits with code
-3 rather than promoting a reduced claim. `benchmark agentdojo --upstream-log` strictly
+3 rather than promoting a reduced claim. Every output directory also contains
+`summary.md`, which states the exact claim strength, bound, reduction counts,
+shortest known witness, or actionable reason why no conclusion was reached.
+The checked-in models under `experiments/suites/sled-coi-v1/` are the canonical
+review examples; evidence bundles copy them and retain their hashes.
+`benchmark agentdojo --upstream-log` strictly
 translates one pinned upstream record. Without the fixture it validates the
 installed pinned suite, then stops at the explicit live-runner gate. `chat`
 uses the optional OpenAI-compatible adapter but routes every proposed effect

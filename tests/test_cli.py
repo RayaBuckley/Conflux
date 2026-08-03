@@ -355,6 +355,9 @@ def test_verify_cli_retains_unknown_optional_backend_result(
         == 3
     )
     assert json.loads((output / "formal-verification.json").read_text())["verdict"] == "unknown"
+    summary = (output / "summary.md").read_text(encoding="utf-8")
+    assert "No security conclusion" in summary
+    assert "Configured bound: `1`" in summary
     assert (
         main(["verify", "--model", str(model), "--property", "missing"])
         == EXIT_USAGE
@@ -447,6 +450,72 @@ def test_verify_cli_emits_cone_reduction_comparison(
     assert report["comparison"]["reduction"]["removed_variables"] == ["noise"]
     assert report["backend"]["failure"] == "backend_unavailable_or_failed"
     assert (output / "formal-verification-original.json").is_file()
+    summary = (output / "summary.md").read_text(encoding="utf-8")
+    assert "Original/reduced states: `" in summary
+    assert "Retained/removed variables: `1 / 1`" in summary
+
+
+def test_verify_cli_explains_unavailable_nuxmv(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "conflux.verification.nuxmv_backend.shutil.which",
+        lambda _: None,
+    )
+    model = tmp_path / "model.json"
+    model.write_text(
+        json.dumps(
+            {
+                "schema_version": "1",
+                "id": "nuxmv-unavailable",
+                "bound": 1,
+                "assumptions": [],
+                "variables": [
+                    {
+                        "name": "safe",
+                        "sort": "boolean",
+                        "initial": True,
+                        "minimum": None,
+                        "maximum": None,
+                    }
+                ],
+                "transitions": [],
+                "invariants": [
+                    {
+                        "id": "safe",
+                        "expression": {
+                            "kind": "variable",
+                            "value": "safe",
+                            "arguments": [],
+                        },
+                        "description": "",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "nuxmv"
+    assert (
+        main(
+            [
+                "verify",
+                "--model",
+                str(model),
+                "--property",
+                "safe",
+                "--backend",
+                "nuxmv",
+                "--output",
+                str(output),
+            ]
+        )
+        == 3
+    )
+    summary = (output / "summary.md").read_text(encoding="utf-8")
+    assert "optional binary unavailable; no conclusion" in summary
+    assert "conflux verify --model" in summary
 
 
 def test_live_agentdojo_gate_reports_missing_optional_package(
