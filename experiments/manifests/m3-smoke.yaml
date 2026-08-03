@@ -2,7 +2,7 @@ schema_version: "1"
 id: m3-current-code-smoke
 suite: canonical-v1+negative-controls-v1
 suite_version: "1"
-source_commit: 9bdb8cccf7e80bdde6785d96df91db9e9f680d87
+source_commit: 3d133af94655106bb7db55f6a11459b084702e98
 defence: ites
 bounds:
   max_model_calls: 3
