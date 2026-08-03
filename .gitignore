@@ -41,6 +41,8 @@ runs/*
 !runs/sled-coi-reduction-v1/**
 !runs/cedar-differential-preflight-v1/
 !runs/cedar-differential-preflight-v1/**
+!runs/direction-readiness-v1/
+!runs/direction-readiness-v1/**
 data/
 *.jsonl
 !runs/smoke/*.jsonl

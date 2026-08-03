@@ -42,6 +42,7 @@ SMOKE = ROOT / "runs" / "smoke"
 NATIVE_SLED = ROOT / "runs" / "native-sled-reproduction-v1"
 COI_EVIDENCE = ROOT / "runs" / "sled-coi-reduction-v1"
 CEDAR_PREFLIGHT = ROOT / "runs" / "cedar-differential-preflight-v1"
+DIRECTION_EVIDENCE = ROOT / "runs" / "direction-readiness-v1"
 COI_EVIDENCE_ROOT_FILES = (
     "CHECKSUMS.sha256",
     "RERUN.txt",
@@ -866,6 +867,77 @@ def check_cedar_preflight_evidence(errors: list[str]) -> None:
         errors.append("Cedar preflight overstates unavailable parity evidence")
 
 
+def check_direction_evidence(errors: list[str]) -> None:
+    if not DIRECTION_EVIDENCE.exists():
+        return
+    required = {
+        "CHECKSUMS.sha256",
+        "RERUN.txt",
+        "agentdojo-preflight.json",
+        "laptop-planning-preflight.json",
+        "manifest.json",
+        "planning-preflight.json",
+        "security-mutations.json",
+        "table.md",
+    }
+    actual = {path.name for path in DIRECTION_EVIDENCE.glob("*") if path.is_file()}
+    if actual != required:
+        errors.append("direction evidence files differ from the canonical bundle")
+        return
+    indexed: set[str] = set()
+    for line in (DIRECTION_EVIDENCE / "CHECKSUMS.sha256").read_text(
+        encoding="utf-8"
+    ).splitlines():
+        expected, separator, name = line.partition("  ")
+        path = DIRECTION_EVIDENCE / name
+        if not separator or name in indexed or not path.is_file():
+            errors.append(f"invalid direction evidence checksum entry: {line}")
+            continue
+        indexed.add(name)
+        if hashlib.sha256(canonical_text_bytes(path)).hexdigest() != expected:
+            errors.append(f"direction evidence checksum changed: {name}")
+    if indexed != required - {"CHECKSUMS.sha256"}:
+        errors.append("direction evidence checksum index is incomplete")
+    expected_cells = {
+        "laptop-planning-preflight.json": 16,
+        "planning-preflight.json": 32,
+        "agentdojo-preflight.json": 4,
+    }
+    for name, count in expected_cells.items():
+        result: Any = json.loads(
+            (DIRECTION_EVIDENCE / name).read_text(encoding="utf-8")
+        )
+        matrix = result.get("matrix", []) if isinstance(result, dict) else []
+        if (
+            result.get("classification") != "evaluation_ready"
+            or result.get("complete") is not False
+            or len(matrix) != count
+            or any(cell.get("status") != "unavailable" for cell in matrix)
+        ):
+            errors.append(f"direction readiness result overstates execution: {name}")
+    mutations: Any = json.loads(
+        (DIRECTION_EVIDENCE / "security-mutations.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    groups = mutations.get("mutants", {}) if isinstance(mutations, dict) else {}
+    mutants = [item for group in groups.values() for item in group]
+    canonical = mutations.get("canonical", {}) if isinstance(mutations, dict) else {}
+    if (
+        mutations.get("classification") != "bounded_evidence"
+        or mutations.get("complete") is not True
+        or mutations.get("runtime_delegation_enabled") is not False
+        or len(mutants) != 11
+        or any(
+            not item.get("killed")
+            or item.get("verification", {}).get("counterexample", {}).get("length") != 1
+            for item in mutants
+        )
+        or any(result.get("verdict") != "safe" for result in canonical.values())
+    ):
+        errors.append("direction security mutation evidence is incomplete")
+
+
 def check_schemas(errors: list[str]) -> None:
     required = {
         "cedar-policy-bundle.schema.json",
@@ -899,6 +971,9 @@ def check_schemas(errors: list[str]) -> None:
         "planning-diagnostic-suite.schema.json",
         "planning-laptop-smoke.schema.json",
         "planning-laptop-smoke-result.schema.json",
+        "direction-readiness-manifest.schema.json",
+        "direction-readiness-result.schema.json",
+        "security-mutation-result.schema.json",
     }
     actual = {path.name for path in (ROOT / "schemas").glob("*.json")}
     for name in sorted(required - actual):
@@ -917,6 +992,7 @@ def main() -> int:
     check_native_sled_evidence(errors)
     check_coi_evidence(errors)
     check_cedar_preflight_evidence(errors)
+    check_direction_evidence(errors)
     check_schemas(errors)
     if not (ROOT / "SECURITY.md").is_file():
         errors.append("missing repository security policy: SECURITY.md")

@@ -69,6 +69,12 @@ def main() -> int:
             "runs/cedar-differential-preflight-v1",
             "--check",
         )
+    if (ROOT / "runs" / "direction-readiness-v1").is_dir():
+        run(
+            "scripts/generate_direction_evidence.py",
+            "runs/direction-readiness-v1",
+            "--check",
+        )
     run(
         "-m",
         "pytest",
