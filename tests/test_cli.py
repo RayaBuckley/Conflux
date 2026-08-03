@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
+import pytest
+
+import conflux.cli as cli_module
 from conflux.cli import (
     EXIT_INVALID_EVIDENCE,
     EXIT_OK,
     EXIT_USAGE,
     main,
 )
+from conflux.experiments import ExperimentProtocol, load_protocol
+from conflux.ports import LocalModelPreflight
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO = ROOT / "examples" / "basic.yaml"
@@ -128,6 +134,38 @@ def test_demo_writes_linked_trace_result_and_report(
     assert payload["utility"]["completed"]
     assert (output / "trace.jsonl").is_file()
     assert (output / "report.md").is_file()
+
+
+def test_demo_retains_manifest_and_reports_an_all_blocked_scenario(
+    tmp_path: Path,
+) -> None:
+    blocked_scenario = tmp_path / "blocked.yaml"
+    blocked_scenario.write_text(
+        SCENARIO.read_text(encoding="utf-8").replace(
+            "consent: [write-output]", "consent: []"
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "blocked-run"
+    assert (
+        main(
+            [
+                "demo",
+                "--scenario",
+                str(blocked_scenario),
+                "--manifest",
+                str(ROOT / "experiments/manifests/m3-smoke.yaml"),
+                "--output",
+                str(output),
+            ]
+        )
+        == EXIT_OK
+    )
+    result = json.loads((output / "result.json").read_text(encoding="utf-8"))
+    assert result["diagnostics"]["blocked"] == 1
+    assert result["diagnostics"]["executed"] == 0
+    assert result["utility"]["completed"] is False
+    assert (output / "manifest.json").is_file()
 
 
 def test_native_sled_command_writes_verification_result(tmp_path: Path) -> None:
@@ -549,6 +587,397 @@ def test_direction_security_preflight_commands_are_offline(
     assert doctor["cedar"]["expected_version"] == "4.11.0"
     assert doctor["cedar"]["available"] is False
     assert doctor["cedar"]["invoked"] is False
+
+
+def test_laptop_cli_retains_a_complete_fake_backed_live_bundle(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    transformers = tmp_path / "transformers.json"
+    llama = tmp_path / "llama.json"
+    output = tmp_path / "laptop-live"
+    _write_laptop_protocol(transformers, "transformers")
+    _write_laptop_protocol(llama, "openai_compatible")
+
+    class AvailableModel:
+        def __init__(self, backend: str, model_id: str) -> None:
+            self.backend = backend
+            self.model_id = model_id
+
+        def preflight(self) -> LocalModelPreflight:
+            return LocalModelPreflight(
+                self.backend, self.model_id, True, "loopback", None
+            )
+
+    def model_for(protocol: ExperimentProtocol) -> AvailableModel:
+        assert protocol.model is not None
+        return AvailableModel(protocol.model.backend, protocol.model.model_id)
+
+    plan = json.loads(LAPTOP_SMOKE_PLAN.read_text(encoding="utf-8"))
+    observations = [
+        {
+            "backend_id": backend,
+            "case_id": f"{backend}:{scenario}:{mode}",
+            "security_violations": 0,
+        }
+        for backend in plan["backends"]
+        for scenario in plan["scenario_ids"]
+        for mode in plan["modes"]
+    ]
+    monkeypatch.setattr(cli_module, "_local_model", model_for)
+    monkeypatch.setattr(
+        cli_module,
+        "run_laptop_planning_smoke",
+        lambda *_: {
+            "schema_version": "1",
+            "complete": True,
+            "model_identities": {},
+            "observations": observations,
+        },
+    )
+    assert (
+        main(
+            [
+                "plan",
+                "laptop-smoke",
+                "--plan",
+                str(LAPTOP_SMOKE_PLAN),
+                "--transformers-config",
+                str(transformers),
+                "--llama-config",
+                str(llama),
+                "--output",
+                str(output),
+                "--execute-local",
+            ]
+        )
+        == EXIT_OK
+    )
+    assert (output / "CHECKSUMS.sha256").is_file()
+    assert (output / "manifest.json").is_file()
+    assert len((output / "raw-results.jsonl").read_text().splitlines()) == 16
+    assert (output / "transformers" / "result.json").is_file()
+    assert (output / "llama_cpp_q8_0" / "result.json").is_file()
+
+
+def test_laptop_cli_live_gate_reports_unavailable_runtimes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    transformers = tmp_path / "transformers.json"
+    llama = tmp_path / "llama.json"
+    _write_laptop_protocol(transformers, "transformers")
+    _write_laptop_protocol(llama, "openai_compatible")
+
+    class UnavailableModel:
+        def __init__(self, backend: str, model_id: str) -> None:
+            self.backend = backend
+            self.model_id = model_id
+
+        def preflight(self) -> LocalModelPreflight:
+            return LocalModelPreflight(
+                self.backend, self.model_id, False, "none", "fixture_unavailable"
+            )
+
+    def model_for(protocol: ExperimentProtocol) -> UnavailableModel:
+        assert protocol.model is not None
+        return UnavailableModel(protocol.model.backend, protocol.model.model_id)
+
+    monkeypatch.setattr(cli_module, "_local_model", model_for)
+    assert (
+        main(
+            [
+                "plan",
+                "laptop-smoke",
+                "--plan",
+                str(LAPTOP_SMOKE_PLAN),
+                "--transformers-config",
+                str(transformers),
+                "--llama-config",
+                str(llama),
+                "--execute-local",
+            ]
+        )
+        == EXIT_USAGE
+    )
+
+
+def test_chat_cli_routes_a_turn_and_handles_end_of_input(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: object,
+) -> None:
+    class AvailableChatModel:
+        api_key_env = "TEST_KEY"
+
+        def available(self) -> bool:
+            return True
+
+    class FakeRuntime:
+        def __init__(self, *_: object) -> None:
+            pass
+
+        def submit(self, text: str) -> object:
+            assert text == "hello"
+            report = SimpleNamespace(run_id="chat-run", blocked_count=1)
+            return SimpleNamespace(report=report, executed=False, reason="blocked")
+
+    replies = iter(("hello", "exit"))
+    monkeypatch.setattr(cli_module, "OpenAICompatibleModel", lambda *_args, **_kwargs: AvailableChatModel())
+    monkeypatch.setattr(cli_module, "ChatRuntime", FakeRuntime)
+    monkeypatch.setattr("builtins.input", lambda _prompt: next(replies))
+    assert (
+        main(
+            [
+                "chat",
+                "--scenario",
+                str(SCENARIO),
+                "--endpoint",
+                "http://127.0.0.1:8000/v1",
+                "--model",
+                "local-fixture",
+            ]
+        )
+        == EXIT_OK
+    )
+    output = capsys.readouterr().out  # type: ignore[attr-defined]
+    assert '"run_id":"chat-run"' in output
+    assert '"blocked":1' in output
+
+    monkeypatch.setattr("builtins.input", lambda _prompt: (_ for _ in ()).throw(EOFError()))
+    assert (
+        main(
+            [
+                "chat",
+                "--scenario",
+                str(SCENARIO),
+                "--endpoint",
+                "http://127.0.0.1:8000/v1",
+                "--model",
+                "local-fixture",
+            ]
+        )
+        == EXIT_OK
+    )
+    assert "chat_aborted_safely" in capsys.readouterr().out  # type: ignore[attr-defined]
+
+
+def test_chat_cli_fails_closed_when_local_endpoint_adapter_is_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class UnavailableChatModel:
+        api_key_env = "MISSING_TEST_KEY"
+
+        def available(self) -> bool:
+            return False
+
+    monkeypatch.setattr(
+        cli_module,
+        "OpenAICompatibleModel",
+        lambda *_args, **_kwargs: UnavailableChatModel(),
+    )
+    assert (
+        main(
+            [
+                "chat",
+                "--scenario",
+                str(SCENARIO),
+                "--endpoint",
+                "http://127.0.0.1:8000/v1",
+                "--model",
+                "unavailable-fixture",
+            ]
+        )
+        == EXIT_USAGE
+    )
+
+
+def test_model_comparison_live_paths_retain_normalized_results(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    planning = tmp_path / "planning.json"
+    planning_output = tmp_path / "planning-live"
+    _write_protocol(planning, "planning", model=True)
+    monkeypatch.setattr(cli_module, "_local_model", lambda _protocol: object())
+    monkeypatch.setattr(
+        cli_module,
+        "run_planning_comparison",
+        lambda *_: {
+            "schema_version": "2",
+            "protocol_fingerprint": "fixture",
+            "complete": True,
+            "model_id": "fixture",
+            "task_ids": [],
+            "observations": [],
+        },
+    )
+    assert (
+        main(
+            [
+                "plan",
+                "compare",
+                "--config",
+                str(planning),
+                "--output",
+                str(planning_output),
+                "--execute-local",
+            ]
+        )
+        == EXIT_OK
+    )
+    assert (planning_output / "result.json").is_file()
+
+    agentdojo = tmp_path / "agentdojo.json"
+    agentdojo_output = tmp_path / "agentdojo-live"
+    _write_protocol(agentdojo, "agentdojo", model=True)
+    monkeypatch.setattr(
+        cli_module,
+        "run_agentdojo_comparison",
+        lambda *_: {
+            "schema_version": "2",
+            "protocol_fingerprint": "fixture",
+            "complete": False,
+            "model_id": "fixture",
+            "cells": [],
+            "failure_counts": {},
+        },
+    )
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "--config",
+                str(agentdojo),
+                "--output",
+                str(agentdojo_output),
+                "--execute-local",
+            ]
+        )
+        == 3
+    )
+    assert (agentdojo_output / "result.json").is_file()
+
+
+def test_cedar_binary_preflight_distinguishes_missing_and_mismatched_bytes(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    missing = tmp_path / "missing-cedar"
+    assert (
+        main(
+            [
+                "doctor",
+                "--cedar-bundle",
+                str(CEDAR_BUNDLE),
+                "--cedar-binary",
+                str(missing),
+                "--json",
+            ]
+        )
+        == EXIT_OK
+    )
+    assert json.loads(capsys.readouterr().out)["cedar"]["reason"] == "binary_not_found"  # type: ignore[attr-defined]
+
+    binary = tmp_path / "cedar"
+    binary.write_bytes(b"not the pinned Cedar binary")
+    assert (
+        main(
+            [
+                "doctor",
+                "--cedar-bundle",
+                str(CEDAR_BUNDLE),
+                "--cedar-binary",
+                str(binary),
+                "--json",
+            ]
+        )
+        == EXIT_OK
+    )
+    cedar = json.loads(capsys.readouterr().out)["cedar"]  # type: ignore[attr-defined]
+    assert cedar["reason"] == "binary_checksum_mismatch"
+    assert cedar["actual_sha256"] is not None
+    assert cedar["invoked"] is False
+
+
+def test_human_doctor_renders_local_model_and_cedar_boundaries(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    planning = tmp_path / "planning.json"
+    _write_protocol(planning, "planning", model=True)
+    assert (
+        main(
+            [
+                "doctor",
+                "--local-model-config",
+                str(planning),
+                "--cedar-bundle",
+                str(CEDAR_BUNDLE),
+            ]
+        )
+        == EXIT_OK
+    )
+    output = capsys.readouterr().out  # type: ignore[attr-defined]
+    assert "Local model:" in output
+    assert "Cedar: 4.11.0 - binary_not_supplied" in output
+
+
+def test_doctor_rejects_protocol_without_model(tmp_path: Path) -> None:
+    protocol = tmp_path / "native.json"
+    _write_protocol(protocol, "native_sled", model=False)
+    assert main(["doctor", "--local-model-config", str(protocol)]) == EXIT_USAGE
+
+
+def test_legacy_agentdojo_preflight_stops_after_pinned_suite_validation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    suite = SimpleNamespace(to_dict=lambda: {"schema_version": "fixture"})
+    monkeypatch.setattr(cli_module, "load_pinned_suite", lambda _suite_id: suite)
+    assert (
+        main(["benchmark", "agentdojo", "--config", str(AGENTDOJO_MANIFEST)])
+        == EXIT_USAGE
+    )
+
+
+def test_legacy_agentdojo_execute_gate_and_model_less_protocol_fail_closed(
+    tmp_path: Path,
+) -> None:
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "--config",
+                str(AGENTDOJO_MANIFEST),
+                "--execute-local",
+            ]
+        )
+        == EXIT_USAGE
+    )
+    model_less = tmp_path / "native.json"
+    _write_protocol(model_less, "native_sled", model=False)
+    protocol = load_protocol(model_less)
+    with pytest.raises(ValueError, match="self_hosted_model_protocol_required"):
+        cli_module._local_model(protocol)
+
+
+def test_result_kind_routing_is_strict() -> None:
+    assert cli_module._result_schema({"schema_version": "1"}) == "result.schema.json"
+    assert (
+        cli_module._result_schema({"schema_version": "2", "model_identities": {}, "observations": []})
+        == "planning-laptop-smoke-result.schema.json"
+    )
+    assert (
+        cli_module._result_schema({"schema_version": "2", "cells": []})
+        == "agentdojo-comparison-result-v2.schema.json"
+    )
+    assert (
+        cli_module._result_schema({"schema_version": "2", "observations": []})
+        == "planning-comparison-result-v2.schema.json"
+    )
+    with pytest.raises(ValueError, match="unknown_version_two_result_kind"):
+        cli_module._result_schema({"schema_version": "2"})
 
 
 def test_native_reproduction_cli_and_version_two_report(
