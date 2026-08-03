@@ -41,6 +41,7 @@ MANUSCRIPT = ROOT / "manuscript"
 SMOKE = ROOT / "runs" / "smoke"
 NATIVE_SLED = ROOT / "runs" / "native-sled-reproduction-v1"
 COI_EVIDENCE = ROOT / "runs" / "sled-coi-reduction-v1"
+CEDAR_PREFLIGHT = ROOT / "runs" / "cedar-differential-preflight-v1"
 COI_EVIDENCE_ROOT_FILES = (
     "CHECKSUMS.sha256",
     "RERUN.txt",
@@ -820,6 +821,51 @@ def check_coi_evidence(errors: list[str]) -> None:
         errors.append("COI evidence does not support its bounded equivalence claim")
 
 
+def check_cedar_preflight_evidence(errors: list[str]) -> None:
+    if not CEDAR_PREFLIGHT.exists():
+        return
+    required = {
+        "CHECKSUMS.sha256",
+        "RERUN.txt",
+        "corpus.json",
+        "manifest.json",
+        "policy-bundle.json",
+        "protocol.json",
+        "result.json",
+        "table.md",
+    }
+    actual = {path.name for path in CEDAR_PREFLIGHT.glob("*") if path.is_file()}
+    if actual != required:
+        errors.append("Cedar preflight files differ from the canonical bundle")
+        return
+    indexed: set[str] = set()
+    for line in (CEDAR_PREFLIGHT / "CHECKSUMS.sha256").read_text(
+        encoding="utf-8"
+    ).splitlines():
+        expected, separator, name = line.partition("  ")
+        path = CEDAR_PREFLIGHT / name
+        if not separator or name in indexed or not path.is_file():
+            errors.append(f"invalid Cedar preflight checksum entry: {line}")
+            continue
+        indexed.add(name)
+        if hashlib.sha256(canonical_text_bytes(path)).hexdigest() != expected:
+            errors.append(f"Cedar preflight checksum changed: {name}")
+    if indexed != required - {"CHECKSUMS.sha256"}:
+        errors.append("Cedar preflight checksum index is incomplete")
+    result: Any = json.loads(
+        (CEDAR_PREFLIGHT / "result.json").read_text(encoding="utf-8")
+    )
+    cases = result.get("cases", []) if isinstance(result, dict) else []
+    if (
+        result.get("classification") != "evaluation_ready"
+        or result.get("complete") is not False
+        or result.get("cedar_status") != "unavailable"
+        or len(cases) != 8
+        or any(case.get("cedar_decision") is not None for case in cases)
+    ):
+        errors.append("Cedar preflight overstates unavailable parity evidence")
+
+
 def check_schemas(errors: list[str]) -> None:
     required = {
         "cedar-policy-bundle.schema.json",
@@ -870,6 +916,7 @@ def main() -> int:
     check_smoke_evidence(errors)
     check_native_sled_evidence(errors)
     check_coi_evidence(errors)
+    check_cedar_preflight_evidence(errors)
     check_schemas(errors)
     if not (ROOT / "SECURITY.md").is_file():
         errors.append("missing repository security policy: SECURITY.md")

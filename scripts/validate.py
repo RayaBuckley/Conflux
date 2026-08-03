@@ -63,6 +63,12 @@ def main() -> int:
             "runs/sled-coi-reduction-v1",
             "--check",
         )
+    if (ROOT / "runs" / "cedar-differential-preflight-v1").is_dir():
+        run(
+            "scripts/generate_cedar_preflight.py",
+            "runs/cedar-differential-preflight-v1",
+            "--check",
+        )
     run(
         "-m",
         "pytest",

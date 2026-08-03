@@ -39,6 +39,8 @@ runs/*
 !runs/native-sled-reproduction-v1/**
 !runs/sled-coi-reduction-v1/
 !runs/sled-coi-reduction-v1/**
+!runs/cedar-differential-preflight-v1/
+!runs/cedar-differential-preflight-v1/**
 data/
 *.jsonl
 !runs/smoke/*.jsonl
