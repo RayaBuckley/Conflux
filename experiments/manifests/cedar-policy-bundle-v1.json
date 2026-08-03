@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "bundle_id": "conflux-cedar-differential-v1",
+  "schema": {
+    "Conflux": {
+      "entityTypes": {
+        "Principal": {},
+        "Resource": {}
+      },
+      "actions": {
+        "write": {
+          "appliesTo": {
+            "principalTypes": ["Principal"],
+            "resourceTypes": ["Resource"],
+            "context": {
+              "type": "Record",
+              "attributes": {},
+              "additionalAttributes": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "policies": "permit(principal, action == Action::\"write\", resource);\n",
+  "entities": [],
+  "binary": {
+    "version": "4.11.0",
+    "commit": "d86ed2ee47cbe5a30e6b70a3d8414bc66ce88ae3",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "supported_features": ["entities_json", "explicit_forbid", "json_schema", "parc", "request_context"]
+}

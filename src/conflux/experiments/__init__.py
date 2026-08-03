@@ -1,6 +1,13 @@
 """Reproducible experiment definitions and retained-run metadata."""
 
 from .agentdojo import AgentDojoCell, AgentDojoCellResult, agentdojo_matrix, run_agentdojo_comparison
+from .cedar_preflight import (
+    CedarDifferentialCase,
+    CedarDifferentialCorpus,
+    cedar_differential_preflight,
+    load_cedar_bundle,
+    load_cedar_corpus,
+)
 from .coi_evidence import (
     COI_EVIDENCE_ROOT_FILES,
     compare_coi_evidence_bundle,
@@ -65,6 +72,8 @@ __all__ = [
     "AbstractExecutionState",
     "AgentDojoCell",
     "AgentDojoCellResult",
+    "CedarDifferentialCase",
+    "CedarDifferentialCorpus",
     "CanonicalExecutionOracle",
     "ExperimentCase",
     "ExperimentManifest",
@@ -84,6 +93,7 @@ __all__ = [
     "RunFailure",
     "aggregate_planning_comparison",
     "agentdojo_matrix",
+    "cedar_differential_preflight",
     "completion_marker",
     "compare_native_sled_bundle",
     "compare_coi_evidence_bundle",
@@ -97,6 +107,8 @@ __all__ = [
     "load_default_planning_diagnostic_suite",
     "load_planning_diagnostic_suite",
     "load_protocol",
+    "load_cedar_bundle",
+    "load_cedar_corpus",
     "materialise_jobs",
     "plan_resume",
     "planning_matrix",

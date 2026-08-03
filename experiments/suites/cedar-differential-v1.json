@@ -1,0 +1,15 @@
+{
+  "schema_version": "1",
+  "id": "cedar-differential-v1",
+  "max_requests": 9,
+  "cases": [
+    {"id": "allow", "principal_ids": ["alice"], "allowed_principal_ids": ["alice"], "argument_allowed_principal_ids": ["alice"], "argument_name": "resource", "argument_role": "resource", "argument_value": "out", "resource_id": "out", "resource_present": true, "explicit_forbid": false, "expected_reason": "all_pointwise_checks_allow"},
+    {"id": "deny", "principal_ids": ["alice"], "allowed_principal_ids": [], "argument_allowed_principal_ids": ["alice"], "argument_name": "resource", "argument_role": "resource", "argument_value": "out", "resource_id": "out", "resource_present": true, "explicit_forbid": false, "expected_reason": "action_authority_denied"},
+    {"id": "mixed-context", "principal_ids": ["alice", "bob"], "allowed_principal_ids": ["alice"], "argument_allowed_principal_ids": ["alice", "bob"], "argument_name": "resource", "argument_role": "resource", "argument_value": "out", "resource_id": "out", "resource_present": true, "explicit_forbid": false, "expected_reason": "one_principal_denied"},
+    {"id": "recipient", "principal_ids": ["alice"], "allowed_principal_ids": ["alice"], "argument_allowed_principal_ids": ["alice"], "argument_name": "recipient", "argument_role": "recipient", "argument_value": "bob", "resource_id": "out", "resource_present": true, "explicit_forbid": false, "expected_reason": "recipient_authorised"},
+    {"id": "destination", "principal_ids": ["alice"], "allowed_principal_ids": ["alice"], "argument_allowed_principal_ids": [], "argument_name": "destination", "argument_role": "destination", "argument_value": "external", "resource_id": "out", "resource_present": true, "explicit_forbid": false, "expected_reason": "destination_denied"},
+    {"id": "resource-selector", "principal_ids": ["alice"], "allowed_principal_ids": ["alice"], "argument_allowed_principal_ids": ["alice"], "argument_name": "resource", "argument_role": "resource", "argument_value": "selected", "resource_id": "selected", "resource_present": true, "explicit_forbid": false, "expected_reason": "exact_resource_authorised"},
+    {"id": "missing-entity", "principal_ids": ["alice"], "allowed_principal_ids": ["alice"], "argument_allowed_principal_ids": ["alice"], "argument_name": "resource", "argument_role": "resource", "argument_value": "missing", "resource_id": "missing", "resource_present": false, "explicit_forbid": false, "expected_reason": "missing_resource_entity"},
+    {"id": "explicit-forbid", "principal_ids": ["alice"], "allowed_principal_ids": ["alice"], "argument_allowed_principal_ids": ["alice"], "argument_name": "credential", "argument_role": "credential_reference", "argument_value": "blocked-credential", "resource_id": "out", "resource_present": true, "explicit_forbid": true, "expected_reason": "explicit_forbid"}
+  ]
+}
