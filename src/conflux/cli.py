@@ -77,6 +77,7 @@ from conflux.experiments import (
     validate_laptop_protocols,
 )
 from conflux.ites import BranchState, MediatingITES, TransitionKernel
+from conflux.planning.executor import DynamicPlanResult
 from conflux.ports import LocalModelPreflight, LocalModelSpec
 from conflux.verification import (
     FormalVerdict,
@@ -163,9 +164,7 @@ def _parser() -> argparse.ArgumentParser:
     sled_reproduce = sled_commands.add_parser("reproduce", help="run paired legacy/canonical native SLED")
     sled_reproduce.add_argument("--protocol", type=Path, required=True)
     sled_reproduce.add_argument("--output", type=Path)
-    sled_delegation = sled_commands.add_parser(
-        "delegation", help="verify the disabled scoped-delegation model"
-    )
+    sled_delegation = sled_commands.add_parser("delegation", help="verify the disabled scoped-delegation model")
     sled_delegation.add_argument("--output", type=Path, required=True)
 
     verify = commands.add_parser("verify", help="solver-facing verification (M7)")
@@ -181,18 +180,30 @@ def _parser() -> argparse.ArgumentParser:
         required=True,
     )
     agentdojo = benchmark_commands.add_parser("agentdojo")
-    agentdojo.add_argument("--config", type=Path, required=True)
-    agentdojo.add_argument("--upstream-log", type=Path)
-    agentdojo.add_argument("--output", type=Path)
-    agentdojo.add_argument("--execute-local", action="store_true")
+    agentdojo_commands = agentdojo.add_subparsers(
+        dest="agentdojo_command",
+        required=True,
+    )
+    agentdojo_translate = agentdojo_commands.add_parser("translate", help="translate one retained upstream log")
+    agentdojo_translate.add_argument("--config", type=Path, required=True)
+    agentdojo_translate.add_argument("--upstream-log", type=Path, required=True)
+    agentdojo_translate.add_argument("--output", type=Path, required=True)
+    agentdojo_preflight = agentdojo_commands.add_parser("preflight", help="validate the package, model, policy, and six-cell matrix")
+    agentdojo_preflight_source = agentdojo_preflight.add_mutually_exclusive_group(required=True)
+    agentdojo_preflight_source.add_argument("--config", type=Path)
+    agentdojo_preflight_source.add_argument("--model-config", type=Path)
+    agentdojo_preflight.add_argument("--source-commit")
+    agentdojo_preflight.add_argument("--output", type=Path, required=True)
+    agentdojo_run = agentdojo_commands.add_parser("run", help="deliberately run the pinned six-cell local comparison")
+    agentdojo_run.add_argument("--config", type=Path, required=True)
+    agentdojo_run.add_argument("--output", type=Path, required=True)
+    agentdojo_run.add_argument("--execute-local", action="store_true", required=True)
 
     policy = commands.add_parser("policy", help="optional policy-adapter tooling")
     policy_commands = policy.add_subparsers(dest="policy_command", required=True)
     cedar = policy_commands.add_parser("cedar", help="pinned local Cedar adapter")
     cedar_commands = cedar.add_subparsers(dest="cedar_command", required=True)
-    cedar_preflight = cedar_commands.add_parser(
-        "preflight", help="translate a corpus without invoking Cedar"
-    )
+    cedar_preflight = cedar_commands.add_parser("preflight", help="translate a corpus without invoking Cedar")
     cedar_preflight.add_argument("--bundle", type=Path, required=True)
     cedar_preflight.add_argument("--corpus", type=Path, required=True)
     cedar_preflight.add_argument("--binary", type=Path)
@@ -247,10 +258,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _model_artifacts(arguments: argparse.Namespace) -> int:
-    if (
-        str(arguments.model_command) != "resolve"
-        or str(arguments.resolve_command) != "transformers"
-    ):
+    if str(arguments.model_command) != "resolve" or str(arguments.resolve_command) != "transformers":
         return _unavailable("unsupported_model_artifact_command")
     model_id = str(arguments.model_id)
     revision = str(arguments.revision)
@@ -312,11 +320,7 @@ def _model_artifacts(arguments: argparse.Namespace) -> int:
 
 def _demo(arguments: argparse.Namespace) -> int:
     scenario = load_scenario(cast(Path, arguments.scenario))
-    manifest = (
-        load_manifest(cast(Path, arguments.manifest))
-        if arguments.manifest is not None
-        else None
-    )
+    manifest = load_manifest(cast(Path, arguments.manifest)) if arguments.manifest is not None else None
     mediator = MediatingITES(TransitionKernel(scenario.pipeline))
     service = MediationService(mediator)
     report = service.evaluate(
@@ -346,11 +350,7 @@ def _demo(arguments: argparse.Namespace) -> int:
         utility = UtilityOutcome(False, "branch_selection_required")
     else:
         utility = UtilityOutcome(False, "all_proposals_blocked")
-    output = (
-        cast(Path | None, arguments.output)
-        or (Path(manifest.output_directory) if manifest else None)
-        or Path("runs") / report.run_id
-    )
+    output = cast(Path | None, arguments.output) or (Path(manifest.output_directory) if manifest else None) or Path("runs") / report.run_id
     output.mkdir(parents=True, exist_ok=True)
     if manifest is not None:
         manifest.materialise(output)
@@ -359,11 +359,7 @@ def _demo(arguments: argparse.Namespace) -> int:
     result = RunResult.from_report(
         report,
         source={"scenario_id": scenario.id, "scenario_path": str(arguments.scenario)},
-        manifest=(
-            manifest.to_dict()
-            if manifest
-            else {"scenario": scenario.id, "model": "scripted"}
-        ),
+        manifest=(manifest.to_dict() if manifest else {"scenario": scenario.id, "model": "scripted"}),
         utility=utility,
         trace_path="trace.jsonl",
         trace_sha256=trace_hash,
@@ -371,7 +367,7 @@ def _demo(arguments: argparse.Namespace) -> int:
     result_path = output / "result.json"
     write_result(result, result_path)
     (output / "report.md").write_text(_render_result(result.to_dict()), encoding="utf-8")
-    print(canonical_json({"run_id": report.run_id, "output": str(output)}))
+    _print_demo_summary(result.to_dict(), output)
     return EXIT_OK
 
 
@@ -418,7 +414,7 @@ def _sled(arguments: argparse.Namespace) -> int:
     output.mkdir(parents=True, exist_ok=True)
     path = output / "verification.json"
     path.write_text(canonical_json(verification.to_dict()) + "\n", encoding="utf-8")
-    print(canonical_json({"verdict": verification.verdict.value, "output": str(path)}))
+    _print_sled_summary(verification.to_dict())
     return EXIT_RUNTIME if verification.verdict.value == "unknown" else EXIT_OK
 
 
@@ -450,11 +446,7 @@ def _verify(arguments: argparse.Namespace) -> int:
         ir,
         invariants=tuple(item for item in ir.invariants if item.id in invariant_ids),
     )
-    backend = (
-        verify_with_z3
-        if str(arguments.backend) == "z3"
-        else NuXmvBackend().verify
-    )
+    backend = verify_with_z3 if str(arguments.backend) == "z3" else NuXmvBackend().verify
     reduction_name = cast(str | None, arguments.reduce)
     if reduction_name == "cone_of_influence":
         comparison = compare_cone_of_influence(ir, invariant_ids)
@@ -514,9 +506,7 @@ def _verify(arguments: argparse.Namespace) -> int:
         )
     print(canonical_json(report))
     failed = (
-        result.verdict == FormalVerdict.UNKNOWN
-        or backend_failure is not None
-        or (comparison is not None and not comparison.equivalent)
+        result.verdict == FormalVerdict.UNKNOWN or backend_failure is not None or (comparison is not None and not comparison.equivalent)
     )
     return EXIT_RUNTIME if failed else EXIT_OK
 
@@ -534,10 +524,7 @@ def _verification_summary(
     bound = int(cast(int, result["bound"]))
     claim = {
         "safe": "The finite state space was exhausted without a violation.",
-        "bounded_safe": (
-            f"No violation was found through the configured bound of {bound}; "
-            "this is not an unbounded proof."
-        ),
+        "bounded_safe": (f"No violation was found through the configured bound of {bound}; this is not an unbounded proof."),
         "unsafe": "A violating execution was found within the configured bound.",
         "unknown": "No security conclusion can be drawn from this backend result.",
     }.get(verdict, "The backend returned an unrecognised verdict.")
@@ -570,10 +557,7 @@ def _verification_summary(
     if error is not None:
         lines.extend(("", "## Incomplete result", "", f"- Reason: `{error}`"))
         if error == "optional_binary_unavailable:nuXmv":
-            command = (
-                f"conflux verify --model {model_path} --property {property_id} "
-                "--backend nuxmv --output verification-output"
-            )
+            command = f"conflux verify --model {model_path} --property {property_id} --backend nuxmv --output verification-output"
             lines.extend(
                 (
                     "- Meaning: optional binary unavailable; no conclusion.",
@@ -607,20 +591,45 @@ def _verification_summary(
 def _render_result(payload: dict[str, Any]) -> str:
     diagnostics = cast(dict[str, object], payload["diagnostics"])
     utility = cast(dict[str, object], payload["utility"])
-    return "\n".join(
-        (
-            f"# Conflux run {payload['run_id']}",
-            "",
-            f"- Status: {payload['status']}",
+    security = cast(dict[str, object], payload.get("security", {}))
+    bounds = cast(dict[str, object], payload.get("bounds", {}))
+    source = cast(dict[str, object], payload.get("source", {}))
+    trace = cast(dict[str, object], payload.get("trace", {}))
+    lines = [
+        f"# Conflux run {payload['run_id']}",
+        "",
+        f"- Status: {payload['status']}",
+    ]
+    scenario_id = source.get("scenario_id")
+    if scenario_id:
+        lines.append(f"- Scenario: {scenario_id}")
+    lines.extend(
+        [
             f"- Proposed: {diagnostics.get('proposed', 0)}",
             f"- Authorised: {diagnostics.get('authorised', 0)}",
             f"- Blocked: {diagnostics.get('blocked', 0)}",
             f"- Executed: {diagnostics.get('executed', 0)}",
             f"- Provider failed: {diagnostics.get('provider_failed', 0)}",
-            f"- Utility completed: {utility.get('completed', False)}",
-            "",
-        )
+            f"- Incomplete: {diagnostics.get('incomplete', 0)}",
+        ]
     )
+    if bounds:
+        lines.append(f"- Model calls: {bounds.get('model_calls', 0)}/{bounds.get('max_model_calls', '?')}")
+    utility_detail = utility.get("details")
+    utility_completed = utility.get("completed", False)
+    lines.append(f"- Utility: {'completed' if utility_completed else 'incomplete'}")
+    if utility_detail:
+        lines.append(f"  - {utility_detail}")
+    if security:
+        lines.extend(("", "## Security assessments", ""))
+        lines.extend(
+            f"- **{name}**: {'holds' if cast(dict[str, object], item).get('holds') else 'VIOLATED'}" for name, item in security.items()
+        )
+    trace_path = trace.get("path")
+    if trace_path:
+        lines.extend(("", f"- Trace: `{trace_path}`"))
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _doctor(arguments: argparse.Namespace) -> int:
@@ -644,9 +653,7 @@ def _doctor(arguments: argparse.Namespace) -> int:
     cedar_bundle_path = cast(Path | None, arguments.cedar_bundle)
     cedar_binary_path = cast(Path | None, arguments.cedar_binary)
     if cedar_bundle_path is not None:
-        payload["cedar"] = _cedar_identity_preflight(
-            load_cedar_bundle(cedar_bundle_path), cedar_binary_path
-        )
+        payload["cedar"] = _cedar_identity_preflight(load_cedar_bundle(cedar_bundle_path), cedar_binary_path)
     if arguments.json:
         print(canonical_json(payload))
     else:
@@ -662,26 +669,15 @@ def _doctor(arguments: argparse.Namespace) -> int:
             )
         if "cedar" in payload:
             cedar = cast(dict[str, object], payload["cedar"])
-            print(
-                f"Cedar: {cedar['expected_version']} - "
-                f"{'available' if cedar['available'] else cedar['reason']}"
-            )
+            print(f"Cedar: {cedar['expected_version']} - {'available' if cedar['available'] else cedar['reason']}")
     return EXIT_OK
 
 
 def _chat(arguments: argparse.Namespace) -> int:
     scenario = load_scenario(cast(Path, arguments.scenario))
-    principal_id = (
-        str(arguments.principal)
-        if arguments.principal
-        else min(scenario.session.participants).id
-    )
+    principal_id = str(arguments.principal) if arguments.principal else min(scenario.session.participants).id
     human = next(
-        (
-            principal
-            for principal in scenario.session.participants
-            if principal.id == principal_id
-        ),
+        (principal for principal in scenario.session.participants if principal.id == principal_id),
         None,
     )
     if human is None:
@@ -693,9 +689,7 @@ def _chat(arguments: argparse.Namespace) -> int:
         api_key_env=str(arguments.api_key_env),
     )
     if not model.available():
-        return _unavailable(
-            f"chat_backend_unavailable:secret_or_httpx:{model.api_key_env}"
-        )
+        return _unavailable(f"chat_backend_unavailable:secret_or_httpx:{model.api_key_env}")
     runtime = ChatRuntime(
         scenario.environment,
         scenario.session,
@@ -759,25 +753,9 @@ def _plan(arguments: argparse.Namespace) -> int:
     plan_result = run_dynamic_planning_demo()
     output = cast(Path, arguments.output)
     output.mkdir(parents=True, exist_ok=True)
-    trace_hash = write_plan_trace(plan_result.state, output / "trace.jsonl")
+    write_plan_trace(plan_result.state, output / "trace.jsonl")
     write_plan_result(plan_result, output / "result.json")
-    print(
-        canonical_json(
-            {
-                "run_id": plan_result.state.run_id,
-                "status": plan_result.state.status.value,
-                "completed": plan_result.completed,
-                "blocked": sum(
-                    report.blocked_count for report in plan_result.mediation_reports
-                ),
-                "executed": sum(
-                    report.executed_count for report in plan_result.mediation_reports
-                ),
-                "trace_sha256": trace_hash,
-                "output": str(output),
-            }
-        )
-    )
+    _print_plan_summary(plan_result)
     return EXIT_OK if plan_result.completed else EXIT_RUNTIME
 
 
@@ -797,9 +775,7 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
         },
         source_commit=source_commit,
         inputs={
-            "experiments/suites/planning-diagnostic-v1.yaml": _text_sha256(
-                suite_path
-            ),
+            "experiments/suites/planning-diagnostic-v1.yaml": _text_sha256(suite_path),
             "local-artifact-manifest": resolved.manifest.fingerprint,
         },
         model=resolved.spec,
@@ -870,20 +846,15 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
 def _laptop_smoke(arguments: argparse.Namespace) -> int:
     plan = load_laptop_planning_smoke(cast(Path, arguments.plan))
     protocols = {
-        BACKEND_TRANSFORMERS: load_protocol(
-            cast(Path, arguments.transformers_config)
-        ),
+        BACKEND_TRANSFORMERS: load_protocol(cast(Path, arguments.transformers_config)),
         BACKEND_LLAMA_CPP: load_protocol(cast(Path, arguments.llama_config)),
     }
     validate_laptop_protocols(plan, protocols)
     models = {backend: _local_model(protocol) for backend, protocol in protocols.items()}
-    preflights = {
-        backend: _preflight_dict(model.preflight())
-        for backend, model in models.items()
-    }
+    preflights = {backend: _preflight_dict(model.preflight()) for backend, model in models.items()}
     matrix = [cell.id for cell in plan.matrix()]
     if not bool(arguments.execute_local):
-        payload = {
+        payload: dict[str, object] = {
             "schema_version": "1",
             "classification": "evaluation_ready",
             "complete": False,
@@ -898,15 +869,9 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
         }
         _emit_preflight(payload, cast(Path | None, arguments.output))
         return EXIT_OK
-    unavailable = [
-        backend
-        for backend, preflight in preflights.items()
-        if preflight["available"] is not True
-    ]
+    unavailable = [backend for backend, preflight in preflights.items() if preflight["available"] is not True]
     if unavailable:
-        return _unavailable(
-            "laptop_smoke_runtime_unavailable:" + ",".join(sorted(unavailable))
-        )
+        return _unavailable("laptop_smoke_runtime_unavailable:" + ",".join(sorted(unavailable)))
     result = run_laptop_planning_smoke(plan, protocols, models)
     output = cast(Path | None, arguments.output) or Path("runs/laptop-planning-smoke-v1")
     output.mkdir(parents=True, exist_ok=True)
@@ -924,15 +889,11 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
             ],
         }
         _write_protocol_result(protocol, backend_result, output / backend)
-    (output / "result.json").write_text(
-        canonical_json(result) + "\n", encoding="utf-8", newline="\n"
-    )
+    (output / "result.json").write_text(canonical_json(result) + "\n", encoding="utf-8", newline="\n")
     (output / "raw-results.jsonl").write_text(
         "".join(
             canonical_json({"sequence": index, **observation}) + "\n"
-            for index, observation in enumerate(
-                cast(list[dict[str, object]], result["observations"])
-            )
+            for index, observation in enumerate(cast(list[dict[str, object]], result["observations"]))
         ),
         encoding="utf-8",
         newline="\n",
@@ -942,13 +903,8 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
             {
                 "schema_version": "1",
                 "plan_fingerprint": plan.fingerprint,
-                "protocol_fingerprints": {
-                    backend: protocol.fingerprint
-                    for backend, protocol in protocols.items()
-                },
-                "source_commits": sorted(
-                    {protocol.source_commit for protocol in protocols.values()}
-                ),
+                "protocol_fingerprints": {backend: protocol.fingerprint for backend, protocol in protocols.items()},
+                "source_commits": sorted({protocol.source_commit for protocol in protocols.values()}),
                 "complete": result["complete"],
                 "stop_for_human_review": True,
             }
@@ -957,15 +913,9 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
         encoding="utf-8",
         newline="\n",
     )
-    content = tuple(
-        sorted(path for path in output.rglob("*") if path.is_file())
-    )
+    content = tuple(sorted(path for path in output.rglob("*") if path.is_file()))
     (output / "CHECKSUMS.sha256").write_text(
-        "".join(
-            f"{_text_sha256(path)}  "
-            f"{path.relative_to(output).as_posix()}\n"
-            for path in content
-        ),
+        "".join(f"{_text_sha256(path)}  {path.relative_to(output).as_posix()}\n" for path in content),
         encoding="utf-8",
         newline="\n",
     )
@@ -985,13 +935,13 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
 def _benchmark(arguments: argparse.Namespace) -> int:
     if str(arguments.benchmark_command) != "agentdojo":
         return _unavailable(f"unsupported_benchmark:{arguments.benchmark_command}")
-    upstream_log = cast(Path | None, arguments.upstream_log)
-    output = cast(Path | None, arguments.output)
-    if upstream_log is not None:
+    command = str(arguments.agentdojo_command)
+    output = cast(Path, arguments.output)
+    if command == "translate":
+        upstream_log = cast(Path, arguments.upstream_log)
         load_manifest(cast(Path, arguments.config))
         translation = parse_upstream_log(upstream_log)
-        destination = output or Path("runs") / "agentdojo-translation.json"
-        write_translation(translation, destination)
+        write_translation(translation, output)
         print(
             canonical_json(
                 {
@@ -1000,40 +950,59 @@ def _benchmark(arguments: argparse.Namespace) -> int:
                     "injection_task_id": translation.injection_task_id,
                     "native_security": translation.native_security,
                     "native_utility": translation.native_utility,
-                    "output": str(destination),
+                    "output": str(output),
                 }
             )
         )
         return EXIT_OK
-    try:
-        protocol = load_protocol(cast(Path, arguments.config))
-    except ValueError as protocol_error:
-        if bool(arguments.execute_local):
-            raise protocol_error
-        manifest = load_manifest(cast(Path, arguments.config))
-        suite_id = manifest.suite.removeprefix("agentdojo-")
-        suite = load_pinned_suite(suite_id)
-        print(canonical_json(suite.to_dict()))
-        return _unavailable(
-            "agentdojo_legacy_manifest_has_no_self_hosted_model_protocol:"
-            "offline_suite_validation_succeeded"
+    config = cast(Path | None, getattr(arguments, "config", None))
+    model_config = cast(Path | None, getattr(arguments, "model_config", None))
+    if command == "preflight" and model_config is not None:
+        resolved = load_resolved_local_model(model_config)
+        protocol = _agentdojo_pilot_protocol(
+            resolved,
+            model_config=model_config,
+            output=output,
+            source_commit=str(arguments.source_commit or _git_head()),
         )
-    model = _local_model(protocol)
+        model: SelfHostedOpenAIModel | TransformersLocalModel = TransformersLocalModel(
+            resolved.spec,
+            snapshot_path=resolved.snapshot_path,
+            artifact_manifest=resolved.manifest,
+        )
+        protocol.materialise(output)
+    else:
+        if config is None:
+            raise ValueError("agentdojo_protocol_required")
+        protocol = load_protocol(config)
+        model = _local_model(protocol)
     matrix = agentdojo_matrix(protocol)
-    if not bool(arguments.execute_local):
-        payload = {
+    if command == "preflight":
+        suite_error: str | None = None
+        try:
+            suite = load_pinned_suite("workspace")
+            suite_identity: dict[str, object] | None = suite.to_dict()
+        except Exception as error:
+            suite_identity = None
+            suite_error = f"{type(error).__name__}:{error}"
+        payload: dict[str, object] = {
             "schema_version": "1",
-            "classification": "evaluation_ready",
+            "classification": "evaluation_ready" if suite_error is None else "partial",
             "complete": False,
             "execute_local": False,
             "preflight": _preflight_dict(model.preflight()),
+            "suite": suite_identity,
+            "suite_error": suite_error,
             "bounds": dict(protocol.bounds),
             "matrix": [cell.to_dict() for cell in matrix],
+            "annotation_profiles": ["conservative", "oracle"],
             "exclusions": ["AgentDojo and the local model were not invoked"],
         }
         _emit_preflight(payload, output)
         return EXIT_OK
-    destination = output or Path(protocol.output_directory)
+    if command != "run":
+        return _unavailable(f"unsupported_agentdojo_command:{command}")
+    destination = output
     comparison = run_agentdojo_comparison(
         protocol,
         model,
@@ -1042,6 +1011,54 @@ def _benchmark(arguments: argparse.Namespace) -> int:
     _write_protocol_result(protocol, comparison, destination)
     print(canonical_json({"complete": comparison["complete"], "output": str(destination / "result.json")}))
     return EXIT_OK if comparison["complete"] else EXIT_RUNTIME
+
+
+def _agentdojo_pilot_protocol(
+    resolved: ResolvedLocalModel,
+    *,
+    model_config: Path,
+    output: Path,
+    source_commit: str,
+) -> ExperimentProtocol:
+    schemas = Path("experiments/suites/agentdojo-tool-schemas-v1.json")
+    exceptions = Path("experiments/suites/agentdojo-annotation-exceptions-v1.json")
+    return ExperimentProtocol(
+        id="agentdojo-local-pilot-v2",
+        track="agentdojo",
+        suite={
+            "id": "workspace:user_task_17:injection_task_1",
+            "version": "v1.2.2",
+            "case_ids": ["benign", "attacked"],
+        },
+        source_commit=source_commit,
+        inputs={
+            schemas.as_posix(): _text_sha256(schemas),
+            exceptions.as_posix(): _text_sha256(exceptions),
+            "local-artifact-manifest": resolved.manifest.fingerprint,
+        },
+        model=resolved.spec,
+        prompts={"agent": "agentdojo_turn_v1"},
+        seeds=(0,),
+        repetitions=1,
+        bounds={"max_model_calls": 8, "max_steps": 16},
+        environment={
+            "agentdojo_package": "0.1.35",
+            "benchmark": "v1.2.2",
+            "annotation_profiles": "conservative,oracle",
+        },
+        output_directory=str(output),
+        rerun_command=(
+            "conflux",
+            "benchmark",
+            "agentdojo",
+            "run",
+            "--config",
+            str(output / "protocol.json"),
+            "--output",
+            str(output),
+            "--execute-local",
+        ),
+    )
 
 
 def _local_model(protocol: ExperimentProtocol) -> SelfHostedOpenAIModel | TransformersLocalModel:
@@ -1080,22 +1097,16 @@ def _emit_preflight(payload: dict[str, object], output: Path | None) -> None:
 
 def _sled_delegation(output: Path) -> int:
     bounds = VerificationBounds(1, 4, 4, 1)
-    canonical = ExplicitStateChecker().verify(
-        DelegationVerificationSystem(), DELEGATION_PROPERTIES, bounds
-    )
+    canonical = ExplicitStateChecker().verify(DelegationVerificationSystem(), DELEGATION_PROPERTIES, bounds)
     mutants = []
     for mutation in DelegationMutation:
         if mutation is DelegationMutation.CANONICAL:
             continue
-        result = ExplicitStateChecker().verify(
-            DelegationVerificationSystem(mutation), DELEGATION_PROPERTIES, bounds
-        )
+        result = ExplicitStateChecker().verify(DelegationVerificationSystem(mutation), DELEGATION_PROPERTIES, bounds)
         mutants.append(
             {
                 "mutation": mutation.value,
-                "killed": result.verdict.value == "unsafe"
-                and result.counterexample is not None
-                and result.counterexample.length == 1,
+                "killed": result.verdict.value == "unsafe" and result.counterexample is not None and result.counterexample.length == 1,
                 "verification": result.to_dict(),
             }
         )
@@ -1115,10 +1126,7 @@ def _sled_delegation(output: Path) -> int:
 
 
 def _policy(arguments: argparse.Namespace) -> int:
-    if (
-        str(arguments.policy_command) != "cedar"
-        or str(arguments.cedar_command) != "preflight"
-    ):
+    if str(arguments.policy_command) != "cedar" or str(arguments.cedar_command) != "preflight":
         return _unavailable("unsupported_policy_command")
     bundle = load_cedar_bundle(cast(Path, arguments.bundle))
     corpus = load_cedar_corpus(cast(Path, arguments.corpus))
@@ -1133,9 +1141,7 @@ def _policy(arguments: argparse.Namespace) -> int:
     return EXIT_OK
 
 
-def _cedar_identity_preflight(
-    bundle: CedarPolicyBundle, binary: Path | None
-) -> dict[str, object]:
+def _cedar_identity_preflight(bundle: CedarPolicyBundle, binary: Path | None) -> dict[str, object]:
     expected = bundle.binary
     available = binary is not None and binary.is_file()
     actual_sha256 = None
@@ -1224,10 +1230,7 @@ def _write_cpu_pilot_bundle(
         "",
         "## Cell outcomes",
         "",
-        *(
-            f"- `{name}`: {count}"
-            for name, count in sorted(statuses.items())
-        ),
+        *(f"- `{name}`: {count}" for name, count in sorted(statuses.items())),
         "",
         "All effects were modeled in memory. Human review is required before claim promotion.",
         "",
@@ -1250,9 +1253,7 @@ def _write_cpu_pilot_bundle(
     )
     complete = bool(result["complete"])
     manifest = ResolvedRunManifest(
-        run_id=fingerprint(
-            {"protocol": protocol.fingerprint, "result": checksums["result.json"]}
-        ),
+        run_id=fingerprint({"protocol": protocol.fingerprint, "result": checksums["result.json"]}),
         track="planning",
         protocol_fingerprint=protocol.fingerprint,
         source_commit=protocol.source_commit,
@@ -1324,18 +1325,177 @@ def _result_schema(payload: dict[str, Any]) -> str:
 def _render_any_result(payload: dict[str, Any]) -> str:
     if payload.get("schema_version") != "2":
         return _render_result(payload)
-    kind = "native SLED" if "pairs" in payload else "AgentDojo" if "cells" in payload else "planning"
-    count = len(cast(list[object], payload.get("pairs") or payload.get("cells") or payload.get("observations") or []))
-    return "\n".join(
-        (
-            f"# Conflux {kind} result",
-            "",
-            f"- Complete: {payload.get('complete', False)}",
-            f"- Records: {count}",
-            f"- Protocol: {payload.get('protocol_fingerprint', 'unknown')}",
-            "",
-        )
+    if "pairs" in payload:
+        return _render_native_sled_result(payload)
+    if "cells" in payload:
+        return _render_agentdojo_result(payload)
+    return _render_planning_result(payload)
+
+
+def _render_native_sled_result(payload: dict[str, Any]) -> str:
+    pairs = cast(list[dict[str, object]], payload.get("pairs", []))
+    complete = payload.get("complete", False)
+    lines = [
+        "# Conflux native SLED result",
+        "",
+        f"- Complete: {complete}",
+        f"- Pairs: {len(pairs)}",
+        f"- Protocol: {payload.get('protocol_fingerprint', 'unknown')}",
+        "",
+    ]
+    if pairs:
+        lines.append("## Pairs")
+        lines.append("")
+        for pair in pairs:
+            legacy = cast(dict[str, object], pair.get("legacy", {}))
+            canonical = cast(dict[str, object], pair.get("canonical", {}))
+            pair_id = pair.get("id", "unknown")
+            lines.append(f"- **{pair_id}**:")
+            lines.append(f"  - Legacy verdict: `{legacy.get('verdict', 'unknown')}`")
+            lines.append(f"  - Canonical verdict: `{canonical.get('verdict', 'unknown')}`")
+            agree = legacy.get("verdict") == canonical.get("verdict")
+            lines.append(f"  - Agreement: {'yes' if agree else 'NO'}")
+    negative_controls = cast(list[dict[str, object]], payload.get("negative_controls", []))
+    if negative_controls:
+        lines.extend(("", "## Negative controls", ""))
+        for control in negative_controls:
+            killed = "killed" if control.get("killed") else "SURVIVED"
+            lines.append(f"- **{control.get('id', 'unknown')}**: {killed}")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _render_agentdojo_result(payload: dict[str, Any]) -> str:
+    cells = cast(list[dict[str, object]], payload.get("cells", []))
+    complete = payload.get("complete", False)
+    lines = [
+        "# Conflux AgentDojo result",
+        "",
+        f"- Complete: {complete}",
+        f"- Cells: {len(cells)}",
+        f"- Protocol: {payload.get('protocol_fingerprint', 'unknown')}",
+    ]
+    failure_counts = cast(dict[str, object], payload.get("failure_counts", {}))
+    if failure_counts:
+        lines.append("")
+        lines.append("## Failure counts")
+        lines.append("")
+        for key, value in sorted(failure_counts.items()):
+            lines.append(f"- {key}: {value}")
+    if cells:
+        lines.extend(("", "## Cells", ""))
+        for cell in cells:
+            cell_id = cell.get("id", "unknown")
+            security = cell.get("native_security")
+            utility = cell.get("native_utility")
+            lines.append(f"- **{cell_id}**:")
+            if security is not None:
+                lines.append(f"  - Security: `{security}`")
+            if utility is not None:
+                lines.append(f"  - Utility: `{utility}`")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _render_planning_result(payload: dict[str, Any]) -> str:
+    observations = cast(list[dict[str, object]], payload.get("observations", []))
+    complete = payload.get("complete", False)
+    lines = [
+        "# Conflux planning result",
+        "",
+        f"- Complete: {complete}",
+        f"- Observations: {len(observations)}",
+        f"- Protocol: {payload.get('protocol_fingerprint', 'unknown')}",
+    ]
+    model_id = payload.get("model_id")
+    if model_id:
+        lines.append(f"- Model: `{model_id}`")
+    task_ids = cast(list[object], payload.get("task_ids", []))
+    if task_ids:
+        lines.append(f"- Tasks: {len(task_ids)}")
+    if observations:
+        lines.extend(("", "## Observations", ""))
+        for observation in observations:
+            case_id = observation.get("case_id", "unknown")
+            status = observation.get("status", "unknown")
+            model_calls = observation.get("model_calls", 0)
+            lines.append(f"- **{case_id}**: status=`{status}`, model_calls={model_calls}")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _print_demo_summary(payload: dict[str, Any], output: Path) -> None:
+    diagnostics = cast(dict[str, object], payload["diagnostics"])
+    utility = cast(dict[str, object], payload["utility"])
+    security = cast(dict[str, object], payload.get("security", {}))
+    bounds = cast(dict[str, object], payload.get("bounds", {}))
+    source = cast(dict[str, object], payload.get("source", {}))
+    print(f"Run {payload['run_id'][:12]}...")
+    print(f"  Status: {payload['status']}")
+    scenario_id = source.get("scenario_id")
+    if scenario_id:
+        print(f"  Scenario: {scenario_id}")
+    print(
+        f"  Proposed: {diagnostics.get('proposed', 0)}, "
+        f"Authorised: {diagnostics.get('authorised', 0)}, "
+        f"Blocked: {diagnostics.get('blocked', 0)}, "
+        f"Executed: {diagnostics.get('executed', 0)}"
     )
+    print(f"  Model calls: {bounds.get('model_calls', 0)}/{bounds.get('max_model_calls', '?')}")
+    utility_completed = utility.get("completed", False)
+    utility_detail = utility.get("details")
+    print(f"  Utility: {'completed' if utility_completed else 'incomplete'}" + (f" ({utility_detail})" if utility_detail else ""))
+    for name, item in security.items():
+        holds = cast(dict[str, object], item).get("holds")
+        print(f"  Security: {name} = {'holds' if holds else 'VIOLATED'}")
+    print(f"  Output: {output}")
+
+
+def _print_sled_summary(verification_dict: dict[str, object]) -> None:
+    verdict = verification_dict.get("verdict", "unknown")
+    statistics = cast(dict[str, object], verification_dict.get("statistics", {}))
+    bounds = cast(dict[str, object], verification_dict.get("bounds", {}))
+    counterexample = cast(dict[str, object] | None, verification_dict.get("counterexample"))
+    error = cast(str | None, verification_dict.get("error"))
+    print(f"SLED verdict: {verdict}")
+    if error:
+        print(f"  Error: {error}")
+    print(
+        f"  States: {statistics.get('unique_states', '?')}, "
+        f"Transitions: {statistics.get('transitions', '?')}, "
+        f"Duplicates: {statistics.get('duplicate_states', 0)}"
+    )
+    truncated = statistics.get("truncated")
+    if truncated:
+        print(f"  Truncated: {truncated}")
+    print(
+        f"  Bounds: depth={bounds.get('max_depth', '?')}, "
+        f"states={bounds.get('max_states', '?')}, "
+        f"transitions={bounds.get('max_transitions', '?')}, "
+        f"model_calls={bounds.get('max_model_calls', '?')}"
+    )
+    if counterexample:
+        print(
+            f"  Counterexample: property={counterexample.get('property', '?')}, "
+            f"reason={counterexample.get('reason', '?')}, "
+            f"length={counterexample.get('length', '?')}"
+        )
+        labels = cast(list[object], counterexample.get("labels", []))
+        if labels:
+            print(f"  Witness labels: {', '.join(str(label) for label in labels)}")
+
+
+def _print_plan_summary(result_payload: DynamicPlanResult) -> None:
+    state = result_payload.state
+    print(f"Plan status: {state.status.value}, completed: {result_payload.completed}")
+    node_ids = [e.node_id for e in state.events if e.event_type == "plan.node_activated" and e.node_id is not None]
+    if node_ids:
+        print(f"  Activated nodes: {', '.join(node_ids)}")
+    if result_payload.mediation_reports:
+        print(f"  Mediation runs: {len(result_payload.mediation_reports)}")
+    blocked = sum(report.blocked_count for report in result_payload.mediation_reports)
+    executed = sum(report.executed_count for report in result_payload.mediation_reports)
+    print(f"  Blocked: {blocked}, Executed: {executed}")
 
 
 def _unavailable(reason: str) -> int:

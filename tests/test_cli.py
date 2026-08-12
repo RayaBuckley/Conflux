@@ -199,9 +199,10 @@ def test_dynamic_plan_demo_writes_replayable_evidence(
     assert payload["completed"] is True
     assert payload["state"]["status"] == "safe_stop"
     assert (output / "trace.jsonl").is_file()
-    summary = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
-    assert summary["blocked"] == 1
-    assert summary["executed"] == 1
+    stdout = capsys.readouterr().out  # type: ignore[attr-defined]
+    assert "Plan status: safe_stop" in stdout
+    assert "Blocked: 1" in stdout
+    assert "Executed: 1" in stdout
 
 
 def test_report_and_doctor_have_machine_readable_modes(
@@ -225,7 +226,20 @@ def test_unavailable_backends_and_invalid_evidence_fail_closed(
     tmp_path: Path,
 ) -> None:
     assert main(["verify"]) == EXIT_USAGE
-    assert main(["benchmark", "agentdojo", "--config", "missing.yaml"]) == EXIT_USAGE
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "preflight",
+                "--config",
+                "missing.json",
+                "--output",
+                str(tmp_path / "missing"),
+            ]
+        )
+        == EXIT_USAGE
+    )
 
     invalid = tmp_path / "result.json"
     invalid.write_text('{"schema_version":"1"}', encoding="utf-8")
@@ -242,6 +256,7 @@ def test_agentdojo_command_translates_retained_upstream_log(
             [
                 "benchmark",
                 "agentdojo",
+                "translate",
                 "--config",
                 str(AGENTDOJO_MANIFEST),
                 "--upstream-log",
@@ -519,6 +534,7 @@ def test_verify_cli_explains_unavailable_nuxmv(
 
 
 def test_live_agentdojo_gate_reports_missing_optional_package(
+    tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def missing(_: str) -> str:
@@ -528,17 +544,23 @@ def test_live_agentdojo_gate_reports_missing_optional_package(
         "conflux.adapters.benchmarks.agentdojo_v1.importlib.metadata.version",
         missing,
     )
-    assert (
-        main(
-            [
-                "benchmark",
-                "agentdojo",
-                "--config",
-                str(AGENTDOJO_MANIFEST),
-            ]
-        )
-        == 3
-    )
+    protocol = tmp_path / "agentdojo.json"
+    output = tmp_path / "preflight"
+    _write_protocol(protocol, "agentdojo", model=True)
+    assert main(
+        [
+            "benchmark",
+            "agentdojo",
+            "preflight",
+            "--config",
+            str(protocol),
+            "--output",
+            str(output),
+        ]
+    ) == EXIT_OK
+    preflight = json.loads((output / "preflight.json").read_text())
+    assert preflight["classification"] == "partial"
+    assert "agentdojo_setup_failure:not_installed" in preflight["suite_error"]
 
 
 def test_model_dependent_commands_preflight_without_model_invocation(
@@ -601,6 +623,7 @@ def test_model_dependent_commands_preflight_without_model_invocation(
             [
                 "benchmark",
                 "agentdojo",
+                "preflight",
                 "--config",
                 str(agentdojo),
                 "--output",
@@ -611,7 +634,7 @@ def test_model_dependent_commands_preflight_without_model_invocation(
     )
     benchmark_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert benchmark_preflight["execute_local"] is False
-    assert len(benchmark_preflight["matrix"]) == 4
+    assert len(benchmark_preflight["matrix"]) == 6
     assert (benchmark_output / "preflight.json").is_file()
 
     assert main(["doctor", "--local-model-config", str(planning), "--json"]) == EXIT_OK
@@ -933,6 +956,7 @@ def test_model_comparison_live_paths_retain_normalized_results(
             [
                 "benchmark",
                 "agentdojo",
+                "run",
                 "--config",
                 str(agentdojo),
                 "--output",
@@ -1021,7 +1045,17 @@ def test_legacy_agentdojo_preflight_stops_after_pinned_suite_validation(
     suite = SimpleNamespace(to_dict=lambda: {"schema_version": "fixture"})
     monkeypatch.setattr(cli_module, "load_pinned_suite", lambda _suite_id: suite)
     assert (
-        main(["benchmark", "agentdojo", "--config", str(AGENTDOJO_MANIFEST)])
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "preflight",
+                "--config",
+                str(AGENTDOJO_MANIFEST),
+                "--output",
+                "ignored",
+            ]
+        )
         == EXIT_USAGE
     )
 
@@ -1034,8 +1068,11 @@ def test_legacy_agentdojo_execute_gate_and_model_less_protocol_fail_closed(
             [
                 "benchmark",
                 "agentdojo",
+                "run",
                 "--config",
                 str(AGENTDOJO_MANIFEST),
+                "--output",
+                str(tmp_path / "legacy"),
                 "--execute-local",
             ]
         )
