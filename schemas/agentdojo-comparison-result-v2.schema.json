@@ -25,7 +25,7 @@
         "properties": {
           "case_id": {"type": "string"},
           "attacked": {"type": "boolean"},
-          "defence": {"enum": ["no_defence", "ites"]},
+          "defence": {"enum": ["no_defence", "ites_conservative", "ites_oracle"]},
           "repetition": {"type": "integer", "minimum": 0},
           "seed": {"type": "integer", "minimum": 0},
           "status": {"enum": ["complete", "setup_failed", "model_failed", "parser_failed", "policy_blocked", "tool_failed", "incomplete"]},

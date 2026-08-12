@@ -49,9 +49,10 @@ The offline result-ready path is implemented:
 
 The pinned AgentDojo `0.1.35` / benchmark `v1.2.2` boundary translates exact
 upstream suite and trace structures, preserves IDs and native metrics, retains
-a raw upstream fixture, and rejects schema/version drift. The self-hosted
-comparison runner is evaluation-ready. An operator has not yet retained its
-benign/attacked, no-defence/ITES model result, so efficacy is not claimed.
+a raw upstream fixture, and rejects schema/version drift. Its six-cell local
+runner compares benign/attacked input under no defence, conservative ITES, and
+an explicitly non-deployable oracle profile. Fake-backed conformance passes,
+but an operator has not retained a model result, so efficacy is not claimed.
 
 Likewise, local model weights and servers, Z3, nuXmv, Docker code execution,
 AgentDojo execution, and scheduler submission are optional capabilities. Their

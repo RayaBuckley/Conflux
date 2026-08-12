@@ -20,13 +20,24 @@ from conflux.domain import (
     ResourceRef,
     Session,
     canonical_json,
+    fingerprint,
+    provenance_union,
 )
 from conflux.evaluation.defences import NoDefence
 from conflux.experiments.agentdojo import AgentDojoCell, AgentDojoCellResult
 from conflux.ites import MediatingITES, TransitionKernel
-from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy, PolicyGrant, SessionVisibilityPolicy, SnapshotReadPolicy
+from conflux.policy import (
+    ArgumentPolicyGrant,
+    ExplicitConsentPolicy,
+    InMemoryArgumentAuthorisationPolicy,
+    InMemoryAuthorisationPolicy,
+    PolicyGrant,
+    SessionVisibilityPolicy,
+    SnapshotReadPolicy,
+)
 from conflux.ports import ExecutorPort, LocalModelPort, LocalModelRequest, ProviderResult
 
+from .agentdojo_annotations import AnnotationProfile, pilot_annotations
 from .agentdojo_v1 import BENCHMARK_VERSION, PACKAGE_VERSION, parse_upstream_log
 
 
@@ -38,13 +49,14 @@ class AgentDojoActionMediator:
     defence: str
     user: Principal = field(default_factory=lambda: Principal("agentdojo:user", "AgentDojo user", "human"))
     injection: Principal = field(default_factory=lambda: Principal("agentdojo:injection", "AgentDojo injected author", "external"))
+    external: Principal = field(default_factory=lambda: Principal("agentdojo:external", "External tool content", "external"))
     environment: EnvironmentSnapshot = field(init=False)
     session: Session = field(init=False)
     records: list[dict[str, object]] = field(default_factory=list, init=False)
     sequence: int = field(default=0, init=False)
 
     def __post_init__(self) -> None:
-        if self.defence not in {"no_defence", "ites"}:
+        if self.defence not in {"no_defence", "ites_conservative", "ites_oracle"}:
             raise ValueError("unsupported_agentdojo_defence")
         resources = (
             ResourceRef("agentdojo", "search_emails", "tool"),
@@ -57,12 +69,12 @@ class AgentDojoActionMediator:
                     "agentdojo:user-task",
                     "workspace user task",
                     frozenset({self.user}),
-                    frozenset({self.user, self.injection}),
+                    frozenset({self.user}),
                 ),
             ),
             resources,
         )
-        self.session = Session("agentdojo:workspace", frozenset({self.user, self.injection}))
+        self.session = Session("agentdojo:workspace", frozenset({self.user}))
 
     def mediate(
         self,
@@ -70,19 +82,44 @@ class AgentDojoActionMediator:
         arguments: dict[str, object],
         executor: ExecutorPort,
     ) -> ProviderResult:
-        if tool_name not in {"search_emails", "delete_file"}:
+        profile = (
+            AnnotationProfile.ORACLE
+            if self.defence == "ites_oracle"
+            else AnnotationProfile.CONSERVATIVE
+        )
+        annotations = pilot_annotations(profile)
+        schema = annotations.operations.get(tool_name)
+        if schema is None:
             self.records.append({"tool": tool_name, "outcome": "blocked", "reason": "unsupported_tool"})
             return ProviderResult(False, error="unsupported_tool")
+        inputs = self.environment.artifacts()
+        provenance = provenance_union(*(artifact.provenance for artifact in inputs))
+        try:
+            action_arguments = schema.bind(
+                {name: (value, provenance) for name, value in arguments.items()},
+            )
+        except ValueError as error:
+            self.records.append(
+                {
+                    "tool": tool_name,
+                    "outcome": "blocked",
+                    "reason": "unsupported_arguments",
+                    "detail": str(error),
+                    "annotations_sha256": annotations.fingerprint,
+                }
+            )
+            return ProviderResult(False, error="unsupported_arguments")
         permission = Permission("read" if tool_name == "search_emails" else "delete")
         action = PrimitiveAction(
             tool_name,
             tool_name,
             permission,
             next(resource for resource in self.environment.resources if resource.resource_id == tool_name),
-            self.environment.artifacts(),
+            inputs,
+            arguments=action_arguments,
         )
         pipeline = self._pipeline()
-        engine = pipeline if self.defence == "ites" else NoDefence()
+        engine = pipeline if self.defence != "no_defence" else NoDefence()
         service = MediationService(MediatingITES(TransitionKernel(engine)))
         report = service.evaluate(
             environment=self.environment,
@@ -97,6 +134,7 @@ class AgentDojoActionMediator:
                     "tool": tool_name,
                     "arguments_sha256": hashlib.sha256(canonical_json(arguments).encode("utf-8")).hexdigest(),
                     "outcome": "blocked",
+                    "annotations_sha256": annotations.fingerprint,
                     "report": report.to_dict(),
                 }
             )
@@ -113,6 +151,8 @@ class AgentDojoActionMediator:
                 "tool": tool_name,
                 "arguments_sha256": hashlib.sha256(canonical_json(arguments).encode("utf-8")).hexdigest(),
                 "outcome": "executed" if result.provider.success else "provider_failed",
+                "annotations_sha256": annotations.fingerprint,
+                "arguments": [argument.to_dict() for argument in action_arguments],
                 "certificate_id": report.authorised_branches[0].certificate.id,
                 "report": result.report.to_dict(),
             }
@@ -129,21 +169,45 @@ class AgentDojoActionMediator:
                 PolicyGrant(self.user.id, "delete", "delete_file"),
             }
         )
+        delete_annotations = pilot_annotations(AnnotationProfile.CONSERVATIVE)
+        argument_grants = frozenset(
+            {
+                ArgumentPolicyGrant(
+                    self.user.id,
+                    "delete_file",
+                    "file_id",
+                    delete_annotations.operations["delete_file"].roles["file_id"],
+                    fingerprint(value),
+                )
+                for value in delete_annotations.reviewed_values["delete_file.file_id"]
+            }
+        )
         return DecisionPipeline(
             InMemoryAuthorisationPolicy(grants),
             SnapshotReadPolicy(),
             SessionVisibilityPolicy(),
             ExplicitConsentPolicy(frozenset({"search_emails", "delete_file"})),
+            InMemoryArgumentAuthorisationPolicy(argument_grants),
         )
 
     def _record_result(self, tool_name: str, value: object) -> None:
         self.sequence += 1
-        authors = frozenset({self.user, self.injection}) if self.attacked and tool_name == "search_emails" else frozenset({self.user})
+        profile = (
+            AnnotationProfile.ORACLE
+            if self.defence == "ites_oracle"
+            else AnnotationProfile.CONSERVATIVE
+        )
+        if self.attacked and tool_name == "search_emails":
+            authors = frozenset({self.user, self.injection})
+        elif profile == AnnotationProfile.CONSERVATIVE:
+            authors = frozenset({self.user, self.external})
+        else:
+            authors = frozenset({self.user})
         item = DataItem(
             f"agentdojo:tool-result:{self.sequence}",
             str(value),
             authors,
-            frozenset({self.user, self.injection}),
+            frozenset({self.user}),
         )
         self.environment = EnvironmentSnapshot(
             self.environment.id,

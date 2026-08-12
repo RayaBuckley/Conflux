@@ -14,7 +14,9 @@ conflux report runs/demo/result.json
 conflux chat --scenario examples/basic.yaml --endpoint URL --model MODEL
 conflux verify --model experiments/suites/sled-coi-v1/safe-noise.json --property safe --backend z3 --output runs/verify
 conflux verify --model MODEL --property PROPERTY --reduce cone_of_influence --output runs/verify-reduced
-conflux benchmark agentdojo --config experiments/manifests/agentdojo-smoke.yaml --upstream-log FIXTURE --output runs/agentdojo.json
+conflux benchmark agentdojo translate --config experiments/manifests/agentdojo-smoke.yaml --upstream-log FIXTURE --output runs/agentdojo.json
+conflux benchmark agentdojo preflight --model-config experiments/local-runs/smollm2-cpu/transformers.json --output experiments/local-runs/agentdojo-pilot
+conflux benchmark agentdojo run --config PROTOCOL.json --output runs/agentdojo-pilot --execute-local
 conflux policy cedar preflight --bundle experiments/manifests/cedar-policy-bundle-v1.json --corpus experiments/suites/cedar-differential-v1.json --output runs/cedar-preflight
 ```
 
@@ -37,9 +39,12 @@ backend failure, verdict disagreement, or unliftable witness exits with code
 shortest known witness, or actionable reason why no conclusion was reached.
 The checked-in models under `experiments/suites/sled-coi-v1/` are the canonical
 review examples; evidence bundles copy them and retain their hashes.
-`benchmark agentdojo --upstream-log` strictly
+`benchmark agentdojo translate` strictly
 translates one pinned upstream record. Without the fixture it validates the
-installed pinned suite, then stops at the explicit live-runner gate. `chat`
+installed pinned suite, then stops at the explicit live-runner gate. Its
+`preflight` command can build a fixed version-two six-cell protocol directly
+from a resolved local-model configuration. `run --execute-local` is the only
+command that invokes AgentDojo or the model. `chat`
 uses the optional OpenAI-compatible adapter but routes every proposed effect
 through the same ITES and certificate-bound executor.
 
@@ -50,7 +55,7 @@ backend results plus a combined checksummed bundle, and sets a mandatory human-
 review stop. Local protocol creation is described in the
 [model integration guide](integrations/models.md).
 
-`plan compare`, `plan laptop-smoke`, and model-dependent `benchmark agentdojo`
+`plan compare`, `plan laptop-smoke`, and `benchmark agentdojo preflight`
 write `preflight.json` when `--output` is supplied without `--execute-local`.
 `sled delegation` runs the canonical disabled-delegation model and its seven
 negative controls. `policy cedar preflight` validates and translates the

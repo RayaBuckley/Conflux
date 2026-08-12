@@ -97,7 +97,7 @@ def agentdojo_matrix(protocol: ExperimentProtocol) -> tuple[AgentDojoCell, ...]:
     return tuple(
         AgentDojoCell(attacked, defence, repetition, seed)
         for attacked in (False, True)
-        for defence in ("no_defence", "ites")
+        for defence in ("no_defence", "ites_conservative", "ites_oracle")
         for repetition in range(protocol.repetitions)
         for seed in protocol.seeds
     )

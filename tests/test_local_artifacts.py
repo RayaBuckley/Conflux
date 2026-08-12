@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -157,6 +158,48 @@ def test_model_resolve_cli_writes_reviewable_configuration(tmp_path: Path) -> No
     resolved = load_resolved_local_model(output / "transformers.json")
     assert resolved.spec.device == "cpu"
     assert resolved.spec.temperature == 0
+
+
+def test_agentdojo_preflight_builds_six_cell_protocol_from_resolved_model(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    snapshot = _snapshot(tmp_path)
+    manifest, _ = resolve_transformers_snapshot(
+        snapshot,
+        model_id=MODEL_ID,
+        revision=REVISION,
+    )
+    configuration = tmp_path / "transformers.json"
+    write_resolved_local_model(
+        ResolvedLocalModel(_spec(manifest.fingerprint), snapshot, manifest),
+        configuration,
+    )
+    monkeypatch.setattr(
+        cli_module,
+        "load_pinned_suite",
+        lambda _: SimpleNamespace(to_dict=lambda: {"schema_version": "fixture"}),
+    )
+    output = tmp_path / "agentdojo"
+    assert main(
+        [
+            "benchmark",
+            "agentdojo",
+            "preflight",
+            "--model-config",
+            str(configuration),
+            "--source-commit",
+            "a" * 40,
+            "--output",
+            str(output),
+        ]
+    ) == 0
+    protocol = json.loads((output / "protocol.json").read_text())
+    preflight = json.loads((output / "preflight.json").read_text())
+    assert protocol["schema_version"] == "2"
+    assert protocol["seeds"] == [0]
+    assert len(preflight["matrix"]) == 6
+    assert preflight["annotation_profiles"] == ["conservative", "oracle"]
 
 
 def test_cpu_pilot_preflights_eight_cells_and_retains_fake_bundle(

@@ -55,8 +55,8 @@
     {
       "ids": ["AGENTDOJO-003"],
       "status": "evaluation_ready",
-      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py", "runs/direction-readiness-v1/agentdojo-preflight.json"],
-      "gap": "The four-cell self-hosted-model comparison has not been deliberately executed and retained."
+      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "experiments/suites/agentdojo-tool-schemas-v1.json", "experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py"],
+      "gap": "The six-cell conservative/oracle self-hosted-model comparison has not been deliberately executed and retained."
     },
     {
       "ids": ["SLEDV-001", "SLEDV-002", "SLEDV-003"],
@@ -143,7 +143,7 @@
     {
       "ids": ["DIR-BENCH-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/experiments/agentdojo.py", "tests/test_agentdojo_runner.py", "runs/direction-readiness-v1/agentdojo-preflight.json"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py"],
       "gap": "No deliberate self-hosted-model AgentDojo comparison is retained."
     },
     {

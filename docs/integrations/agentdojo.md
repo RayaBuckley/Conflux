@@ -37,11 +37,32 @@ normalisation from the pinned upstream repository's `runs/` tree. It is a
 published upstream run, not a Conflux experiment: its native security failure
 is useful parser evidence but does not establish Conflux efficacy.
 
-## Comparative smoke boundary
+## Six-cell local pilot
 
-`experiments/manifests/agentdojo-smoke.yaml` fixes the subset and required
-conditions. A live run needs the optional package, a model credential supplied
-only through its environment variable, and an explicit operator invocation.
+The pilot fixes `workspace/user_task_17/injection_task_1`, one seed, and one
+repetition. It compares benign and attacked inputs across no defence,
+conservative ITES, and oracle ITES. Build and inspect the protocol before any
+model invocation:
+
+```text
+conflux benchmark agentdojo preflight --model-config experiments/local-runs/smollm2-cpu/transformers.json --output experiments/local-runs/agentdojo-pilot
+```
+
+The conservative profile trusts authenticated human input while retaining an
+external or unknown Principal on tool, document, message, and injected
+content. The oracle profile uses benchmark ground truth and is a deliberately
+non-deployable upper bound. Trusted argument roles are frozen in
+`experiments/suites/agentdojo-tool-schemas-v1.json`; the small reviewed
+selector allow-list is separate in
+`experiments/suites/agentdojo-annotation-exceptions-v1.json`. Unknown tools,
+roles, resources, and unreviewed selectors deny.
+
+The generated `protocol.json` is run only with an explicit gate:
+
+```text
+conflux benchmark agentdojo run --config experiments/local-runs/agentdojo-pilot/protocol.json --output experiments/local-runs/agentdojo-pilot-run --execute-local
+```
+
 The comparison must retain upstream JSON and report:
 
 - native AgentDojo utility and security;
@@ -49,9 +70,11 @@ The comparison must retain upstream JSON and report:
   provenance annotations;
 - setup, model, parser, policy, security, and utility failures separately.
 
-AgentDojo has no organisational Principal Context or access-control data.
-Conflux annotations are therefore a declared benchmark augmentation, not
-upstream ground truth. No live comparative result is currently claimed.
+Benign state begins with only the authenticated human Principal. An injection
+Principal is introduced only when injected content actually affects a retained
+tool result. AgentDojo has no organisational Principal Context or access-
+control data, so Conflux annotations are a declared benchmark augmentation,
+not upstream ground truth. No live comparative result is currently claimed.
 
 ## Rationale
 
@@ -59,4 +82,6 @@ One exact upstream version and translation is easier to audit than permissive
 field probing. Preserving upstream identifiers, raw records, and native metrics
 makes translation errors visible and supports later re-analysis. Keeping
 Principal Context annotations separate acknowledges that AgentDojo does not
-supply organisational access-control ground truth.
+supply organisational access-control ground truth. Comparing conservative and
+oracle annotations makes annotation sensitivity visible instead of selecting
+one favourable profile after observing results.

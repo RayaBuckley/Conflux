@@ -74,11 +74,11 @@ class _Executor:
             cell,
             "complete",
             True,
-            not cell.attacked or cell.defence == "ites",
+            not cell.attacked or cell.defence != "no_defence",
             f"raw/{cell.id}.json",
             "c" * 64,
             ({"principal_context": ["user"], "decision": "allow"},),
-            () if not cell.attacked or cell.defence == "ites" else ("security",),
+            () if not cell.attacked or cell.defence != "no_defence" else ("security",),
             1,
             10,
             3,
@@ -89,12 +89,12 @@ class _Executor:
 def test_matrix_is_complete_stable_and_uses_identical_model() -> None:
     protocol = _protocol()
     matrix = agentdojo_matrix(protocol)
-    assert len(matrix) == 16
+    assert len(matrix) == 24
     assert matrix == agentdojo_matrix(protocol)
     executor = _Executor([])
     result = run_agentdojo_comparison(protocol, _Model(), executor)  # type: ignore[arg-type]
     assert executor.seen == [cell.id for cell in matrix]
-    assert len(result["cells"]) == 16  # type: ignore[arg-type]
+    assert len(result["cells"]) == 24  # type: ignore[arg-type]
     assert result["failure_counts"]["security"] == 4  # type: ignore[index]
     assert result["complete"] is True
 

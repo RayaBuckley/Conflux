@@ -23,7 +23,7 @@
 | Cedar decisions match the in-memory oracle | Not yet evidenced | the exact 4.11.0 binary has not completed the retained differential matrix |
 | Conflux is secure for unbounded deployments | Not claimed | finite bounds and abstractions do not prove unbounded deployments |
 | AgentDojo integration preserves upstream semantics | Implemented for translation | pinned 0.1.35 structures and raw fixture; Conflux annotations are additional assumptions |
-| AgentDojo establishes Conflux utility or efficacy | Not yet evidenced | `runs/direction-readiness-v1/agentdojo-preflight.json` retains the four unavailable cells; no empirical bundle exists |
+| AgentDojo establishes Conflux utility or efficacy | Not yet evidenced | the earlier four-cell readiness record is historical; the current six-cell conservative/oracle protocol has fake-backed conformance but no empirical bundle |
 | Open-ended planning improves utility | Not yet evidenced | `runs/direction-readiness-v1/planning-preflight.json` retains all unavailable protocol cells; offline modeled fixtures are mechanics evidence only |
 | Self-hosted model output is reproducible across hardware or runtimes | Not claimed | identity and sampling are recorded, but no model-generated bundle or cross-hardware comparison is retained |
 | Cloud policy behaviour matches a provider | Not claimed | current AWS adapter is an explicit fail-closed subset |

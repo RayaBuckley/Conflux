@@ -1,0 +1,22 @@
+{
+  "schema_version": "1",
+  "source": {
+    "agentdojo_package": "0.1.35",
+    "benchmark": "v1.2.2",
+    "suite": "workspace"
+  },
+  "operations": {
+    "delete_file": {
+      "arguments": {
+        "file_id": "resource"
+      },
+      "version": "agentdojo-0.1.35"
+    },
+    "search_emails": {
+      "arguments": {
+        "query": "content"
+      },
+      "version": "agentdojo-0.1.35"
+    }
+  }
+}
