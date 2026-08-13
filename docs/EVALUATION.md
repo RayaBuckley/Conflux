@@ -7,6 +7,26 @@ remain distinguishable throughout normalization.
 
 ## Current evidence boundary
 
+```mermaid
+flowchart LR
+    protocol[protocol] --> preflight[preflight]
+    preflight -->|execute-local| execute[execute]
+    preflight -->|unavailable| unavailable[unavailable cells]
+    execute --> retain[retain raw events]
+    retain --> normalize[normalize result JSON]
+    normalize --> summary[summary]
+```
+
+```mermaid
+flowchart LR
+    implemented[implemented] --> bounded_evidence[bounded_evidence]
+    bounded_evidence --> evaluation_ready[evaluation_ready]
+    evaluation_ready --> externally_gated[externally_gated]
+    externally_gated --> deferred[deferred]
+    bounded_evidence -.->|dashed: unavailable optional dependency| externally_gated
+    evaluation_ready -.->|dashed: no model result| externally_gated
+```
+
 | Track | Repository status | What is evidenced |
 |---|---|---|
 | Native SLED reproduction | `bounded_evidence` | One deterministic finite run over three paired fixtures and five negative controls |

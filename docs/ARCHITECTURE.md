@@ -2,11 +2,16 @@
 
 Conflux has one dependency direction and one mediation boundary:
 
-```text
-domain <- ports <- application <- adapters
-                <- ITES <- planning
-                         <- evaluation
-verification <- optional solver adapters
+```mermaid
+flowchart LR
+    domain --> ports --> application --> adapters
+    ports --> ITES --> planning
+    ITES --> evaluation
+    verification ~~~ optional_solver_adapters[optional solver adapters]
+    optional_solver_adapters -.-> verification
+
+    style ITES fill:#e8f4e8,stroke:#2d7d2d,stroke-width:2px
+    style optional_solver_adapters stroke-dasharray: 5 5
 ```
 
 - `conflux.domain` owns immutable identities, provenance, resources, actions,

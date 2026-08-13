@@ -100,6 +100,20 @@ and a redacted raw response.
 
 ## Execution state machine
 
+```mermaid
+stateDiagram-v2
+    [*] --> pending
+    pending --> ready
+    ready --> running
+    running --> succeeded
+    running --> failed
+    running --> blocked
+    running --> skipped
+    failed --> continuation[continuation]
+    blocked --> continuation
+    continuation --> ready : inherits provenance
+```
+
 Node states are `pending`, `ready`, `running`, `succeeded`, `failed`,
 `blocked`, and `skipped`. Ready nodes are ordered by `(plan_id, node_id,
 node_fingerprint)`. Each transition returns a new immutable state.
@@ -109,6 +123,16 @@ continuation depth, loop iterations, effects, output bytes, and elapsed time.
 Exhaustion is an explicit incomplete outcome, never success.
 
 For an action node:
+
+```mermaid
+flowchart TD
+    resolve[1. resolve and validate bindings] --> derive[2. derive conservative context from provenance]
+    derive --> construct[3. construct canonical primitive action]
+    construct --> kernel[4. ask kernel for fresh independent decisions]
+    kernel --> execute[5. execute certificate-bound allowed action]
+    execute --> convert[6. convert provider output to provenance-bearing artifacts]
+    convert --> record[7. record allowed, blocked, failed, environment outcomes]
+```
 
 1. resolve and validate bindings;
 2. derive the conservative context from trusted provenance;

@@ -28,6 +28,20 @@ against the current environment and session immediately before each effect.
 Revocation or certificate change blocks execution. Ordered plans stop at the
 first action-time denial or provider failure.
 
+```mermaid
+flowchart TD
+    effect[pending effect] --> recheck[MediationService re-runs all policy dimensions]
+    recheck --> cert{certificate matches?}
+    cert -->|no| block[blocked: stale or mismatched certificate]
+    cert -->|yes| policy{all policy dimensions allow?}
+    policy -->|denial| denial[policy denial]
+    policy -->|allow| execute[execute through provider]
+    execute --> success[success: outcome evidence]
+    execute --> failure[provider failure]
+    denial -.->|ordered plan stops| plan_stop[plan stops at first denial]
+    failure -.->|ordered plan stops| plan_stop2[plan stops at first provider failure]
+```
+
 ## Rationale
 
 | Runtime choice | Why |

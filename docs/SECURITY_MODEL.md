@@ -16,10 +16,23 @@ grant authority, assert decision provenance, or narrow Principal Context.
 
 ## Decision pipeline
 
-```text
-authenticated inputs + argument provenance -> conservative Principal Context
-  -> action + pointwise argument + read + visibility + consent decisions
-  -> exact decision certificate -> selected executor -> outcome evidence
+```mermaid
+flowchart TD
+    inputs[authenticated inputs + argument provenance] --> ctx[conservative Principal Context]
+    ctx --> action[action decision]
+    ctx --> argument[pointwise argument decision]
+    ctx --> read[read decision]
+    ctx --> visibility[visibility decision]
+    ctx --> consent[consent decision]
+    action --> cert[exact decision certificate]
+    argument --> cert
+    read --> cert
+    visibility --> cert
+    consent --> cert
+    cert --> executor[selected executor]
+    executor --> outcome[outcome evidence]
+    outcome --> recheck[re-check policy at execution time]
+    recheck -->|certificate matches| outcome
 ```
 
 The policy dimensions remain independently visible. Authority-bearing

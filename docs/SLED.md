@@ -11,6 +11,24 @@ discovered counterexample.
 | `UNSAFE` | A safety property failed with a counterexample |
 | `UNKNOWN` | Modelling, property, or adapter evaluation failed |
 
+```mermaid
+flowchart TD
+    start[start BFS exploration] --> expand[expand reachable states]
+    expand --> check{invariant check}
+    check -->|violation found| unsafe[UNSAFE: counterexample]
+    check -->|no violation| bounds{bound exhausted?}
+    bounds -->|yes| bounded_safe[BOUNDED_SAFE]
+    bounds -->|no| exhausted{state space exhausted?}
+    exhausted -->|yes| safe[SAFE]
+    exhausted -->|no| expand
+    check -->|evaluation failed| unknown[UNKNOWN]
+
+    ir[verification IR] -.->|optional backend| z3[Z3 bounded checking]
+    ir -.->|unsupported| unknown
+    ir --> ref[reference interpreter]
+    ref --> compare[original vs reduced comparison]
+```
+
 Depth, state, transition, and model-call bounds are explicit. Results retain
 unique states, transitions, duplicates, truncation, and counterexample length.
 ITES properties cover unauthorised execution, forbidden observation,
