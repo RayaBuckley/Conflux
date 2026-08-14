@@ -1,1 +1,1 @@
-python scripts/generate_direction_evidence.py runs/direction-readiness-v1 --source-commit 14f2aa3833b0533a89d7d6e18a21c98625590931
+python scripts/generate_direction_evidence.py runs/direction-readiness-v1 --source-commit 353c0b6e2a17bc65560c3702ee70ed6e4b4665a2
