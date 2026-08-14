@@ -31,8 +31,8 @@ flowchart LR
 |---|---|---|
 | Native SLED reproduction | `bounded_evidence` | One deterministic finite run over three paired fixtures and five negative controls |
 | Verification COI reduction | `bounded_evidence` | Two finite IR fixtures have matching reference verdicts, measurable reduction, and one lifted unsafe witness; optional formal binaries were unavailable |
-| AgentDojo comparison | `evaluation_ready` | Pinned translation, six-cell conservative/oracle runner, argument mediation, and fake-backed conformance tests; no model result |
-| Four-mode planning | `evaluation_ready` | Eight scenarios, 32-cell runner, inert modeled-program validation, and offline tests; no model result |
+| AgentDojo comparison | `bounded_evidence` | Pinned translation, six-cell conservative/oracle runner, argument mediation, and fake-backed conformance tests; no model result; experiment plan in [RESULTS_AND_EXPERIMENT_PLAN.md](../reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
+| Four-mode planning | `bounded_evidence` | Eight scenarios, 32-cell runner, inert modeled-program validation, and offline tests; no model result; experiment plan in [RESULTS_AND_EXPERIMENT_PLAN.md](../reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
 | Dual-backend laptop planning smoke | `evaluation_ready` | Fixed two-scenario, four-mode, two-runtime 16-cell protocol and fake-backed runner; no model-generated bundle |
 | Scoped delegation model | `implemented` | Exact one-use grants, lifecycle evidence, atomic consumption, and seven killed mutants; operational ITES consumption remains denied |
 | Cedar differential | `evaluation_ready` | Strict corpus, PARC translation, oracle decisions, and binary preflight; Cedar remains unavailable and parity is not evidenced |

@@ -52,6 +52,11 @@ Missing or unsupported backends return `UNKNOWN`. Partial-order reduction,
 Principal symmetry, hyperproperties, arbitrary-program proofs, and unbounded
 deployment claims remain future work.
 
+## Related research
+
+- [Maximal security and synthesis](../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md): formalises the claim that ITES is the maximally permissive PE-safe controller and proposes a controller-synthesis experiment.
+- [Comparative defence verification](../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md): research design for verifying contemporary agent defences against the Conflux PE property.
+
 ## Rationale
 
 Breadth-first search produces small diagnostic witnesses. Canonical state and

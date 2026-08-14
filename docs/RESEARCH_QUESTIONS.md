@@ -1,6 +1,8 @@
 # Current Research Questions
 
 > Draft prioritisation document. These questions should be reconciled with the current repository status and claims ledger.
+>
+> **Canonical owners:** Implementation status is in [task-registry.json](task-registry.json); claim strength in [CLAIMS.md](CLAIMS.md); change catalogue in [CHANGE_CATALOG.md](CHANGE_CATALOG.md).
 
 ## Primary questions
 

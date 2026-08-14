@@ -13,7 +13,10 @@ richer operation-specific argument-effect semantics remain proposed work.
 
 The [current report analysis](../reports/analysis/PROJECT_ANALYSIS.md) explains
 how the detailed archived taxonomy and literature matrix relate to the current
-repository. Very recent preprints, titles, author lists, and reported numbers
+repository. The [comparative defence verification
+analysis](../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md) proposes a
+research design for verifying contemporary agent defences against the Conflux
+PE property. Very recent preprints, titles, author lists, and reported numbers
 must be checked against primary sources before publication. This document does
 not revise the archived paper.
 

@@ -1,6 +1,8 @@
 # Conflux Research Overview
 
 > Draft reviewer-facing overview. Reconcile against the current canonical repository documentation before treating this file as normative.
+>
+> **Canonical owners:** The security model is normative in [SECURITY_MODEL.md](SECURITY_MODEL.md); implementation status in [STATUS.md](STATUS.md) and [task-registry.json](task-registry.json); claim strength in [CLAIMS.md](CLAIMS.md); formal verification in [SLED.md](SLED.md); evaluation evidence in [EVALUATION.md](EVALUATION.md); comparative defence analysis in [reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md](../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md); maximal-permissiveness analysis in [reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md](../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md).
 
 ## 1. Research problem
 

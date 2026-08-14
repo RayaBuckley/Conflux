@@ -30,6 +30,7 @@ reconcile, not permission to promote a historical or convenient statement.
 | 30 July planning supplement | Assessed progress and specified open-ended planning | Planning design is implemented; the report did not execute the repository and is not current evidence |
 | 31 July evidence-first evaluation | Required self-hosted model protocols and retained native SLED evidence | Native evidence is retained; model-dependent runners are evaluation-ready without empirical efficacy claims |
 | 2 August fourth-year direction | Proposed planning, delegation, argument policy, disclosure, attribution, verification reduction, benchmark, PDP, and governance work | Reconciled by specification 013; COI reduction is first, delegation stays disabled until its gates pass |
+| 14 August reviewer-support | Supporting drafts for reviewer onboarding, maximal-permissiveness formalisation, comparative defence verification, and experiment planning | Archived in reports/archive/2026-08-14-reviewer-support/; superseded by canonical docs and analysis reports listed in MANIFEST.json |
 
 The package metadata and exact source files are in
 [the archive manifest](../archive/MANIFEST.json).
