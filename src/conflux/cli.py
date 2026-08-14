@@ -196,6 +196,7 @@ def _parser() -> argparse.ArgumentParser:
     agentdojo_preflight.add_argument("--output", type=Path, required=True)
     agentdojo_run = agentdojo_commands.add_parser("run", help="deliberately run the pinned six-cell local comparison")
     agentdojo_run.add_argument("--config", type=Path, required=True)
+    agentdojo_run.add_argument("--model-config", type=Path)
     agentdojo_run.add_argument("--output", type=Path, required=True)
     agentdojo_run.add_argument("--execute-local", action="store_true", required=True)
 
@@ -975,7 +976,16 @@ def _benchmark(arguments: argparse.Namespace) -> int:
         if config is None:
             raise ValueError("agentdojo_protocol_required")
         protocol = load_protocol(config)
-        model = _local_model(protocol)
+        model_config_path = cast(Path | None, getattr(arguments, "model_config", None))
+        if model_config_path is not None and protocol.model is not None and protocol.model.backend == "transformers":
+            resolved = load_resolved_local_model(model_config_path)
+            model = TransformersLocalModel(
+                resolved.spec,
+                snapshot_path=resolved.snapshot_path,
+                artifact_manifest=resolved.manifest,
+            )
+        else:
+            model = _local_model(protocol)
     matrix = agentdojo_matrix(protocol)
     if command == "preflight":
         suite_error: str | None = None
