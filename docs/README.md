@@ -44,6 +44,12 @@ owner; linked documents should reference that owner rather than restating it.
 - [Report sources and analysis](../reports/README.md): reconciled historical inputs.
 - [Current manuscript](../manuscript/README.md): publication source and evidence policy.
 
+## Research context
+
+- [Research overview](RESEARCH_OVERVIEW.md): reviewer-facing problem statement, ITES rule, and Part C direction.
+- [Research questions](RESEARCH_QUESTIONS.md): prioritised open questions and evidence requirements.
+- [Verification backends](integrations/verification.md): optional solver and model dependencies.
+
 ## Ownership and rationale
 
 | Question | Canonical owner | Why |
