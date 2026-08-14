@@ -3,7 +3,7 @@
     "integrity_scope":  "exact repository blob bytes",
     "hash_algorithm":  "sha256",
     "git_object_format":  "sha1",
-    "artifact_count":  29,
+    "artifact_count":  31,
     "packages":  [
                      {
                          "id":  "2026-07-27-engineering-and-sled",
@@ -150,20 +150,45 @@
                          "supersedes":  [
 
                                         ],
-                         "superseded_by":  [
-
-                                           ],
-                         "canonical_successors":  [
-                                                      "docs/specifications/013-fourth-year-direction-programme.md",
+                          "superseded_by":  [
+                                                "2026-08-14-reviewer-support"
+                                            ],
+                          "canonical_successors":  [
+                                                       "docs/specifications/013-fourth-year-direction-programme.md",
                                                       "docs/task-registry.json",
                                                       "reports/analysis/PROJECT_ANALYSIS.md"
                                                   ],
                          "limitations":  [
                                              "The package contains unresolved filecite markers and open design questions; specification 013 records the accepted choices.",
-                                             "Some recommendations overlap implementation that predates the snapshot; docs/task-registry.json owns current status."
-                                         ]
-                     }
-                 ],
+                                              "Some recommendations overlap implementation that predates the snapshot; docs/task-registry.json owns current status."
+                                          ]
+                      },
+                      {
+                          "id":  "2026-08-14-reviewer-support",
+                          "title":  "Reviewer-support and research-direction package",
+                          "snapshot_date":  "2026-08-14",
+                          "source_commits":  [
+                                                 "25d3552"
+                                             ],
+                          "status":  "historical_input",
+                          "supersedes":  [
+                                             "2026-08-02-fourth-year-direction"
+                                         ],
+                          "superseded_by":  [
+
+                                            ],
+                          "canonical_successors":  [
+                                                       "docs/RESEARCH_OVERVIEW.md",
+                                                       "docs/RESEARCH_QUESTIONS.md",
+                                                       "reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md",
+                                                       "reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md",
+                                                       "reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md"
+                                                   ],
+                          "limitations":  [
+                                              "Package cover note and manifest are archival; their content is superseded by the canonical successors listed above."
+                                          ]
+                      }
+                  ],
     "artifacts":  [
                       {
                           "package_id":  "2026-07-27-engineering-and-sled",
@@ -481,6 +506,28 @@
                           "size_bytes":  1409,
                           "sha256_bytes":  "6fdf1481d73eeee8f9f352fceeb01ac0f3e7ac7558a579de3e5f40431047e7cd",
                           "git_blob_oid":  "b95ba714f92cc79eb9b6c89012f7aca1e0bb44bf",
+                          "role":  "source_manifest",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-14-reviewer-support",
+                          "original_path":  "README_FOR_GLM.md",
+                          "archive_path":  "reports/archive/2026-08-14-reviewer-support/README_FOR_GLM.md",
+                          "media_type":  "text/markdown",
+                          "size_bytes":  969,
+                          "sha256_bytes":  "d13b99604985313aaf11e9d7fe630525d2d1f1c5053580f5e8f00b7835da9330",
+                          "git_blob_oid":  "67025abd05c5c4606bee077578078332dd81ff03",
+                          "role":  "navigation",
+                          "duplicate_of":  null
+                      },
+                      {
+                          "package_id":  "2026-08-14-reviewer-support",
+                          "original_path":  "PACKAGE_MANIFEST.json",
+                          "archive_path":  "reports/archive/2026-08-14-reviewer-support/PACKAGE_MANIFEST.json",
+                          "media_type":  "application/json",
+                          "size_bytes":  568,
+                          "sha256_bytes":  "7fc051a28bb9c7c9ad5a9523ea4eaf91c39d0aa62340633ff87b540c4bb4ca83",
+                          "git_blob_oid":  "f9073d63c00d268b40baa656136a4ce2c407eaaf",
                           "role":  "source_manifest",
                           "duplicate_of":  null
                       }

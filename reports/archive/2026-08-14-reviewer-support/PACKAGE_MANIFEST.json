@@ -1,0 +1,15 @@
+{
+  "package": "Conflux reviewer and research support drafts",
+  "date": "2026-08-14",
+  "status": "supporting drafts; reconcile with current repository before treating as canonical",
+  "files": [
+    "README_FOR_GLM.md",
+    "docs/RESEARCH_OVERVIEW.md",
+    "docs/RESEARCH_QUESTIONS.md",
+    "reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md",
+    "reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md",
+    "reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md",
+    "reports/analysis/GLM_SYNTHESIS_BRIEF.md",
+    "reports/analysis/REVIEWER_MEETING_CHECKLIST.md"
+  ]
+}

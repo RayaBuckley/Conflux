@@ -23,6 +23,9 @@ htmlcov/
 .local/
 /pytest-full.log
 
+# AI tool state
+.ae3code/
+
 # Editors and operating systems
 .idea/
 .vscode/
