@@ -23,3 +23,14 @@ therefore have separate owners.
 The maintained analysis should summarize a finding once, link its original
 source, and point to canonical evidence. Mutable status remains exclusively in
 `docs/task-registry.json`.
+
+## Analysis reports
+
+| Report | Path |
+|--------|------|
+| Foundational security literature | [analysis/2026-08-13-foundational-security-literature.md](analysis/2026-08-13-foundational-security-literature.md) |
+| Maximal security and synthesis | [analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md](analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md) |
+| Comparative defence verification | [analysis/COMPARATIVE_DEFENCE_VERIFICATION.md](analysis/COMPARATIVE_DEFENCE_VERIFICATION.md) |
+| Results and experiment plan | [analysis/RESULTS_AND_EXPERIMENT_PLAN.md](analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
+| GLM synthesis brief | [analysis/GLM_SYNTHESIS_BRIEF.md](analysis/GLM_SYNTHESIS_BRIEF.md) |
+| Reviewer meeting checklist | [analysis/REVIEWER_MEETING_CHECKLIST.md](analysis/REVIEWER_MEETING_CHECKLIST.md) |
