@@ -34,11 +34,15 @@ repair the appropriate owner; do not choose whichever source enables a task.
 1. Confirm `main`, a clean worktree, and the affected canonical owners.
 2. Read the relevant specification, ADR, implementation, tests, and status.
 3. Write a decision-complete specification before foundational behavior.
-4. Implement the smallest coherent change with security regression tests.
-5. Run focused checks, repository audit, portable validation, and diff review.
-6. Update the existing status, claim, glossary, and manuscript owners only
+4. Formulate a commit strategy: when changes span multiple files or logical
+   concerns, group them into atomic commits — one per distinct concern — and
+   list the files for each commit. Each commit must pass validation
+   independently.
+5. Implement the smallest coherent change with security regression tests.
+6. Run focused checks, repository audit, portable validation, and diff review.
+7. Update the existing status, claim, glossary, and manuscript owners only
    where the change alters them.
-7. Commit atomically. Keep generated evidence in a later commit.
+8. Commit atomically. Keep generated evidence in a later commit.
 
 ### Rationale
 

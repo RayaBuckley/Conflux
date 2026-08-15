@@ -55,6 +55,14 @@ Read `docs/AI_AGENT_GUIDE.md` for source authority, documentation routing, and
 stop conditions. Update one canonical owner rather than creating parallel
 status, rationale, roadmap, or claim documents.
 
+## Commit strategy
+
+When changes span multiple files or logical concerns, formulate a commit
+strategy *before* implementing. Group changes into atomic, coherent commits —
+one per distinct concern — and list the files for each commit. Each commit
+must pass validation independently. Do not bundle unrelated concerns or mix
+implementation with generated evidence in the same commit.
+
 ## Terminology and paper policy
 
 Use `Principal Context` and `Principal`; use `User` only for an explicitly
