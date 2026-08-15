@@ -160,6 +160,55 @@ def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
         model.generate(_request())
 
 
+def test_transformers_adapter_strips_markdown_fences() -> None:
+    def generate_fenced(
+        prompt: str,
+        *,
+        max_new_tokens: int,
+        temperature: float,
+        top_p: float,
+        seed: int,
+    ) -> LocalTextGeneration:
+        return LocalTextGeneration('```json\n{"answer":"fenced"}\n```', 11, 4)
+
+    model = TransformersLocalModel(_spec("transformers", None), generator=generate_fenced, clock=lambda: 2.0)
+    response = model.generate(_request())
+    assert response.payload == {"answer": "fenced"}
+    assert model.records[0]["content"] == '```json\n{"answer":"fenced"}\n```'
+
+
+def test_transformers_adapter_strips_plain_fences() -> None:
+    def generate_plain(
+        prompt: str,
+        *,
+        max_new_tokens: int,
+        temperature: float,
+        top_p: float,
+        seed: int,
+    ) -> LocalTextGeneration:
+        return LocalTextGeneration('```\n{"answer":"plain"}\n```', 11, 4)
+
+    model = TransformersLocalModel(_spec("transformers", None), generator=generate_plain, clock=lambda: 2.0)
+    response = model.generate(_request())
+    assert response.payload == {"answer": "plain"}
+
+
+def test_transformers_adapter_preserves_unfenced_json() -> None:
+    def generate_unfenced(
+        prompt: str,
+        *,
+        max_new_tokens: int,
+        temperature: float,
+        top_p: float,
+        seed: int,
+    ) -> LocalTextGeneration:
+        return LocalTextGeneration('{"answer":"raw"}', 11, 4)
+
+    model = TransformersLocalModel(_spec("transformers", None), generator=generate_unfenced, clock=lambda: 2.0)
+    response = model.generate(_request())
+    assert response.payload == {"answer": "raw"}
+
+
 def test_transformers_dependency_is_optional_and_loading_is_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     model = TransformersLocalModel(_spec("transformers", None))
     monkeypatch.setattr("conflux.adapters.models.local_transformers.find_spec", lambda name: None)

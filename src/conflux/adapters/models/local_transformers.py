@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from dataclasses import dataclass, field
 from importlib.util import find_spec
@@ -17,6 +18,16 @@ from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResp
 
 from .artifacts import LocalArtifactManifest, verify_transformers_snapshot
 from .local_openai import LocalModelFailure
+
+_FENCE_RE = re.compile(
+    r"^\s*```(?:json)?\s*\n(.*?)\n```\s*$",
+    re.DOTALL,
+)
+
+
+def _strip_markdown_fences(text: str) -> str:
+    stripped = _FENCE_RE.sub(r"\1", text)
+    return stripped.strip() if stripped != text.strip() else text.strip()
 
 
 class LocalTextGenerator(Protocol):
@@ -53,9 +64,7 @@ class TransformersLocalModel:
 
     def preflight(self) -> LocalModelPreflight:
         dependency = self.generator is not None or find_spec("transformers") is not None
-        artifact = self.generator is not None or (
-            self.snapshot_path is not None and self.artifact_manifest is not None
-        )
+        artifact = self.generator is not None or (self.snapshot_path is not None and self.artifact_manifest is not None)
         identity = False
         warnings: tuple[str, ...] = ()
         reason = None
@@ -67,10 +76,7 @@ class TransformersLocalModel:
                     self.snapshot_path,
                     self.artifact_manifest,
                 )
-                identity = (
-                    self.artifact_manifest.fingerprint
-                    == self.spec.weight_manifest_sha256
-                )
+                identity = self.artifact_manifest.fingerprint == self.spec.weight_manifest_sha256
                 if not identity:
                     reason = "artifact_identity_mismatch"
             except (OSError, ValueError) as error:
@@ -107,11 +113,7 @@ class TransformersLocalModel:
                 top_p=self.spec.top_p,
                 seed=self.spec.seed,
             )
-            generation = (
-                generated
-                if isinstance(generated, LocalTextGeneration)
-                else LocalTextGeneration(generated)
-            )
+            generation = generated if isinstance(generated, LocalTextGeneration) else LocalTextGeneration(generated)
             content = generation.content
             self.records.append(
                 {
@@ -122,7 +124,7 @@ class TransformersLocalModel:
                     "output_tokens": generation.output_tokens,
                 }
             )
-            decoded = json.loads(content)
+            decoded = json.loads(_strip_markdown_fences(content))
             if not isinstance(decoded, dict):
                 raise TypeError("structured_root_not_object")
             Draft202012Validator(dict(request.schema)).validate(decoded)
