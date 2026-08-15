@@ -83,7 +83,7 @@ def test_corpus_rejects_unknown_principals_and_request_overflow(tmp_path: Path) 
 
 def test_unknown_bundle_version_and_feature_fail_closed(tmp_path: Path) -> None:
     version = json.loads(BUNDLE.read_text(encoding="utf-8"))
-    version["binary"]["version"] = "4.12.0"
+    version["binary"]["version"] = "4.99.0"
     invalid_version = tmp_path / "version.json"
     invalid_version.write_text(json.dumps(version), encoding="utf-8")
     with pytest.raises(ValueError):

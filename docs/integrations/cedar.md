@@ -1,7 +1,7 @@
 # Cedar integration
 
-Conflux has an optional, local Cedar policy adapter pinned to version `4.11.0`
-and commit `d86ed2ee47cbe5a30e6b70a3d8414bc66ce88ae3`. Core installation and CI do not
+Conflux has an optional, local Cedar policy adapter pinned to version `4.12.0`
+and commit `fdcbaed32bdb8c8d13e4eaf2b58db5555e9fb8c5`. Core installation and CI do not
 download or invoke Cedar.
 
 ## Offline preflight

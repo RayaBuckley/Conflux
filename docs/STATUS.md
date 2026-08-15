@@ -32,7 +32,7 @@ The offline result-ready path is implemented:
   grants with deterministic lifecycle evidence and mutation-tested bounds;
   operational delegation remains unconditionally denied pending activation
   evidence;
-- the optional Cedar 4.11.0 adapter, strict differential corpus, PARC
+- the optional Cedar 4.12.0 adapter, strict differential corpus, PARC
   translation, binary-identity preflight, and offline readiness bundle are
   implemented; Cedar was not invoked, so parity is not claimed;
 - deterministic scenarios, traces, schemas, manifests, smoke evidence,

@@ -22,14 +22,7 @@ from conflux.ports import LocalModelPreflight
 
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO = ROOT / "examples" / "basic.yaml"
-AGENTDOJO_FIXTURE = (
-    ROOT
-    / "tests"
-    / "fixtures"
-    / "agentdojo"
-    / "v0.1.35"
-    / "workspace-user_task_17-injection_task_1.json"
-)
+AGENTDOJO_FIXTURE = ROOT / "tests" / "fixtures" / "agentdojo" / "v0.1.35" / "workspace-user_task_17-injection_task_1.json"
 AGENTDOJO_MANIFEST = ROOT / "experiments" / "manifests" / "agentdojo-smoke.yaml"
 LAPTOP_SMOKE_PLAN = ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
 CEDAR_BUNDLE = ROOT / "experiments/manifests/cedar-policy-bundle-v1.json"
@@ -92,11 +85,7 @@ def _write_laptop_protocol(path: Path, backend: str) -> None:
         "inputs": {},
         "model": {
             "backend": backend,
-            "model_id": (
-                plan["generated_llama_model_id"]
-                if is_llama
-                else plan["source_model_id"]
-            ),
+            "model_id": (plan["generated_llama_model_id"] if is_llama else plan["source_model_id"]),
             "revision": plan["source_revision"],
             "weight_manifest_sha256": ("b" if is_llama else "a") * 64,
             "tokenizer_id": plan["tokenizer_id"],
@@ -143,9 +132,7 @@ def test_demo_retains_manifest_and_reports_an_all_blocked_scenario(
 ) -> None:
     blocked_scenario = tmp_path / "blocked.yaml"
     blocked_scenario.write_text(
-        SCENARIO.read_text(encoding="utf-8").replace(
-            "consent: [write-output]", "consent: []"
-        ),
+        SCENARIO.read_text(encoding="utf-8").replace("consent: [write-output]", "consent: []"),
         encoding="utf-8",
     )
     output = tmp_path / "blocked-run"
@@ -373,10 +360,7 @@ def test_verify_cli_retains_unknown_optional_backend_result(
     summary = (output / "summary.md").read_text(encoding="utf-8")
     assert "No security conclusion" in summary
     assert "Configured bound: `1`" in summary
-    assert (
-        main(["verify", "--model", str(model), "--property", "missing"])
-        == EXIT_USAGE
-    )
+    assert main(["verify", "--model", str(model), "--property", "missing"]) == EXIT_USAGE
 
 
 def test_verify_cli_emits_cone_reduction_comparison(
@@ -547,17 +531,20 @@ def test_live_agentdojo_gate_reports_missing_optional_package(
     protocol = tmp_path / "agentdojo.json"
     output = tmp_path / "preflight"
     _write_protocol(protocol, "agentdojo", model=True)
-    assert main(
-        [
-            "benchmark",
-            "agentdojo",
-            "preflight",
-            "--config",
-            str(protocol),
-            "--output",
-            str(output),
-        ]
-    ) == EXIT_OK
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "preflight",
+                "--config",
+                str(protocol),
+                "--output",
+                str(output),
+            ]
+        )
+        == EXIT_OK
+    )
     preflight = json.loads((output / "preflight.json").read_text())
     assert preflight["classification"] == "partial"
     assert "agentdojo_setup_failure:not_installed" in preflight["suite_error"]
@@ -648,9 +635,7 @@ def test_direction_security_preflight_commands_are_offline(
 ) -> None:
     delegation_output = tmp_path / "delegation"
     assert main(["sled", "delegation", "--output", str(delegation_output)]) == EXIT_OK
-    delegation = json.loads(
-        (delegation_output / "delegation-verification.json").read_text()
-    )
+    delegation = json.loads((delegation_output / "delegation-verification.json").read_text())
     assert delegation["runtime_enabled"] is False
     assert delegation["canonical"]["verdict"] == "safe"
     assert len(delegation["mutants"]) == 7
@@ -693,7 +678,7 @@ def test_direction_security_preflight_commands_are_offline(
         == EXIT_OK
     )
     doctor = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
-    assert doctor["cedar"]["expected_version"] == "4.11.0"
+    assert doctor["cedar"]["expected_version"] == "4.12.0"
     assert doctor["cedar"]["available"] is False
     assert doctor["cedar"]["invoked"] is False
 
@@ -714,9 +699,7 @@ def test_laptop_cli_retains_a_complete_fake_backed_live_bundle(
             self.model_id = model_id
 
         def preflight(self) -> LocalModelPreflight:
-            return LocalModelPreflight(
-                self.backend, self.model_id, True, "loopback", None
-            )
+            return LocalModelPreflight(self.backend, self.model_id, True, "loopback", None)
 
     def model_for(protocol: ExperimentProtocol) -> AvailableModel:
         assert protocol.model is not None
@@ -784,9 +767,7 @@ def test_laptop_cli_live_gate_reports_unavailable_runtimes(
             self.model_id = model_id
 
         def preflight(self) -> LocalModelPreflight:
-            return LocalModelPreflight(
-                self.backend, self.model_id, False, "none", "fixture_unavailable"
-            )
+            return LocalModelPreflight(self.backend, self.model_id, False, "none", "fixture_unavailable")
 
     def model_for(protocol: ExperimentProtocol) -> UnavailableModel:
         assert protocol.model is not None
@@ -1030,7 +1011,7 @@ def test_human_doctor_renders_local_model_and_cedar_boundaries(
     )
     output = capsys.readouterr().out  # type: ignore[attr-defined]
     assert "Local model:" in output
-    assert "Cedar: 4.11.0 - binary_not_supplied" in output
+    assert "Cedar: 4.12.0 - binary_not_supplied" in output
 
 
 def test_doctor_rejects_protocol_without_model(tmp_path: Path) -> None:
@@ -1091,14 +1072,8 @@ def test_result_kind_routing_is_strict() -> None:
         cli_module._result_schema({"schema_version": "2", "model_identities": {}, "observations": []})
         == "planning-laptop-smoke-result.schema.json"
     )
-    assert (
-        cli_module._result_schema({"schema_version": "2", "cells": []})
-        == "agentdojo-comparison-result-v2.schema.json"
-    )
-    assert (
-        cli_module._result_schema({"schema_version": "2", "observations": []})
-        == "planning-comparison-result-v2.schema.json"
-    )
+    assert cli_module._result_schema({"schema_version": "2", "cells": []}) == "agentdojo-comparison-result-v2.schema.json"
+    assert cli_module._result_schema({"schema_version": "2", "observations": []}) == "planning-comparison-result-v2.schema.json"
     with pytest.raises(ValueError, match="unknown_version_two_result_kind"):
         cli_module._result_schema({"schema_version": "2"})
 

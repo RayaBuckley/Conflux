@@ -28,8 +28,8 @@ from conflux.domain import (
     fingerprint,
 )
 
-CEDAR_VERSION = "4.11.0"
-CEDAR_COMMIT = "d86ed2ee47cbe5a30e6b70a3d8414bc66ce88ae3"
+CEDAR_VERSION = "4.12.0"
+CEDAR_COMMIT = "fdcbaed32bdb8c8d13e4eaf2b58db5555e9fb8c5"
 SUPPORTED_FEATURES = frozenset(
     {
         "parc",

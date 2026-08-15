@@ -79,13 +79,17 @@ def _action(
     include_argument: bool = True,
 ) -> PrimitiveAction:
     arguments = (
-        ActionArgument.bind(
-            name="destination",
-            role=ArgumentRole.DESTINATION,
-            value=destination,
-            provenance=Provenance.from_principal(principal),
-        ),
-    ) if include_argument else ()
+        (
+            ActionArgument.bind(
+                name="destination",
+                role=ArgumentRole.DESTINATION,
+                value=destination,
+                provenance=Provenance.from_principal(principal),
+            ),
+        )
+        if include_argument
+        else ()
+    )
     return PrimitiveAction(
         "write",
         "write",
@@ -98,7 +102,7 @@ def _action(
 def test_bundle_is_pinned_hashed_immutable_and_schema_valid() -> None:
     bundle = _bundle()
     assert bundle.fingerprint == _bundle().fingerprint
-    assert bundle.binary.version == "4.11.0"
+    assert bundle.binary.version == "4.12.0"
     schema = json.loads((ROOT / "schemas" / "cedar-policy-bundle.schema.json").read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(bundle.to_dict())
     with pytest.raises(ValueError, match="unsupported Cedar binary"):
@@ -203,9 +207,7 @@ def test_mixed_principal_context_denies_pointwise(
     alice: Principal,
     bob: Principal,
 ) -> None:
-    runner = RecordingRunner(
-        iter((_result(CedarDecision.ALLOW, "alice"), _result(CedarDecision.DENY, "bob")))
-    )
+    runner = RecordingRunner(iter((_result(CedarDecision.ALLOW, "alice"), _result(CedarDecision.DENY, "bob"))))
     adapter = CedarAuthorisationPolicy(_bundle(), runner, {"write": "1"})
     cedar_pipeline = replace(pipeline, authorisation=adapter)
     decision = cedar_pipeline.decide(
@@ -243,7 +245,7 @@ def test_cli_runner_uses_no_shell_and_exact_binary_identity(
     calls: list[tuple[tuple[str, ...], bool]] = []
     responses = iter(
         (
-            subprocess.CompletedProcess([], 0, "cedar 4.11.0\n", ""),
+            subprocess.CompletedProcess([], 0, "cedar 4.12.0\n", ""),
             subprocess.CompletedProcess([], 0, "validation passed\n", ""),
             subprocess.CompletedProcess([], 0, "ALLOW\n", ""),
         )
@@ -280,14 +282,14 @@ def test_cli_runner_rejects_hash_mismatch_before_invocation(tmp_path: Path) -> N
         ((subprocess.CompletedProcess([], 0, "cedar 4.10.0\n", ""),), "binary_identity_mismatch"),
         (
             (
-                subprocess.CompletedProcess([], 0, "cedar 4.11.0\n", ""),
+                subprocess.CompletedProcess([], 0, "cedar 4.12.0\n", ""),
                 subprocess.CompletedProcess([], 1, "", "invalid schema"),
             ),
             "validation_error",
         ),
         (
             (
-                subprocess.CompletedProcess([], 0, "cedar 4.11.0\n", ""),
+                subprocess.CompletedProcess([], 0, "cedar 4.12.0\n", ""),
                 subprocess.CompletedProcess([], 0, "validation passed\n", ""),
                 subprocess.CompletedProcess([], 0, "allow-ish\n", ""),
             ),
@@ -295,7 +297,7 @@ def test_cli_runner_rejects_hash_mismatch_before_invocation(tmp_path: Path) -> N
         ),
         (
             (
-                subprocess.CompletedProcess([], 0, "cedar 4.11.0\n", ""),
+                subprocess.CompletedProcess([], 0, "cedar 4.12.0\n", ""),
                 subprocess.CompletedProcess([], 0, "validation passed\n", ""),
                 subprocess.CompletedProcess([], 1, "", "evaluation failed"),
             ),

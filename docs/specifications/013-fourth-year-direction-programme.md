@@ -84,7 +84,7 @@ explanations remain explicitly untrusted.
 ### Cedar and delegation
 
 Cedar is an optional, no-shell, timeout-bounded local CLI adapter pinned to
-v4.11.0 (`d86ed2ee47cbe5a30e6b70a3d8414bc66ce88ae3`). Its hashed bundle owns the
+v4.12.0 (`fdcbaed32bdb8c8d13e4eaf2b58db5555e9fb8c5`). Its hashed bundle owns the
 schema, policies, entities, supported subset, and binary identity. Requests
 are pointwise across Principal Context; any mixed, malformed, missing,
 unsupported, timed-out, or version-mismatched response denies.
