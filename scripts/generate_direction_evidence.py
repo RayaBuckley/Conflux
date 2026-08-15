@@ -35,7 +35,8 @@ def main() -> int:
     arguments = parser.parse_args()
     if not arguments.check:
         generate_direction_evidence_bundle(
-            str(arguments.source_commit or _head_commit()), arguments.output
+            str(arguments.source_commit or _head_commit()), arguments.output,
+            repo_root=ROOT,
         )
         print(f"Generated offline direction evidence: {arguments.output}")
         return 0
@@ -46,7 +47,7 @@ def main() -> int:
     source_commit = str(json.loads(manifest.read_text(encoding="utf-8"))["source_commit"])
     with tempfile.TemporaryDirectory(prefix="conflux-directions-") as temporary:
         regenerated = Path(temporary) / arguments.output.name
-        generate_direction_evidence_bundle(source_commit, regenerated)
+        generate_direction_evidence_bundle(source_commit, regenerated, repo_root=ROOT)
         changed = compare_direction_evidence_bundle(arguments.output, regenerated)
     if changed:
         print(f"Direction evidence is stale: {', '.join(changed)}", file=sys.stderr)

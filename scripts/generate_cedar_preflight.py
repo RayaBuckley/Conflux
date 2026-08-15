@@ -32,7 +32,7 @@ def main() -> int:
     parser.add_argument("--check", action="store_true")
     arguments = parser.parse_args()
     if not arguments.check:
-        generate_cedar_preflight_bundle(str(arguments.source_commit or _head_commit()), arguments.output)
+        generate_cedar_preflight_bundle(str(arguments.source_commit or _head_commit()), arguments.output, repo_root=ROOT)
         print(f"Generated offline Cedar preflight evidence: {arguments.output}")
         return 0
     protocol_path = arguments.output / "protocol.json"
@@ -43,7 +43,7 @@ def main() -> int:
     source_commit = str(retained["source_commit"])
     with tempfile.TemporaryDirectory(prefix="conflux-cedar-") as temporary:
         regenerated = Path(temporary) / arguments.output.name
-        generate_cedar_preflight_bundle(source_commit, regenerated)
+        generate_cedar_preflight_bundle(source_commit, regenerated, repo_root=ROOT)
         changed = compare_cedar_preflight_bundle(arguments.output, regenerated)
     if changed:
         print(f"Cedar preflight evidence is stale: {', '.join(changed)}", file=sys.stderr)

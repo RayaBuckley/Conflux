@@ -26,7 +26,7 @@ from conflux.ites import BranchState, ITESReport, MediatingITES, TransitionKerne
 
 from .manifest import ExperimentManifest
 
-ROOT = Path(__file__).resolve().parents[3]
+_ROOT = Path(__file__).resolve().parents[3]
 BUNDLE_FILES = (
     "RERUN.txt",
     "counterexample.json",
@@ -40,11 +40,14 @@ BUNDLE_FILES = (
 def generate_smoke_bundle(
     manifest: ExperimentManifest,
     output: Path,
+    *,
+    repo_root: Path | None = None,
 ) -> tuple[Path, ...]:
+    root = repo_root or _ROOT
     output.mkdir(parents=True, exist_ok=True)
     manifest.materialise(output)
-    authorised = _run(ROOT / "examples" / "basic.yaml", execute=True)
-    blocked_path = ROOT / "experiments" / "suites" / "canonical" / "env-01-confidential-handoff.yaml"
+    authorised = _run(root / "examples" / "basic.yaml", execute=True)
+    blocked_path = root / "experiments" / "suites" / "canonical" / "env-01-confidential-handoff.yaml"
     blocked = _run(blocked_path, execute=False)
     negative = _negative_control(blocked_path)
 

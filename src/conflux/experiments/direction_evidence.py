@@ -29,12 +29,8 @@ from .laptop_smoke import load_laptop_planning_smoke
 from .planning_comparison import PlanningMode
 from .planning_runner import load_default_planning_diagnostic_suite
 
-ROOT = Path(__file__).resolve().parents[3]
+_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_OUTPUT = Path("runs/direction-readiness-v1")
-LAPTOP_PLAN = ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
-PLANNING_SUITE = ROOT / "experiments/suites/planning-diagnostic-v1.yaml"
-PLANNING_SOURCE = ROOT / "src/conflux/experiments/planning_runner.py"
-AGENTDOJO_MANIFEST = ROOT / "experiments/manifests/agentdojo-smoke.yaml"
 DIRECTION_EVIDENCE_FILES = frozenset(
     {
         "CHECKSUMS.sha256",
@@ -55,10 +51,15 @@ DISCLOSURE_PROPERTIES = (
 )
 
 
-def generate_direction_evidence_bundle(source_commit: str, output: Path) -> None:
+def generate_direction_evidence_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> None:
+    root = repo_root or _ROOT
+    laptop_plan = root / "experiments/manifests/planning-laptop-smoke-v1.json"
+    planning_suite = root / "experiments/suites/planning-diagnostic-v1.yaml"
+    planning_source = root / "src/conflux/experiments/planning_runner.py"
+    agentdojo_manifest = root / "experiments/manifests/agentdojo-smoke.yaml"
     output.mkdir(parents=True, exist_ok=True)
-    laptop = _laptop_preflight()
-    planning = _planning_preflight()
+    laptop = _laptop_preflight(laptop_plan, planning_source)
+    planning = _planning_preflight(planning_source)
     agentdojo = _agentdojo_preflight()
     mutations = _security_mutations()
     payloads = {
@@ -82,10 +83,10 @@ def generate_direction_evidence_bundle(source_commit: str, output: Path) -> None
         "offline": True,
         "optional_runtimes_invoked": [],
         "inputs": {
-            "laptop_plan_sha256": _file_sha256(LAPTOP_PLAN),
-            "planning_suite_sha256": _file_sha256(PLANNING_SUITE),
-            "planning_prompt_source_sha256": _file_sha256(PLANNING_SOURCE),
-            "agentdojo_manifest_sha256": _file_sha256(AGENTDOJO_MANIFEST),
+            "laptop_plan_sha256": _file_sha256(laptop_plan),
+            "planning_suite_sha256": _file_sha256(planning_suite),
+            "planning_prompt_source_sha256": _file_sha256(planning_source),
+            "agentdojo_manifest_sha256": _file_sha256(agentdojo_manifest),
         },
         "outputs": {name: fingerprint(payload) for name, payload in payloads.items()},
         "rerun_command": [
@@ -120,12 +121,12 @@ def compare_direction_evidence_bundle(retained: Path, regenerated: Path) -> tupl
         for name in sorted(names)
         if not (retained / name).is_file()
         or not (regenerated / name).is_file()
-        or (retained / name).read_bytes() != (regenerated / name).read_bytes()
+        or _canonical_bytes(retained / name) != _canonical_bytes(regenerated / name)
     )
 
 
-def _laptop_preflight() -> dict[str, object]:
-    plan = load_laptop_planning_smoke(LAPTOP_PLAN)
+def _laptop_preflight(laptop_plan: Path, planning_source: Path) -> dict[str, object]:
+    plan = load_laptop_planning_smoke(laptop_plan)
     models = {
         "transformers": {
             "backend": "transformers",
@@ -161,7 +162,7 @@ def _laptop_preflight() -> dict[str, object]:
         "prompt": {
             "template_version": plan.prompt_template_version,
             "source": "conflux.experiments.planning_runner._planning_request",
-            "source_sha256": _file_sha256(PLANNING_SOURCE),
+            "source_sha256": _file_sha256(planning_source),
         },
         "seeds": [plan.seed],
         "repetitions": plan.repetitions,
@@ -183,7 +184,7 @@ def _laptop_preflight() -> dict[str, object]:
     return payload
 
 
-def _planning_preflight() -> dict[str, object]:
+def _planning_preflight(planning_source: Path) -> dict[str, object]:
     scenarios = load_default_planning_diagnostic_suite()
     cells = [
         f"{scenario.id}:{mode.value}:r0:s0"
@@ -203,7 +204,7 @@ def _planning_preflight() -> dict[str, object]:
         "prompt": {
             "template_version": "planning-diagnostic-v1",
             "source": "conflux.experiments.planning_runner._planning_request",
-            "source_sha256": _file_sha256(PLANNING_SOURCE),
+            "source_sha256": _file_sha256(planning_source),
         },
         "seeds": [0],
         "repetitions": 1,
@@ -367,6 +368,10 @@ def _write_checksums(output: Path) -> None:
 def _file_sha256(path: Path) -> str:
     content = path.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
     return hashlib.sha256(content).hexdigest()
+
+
+def _canonical_bytes(path: Path) -> bytes:
+    return path.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
 
 
 __all__ = [

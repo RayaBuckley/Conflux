@@ -9,4 +9,4 @@
 *.yml text eol=lf
 *.sh text eol=lf
 reports/** -text
-runs/smoke/** text eol=lf
+runs/** text eol=lf

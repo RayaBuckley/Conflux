@@ -33,7 +33,7 @@ def main() -> int:
     arguments = parser.parse_args()
     if not arguments.check:
         source_commit = str(arguments.source_commit or _head_commit())
-        generate_native_sled_bundle(source_commit, arguments.output)
+        generate_native_sled_bundle(source_commit, arguments.output, repo_root=ROOT)
         print(f"Generated native SLED evidence: {arguments.output}")
         return 0
     protocol_path = arguments.output / "protocol.json"
@@ -44,7 +44,7 @@ def main() -> int:
     source_commit = str(retained["source_commit"])
     with tempfile.TemporaryDirectory(prefix="conflux-native-sled-") as temporary:
         regenerated = Path(temporary) / arguments.output.name
-        generate_native_sled_bundle(source_commit, regenerated)
+        generate_native_sled_bundle(source_commit, regenerated, repo_root=ROOT)
         changed = compare_native_sled_bundle(arguments.output, regenerated)
     if changed:
         print(f"Native SLED evidence is stale: {', '.join(changed)}", file=sys.stderr)

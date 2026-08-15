@@ -10,12 +10,14 @@ from conflux.experiments import (
     generate_direction_evidence_bundle,
 )
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_direction_bundle_separates_readiness_from_bounded_evidence(
     tmp_path: Path,
 ) -> None:
     output = tmp_path / "direction"
-    generate_direction_evidence_bundle("abcdef0", output)
+    generate_direction_evidence_bundle("abcdef0", output, repo_root=ROOT)
     for name, cells in (
         ("laptop-planning-preflight.json", 16),
         ("planning-preflight.json", 32),
@@ -47,6 +49,6 @@ def test_direction_bundle_separates_readiness_from_bounded_evidence(
 def test_direction_bundle_regenerates_byte_identically(tmp_path: Path) -> None:
     first = tmp_path / "first"
     second = tmp_path / "second"
-    generate_direction_evidence_bundle("abcdef0", first)
-    generate_direction_evidence_bundle("abcdef0", second)
+    generate_direction_evidence_bundle("abcdef0", first, repo_root=ROOT)
+    generate_direction_evidence_bundle("abcdef0", second, repo_root=ROOT)
     assert compare_direction_evidence_bundle(first, second) == ()

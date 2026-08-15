@@ -20,7 +20,7 @@ from conflux.verification import (
 
 from .protocol import ExperimentProtocol, ResolvedRunManifest, RunFailure
 
-ROOT = Path(__file__).resolve().parents[3]
+_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_OUTPUT = Path("runs/sled-coi-reduction-v1")
 COI_EVIDENCE_ROOT_FILES = (
     "CHECKSUMS.sha256",
@@ -33,11 +33,12 @@ COI_EVIDENCE_ROOT_FILES = (
 )
 
 
-def generate_coi_evidence_bundle(source_commit: str, output: Path) -> tuple[Path, ...]:
+def generate_coi_evidence_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> tuple[Path, ...]:
     """Generate original/reduced models and normalized comparison evidence."""
 
-    fixture_paths = tuple(sorted((ROOT / "experiments/suites/sled-coi-v1").glob("*.json")))
-    protocol = _protocol(source_commit, fixture_paths)
+    root = repo_root or _ROOT
+    fixture_paths = tuple(sorted((root / "experiments/suites/sled-coi-v1").glob("*.json")))
+    protocol = _protocol(source_commit, fixture_paths, root)
     output.mkdir(parents=True, exist_ok=True)
     protocol.materialise(output)
     original_directory = output / "models" / "original"
@@ -213,13 +214,13 @@ def _formal_comparisons(
     return results, tuple(failures)
 
 
-def _protocol(source_commit: str, paths: tuple[Path, ...]) -> ExperimentProtocol:
+def _protocol(source_commit: str, paths: tuple[Path, ...], root: Path) -> ExperimentProtocol:
     return ExperimentProtocol(
         id="sled-coi-reduction-v1",
         track="verification_reduction",
         suite={"id": "sled-coi", "version": "1"},
         source_commit=source_commit,
-        inputs={path.relative_to(ROOT).as_posix(): _file_sha256(path) for path in paths},
+        inputs={path.relative_to(root).as_posix(): _file_sha256(path) for path in paths},
         model=None,
         prompts={},
         seeds=(0,),

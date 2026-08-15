@@ -11,6 +11,8 @@ from jsonschema import Draft202012Validator
 from conflux.adapters.scenarios import load_schema
 from conflux.experiments import ExperimentManifest, generate_smoke_bundle
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def _manifest(output: Path) -> ExperimentManifest:
     return ExperimentManifest(
@@ -33,8 +35,8 @@ def _manifest(output: Path) -> ExperimentManifest:
 def test_smoke_bundle_is_deterministic_linked_and_schema_valid(tmp_path: Path) -> None:
     first = tmp_path / "first"
     second = tmp_path / "second"
-    generate_smoke_bundle(_manifest(first), first)
-    generate_smoke_bundle(_manifest(first), second)
+    generate_smoke_bundle(_manifest(first), first, repo_root=ROOT)
+    generate_smoke_bundle(_manifest(first), second, repo_root=ROOT)
     assert {
         path.name: path.read_bytes()
         for path in first.iterdir()

@@ -12,12 +12,14 @@ from conflux.experiments import (
     verify_native_sled_checksums,
 )
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_native_bundle_is_deterministic_complete_and_linked(tmp_path: Path) -> None:
     first = tmp_path / "first"
     second = tmp_path / "second"
-    generate_native_sled_bundle("a" * 40, first)
-    generate_native_sled_bundle("a" * 40, second)
+    generate_native_sled_bundle("a" * 40, first, repo_root=ROOT)
+    generate_native_sled_bundle("a" * 40, second, repo_root=ROOT)
     assert compare_native_sled_bundle(first, second) == ()
     assert verify_native_sled_checksums(first) == ()
     assert {path.name for path in first.iterdir()} == set(NATIVE_EVIDENCE_FILES)
@@ -35,8 +37,8 @@ def test_native_bundle_is_deterministic_complete_and_linked(tmp_path: Path) -> N
 def test_native_bundle_detects_changed_and_missing_content(tmp_path: Path) -> None:
     retained = tmp_path / "retained"
     regenerated = tmp_path / "regenerated"
-    generate_native_sled_bundle("b" * 40, retained)
-    generate_native_sled_bundle("b" * 40, regenerated)
+    generate_native_sled_bundle("b" * 40, retained, repo_root=ROOT)
+    generate_native_sled_bundle("b" * 40, regenerated, repo_root=ROOT)
     (retained / "table.md").write_text("changed", encoding="utf-8")
     (retained / "raw-events.jsonl").unlink()
     assert compare_native_sled_bundle(retained, regenerated) == (

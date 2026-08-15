@@ -10,7 +10,7 @@ from conflux.domain import canonical_json, fingerprint
 from .native_sled import run_native_reproduction
 from .protocol import ExperimentProtocol, ResolvedRunManifest
 
-ROOT = Path(__file__).resolve().parents[3]
+_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_OUTPUT = Path("runs/native-sled-reproduction-v1")
 NATIVE_EVIDENCE_FILES = (
     "CHECKSUMS.sha256",
@@ -30,13 +30,14 @@ _CONTENT_FILES = (
 )
 
 
-def generate_native_sled_bundle(source_commit: str, output: Path) -> tuple[Path, ...]:
+def generate_native_sled_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> tuple[Path, ...]:
     """Generate the complete native bundle from repository fixtures."""
 
-    protocol = _protocol(source_commit)
+    root = repo_root or _ROOT
+    protocol = _protocol(source_commit, root)
     output.mkdir(parents=True, exist_ok=True)
     protocol.materialise(output)
-    result = run_native_reproduction(protocol)
+    result = run_native_reproduction(protocol, root)
     _write_json(output / "result.json", result)
     (output / "raw-events.jsonl").write_text(
         _raw_events(result),
@@ -113,10 +114,10 @@ def verify_native_sled_checksums(directory: Path) -> tuple[str, ...]:
     return tuple(errors)
 
 
-def _protocol(source_commit: str) -> ExperimentProtocol:
+def _protocol(source_commit: str, root: Path) -> ExperimentProtocol:
     inputs = {
-        path.relative_to(ROOT).as_posix(): _file_sha256(path)
-        for path in _input_paths()
+        path.relative_to(root).as_posix(): _file_sha256(path)
+        for path in _input_paths(root)
     }
     rerun = (
         "python",
@@ -151,15 +152,15 @@ def _protocol(source_commit: str) -> ExperimentProtocol:
     )
 
 
-def _input_paths() -> tuple[Path, ...]:
+def _input_paths(root: Path) -> tuple[Path, ...]:
     fixtures = tuple(
-        sorted((ROOT / "experiments" / "suites" / suite).glob("*.yaml"))
+        sorted((root / "experiments" / "suites" / suite).glob("*.yaml"))
         for suite in ("legacy-reproduction", "canonical")
     )
     return (
         *fixtures[0],
         *fixtures[1],
-        ROOT / "experiments" / "baselines" / "sled-historical-v1.json",
+        root / "experiments" / "baselines" / "sled-historical-v1.json",
     )
 
 

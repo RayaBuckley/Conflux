@@ -9,6 +9,8 @@ from pathlib import Path
 
 from conflux.experiments import BUNDLE_FILES, generate_smoke_bundle, load_manifest
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -18,12 +20,12 @@ def main() -> int:
     arguments = parser.parse_args()
     manifest = load_manifest(arguments.manifest)
     if not arguments.check:
-        generate_smoke_bundle(manifest, arguments.output)
+        generate_smoke_bundle(manifest, arguments.output, repo_root=ROOT)
         print(f"Generated smoke bundle: {arguments.output}")
         return 0
     with tempfile.TemporaryDirectory(prefix="conflux-smoke-") as temporary:
         regenerated = Path(temporary)
-        generate_smoke_bundle(manifest, regenerated)
+        generate_smoke_bundle(manifest, regenerated, repo_root=ROOT)
         names = (*BUNDLE_FILES, "checksums.sha256")
         changed = [
             name

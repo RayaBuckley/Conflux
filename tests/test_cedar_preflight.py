@@ -100,8 +100,8 @@ def test_unknown_bundle_version_and_feature_fail_closed(tmp_path: Path) -> None:
 def test_cedar_preflight_bundle_regenerates_byte_for_byte(tmp_path: Path) -> None:
     first = tmp_path / "first"
     second = tmp_path / "second"
-    generate_cedar_preflight_bundle("f38f1fd3b65238cb2200484c80402664cfe85833", first)
-    generate_cedar_preflight_bundle("f38f1fd3b65238cb2200484c80402664cfe85833", second)
+    generate_cedar_preflight_bundle("f38f1fd3b65238cb2200484c80402664cfe85833", first, repo_root=ROOT)
+    generate_cedar_preflight_bundle("f38f1fd3b65238cb2200484c80402664cfe85833", second, repo_root=ROOT)
     assert compare_cedar_preflight_bundle(first, second) == ()
     assert verify_cedar_preflight_checksums(first) == ()
     manifest = json.loads((first / "manifest.json").read_text(encoding="utf-8"))

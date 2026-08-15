@@ -12,9 +12,7 @@ from conflux.domain import canonical_json, fingerprint
 from .cedar_preflight import cedar_differential_preflight, load_cedar_bundle, load_cedar_corpus
 from .protocol import ExperimentProtocol, ResolvedRunManifest, RunFailure
 
-ROOT = Path(__file__).resolve().parents[3]
-BUNDLE_SOURCE = ROOT / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
-CORPUS_SOURCE = ROOT / "experiments" / "suites" / "cedar-differential-v1.json"
+_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_OUTPUT = Path("runs/cedar-differential-preflight-v1")
 CEDAR_EVIDENCE_FILES = frozenset(
     {
@@ -30,18 +28,21 @@ CEDAR_EVIDENCE_FILES = frozenset(
 )
 
 
-def generate_cedar_preflight_bundle(source_commit: str, output: Path) -> None:
+def generate_cedar_preflight_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> None:
+    root = repo_root or _ROOT
+    bundle_source = root / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
+    corpus_source = root / "experiments" / "suites" / "cedar-differential-v1.json"
     output.mkdir(parents=True, exist_ok=True)
-    bundle = load_cedar_bundle(BUNDLE_SOURCE)
-    corpus = load_cedar_corpus(CORPUS_SOURCE)
+    bundle = load_cedar_bundle(bundle_source)
+    corpus = load_cedar_corpus(corpus_source)
     protocol = ExperimentProtocol(
         id="cedar-differential-preflight-v1",
         track="cedar",
         suite={"id": corpus.id, "version": corpus.schema_version},
         source_commit=source_commit,
         inputs={
-            "policy_bundle": _file_sha256(BUNDLE_SOURCE),
-            "corpus": _file_sha256(CORPUS_SOURCE),
+            "policy_bundle": _file_sha256(bundle_source),
+            "corpus": _file_sha256(corpus_source),
         },
         model=None,
         prompts={},
@@ -59,8 +60,8 @@ def generate_cedar_preflight_bundle(source_commit: str, output: Path) -> None:
         ),
     )
     protocol.materialise(output)
-    shutil.copyfile(BUNDLE_SOURCE, output / "policy-bundle.json")
-    shutil.copyfile(CORPUS_SOURCE, output / "corpus.json")
+    shutil.copyfile(bundle_source, output / "policy-bundle.json")
+    shutil.copyfile(corpus_source, output / "corpus.json")
     result = cedar_differential_preflight(bundle, corpus)
     _write_json(output / "result.json", result)
     (output / "table.md").write_text(_table(result), encoding="utf-8", newline="\n")
@@ -94,7 +95,7 @@ def compare_cedar_preflight_bundle(retained: Path, regenerated: Path) -> tuple[s
         for name in sorted(names)
         if not (retained / name).is_file()
         or not (regenerated / name).is_file()
-        or (retained / name).read_bytes() != (regenerated / name).read_bytes()
+        or _canonical_bytes(retained / name) != _canonical_bytes(regenerated / name)
     )
 
 
@@ -147,6 +148,10 @@ def _write_checksums(output: Path) -> None:
 def _file_sha256(path: Path) -> str:
     content = path.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
     return hashlib.sha256(content).hexdigest()
+
+
+def _canonical_bytes(path: Path) -> bytes:
+    return path.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
 
 
 __all__ = [

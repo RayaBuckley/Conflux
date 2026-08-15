@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_coi_bundle_is_deterministic_complete_and_reduced(tmp_path: Path) -> None:
     first = tmp_path / "first"
     second = tmp_path / "second"
-    generate_coi_evidence_bundle("a" * 40, first)
-    generate_coi_evidence_bundle("a" * 40, second)
+    generate_coi_evidence_bundle("a" * 40, first, repo_root=ROOT)
+    generate_coi_evidence_bundle("a" * 40, second, repo_root=ROOT)
     assert compare_coi_evidence_bundle(first, second) == ()
     assert verify_coi_evidence_checksums(first) == ()
 
@@ -47,8 +47,8 @@ def test_coi_bundle_is_deterministic_complete_and_reduced(tmp_path: Path) -> Non
 def test_coi_bundle_detects_changed_and_missing_content(tmp_path: Path) -> None:
     retained = tmp_path / "retained"
     regenerated = tmp_path / "regenerated"
-    generate_coi_evidence_bundle("b" * 40, retained)
-    generate_coi_evidence_bundle("b" * 40, regenerated)
+    generate_coi_evidence_bundle("b" * 40, retained, repo_root=ROOT)
+    generate_coi_evidence_bundle("b" * 40, regenerated, repo_root=ROOT)
     (retained / "table.md").write_text("changed", encoding="utf-8")
     (retained / "models/reduced/safe-noise.json").unlink()
     changed = compare_coi_evidence_bundle(retained, regenerated)

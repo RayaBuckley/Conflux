@@ -20,7 +20,7 @@ from conflux.ites import BranchState, BranchStatus, TransitionKernel
 from conflux.ites.kernel import DecisionEngine
 from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy, PolicyGrant, SessionVisibilityPolicy, SnapshotReadPolicy
 
-ROOT = Path(__file__).resolve().parents[3]
+_ROOT = Path(__file__).resolve().parents[3]
 DEFENCE_NAMES = ("ites", "no_defence", "union_permissions", "initiator_only", "latest_input_only", "no_read_check")
 
 
@@ -127,7 +127,7 @@ def run_native_reproduction(
 
 def _default_reproduction_root() -> Path:
     candidates = (
-        ROOT,
+        _ROOT,
         Path(sysconfig.get_path("data")) / "share" / "conflux",
     )
     for candidate in candidates:

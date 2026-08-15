@@ -40,7 +40,7 @@ def _workflow_escape(value: str) -> str:
     return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
 
 
-def run(*arguments: str) -> None:
+def run(*arguments: str) -> int:
     print(f"[validate] {' '.join(arguments)}", flush=True)
     process = subprocess.Popen(
         (sys.executable, *arguments),
@@ -66,43 +66,49 @@ def run(*arguments: str) -> None:
             f"{_workflow_escape(detail)}",
             flush=True,
         )
-        raise subprocess.CalledProcessError(return_code, (sys.executable, *arguments))
+    return return_code
 
 
 def main() -> int:
-    run("scripts/audit_repository.py")
-    run("scripts/validate_schemas.py")
-    run(
+    failures: list[str] = []
+
+    def _run(*arguments: str) -> None:
+        if run(*arguments):
+            failures.append(" ".join(arguments))
+
+    _run("scripts/audit_repository.py")
+    _run("scripts/validate_schemas.py")
+    _run(
         "scripts/generate_smoke_evidence.py",
         "experiments/manifests/m3-smoke.yaml",
         "runs/smoke",
         "--check",
     )
     if (ROOT / "runs" / "native-sled-reproduction-v1").is_dir():
-        run(
+        _run(
             "scripts/generate_native_sled_evidence.py",
             "runs/native-sled-reproduction-v1",
             "--check",
         )
     if (ROOT / "runs" / "sled-coi-reduction-v1").is_dir():
-        run(
+        _run(
             "scripts/generate_coi_evidence.py",
             "runs/sled-coi-reduction-v1",
             "--check",
         )
     if (ROOT / "runs" / "cedar-differential-preflight-v1").is_dir():
-        run(
+        _run(
             "scripts/generate_cedar_preflight.py",
             "runs/cedar-differential-preflight-v1",
             "--check",
         )
     if (ROOT / "runs" / "direction-readiness-v1").is_dir():
-        run(
+        _run(
             "scripts/generate_direction_evidence.py",
             "runs/direction-readiness-v1",
             "--check",
         )
-    run(
+    _run(
         "-m",
         "pytest",
         "-p",
@@ -113,10 +119,15 @@ def main() -> int:
         "--cov-fail-under=89",
         f"--basetemp={SESSION_ROOT / 'pytest'}",
     )
-    run("-m", "ruff", "check", "src", "tests", "scripts")
-    run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
-    run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
-    run("scripts/validate_wheel.py")
+    _run("-m", "ruff", "check", "src", "tests", "scripts")
+    _run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
+    _run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
+    _run("scripts/validate_wheel.py")
+    if failures:
+        print(f"[validate] {len(failures)} check(s) failed:")
+        for name in failures:
+            print(f"  - {name}")
+        return 1
     rmtree(SESSION_ROOT)
     print("[validate] all checks passed")
     return 0

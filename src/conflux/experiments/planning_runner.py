@@ -31,14 +31,14 @@ from conflux.planning import ModeledProgram, parse_modeled_program
 from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy, PolicyGrant, SessionVisibilityPolicy, SnapshotReadPolicy
 from conflux.ports import LocalModelPort, LocalModelRequest, LocalModelResponse
 
-ROOT = Path(__file__).resolve().parents[3]
+_ROOT = Path(__file__).resolve().parents[3]
 
 
 def load_default_planning_diagnostic_suite() -> tuple[DiagnosticScenario, ...]:
     """Load the packaged suite without assuming the current working directory."""
 
     candidates = (
-        ROOT / "experiments" / "suites" / "planning-diagnostic-v1.yaml",
+        _ROOT / "experiments" / "suites" / "planning-diagnostic-v1.yaml",
         Path(sysconfig.get_path("data"))
         / "share"
         / "conflux"
