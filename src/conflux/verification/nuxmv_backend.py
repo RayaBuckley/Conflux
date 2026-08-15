@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from dataclasses import dataclass, field
@@ -76,20 +77,94 @@ class SubprocessNuXmvRunner:
         )
 
 
+_WSL_DISTRIBUTION = "Ubuntu"
+_WSL_TMP = Path(f"//wsl.localhost/{_WSL_DISTRIBUTION}/tmp")
+
+
+def _wsl_available() -> bool:
+    try:
+        result = subprocess.run(  # noqa: S603
+            ("wsl", "-d", _WSL_DISTRIBUTION, "--", "which", "nuXmv"),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            shell=False,
+        )
+        return result.returncode == 0 and bool(result.stdout.strip())
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+@dataclass(frozen=True, slots=True)
+class WslNuXmvRunner:
+    timeout_seconds: float = 120.0
+
+    def run(
+        self,
+        binary: str,
+        model_path: Path,
+        commands: str,
+    ) -> NuXmvOutcome:
+        wsl_dir = _WSL_TMP / f"conflux-nuxmv-{os.getpid()}-{id(model_path)}"
+        wsl_dir.mkdir(parents=True, exist_ok=True)
+        smv_file = wsl_dir / "model.smv"
+        try:
+            smv_file.write_text(model_path.read_text(encoding="utf-8"), encoding="utf-8")
+            linux_model = f"/tmp/{wsl_dir.name}/model.smv"
+            wsl_prefix: tuple[str, ...] = ("wsl", "-d", _WSL_DISTRIBUTION, "--")
+            try:
+                version = subprocess.run(  # noqa: S603
+                    (*wsl_prefix, binary, "-h"),
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                    shell=False,
+                )
+                process = subprocess.run(  # noqa: S603
+                    (*wsl_prefix, binary, "-int", linux_model),
+                    input=commands,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=self.timeout_seconds,
+                    shell=False,
+                )
+            except (OSError, subprocess.SubprocessError) as error:
+                return NuXmvOutcome(
+                    1,
+                    "",
+                    f"{type(error).__name__}: {error}",
+                    "unavailable",
+                )
+            version_text = (version.stdout or version.stderr).splitlines()
+            return NuXmvOutcome(
+                process.returncode,
+                process.stdout,
+                process.stderr,
+                version_text[0] if version_text else "unknown",
+            )
+        finally:
+            try:
+                smv_file.unlink(missing_ok=True)
+                wsl_dir.rmdir()
+            except OSError:
+                pass
+
+
 @dataclass(frozen=True, slots=True)
 class NuXmvBackend:
     binary: str = "nuXmv"
-    runner: NuXmvRunner = SubprocessNuXmvRunner()
+    runner: NuXmvRunner = field(default_factory=lambda: WslNuXmvRunner() if _wsl_available() else SubprocessNuXmvRunner())
     availability: Callable[[str], bool] = field(
-        default=lambda binary: shutil.which(binary) is not None,
+        default=lambda binary: shutil.which(binary) is not None or _wsl_available(),
         repr=False,
         compare=False,
     )
 
     def verify(self, ir: VerificationIR) -> FormalVerificationResult:
-        unsupported = tuple(
-            variable.name for variable in ir.variables if variable.sort != Sort.BOOLEAN
-        )
+        unsupported = tuple(variable.name for variable in ir.variables if variable.sort != Sort.BOOLEAN)
         if unsupported:
             return self._unknown(
                 ir,
@@ -108,9 +183,7 @@ class NuXmvBackend:
             path = Path(temporary) / "model.smv"
             path.write_text(model, encoding="utf-8", newline="\n")
             outcome = self.runner.run(self.binary, path, commands)
-        solver_hash = fingerprint(
-            {"backend": "nuXmv-ic3", "version": outcome.version}
-        )
+        solver_hash = fingerprint({"backend": "nuXmv-ic3", "version": outcome.version})
         query_hash = fingerprint(commands)
         model_hash = fingerprint(model)
         output = f"{outcome.stdout}\n{outcome.stderr}"
@@ -183,42 +256,22 @@ class NuXmvBackend:
 
 
 def _smv(ir: VerificationIR) -> str:
-    variables = "\n".join(
-        f"  {variable.name} : boolean;" for variable in ir.variables
-    )
-    initial = " & ".join(
-        (
-            variable.name
-            if variable.initial is True
-            else f"!{variable.name}"
-        )
-        for variable in ir.variables
-    )
+    variables = "\n".join(f"  {variable.name} : boolean;" for variable in ir.variables)
+    initial = " & ".join((variable.name if variable.initial is True else f"!{variable.name}") for variable in ir.variables)
     transition_terms: list[str] = []
     for rule in sorted(ir.transitions, key=lambda item: item.id):
         assignments = {item.variable: item.expression for item in rule.assignments}
         updates = " & ".join(
-            f"next({variable.name}) = "
-            f"{_render(assignments.get(variable.name, Expression.variable(variable.name)))}"
+            f"next({variable.name}) = {_render(assignments.get(variable.name, Expression.variable(variable.name)))}"
             for variable in ir.variables
         )
         transition_terms.append(f"({_render(rule.guard)} & {updates})")
-    stutter = " & ".join(
-        f"next({variable.name}) = {variable.name}" for variable in ir.variables
-    )
+    stutter = " & ".join(f"next({variable.name}) = {variable.name}" for variable in ir.variables)
     transition = " | ".join((*transition_terms, f"({stutter})"))
     invariants = "\n".join(
-        f"INVARSPEC NAME {item.id} := {_render(item.expression)};"
-        for item in sorted(ir.invariants, key=lambda item: item.id)
+        f"INVARSPEC NAME {item.id} := {_render(item.expression)};" for item in sorted(ir.invariants, key=lambda item: item.id)
     )
-    return (
-        "MODULE main\n"
-        "VAR\n"
-        f"{variables}\n"
-        f"INIT {initial};\n"
-        f"TRANS {transition};\n"
-        f"{invariants}\n"
-    )
+    return f"MODULE main\nVAR\n{variables}\nINIT {initial};\nTRANS {transition};\n{invariants}\n"
 
 
 def _render(expression: Expression) -> str:
@@ -246,4 +299,5 @@ __all__ = [
     "NuXmvOutcome",
     "NuXmvRunner",
     "SubprocessNuXmvRunner",
+    "WslNuXmvRunner",
 ]

@@ -78,11 +78,7 @@ def test_ir_round_trip_schema_and_interpreter_are_deterministic() -> None:
     assert parsed.fingerprint == ir.fingerprint
     schema = cast(
         dict[str, object],
-        json.loads(
-            (ROOT / "schemas" / "verification-ir.schema.json").read_text(
-                encoding="utf-8"
-            )
-        ),
+        json.loads((ROOT / "schemas" / "verification-ir.schema.json").read_text(encoding="utf-8")),
     )
     Draft202012Validator(schema).validate(payload)
     state = initial_state(ir)
@@ -127,11 +123,7 @@ def test_z3_backend_is_bounded_or_explicitly_unavailable() -> None:
         assert unsafe.counterexample
     result_schema = cast(
         dict[str, object],
-        json.loads(
-            (ROOT / "schemas" / "formal-verification-result.schema.json").read_text(
-                encoding="utf-8"
-            )
-        ),
+        json.loads((ROOT / "schemas" / "formal-verification-result.schema.json").read_text(encoding="utf-8")),
     )
     Draft202012Validator(result_schema).validate(safe.to_dict())
 
@@ -195,6 +187,41 @@ def test_nuxmv_adapter_safe_unsafe_unknown_and_hashes() -> None:
     unsupported = NuXmvBackend(availability=lambda _: True).verify(integer)
     assert unsupported.verdict == FormalVerdict.UNKNOWN
     assert "unsupported_integer_variables" in (unsupported.error or "")
+
+
+def test_wsl_nuxmv_runner_writes_to_wsl_tmp(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from conflux.verification.nuxmv_backend import WslNuXmvRunner
+
+    captured: list[tuple[tuple[str, ...], str]] = []
+
+    def fake_run(command: tuple[str, ...], **kwargs: object) -> object:
+        input_text = kwargs.get("input", "")
+        if isinstance(input_text, str):
+            captured.append((command, input_text))
+        from subprocess import CompletedProcess
+
+        if "-h" in command:
+            return CompletedProcess(command, 0, "nuXmv 2.2.0\n", "")
+        return CompletedProcess(command, 0, "-- invariant x is true\n", "")
+
+    monkeypatch.setattr("conflux.verification.nuxmv_backend.subprocess.run", fake_run)
+    monkeypatch.setattr("conflux.verification.nuxmv_backend._WSL_TMP", tmp_path)
+
+    runner = WslNuXmvRunner()
+    model_src = tmp_path / "source"
+    model_src.mkdir(parents=True, exist_ok=True)
+    model_file = model_src / "model.smv"
+    model_file.write_text("MODULE main\nVAR\n  x : boolean;\n", encoding="utf-8")
+
+    outcome = runner.run("nuXmv", model_file, "go\ncheck_invar_ic3\nquit\n")
+    assert outcome.exit_code == 0
+    assert outcome.version == "nuXmv 2.2.0"
+    assert len(captured) == 2
+    version_cmd = captured[0][0]
+    verify_cmd = captured[1][0]
+    assert "wsl" in version_cmd[0].lower() or version_cmd[0] == "wsl"
+    assert verify_cmd[-1].startswith("/tmp/")
+    assert verify_cmd[-1].endswith("/model.smv")
 
 
 @pytest.mark.parametrize(
