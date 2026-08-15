@@ -154,7 +154,7 @@ class TransformersLocalModel:
         except (OSError, ValueError) as error:
             raise LocalModelFailure("artifact", str(error)) from error
         source = str(self.snapshot_path)
-        tokenizer = AutoTokenizer.from_pretrained(
+        tokenizer = AutoTokenizer.from_pretrained(  # type: ignore[no-untyped-call]
             source,
             local_files_only=True,
             trust_remote_code=False,

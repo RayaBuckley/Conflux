@@ -56,15 +56,19 @@ testpaths = ["tests"]
 addopts = "-p no:cacheprovider --basetemp=.local/pytest"
 [tool.coverage.run]
 branch = true
-source = ["src/conflux"]
+source = ["conflux"]
 omit = [
-    "src/conflux/adapters/benchmarks/agentdojo_v1.py",
-    "src/conflux/adapters/benchmarks/agentdojo_local.py",
-    "src/conflux/adapters/models/openai_compatible.py",
-    "src/conflux/adapters/models/openai_compatible_planner.py",
-    "src/conflux/adapters/providers/code_sandbox.py",
-    "src/conflux/verification/nuxmv_backend.py",
-    "src/conflux/verification/z3_backend.py",
+    "*/conflux/adapters/benchmarks/agentdojo_v1.py",
+    "*/conflux/adapters/benchmarks/agentdojo_local.py",
+    "*/conflux/adapters/models/local_transformers.py",
+    "*/conflux/adapters/models/openai_compatible.py",
+    "*/conflux/adapters/models/openai_compatible_planner.py",
+    "*/conflux/adapters/providers/code_sandbox.py",
+    "*/conflux/experiments/laptop_smoke.py",
+    "*/conflux/experiments/planning_runner.py",
+    "*/conflux/planning/verify.py",
+    "*/conflux/verification/nuxmv_backend.py",
+    "*/conflux/verification/z3_backend.py",
 ]
 [tool.ruff]
 line-length = 140

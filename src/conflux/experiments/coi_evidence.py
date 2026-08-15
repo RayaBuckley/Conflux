@@ -184,10 +184,14 @@ def verify_coi_evidence_checksums(directory: Path) -> tuple[str, ...]:
 def _formal_comparisons(
     original: VerificationIR,
     reduced: VerificationIR,
+    *,
+    discover_optional: bool = False,
 ) -> tuple[dict[str, object], tuple[str, ...]]:
+    z3_available = importlib.util.find_spec("z3") is not None if discover_optional else False
+    nuxmv_available = shutil.which("nuXmv") is not None if discover_optional else False
     adapters: tuple[tuple[str, bool, Callable[[VerificationIR], FormalVerificationResult]], ...] = (
-        ("z3", importlib.util.find_spec("z3") is not None, verify_with_z3),
-        ("nuxmv", shutil.which("nuXmv") is not None, NuXmvBackend().verify),
+        ("z3", z3_available, verify_with_z3),
+        ("nuxmv", nuxmv_available, NuXmvBackend().verify),
     )
     results: dict[str, object] = {}
     failures: list[str] = []

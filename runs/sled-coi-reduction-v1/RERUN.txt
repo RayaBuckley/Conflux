@@ -1,1 +1,1 @@
-python scripts/generate_coi_evidence.py runs/sled-coi-reduction-v1 --source-commit 353c0b6e2a17bc65560c3702ee70ed6e4b4665a2
+python scripts/generate_coi_evidence.py runs/sled-coi-reduction-v1 --source-commit 1d0fc40ba0e7c6435f1dba2e39435e892b1f7c1a

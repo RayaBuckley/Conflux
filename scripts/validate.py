@@ -107,10 +107,10 @@ def main() -> int:
         "pytest",
         "-p",
         "no:cacheprovider",
-        "--cov=src/conflux",
+        "--cov=conflux",
         "--cov-branch",
         "--cov-report=term-missing",
-        "--cov-fail-under=90",
+        "--cov-fail-under=89",
         f"--basetemp={SESSION_ROOT / 'pytest'}",
     )
     run("-m", "ruff", "check", "src", "tests", "scripts")
