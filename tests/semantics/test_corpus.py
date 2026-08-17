@@ -107,10 +107,37 @@ def _cases(
             False,
             "delegation_unsupported",
         ),
+        SemanticCase(
+            "mixed_authorised_and_unauthorised",
+            PrincipalContext(frozenset({alice, mallory})),
+            _write("write"),
+            False,
+            "principal_denied",
+        ),
+        SemanticCase(
+            "unauthorised_single_principal",
+            PrincipalContext(frozenset({mallory})),
+            _write("write"),
+            False,
+            "principal_denied",
+        ),
+        SemanticCase(
+            "mixed_context_with_both_grants_no_inputs",
+            PrincipalContext(frozenset({alice, bob})),
+            _write("write"),
+            True,
+        ),
+        SemanticCase(
+            "mixed_context_read_blocked",
+            PrincipalContext(frozenset({alice, bob})),
+            _write("write", (alice_doc.to_artifact(),)),
+            False,
+            "read_denied",
+        ),
     )
 
 
-@pytest.mark.parametrize("case_index", range(8))
+@pytest.mark.parametrize("case_index", range(12))
 def test_direct_decision_and_kernel_conform(
     case_index: int,
     pipeline: DecisionPipeline,

@@ -215,10 +215,7 @@ class NoAuthorityWithoutContext:
         self,
         transition: Transition[BranchState, ProposalBatch],
     ) -> str | None:
-        if (
-            not transition.source.context.is_authority_bearing
-            and transition.target.status == BranchStatus.AUTHORISED
-        ):
+        if not transition.source.context.is_authority_bearing and transition.target.status == BranchStatus.AUTHORISED:
             return "empty or unknown context authorised an action"
         return None
 
@@ -276,11 +273,7 @@ class NestedInputsInfluenceContext:
         transition: Transition[BranchState, ProposalBatch],
     ) -> str | None:
         for action in transition.action.proposals:
-            expected = {
-                principal
-                for artifact in action.inputs
-                for principal in artifact.provenance.principals
-            }
+            expected = {principal for artifact in action.inputs for principal in artifact.provenance.principals}
             if not expected.issubset(transition.target.context.principals):
                 return "nested input provenance was omitted from the context"
         return None
@@ -296,6 +289,148 @@ class ExecutedInvariantOnly:
     ) -> str | None:
         if transition.target.status == BranchStatus.BLOCKED:
             return "a rejected proposal was misclassified as an executed violation"
+        return None
+
+
+@dataclass(frozen=True, slots=True)
+class ConsentGrantsAuthority:
+    base: DecisionPipeline
+
+    def decide(
+        self,
+        *,
+        session: Session,
+        action: Action,
+        context: PrincipalContext,
+        environment: EnvironmentSnapshot,
+    ) -> ActionDecision:
+        decision = self.base.decide(
+            session=session,
+            action=action,
+            context=context,
+            environment=environment,
+        )
+        if decision.consent.allowed and not decision.authorisation.allowed:
+            from conflux.domain import Decision, DecisionCategory
+
+            return replace(
+                decision,
+                authorisation=Decision(
+                    DecisionCategory.AUTHORISATION,
+                    True,
+                    "consent_override",
+                    decision.authorisation.policy_id,
+                    decision.authorisation.policy_version,
+                ),
+            )
+        return decision
+
+
+@dataclass(frozen=True, slots=True)
+class VisibilityImpliesRead:
+    policy_id: str = "mutant-visibility-implies-read"
+    policy_version: str = "1"
+
+    def decide(
+        self,
+        principal: Principal,
+        artifact: Artifact[Any],
+        environment: EnvironmentSnapshot,
+    ) -> Decision:
+        item = environment.data_item(artifact.id)
+        if item is not None and principal in item.readers:
+            return Decision(
+                DecisionCategory.READ,
+                True,
+                "reader_grant",
+                self.policy_id,
+                self.policy_version,
+                evidence=(principal.id, artifact.id),
+            )
+        return Decision(
+            DecisionCategory.READ,
+            True,
+            "visibility_grant",
+            self.policy_id,
+            self.policy_version,
+            evidence=(principal.id, artifact.id),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class CertificateReplayKernel:
+    base: TransitionKernel
+
+    def expand_batch(
+        self,
+        *,
+        parent: BranchState,
+        batch: ProposalBatch,
+        session: Session,
+        environment: EnvironmentSnapshot,
+        model_calls: int,
+    ) -> tuple[BranchState, ...]:
+        children = self.base.expand_batch(
+            parent=parent,
+            batch=batch,
+            session=session,
+            environment=environment,
+            model_calls=model_calls,
+        )
+        if batch.mode == ProposalMode.ALTERNATIVES and len(children) > 1:
+            replayed = children[0]
+            return tuple(replace(child, certificate=replayed.certificate) if child.certificate is not None else child for child in children)
+        return children
+
+
+@dataclass(frozen=True, slots=True)
+class ContextResetOnDeny:
+    base: TransitionKernel
+
+    def expand_batch(
+        self,
+        *,
+        parent: BranchState,
+        batch: ProposalBatch,
+        session: Session,
+        environment: EnvironmentSnapshot,
+        model_calls: int,
+    ) -> tuple[BranchState, ...]:
+        children = self.base.expand_batch(
+            parent=parent,
+            batch=batch,
+            session=session,
+            environment=environment,
+            model_calls=model_calls,
+        )
+        return tuple(replace(child, context=parent.context) if child.status == BranchStatus.BLOCKED else child for child in children)
+
+
+class NoConsentOverride:
+    name: str = "no_consent_override"
+
+    def violation(
+        self,
+        transition: Transition[BranchState, ProposalBatch],
+    ) -> str | None:
+        target = transition.target
+        if target.status == BranchStatus.AUTHORISED and target.decision is not None:
+            if target.decision.authorisation.reason == "consent_override":
+                return "consent was used to override an authorisation denial"
+        return None
+
+
+@dataclass(frozen=True, slots=True)
+class NoCertificateReplay:
+    name: str = "no_certificate_replay"
+
+    def violation(
+        self,
+        transition: Transition[BranchState, ProposalBatch],
+    ) -> str | None:
+        target = transition.target
+        if target.certificate is not None and target.certificate.branch_id != target.branch_id:
+            return "certificate was replayed from a different branch"
         return None
 
 

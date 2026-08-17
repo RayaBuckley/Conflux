@@ -31,17 +31,23 @@ from conflux.policy import (
 
 from .mutants import (
     BatchSystem,
+    CertificateReplayKernel,
+    ConsentGrantsAuthority,
+    ContextResetOnDeny,
     EmptyContextAllow,
     ExecutedInvariantOnly,
     NestedInputsInfluenceContext,
     NoAuthorAsReader,
     NoAuthorityWithoutContext,
+    NoCertificateReplay,
+    NoConsentOverride,
     NoMixedContextUnion,
     NoSiblingLeakage,
     PermissionUnion,
     ProvenanceAsReadPolicy,
     SiblingLeakKernel,
     StaleContextKernel,
+    VisibilityImpliesRead,
     with_read_policy,
 )
 
@@ -193,9 +199,7 @@ def test_rejected_proposal_misclassification_mutant() -> None:
     alice = Principal("alice", "Alice")
     pipeline = _pipeline(grants=frozenset(), consent=frozenset({"write"}))
     system = BatchSystem(
-        BranchState.initial(
-            (Artifact("input", "x", Provenance.from_principal(alice)),)
-        ),
+        BranchState.initial((Artifact("input", "x", Provenance.from_principal(alice)),)),
         ProposalBatch.alternatives(_action("write")),
         TransitionKernel(pipeline),
         Session("s", frozenset({alice})),
@@ -205,3 +209,88 @@ def test_rejected_proposal_misclassification_mutant() -> None:
         ),
     )
     _assert_minimal(system, ExecutedInvariantOnly())
+
+
+def test_consent_grants_authority_mutant() -> None:
+    alice = Principal("alice", "Alice")
+    source = Artifact("input", "x", Provenance.from_principal(alice))
+    pipeline = _pipeline(grants=frozenset(), consent=frozenset({"write"}))
+    system = BatchSystem(
+        BranchState.initial((source,)),
+        ProposalBatch.alternatives(_action("write")),
+        TransitionKernel(ConsentGrantsAuthority(pipeline)),
+        Session("s", frozenset({alice})),
+        EnvironmentSnapshot(
+            "e",
+            resources=(ResourceRef("test", "out", "document"),),
+        ),
+    )
+    _assert_minimal(system, NoConsentOverride())
+
+
+def test_visibility_implies_read_mutant() -> None:
+    alice, bob = Principal("alice", "Alice"), Principal("bob", "Bob")
+    item = DataItem("doc", "secret", frozenset({alice}), frozenset({bob}))
+    environment = EnvironmentSnapshot(
+        "e",
+        data=(item,),
+        resources=(ResourceRef("test", "out", "document"),),
+    )
+    pipeline = _pipeline(
+        grants=frozenset({PolicyGrant("alice", "write", "out")}),
+        consent=frozenset({"write"}),
+    )
+    pipeline = with_read_policy(pipeline, VisibilityImpliesRead())
+    source = Artifact("input", "x", Provenance.from_principal(alice))
+    system = BatchSystem(
+        BranchState.initial((source,)),
+        ProposalBatch.alternatives(_action("write", (item.to_artifact(),))),
+        TransitionKernel(pipeline),
+        Session("s", frozenset({alice})),
+        environment,
+    )
+    _assert_minimal(system, NoAuthorAsReader(frozenset({bob})))
+
+
+def test_certificate_replay_mutant() -> None:
+    alice, bob = Principal("alice", "Alice"), Principal("bob", "Bob")
+    initial = Artifact("initial", "a", Provenance.from_principal(alice))
+    pipeline = _pipeline(
+        grants=frozenset(
+            {
+                PolicyGrant("alice", "write", "out"),
+                PolicyGrant("bob", "write", "out"),
+            }
+        ),
+        consent=frozenset({"write-a", "write-b"}),
+    )
+    environment = EnvironmentSnapshot(
+        "e",
+        resources=(ResourceRef("test", "out", "document"),),
+    )
+    system = BatchSystem(
+        BranchState.initial((initial,)),
+        ProposalBatch.alternatives(
+            _action("write-a"),
+            _action("write-b"),
+        ),
+        CertificateReplayKernel(TransitionKernel(pipeline)),
+        Session("s", frozenset({alice, bob})),
+        environment,
+    )
+    _assert_minimal(system, NoCertificateReplay())
+
+
+def test_context_reset_on_deny_mutant() -> None:
+    alice, bob = Principal("alice", "Alice"), Principal("bob", "Bob")
+    initial = Artifact("initial", "a", Provenance.from_principal(alice))
+    nested = Artifact("nested", "b", Provenance.from_principal(bob))
+    pipeline = _pipeline(grants=frozenset(), consent=frozenset({"nested"}))
+    system = BatchSystem(
+        BranchState.initial((initial,)),
+        ProposalBatch.alternatives(NestedExecutionAction("nested", (nested,))),
+        ContextResetOnDeny(TransitionKernel(pipeline)),
+        Session("s", frozenset({alice, bob})),
+        EnvironmentSnapshot("e"),
+    )
+    _assert_minimal(system, NestedInputsInfluenceContext())
