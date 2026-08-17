@@ -1,4 +1,15 @@
-"""Typed independent policy decisions and deterministic composition."""
+"""Typed independent policy decisions and deterministic composition.
+
+SEM-005: ActionDecision.allowed is the conjunction of all independent decision
+dimensions (authorisation, argument_authorisation when present, read,
+visibility, consent). No single dimension can override a denial in another.
+
+SEM-006: Consent never manufactures authority. A consent allow cannot override
+an authorisation denial.
+
+SEM-007: Authorisation requires a pointwise allow from every Principal in the
+context. One Principal cannot lend permissions to another.
+"""
 
 from __future__ import annotations
 

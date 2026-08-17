@@ -1,4 +1,24 @@
-"""The sole pure ITES transition kernel."""
+"""The sole pure ITES transition kernel.
+
+SEM-008: Complete mediation. Every action crosses this kernel before any
+effect is observable. No action bypasses mediation.
+
+SEM-009: Authority-intersection rule. The decision context is the merge of
+the parent context and the action provenance context. Consuming information
+from an additional Principal can preserve or reduce authority but never
+increase it (Biba low-water-mark analogue).
+
+SEM-010: Branch isolation. In ALTERNATIVES mode, each proposal branches
+independently from the same parent. Sibling branches never observe each
+other's context.
+
+SEM-011: Ordered-plan sequential propagation. In ORDERED_PLAN mode, the
+plan stops at the first denial or provider failure.
+
+SEM-012: Certificate binding. A decision certificate binds to the exact
+action fingerprint, context fingerprint, branch identity, and policy
+versions. Execution requires a match.
+"""
 
 from __future__ import annotations
 

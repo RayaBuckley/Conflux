@@ -1,0 +1,14 @@
+{
+    "id": "2026-08-17-gpu-debug-scripts",
+    "title": "GPU debugging and model diagnostic scripts (Qwen2.5-7B NF4)",
+    "snapshot_date": "2026-08-17",
+    "source_commits": [],
+    "status": "diagnostic_archive",
+    "supersedes": [],
+    "superseded_by": [],
+    "canonical_successors": [],
+    "limitations": [
+        "Ad-hoc diagnostic scripts; not tested, not part of the validation suite.",
+        "Hardcoded paths and model identifiers; will not run without local GPU and weight cache."
+    ]
+}

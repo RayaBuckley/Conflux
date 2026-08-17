@@ -1,4 +1,12 @@
-"""Principal identities and conservative Principal Context values."""
+"""Principal identities and conservative Principal Context values.
+
+SEM-001: PrincipalContext.merge forms a join semilattice (commutative,
+associative, idempotent, monotone). The ``unknown`` flag is absorbing:
+merging with an unknown context yields unknown.
+
+SEM-002: is_authority_bearing is the guard for all authorisation decisions.
+An empty or unknown context denies all effectful actions.
+"""
 
 from __future__ import annotations
 

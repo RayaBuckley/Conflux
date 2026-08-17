@@ -1,4 +1,12 @@
-"""Independent fail-closed policy boundaries."""
+"""Independent fail-closed policy boundaries.
+
+SEM-015: Policy dimensions are independent. Authorisation, read, visibility,
+and consent are separate decisions. No dimension can override a denial in
+another.
+
+SEM-016: Fail-closed defaults. Missing consent, unknown schemas, policy
+errors, and unavailable boundaries deny.
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,13 @@
-"""Information provenance, separate from access-control policy."""
+"""Information provenance, separate from access-control policy.
+
+SEM-003: Provenance.merge forms a commutative monoid. Precision is monotone
+(EXACT < CONSERVATIVE < UNKNOWN); merge takes the maximum. Attestation is
+conjunction: both sides must be attested for the result to be attested.
+Unknown provenance propagates through merge.
+
+SEM-004: Provenance describes influence origin; it is not a read ACL. Read
+policy is a separate, independent decision.
+"""
 
 from __future__ import annotations
 
@@ -65,9 +74,7 @@ class Provenance:
         return Provenance(
             principals=self.principals | other.principals,
             sources=self.sources | other.sources,
-            activities=self.activities + tuple(
-                activity for activity in other.activities if activity not in self.activities
-            ),
+            activities=self.activities + tuple(activity for activity in other.activities if activity not in self.activities),
             precision=precision,
             attested=self.attested and other.attested,
         )
