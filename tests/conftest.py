@@ -26,6 +26,11 @@ def bob() -> Principal:
 
 
 @pytest.fixture
+def mallory() -> Principal:
+    return Principal("mallory", "Mallory")
+
+
+@pytest.fixture
 def environment(alice: Principal, bob: Principal) -> EnvironmentSnapshot:
     return EnvironmentSnapshot(
         id="test",
@@ -40,6 +45,33 @@ def environment(alice: Principal, bob: Principal) -> EnvironmentSnapshot:
 @pytest.fixture
 def session(alice: Principal, bob: Principal) -> Session:
     return Session("session", frozenset({alice, bob}))
+
+
+@pytest.fixture
+def adversarial_session(alice: Principal, mallory: Principal) -> Session:
+    return Session("adversarial", frozenset({alice, mallory}))
+
+
+@pytest.fixture
+def adversarial_environment(alice: Principal, mallory: Principal) -> EnvironmentSnapshot:
+    return EnvironmentSnapshot(
+        id="adversarial",
+        data=(
+            DataItem("alice-doc", "a", frozenset({alice}), frozenset({alice})),
+            DataItem("mallory-doc", "m", frozenset({mallory}), frozenset({mallory})),
+        ),
+        resources=(ResourceRef("test", "out", "document"),),
+    )
+
+
+@pytest.fixture
+def adversarial_pipeline() -> DecisionPipeline:
+    return DecisionPipeline(
+        InMemoryAuthorisationPolicy(frozenset({PolicyGrant("alice", "write", "out")})),
+        SnapshotReadPolicy(),
+        SessionVisibilityPolicy(),
+        ExplicitConsentPolicy(frozenset({"write", "nested", "message"})),
+    )
 
 
 @pytest.fixture
