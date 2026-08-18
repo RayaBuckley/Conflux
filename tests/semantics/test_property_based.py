@@ -5,22 +5,23 @@ from __future__ import annotations
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+from conflux.application import DecisionPipeline
 from conflux.domain import (
+    Artifact,
     EnvironmentSnapshot,
-    Permission,
     PrimitiveAction,
     Principal,
     PrincipalContext,
+    ProposalBatch,
     Provenance,
     ProvenancePrecision,
     ResourceRef,
     Session,
 )
 from conflux.ites import BranchState, TransitionKernel
-from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy, PolicyGrant
+from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy, PolicyGrant, SessionVisibilityPolicy, SnapshotReadPolicy
 
-from .strategies import artifacts, principal_contexts, principals, primitive_actions, provenances
-
+from .strategies import artifacts, primitive_actions, principal_contexts, provenances
 
 _PERMIT_ALL = InMemoryAuthorisationPolicy(
     frozenset(
@@ -144,9 +145,8 @@ class TestKernelInvariants:
 
     @given(art=artifacts(), action=primitive_actions())
     @settings(max_examples=50, deadline=None)
-    def test_context_monotone_through_kernel(self, art, action) -> None:
+    def test_context_monotone_through_kernel(self, art: Artifact[object], action: PrimitiveAction) -> None:
         parent = BranchState.initial((art,))
-        kernel = TransitionKernel(_PERMIT_ALL)
         consent_ids = {action.id}
         for inp in action.inputs:
             consent_ids.add(inp.id)
@@ -154,7 +154,6 @@ class TestKernelInvariants:
         kernel = TransitionKernel(pipeline)
         env = EnvironmentSnapshot("e", resources=(ResourceRef("test", "out", "document"),))
         session = Session("s", parent.context.principals)
-        from conflux.domain import ProposalBatch
 
         children = kernel.expand_batch(
             parent=parent,
@@ -171,7 +170,7 @@ class TestKernelInvariants:
 
     @given(art=artifacts(), action=primitive_actions())
     @settings(max_examples=50, deadline=None)
-    def test_certificate_branch_id_matches(self, art, action) -> None:
+    def test_certificate_branch_id_matches(self, art: Artifact[object], action: PrimitiveAction) -> None:
         parent = BranchState.initial((art,))
         consent_ids = {action.id}
         for inp in action.inputs:
@@ -180,7 +179,6 @@ class TestKernelInvariants:
         kernel = TransitionKernel(pipeline)
         env = EnvironmentSnapshot("e", resources=(ResourceRef("test", "out", "document"),))
         session = Session("s", parent.context.principals)
-        from conflux.domain import ProposalBatch
 
         children = kernel.expand_batch(
             parent=parent,
@@ -194,10 +192,7 @@ class TestKernelInvariants:
                 assert child.certificate.branch_id == child.branch_id
 
 
-def _permitting_pipeline(consent_ids: set[str]) -> "DecisionPipeline":
-    from conflux.application import DecisionPipeline
-    from conflux.policy import SessionVisibilityPolicy, SnapshotReadPolicy
-
+def _permitting_pipeline(consent_ids: set[str]) -> DecisionPipeline:
     return DecisionPipeline(
         _PERMIT_ALL,
         SnapshotReadPolicy(),
