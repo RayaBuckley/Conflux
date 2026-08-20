@@ -16,7 +16,7 @@ Use sources in this order:
 5. immutable archived reports and the archived previous paper.
 
 `docs/task-registry.json` owns current programme dispositions.
-`docs/CLAIMS.md` owns claim strength. A conflict between sources is a defect to
+`docs/evidence/CLAIMS.md` owns claim strength. A conflict between sources is a defect to
 reconcile, not permission to promote a historical or convenient statement.
 
 ## How the project evolved
@@ -50,7 +50,7 @@ certificate-bound execution, deterministic branch semantics, and no legacy
 | Alternatives and ordered plans | Implemented with isolation and per-step re-authorisation | A proposal batch cannot pre-grant future effects | Formal delegation remains denied |
 | Failure behavior | Errors, unsupported actions, stale decisions, and exhausted bounds fail explicitly | Uncertainty is not permission | Availability and security outcomes remain distinct |
 
-The normative contract is [the security model](../../docs/SECURITY_MODEL.md),
+The normative contract is [the security model](../../docs/reference/SECURITY_MODEL.md),
 not this summary.
 
 ## Runtime, planning, and code execution
@@ -121,7 +121,7 @@ declassification, nonmalleable IFC) provides the conceptual and formal
 foundations. Conflux enriches this lineage with authenticated principal
 identities and authority derived from the organisation's existing ACS. This
 positioning and the candidate distinctions that may survive prior-art search
-are developed in [RELATED_WORK.md](../../docs/RELATED_WORK.md) and
+are developed in [RELATED_WORK.md](../../docs/research/RELATED_WORK.md) and
 [ADR 012](../../docs/decisions/012-foundational-security-lineage.md).
 
 The useful comparison axes are model robustness, architectural isolation,
@@ -139,7 +139,7 @@ current bibliography state is recorded in `manuscript/REFERENCES.md`.
 | Translation evidence | Pinned AgentDojo fixture and adapter | Do not infer efficacy or upstream policy ground truth |
 | Hypothesis or gated result | Planning utility, live-model security, unbounded verification | State that matching retained evidence is absent |
 
-The [claim ledger](../../docs/CLAIMS.md) is authoritative.
+The [claim ledger](../../docs/evidence/CLAIMS.md) is authoritative.
 
 ## Remaining programme
 

@@ -17,22 +17,27 @@ DOCS = ROOT / "docs"
 CANONICAL_DOCS = {
     "README.md",
     "AI_AGENT_GUIDE.md",
-    "ARCHITECTURE.md",
-    "SECURITY_MODEL.md",
-    "REFERENCE.md",
-    "SLED.md",
-    "EVALUATION.md",
-    "RUNTIME.md",
-    "CLI.md",
-    "NEGATIVE_CONTROLS.md",
-    "MVP_RESULTS.md",
-    "CHANGE_CATALOG.md",
-    "CLAIMS.md",
-    "RELATED_WORK.md",
+    "OVERVIEW.md",
     "DEVELOPMENT.md",
-    "STATUS.md",
-    "AUDIT.md",
-    "GLOSSARY.md",
+    "reference/ARCHITECTURE.md",
+    "reference/SECURITY_MODEL.md",
+    "reference/REFERENCE.md",
+    "reference/SLED.md",
+    "reference/RUNTIME.md",
+    "reference/CLI.md",
+    "reference/GLOSSARY.md",
+    "reference/SEMANTICS.md",
+    "evidence/STATUS.md",
+    "evidence/CLAIMS.md",
+    "evidence/EVALUATION.md",
+    "evidence/NEGATIVE_CONTROLS.md",
+    "evidence/MVP_RESULTS.md",
+    "evidence/CHANGE_CATALOG.md",
+    "evidence/AUDIT.md",
+    "evidence/BASELINE_2026-07.md",
+    "research/RELATED_WORK.md",
+    "research/RESEARCH_OVERVIEW.md",
+    "research/RESEARCH_QUESTIONS.md",
 }
 LEGACY = {"core", "auth", "research", "compatibility"}
 FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
@@ -196,13 +201,14 @@ def check_docs(errors: list[str]) -> None:
         ROOT / "README.md",
         ROOT / "CONTRIBUTING.md",
         ROOT / "SECURITY.md",
-        DOCS / "ARCHITECTURE.md",
-        DOCS / "SECURITY_MODEL.md",
-        DOCS / "RUNTIME.md",
-        DOCS / "SLED.md",
-        DOCS / "EVALUATION.md",
-        DOCS / "CLI.md",
+        DOCS / "OVERVIEW.md",
         DOCS / "DEVELOPMENT.md",
+        DOCS / "reference" / "ARCHITECTURE.md",
+        DOCS / "reference" / "SECURITY_MODEL.md",
+        DOCS / "reference" / "RUNTIME.md",
+        DOCS / "reference" / "SLED.md",
+        DOCS / "reference" / "CLI.md",
+        DOCS / "evidence" / "EVALUATION.md",
         DOCS / "integrations" / "models.md",
         DOCS / "integrations" / "agentdojo.md",
         REPORTS / "README.md",
@@ -236,7 +242,7 @@ def check_repository_governance(errors: list[str]) -> None:
 
 
 def check_reports(errors: list[str]) -> None:
-    catalogue = (DOCS / "CHANGE_CATALOG.md").read_text(encoding="utf-8")
+    catalogue = (DOCS / "evidence" / "CHANGE_CATALOG.md").read_text(encoding="utf-8")
     for identifier in ("BUG-001", "BUG-002", "BUG-003", "BUG-004", "SLED-001", "TRACE-001"):
         if identifier not in catalogue:
             errors.append(f"change catalogue missing report identifier {identifier}")

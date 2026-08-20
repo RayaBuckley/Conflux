@@ -111,7 +111,7 @@ denied one. The mutant `EmptyContextAllow` violates this and is killed by SLED.
 
 | Aspect | Location |
 |---|---|
-| Rule | `docs/SECURITY_MODEL.md` normative rules |
+| Rule | `docs/reference/SECURITY_MODEL.md` normative rules |
 | Mutant | `tests/semantics/mutants.py` `EmptyContextAllow` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_empty_context_allow_mutant` |
 
@@ -128,7 +128,7 @@ violates this and is killed by SLED.
 
 | Aspect | Location |
 |---|---|
-| Rule | `docs/SECURITY_MODEL.md` normative rules |
+| Rule | `docs/reference/SECURITY_MODEL.md` normative rules |
 | Mutant | `tests/semantics/mutants.py` `PermissionUnion` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_permission_union_mutant` |
 
@@ -248,7 +248,7 @@ The mutant test `ExecutedInvariantOnly` enforces this distinction.
 
 | Aspect | Location |
 |---|---|
-| Rule | `docs/SECURITY_MODEL.md` normative rules |
+| Rule | `docs/reference/SECURITY_MODEL.md` normative rules |
 | Property | `tests/semantics/mutants.py` `ExecutedInvariantOnly` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_rejected_proposal_misclassification_mutant` |
 

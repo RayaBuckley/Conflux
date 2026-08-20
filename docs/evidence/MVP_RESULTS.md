@@ -18,7 +18,7 @@ committed together.
 | Negative-control counterexample length | 1 |
 
 The table is generated from
-[`runs/smoke/result.json`](../runs/smoke/result.json), not independently
+[`runs/smoke/result.json`](../../runs/smoke/result.json), not independently
 entered experimental data. The authorised fixture executes one
 certificate-bound in-memory action. The attack fixture is blocked by canonical
 pointwise authority/read composition. The deliberately vulnerable

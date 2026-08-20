@@ -13,7 +13,7 @@
     {
       "ids": ["BASE-001", "BASE-002", "SEC-001", "SEC-002", "SEC-003", "SEC-004", "SEC-005", "SEC-006", "SEC-007", "SEC-008", "TRACE-001", "TRACE-002", "ARCH-001", "ARCH-002", "ARCH-003", "ARCH-004"],
       "status": "implemented",
-      "evidence": ["docs/BASELINE_2026-07.md", "docs/SECURITY_MODEL.md", "tests/semantics/", "tests/test_policy_and_ites.py", "tests/test_records_and_schemas.py"]
+      "evidence": ["docs/evidence/BASELINE_2026-07.md", "docs/reference/SECURITY_MODEL.md", "tests/semantics/", "tests/test_policy_and_ites.py", "tests/test_records_and_schemas.py"]
     },
     {
       "ids": ["RUNTIME-001", "RUNTIME-002", "RUNTIME-003", "RUNTIME-004", "CLI-001", "CLI-002"],

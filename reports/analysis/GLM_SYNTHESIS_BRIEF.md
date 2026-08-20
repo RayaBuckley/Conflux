@@ -21,8 +21,8 @@ Report any disagreement between these drafts and the current repository.
 ## Documentation task
 
 Evaluate:
-- `docs/RESEARCH_OVERVIEW.md`
-- `docs/RESEARCH_QUESTIONS.md`
+- `docs/research/RESEARCH_OVERVIEW.md`
+- `docs/research/RESEARCH_QUESTIONS.md`
 
 against canonical docs.
 

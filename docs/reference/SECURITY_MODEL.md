@@ -66,7 +66,7 @@ evaluates current policy state again.
 
 The current argument layer protects authority-bearing selectors. Richer
 operation-specific effect semantics remain future work in the
-[change catalogue](CHANGE_CATALOG.md).
+[change catalogue](../evidence/CHANGE_CATALOG.md).
 
 ## Rationale
 
@@ -98,11 +98,11 @@ contamination from Biba's integrity models: consuming information from an
 additional principal can preserve or reduce effective authority but cannot
 increase it. Conflux enriches this classical pattern with authenticated
 principal provenance and authority derived from the organisation's existing
-authorisation relation. See [ADR 012](decisions/012-foundational-security-lineage.md)
+authorisation relation. See [ADR 012](../decisions/012-foundational-security-lineage.md)
 and the [foundational security literature
-analysis](../reports/analysis/2026-08-13-foundational-security-literature.md).
+analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md).
 
 These rules prevent authority amplification; they do not prove that every
 authorised action matches subjective intent. Complete mediation and correct
 authentication, provenance, policy, runtime, and provider isolation remain
-assumptions. See [SECURITY.md](../SECURITY.md) for the operational boundary.
+assumptions. See [SECURITY.md](../../SECURITY.md) for the operational boundary.

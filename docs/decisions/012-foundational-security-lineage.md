@@ -36,7 +36,7 @@ Conflux concepts, without changing implementation semantics.
   qualified against the classical IFC and integrity literature before
   assertion. See the [foundational security literature
   analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
-  and the [claim ledger](../CLAIMS.md).
+  and the [claim ledger](../evidence/CLAIMS.md).
 
 - SLED-V properties should distinguish access safety from
   observational confidentiality and relational noninterference

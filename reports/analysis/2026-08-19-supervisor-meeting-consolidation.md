@@ -3,7 +3,7 @@
 **Date:** 19 August 2026
 **Status:** Meeting preparation; not a canonical specification
 **Source:** Consolidation of canonical status, claims, task registry, and analysis reports
-**Canonical owners:** Implementation status in [STATUS.md](../../docs/STATUS.md); claim strength in [CLAIMS.md](../../docs/CLAIMS.md); programme disposition in [task-registry.json](../../docs/task-registry.json); formal verification in [SLED.md](../../docs/SLED.md); evaluation evidence in [EVALUATION.md](../../docs/EVALUATION.md)
+**Canonical owners:** Implementation status in [STATUS.md](../../docs/evidence/STATUS.md); claim strength in [CLAIMS.md](../../docs/evidence/CLAIMS.md); programme disposition in [task-registry.json](../../docs/task-registry.json); formal verification in [SLED.md](../../docs/reference/SLED.md); evaluation evidence in [EVALUATION.md](../../docs/evidence/EVALUATION.md)
 
 ## 1. Project summary
 
@@ -42,10 +42,10 @@ evidence, evaluation ready, and deferred.
 - Five deliberately defective negative controls, each with one-step
   counterexamples
 
-**Evidence:** [SECURITY_MODEL.md](../../docs/SECURITY_MODEL.md),
+**Evidence:** [SECURITY_MODEL.md](../../docs/reference/SECURITY_MODEL.md),
 [tests/semantics/](../../tests/semantics/),
 [tests/test_policy_and_ites.py](../../tests/test_policy_and_ites.py),
-[NEGATIVE_CONTROLS.md](../../docs/NEGATIVE_CONTROLS.md)
+[NEGATIVE_CONTROLS.md](../../docs/evidence/NEGATIVE_CONTROLS.md)
 
 ### 2.2 Offline result-ready path — implemented
 
@@ -191,7 +191,7 @@ linked to commit `d6d9857954ac`
 - Manuscript CI: passed
 
 **Evidence:** [artifacts/validation/6fe6b584500e/](../../artifacts/validation/6fe6b584500e/),
-[BASELINE_2026-07.md](../../docs/BASELINE_2026-07.md)
+[BASELINE_2026-07.md](../../docs/evidence/BASELINE_2026-07.md)
 
 ## 3. Claim strength summary
 
@@ -372,17 +372,17 @@ formalisation, experimental design, and comparison methodology.
 
 This consolidation is consistent with and folds in:
 
-- [STATUS.md](../../docs/STATUS.md) — implementation status
-- [CLAIMS.md](../../docs/CLAIMS.md) — claim strength and novelty
+- [STATUS.md](../../docs/evidence/STATUS.md) — implementation status
+- [CLAIMS.md](../../docs/evidence/CLAIMS.md) — claim strength and novelty
   qualification
 - [task-registry.json](../../docs/task-registry.json) — programme
   disposition
-- [RESEARCH_OVERVIEW.md](../../docs/RESEARCH_OVERVIEW.md) — research
+- [RESEARCH_OVERVIEW.md](../../docs/research/RESEARCH_OVERVIEW.md) — research
   problem and direction
-- [RESEARCH_QUESTIONS.md](../../docs/RESEARCH_QUESTIONS.md) — RQ
+- [RESEARCH_QUESTIONS.md](../../docs/research/RESEARCH_QUESTIONS.md) — RQ
   prioritisation
-- [SLED.md](../../docs/SLED.md) — verification and property hierarchy
-- [EVALUATION.md](../../docs/EVALUATION.md) — evaluation evidence
+- [SLED.md](../../docs/reference/SLED.md) — verification and property hierarchy
+- [EVALUATION.md](../../docs/evidence/EVALUATION.md) — evaluation evidence
   boundary
 - [REVIEWER_MEETING_CHECKLIST.md](REVIEWER_MEETING_CHECKLIST.md) —
   original meeting preparation checklist

@@ -1,5 +1,13 @@
 # Conflux Status
 
+## At a glance
+
+Conflux has a working offline security kernel that mediates every agent
+effect through Principal Context authority checks. It can verify security
+properties on finite models, generate authenticated plans, and translate
+external benchmarks. Live model evidence and delegation activation remain
+future work. The detail below is for maintainers and reviewers.
+
 The canonical migration and P0 security repair are complete. Immutable values
 live in `domain`; ITES has one transition kernel; Principal Context is derived
 from trusted provenance at action time; policy dimensions remain independent;
@@ -122,13 +130,13 @@ larger model or output-constraining post-processing).
 ## Foundational literature
 
 The [foundational security literature
-analysis](../reports/analysis/2026-08-13-foundational-security-literature.md)
+analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
 identifies the classical integrity and IFC lineage (Biba, LOMAC, Denning,
 declassification, endorsement, noninterference) underlying Principal Context
 and ITES. This lineage is now integrated into the research positioning (see
-[related work](RELATED_WORK.md), [research overview](RESEARCH_OVERVIEW.md),
-[ADR 012](decisions/012-foundational-security-lineage.md), and the [SLED-V
-property hierarchy](SLED.md)). A novelty audit and primary-source bibliography
+[related work](../research/RELATED_WORK.md), [research overview](../research/RESEARCH_OVERVIEW.md),
+[ADR 012](../decisions/012-foundational-security-lineage.md), and the [SLED-V
+property hierarchy](../reference/SLED.md)). A novelty audit and primary-source bibliography
 verification remain deferred research; no novelty claim should assert the
 absence of classical precedent without prior-art verification.
 

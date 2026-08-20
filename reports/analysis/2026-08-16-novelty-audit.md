@@ -8,9 +8,9 @@
 
 ## Method
 
-1. Enumerate all claims in `docs/CLAIMS.md`, `paper/iclr2026_conference.tex`,
-   `manuscript/conflux_fourth_year_2026.tex`, `docs/RESEARCH_OVERVIEW.md`,
-   `docs/SECURITY_MODEL.md`, `docs/RELATED_WORK.md`, and
+1. Enumerate all claims in `docs/evidence/CLAIMS.md`, `paper/iclr2026_conference.tex`,
+   `manuscript/conflux_fourth_year_2026.tex`, `docs/research/RESEARCH_OVERVIEW.md`,
+   `docs/reference/SECURITY_MODEL.md`, `docs/research/RELATED_WORK.md`, and
    `docs/decisions/012-foundational-security-lineage.md`.
 2. For each claim, assess whether classical IFC/integrity precedent (Biba,
    LOMAC, Denning, decentralized IFC, taint/provenance systems, robust
@@ -391,8 +391,8 @@ classical precedent for any mechanism in the "partially anticipated" or
 ## Relationship to existing documentation
 
 This audit is consistent with and extends:
-- `docs/CLAIMS.md` (Novelty qualification section)
+- `docs/evidence/CLAIMS.md` (Novelty qualification section)
 - `docs/decisions/012-foundational-security-lineage.md`
-- `docs/RELATED_WORK.md` (Foundational security lineage)
-- `docs/RESEARCH_OVERVIEW.md` (Classical security foundations)
+- `docs/research/RELATED_WORK.md` (Foundational security lineage)
+- `docs/research/RESEARCH_OVERVIEW.md` (Classical security foundations)
 - `reports/analysis/2026-08-13-foundational-security-literature.md` (§20, §31)

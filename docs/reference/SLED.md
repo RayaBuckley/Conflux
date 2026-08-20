@@ -54,9 +54,9 @@ deployment claims remain future work.
 
 ## Related research
 
-- [Maximal security and synthesis](../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md): formalises the claim that ITES is the maximally permissive PE-safe controller and proposes a controller-synthesis experiment.
-- [Comparative defence verification](../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md): research design for verifying contemporary agent defences against the Conflux PE property.
-- [Foundational security literature](../reports/analysis/2026-08-13-foundational-security-literature.md): classical integrity and IFC lineage underlying ITES and the property hierarchy below.
+- [Maximal security and synthesis](../../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md): formalises the claim that ITES is the maximally permissive PE-safe controller and proposes a controller-synthesis experiment.
+- [Comparative defence verification](../../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md): research design for verifying contemporary agent defences against the Conflux PE property.
+- [Foundational security literature](../../reports/analysis/2026-08-13-foundational-security-literature.md): classical integrity and IFC lineage underlying ITES and the property hierarchy below.
 
 ## SLED-V property hierarchy
 

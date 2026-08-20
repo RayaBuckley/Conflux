@@ -55,11 +55,11 @@ intent, implementation, executable evidence, and prose to converge.
 | New information | Update |
 |---|---|
 | Normative feature behavior | specification and relevant ADR |
-| Package or data-flow change | `ARCHITECTURE.md` and `REFERENCE.md` |
-| Security rule or assumption | `SECURITY_MODEL.md` and `SECURITY.md` |
-| Test or validation workflow | `DEVELOPMENT.md` and `AUDIT.md` |
-| Programme disposition | `task-registry.json`, summarized in `STATUS.md` |
-| Claim strength or limitation | `CLAIMS.md` |
+| Package or data-flow change | `reference/ARCHITECTURE.md` and `reference/REFERENCE.md` |
+| Security rule or assumption | `reference/SECURITY_MODEL.md` and `SECURITY.md` |
+| Test or validation workflow | `DEVELOPMENT.md` and `evidence/AUDIT.md` |
+| Programme disposition | `task-registry.json`, summarized in `evidence/STATUS.md` |
+| Claim strength or limitation | `evidence/CLAIMS.md` |
 | Historical-report interpretation | `reports/analysis/` |
 | Publication claim | current `manuscript/`, backed by retained evidence |
 

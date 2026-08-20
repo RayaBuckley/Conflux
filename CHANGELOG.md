@@ -1,8 +1,8 @@
 # Changelog
 
 This file records review-level repository changes. Current capability status
-lives in [docs/STATUS.md](docs/STATUS.md), and claim strength lives in
-[docs/CLAIMS.md](docs/CLAIMS.md).
+lives in [docs/evidence/STATUS.md](docs/evidence/STATUS.md), and claim strength lives in
+[docs/evidence/CLAIMS.md](docs/evidence/CLAIMS.md).
 
 ## Unreleased — 31 July 2026
 

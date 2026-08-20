@@ -60,11 +60,12 @@ also run `.\scripts\validate.ps1`.
 
 ## Find the right documentation
 
+- [Plain-language overview](docs/OVERVIEW.md)
 - [Documentation by task](docs/README.md)
 - [Human contribution workflow](CONTRIBUTING.md)
 - [AI-agent collaboration contract](docs/AI_AGENT_GUIDE.md)
-- [Security model](docs/SECURITY_MODEL.md)
-- [Current capabilities and limitations](docs/STATUS.md)
+- [Security model](docs/reference/SECURITY_MODEL.md)
+- [Current capabilities and limitations](docs/evidence/STATUS.md)
 - [Current fourth-year manuscript](manuscript/README.md)
 - [Historical report sources and analysis](reports/README.md)
 

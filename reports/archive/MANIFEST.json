@@ -21,7 +21,7 @@
                                            ],
                          "canonical_successors":  [
                                                       "docs/specifications/008-canonical-migration-and-p0-repair.md",
-                                                      "docs/SLED.md"
+                                                       "docs/reference/SLED.md"
                                                   ],
                          "limitations":  [
                                              "Predates the completed canonical migration and current verification implementation."
@@ -42,7 +42,7 @@
                                                "2026-07-27-research-landscape-v2"
                                            ],
                          "canonical_successors":  [
-                                                      "docs/RELATED_WORK.md"
+                                                       "docs/research/RELATED_WORK.md"
                                                   ],
                          "limitations":  [
                                              "Explicitly corrected and superseded by the research-landscape package."
@@ -63,8 +63,8 @@
 
                                            ],
                          "canonical_successors":  [
-                                                      "docs/RELATED_WORK.md",
-                                                      "docs/CLAIMS.md",
+                                                       "docs/research/RELATED_WORK.md",
+                                                       "docs/evidence/CLAIMS.md",
                                                       "manuscript/references.bib"
                                                   ],
                          "limitations":  [
@@ -132,7 +132,7 @@
                                            ],
                          "canonical_successors":  [
                                                       "docs/specifications/012-evidence-first-evaluation.md",
-                                                      "docs/EVALUATION.md",
+                                                       "docs/evidence/EVALUATION.md",
                                                       "docs/task-registry.json"
                                                   ],
                          "limitations":  [
@@ -178,8 +178,8 @@
 
                                             ],
                           "canonical_successors":  [
-                                                       "docs/RESEARCH_OVERVIEW.md",
-                                                       "docs/RESEARCH_QUESTIONS.md",
+                                                        "docs/research/RESEARCH_OVERVIEW.md",
+                                                        "docs/research/RESEARCH_QUESTIONS.md",
                                                        "reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md",
                                                        "reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md",
                                                        "reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md"

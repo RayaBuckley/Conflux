@@ -181,7 +181,7 @@ wheel and CLI smoke, manuscript compilation, and `git diff --check`.
 
 ## Documentation and paper synchronisation
 
-`docs/task-registry.json` owns disposition; `docs/CLAIMS.md` owns claim
+`docs/task-registry.json` owns disposition; `docs/evidence/CLAIMS.md` owns claim
 strength; this specification owns the accepted design. Report prose stays
 historical. Manuscript numbers may be added only from a matching checksummed
 bundle and must state abstraction, bounds, runtime identity, and exclusions.

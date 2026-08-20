@@ -34,7 +34,7 @@ Repository truth is interpreted in this order:
 
 A disagreement between levels is a defect to reconcile, not permission to
 silently select a convenient claim. `docs/task-registry.json` owns programme
-status and `docs/CLAIMS.md` owns claim strength. New documentation must extend
+status and `docs/evidence/CLAIMS.md` owns claim strength. New documentation must extend
 an existing owner where possible rather than create a competing summary.
 
 ## Archive contracts

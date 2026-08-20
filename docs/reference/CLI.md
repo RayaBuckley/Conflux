@@ -53,7 +53,7 @@ prints the fixed 16-cell matrix without invoking either model. Adding
 `--execute-local` deliberately runs both eight-cell halves, writes distinct
 backend results plus a combined checksummed bundle, and sets a mandatory human-
 review stop. Local protocol creation is described in the
-[model integration guide](integrations/models.md).
+[model integration guide](../integrations/models.md).
 
 `plan compare`, `plan laptop-smoke`, and `benchmark agentdojo preflight`
 write `preflight.json` when `--output` is supplied without `--execute-local`.
@@ -62,7 +62,7 @@ negative controls. `policy cedar preflight` validates and translates the
 corpus without invoking Cedar; optional `--binary` hashes the candidate bytes.
 `doctor --cedar-bundle BUNDLE [--cedar-binary BINARY]` reports the same pinned
 identity check without issuing a policy request. See the
-[Cedar integration guide](integrations/cedar.md).
+[Cedar integration guide](../integrations/cedar.md).
 
 ## Exit codes
 

@@ -2,7 +2,7 @@
 
 > Draft reviewer-facing overview. Reconcile against the current canonical repository documentation before treating this file as normative.
 >
-> **Canonical owners:** The security model is normative in [SECURITY_MODEL.md](SECURITY_MODEL.md); implementation status in [STATUS.md](STATUS.md) and [task-registry.json](task-registry.json); claim strength in [CLAIMS.md](CLAIMS.md); formal verification in [SLED.md](SLED.md); evaluation evidence in [EVALUATION.md](EVALUATION.md); comparative defence analysis in [reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md](../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md); maximal-permissiveness analysis in [reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md](../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md).
+> **Canonical owners:** The security model is normative in [SECURITY_MODEL.md](../reference/SECURITY_MODEL.md); implementation status in [STATUS.md](../evidence/STATUS.md) and [task-registry.json](../task-registry.json); claim strength in [CLAIMS.md](../evidence/CLAIMS.md); formal verification in [SLED.md](../reference/SLED.md); evaluation evidence in [EVALUATION.md](../evidence/EVALUATION.md); comparative defence analysis in [reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md](../../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md); maximal-permissiveness analysis in [reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md](../../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md).
 
 ## 1. Research problem
 
@@ -145,9 +145,9 @@ The security invariant should remain ACS-derived PE prevention while utility is 
 The core ITES mechanism is not without classical precedent. The
 principal-sensitive authority intersection rule is structurally analogous to
 low-water-mark contamination from Biba's integrity models, operationalised in
-systems such as LOMAC. [ADR 012](decisions/012-foundational-security-lineage.md)
+systems such as LOMAC. [ADR 012](../decisions/012-foundational-security-lineage.md)
 records this positioning decision; the [foundational security literature
-analysis](../reports/analysis/2026-08-13-foundational-security-literature.md)
+analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
 provides the detailed comparison.
 
 ### Conceptual lineage

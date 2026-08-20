@@ -39,9 +39,9 @@ structurally analogous to Biba's low-water-mark contamination; intersection
 over permission sets is a standard meet in the powerset lattice; authorised
 reads do not establish noninterference; and source-set taint and
 provenance-aware policy enforcement have extensive prior literature. See
-[ADR 012](decisions/012-foundational-security-lineage.md) and the
+[ADR 012](../decisions/012-foundational-security-lineage.md) and the
 [foundational security literature
-analysis](../reports/analysis/2026-08-13-foundational-security-literature.md)
+analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
 for the detailed comparison and candidate distinctions that may survive
 prior-art search.
 

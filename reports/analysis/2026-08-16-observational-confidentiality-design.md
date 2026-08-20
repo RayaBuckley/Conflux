@@ -8,7 +8,7 @@
 
 ## 1. Property definition
 
-SLED property 5, observational confidentiality, is stated in `docs/SLED.md`:
+SLED property 5, observational confidentiality, is stated in `docs/reference/SLED.md`:
 
 > Executions differing only in secret information produce equivalent
 > observations for unauthorised principals, modulo declared declassification.
