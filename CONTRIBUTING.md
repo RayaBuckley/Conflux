@@ -62,6 +62,38 @@ High aggregate coverage cannot prove that a fail-closed branch was exercised.
 Explicit adversarial and failure cases make the intended denial observable and
 protect the distinction between security, utility, and infrastructure errors.
 
+## Reviewing changes
+
+Use this checklist when reviewing a diff:
+
+- [ ] Architecture, package guidance, and relevant ADRs inspected.
+- [ ] Specification or decision record updated where needed.
+- [ ] Rationale and material rejected alternatives recorded.
+- [ ] Principal Context and provenance impact assessed.
+- [ ] Security cases tested: allow, deny, mixed-context, failure, immutability.
+- [ ] Appropriate tests added (unit, integration, adapter, reproducibility).
+- [ ] `python scripts/audit_repository.py` passes.
+- [ ] `python scripts/validate.py` passes.
+- [ ] Existing canonical owner updated, no competing source created.
+- [ ] Terminology and paper notes synchronised if architecture changed.
+- [ ] Diff reviewed for hidden trust assumptions, benchmark shortcuts,
+      and permission broadening.
+
+## Commit message convention
+
+Each commit should follow:
+
+```text
+<one-line summary>
+
+Security impact: <brief statement or "none">
+
+<optional rationale or detail>
+```
+
+This makes the security relevance of every change visible during diff
+review without requiring a separate PR or form.
+
 ## Keep documentation small and authoritative
 
 - Update an existing canonical owner before creating a new document.

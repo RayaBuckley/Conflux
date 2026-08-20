@@ -1,4 +1,4 @@
-# Conflux repository guidance
+# Conflux repository guidance (for AI agents)
 
 ## Purpose
 
@@ -39,39 +39,10 @@ current Principal Context and provenance, not static prompt trust labels.
 - Domain and ITES do not import benchmark-specific behavior.
 - Evaluation code measures defences and does not encode benchmark shortcuts.
 
-## Engineering rules
+## Workflow and conventions
 
-Use Python 3.12+, type hints, immutable dataclasses where practical, explicit
-dependency injection, and pure functions for domain logic. Keep public APIs
-small and documented. Add regression tests for every security invariant.
-
-## Required workflow
-
-Inspect the architecture and affected APIs, write a decision-complete feature
-specification, implement the smallest coherent change, run
-`scripts\validate.ps1`, update documentation and status, and review the diff.
-Use `scripts\audit_repository.py` during AI-assisted changes.
-Read `docs/AI_AGENT_GUIDE.md` for source authority, documentation routing, and
-stop conditions. Update one canonical owner rather than creating parallel
-status, rationale, roadmap, or claim documents.
-
-## Commit strategy
-
-When changes span multiple files or logical concerns, formulate a commit
-strategy *before* implementing. Group changes into atomic, coherent commits —
-one per distinct concern — and list the files for each commit. Each commit
-must pass validation independently. Do not bundle unrelated concerns or mix
-implementation with generated evidence in the same commit.
-
-## Terminology and paper policy
-
-Use `Principal Context` and `Principal`; use `User` only for an explicitly
-human user. The paper is archived reference material. Synchronise terminology
-and record material implementation divergence as post-paper work; do not alter
-paper claims silently.
-
-## Definition of done
-
-Implementation, tests, documentation, terminology, audit checks, and relevant
-benchmark compatibility are complete. Generated caches, local environments,
-and experiment outputs are not committed.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the change workflow, review
+checklist, and commit message convention. See
+[docs/AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md) for the AI-agent
+collaboration contract, trust order, documentation routing, and stop
+conditions.
