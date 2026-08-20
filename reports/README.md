@@ -34,3 +34,4 @@ source, and point to canonical evidence. Mutable status remains exclusively in
 | Results and experiment plan | [analysis/RESULTS_AND_EXPERIMENT_PLAN.md](analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
 | GLM synthesis brief | [analysis/GLM_SYNTHESIS_BRIEF.md](analysis/GLM_SYNTHESIS_BRIEF.md) |
 | Reviewer meeting checklist | [analysis/REVIEWER_MEETING_CHECKLIST.md](analysis/REVIEWER_MEETING_CHECKLIST.md) |
+| Supervisor meeting consolidation | [analysis/2026-08-19-supervisor-meeting-consolidation.md](analysis/2026-08-19-supervisor-meeting-consolidation.md) |
