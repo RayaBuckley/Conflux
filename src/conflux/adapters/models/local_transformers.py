@@ -30,6 +30,18 @@ def _strip_markdown_fences(text: str) -> str:
     return stripped.strip() if stripped != text.strip() else text.strip()
 
 
+def _extract_first_json(text: str) -> dict[str, object]:
+    cleaned = _strip_markdown_fences(text)
+    start = cleaned.find("{")
+    if start == -1:
+        raise ValueError("no_json_object_found")
+    decoder = json.JSONDecoder()
+    obj, _ = decoder.raw_decode(cleaned, start)
+    if not isinstance(obj, dict):
+        raise TypeError("structured_root_not_object")
+    return obj
+
+
 class LocalTextGenerator(Protocol):
     def __call__(
         self,
@@ -102,8 +114,11 @@ class TransformersLocalModel:
         )
 
     def generate(self, request: LocalModelRequest) -> LocalModelResponse:
-        generator = self.generator or self._load_generator()
-        prompt = f"{request.system_prompt}\n{request.user_prompt}\nReturn JSON only."
+        if self.generator is None:
+            self.generator = self._load_generator()
+        generator = self.generator
+        schema_hint = json.dumps(dict(request.schema), indent=None, separators=(",", ":"))
+        prompt = f"{request.system_prompt}\n{request.user_prompt}\nReturn JSON matching this schema: {schema_hint}"
         started = self.clock()
         try:
             generated = generator(
@@ -115,6 +130,8 @@ class TransformersLocalModel:
             )
             generation = generated if isinstance(generated, LocalTextGeneration) else LocalTextGeneration(generated)
             content = generation.content
+            if not content or not content.strip():
+                raise LocalModelFailure("empty_output", "content=empty")
             self.records.append(
                 {
                     "request_id": request.request_id,
@@ -124,9 +141,13 @@ class TransformersLocalModel:
                     "output_tokens": generation.output_tokens,
                 }
             )
-            decoded = json.loads(_strip_markdown_fences(content))
-            if not isinstance(decoded, dict):
-                raise TypeError("structured_root_not_object")
+            try:
+                decoded = _extract_first_json(content)
+            except (json.JSONDecodeError, ValueError) as parse_error:
+                raise LocalModelFailure(
+                    "malformed_output",
+                    str(parse_error),
+                ) from parse_error
             Draft202012Validator(dict(request.schema)).validate(decoded)
         except LocalModelFailure:
             raise
@@ -137,7 +158,7 @@ class TransformersLocalModel:
         return LocalModelResponse(
             request.request_id,
             self.spec.model_id,
-            cast(dict[str, object], decoded),
+            decoded,
             generation.prompt_tokens,
             generation.output_tokens,
             latency,
@@ -161,13 +182,40 @@ class TransformersLocalModel:
             local_files_only=True,
             trust_remote_code=False,
         )
-        model = AutoModelForCausalLM.from_pretrained(
-            source,
-            local_files_only=True,
-            trust_remote_code=False,
-            torch_dtype=self.spec.dtype,
-            device_map=self.spec.device,
-        )
+        nf4 = self.spec.dtype == "nf4"
+        if nf4:
+            try:
+                from transformers import BitsAndBytesConfig as _BnBConfig  # type: ignore[import-not-found,unused-ignore]
+            except ImportError as error:
+                raise LocalModelFailure("dependency", "optional_dependency_unavailable:transformers") from error
+            import torch  # type: ignore[import-not-found,unused-ignore]
+
+            quantization_config = _BnBConfig(  # type: ignore[no-untyped-call]
+                load_in_4bit=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_use_double_quant=True,
+            )
+            model = AutoModelForCausalLM.from_pretrained(
+                source,
+                local_files_only=True,
+                trust_remote_code=False,
+                quantization_config=quantization_config,
+                device_map=self.spec.device,
+            )
+        else:
+            model = AutoModelForCausalLM.from_pretrained(
+                source,
+                local_files_only=True,
+                trust_remote_code=False,
+                torch_dtype=self.spec.dtype,
+                device_map=self.spec.device,
+            )
+        try:
+            target_device = next(cast(Any, model).parameters(), None)
+            device = str(target_device.device) if target_device is not None else self.spec.device
+        except AttributeError:
+            device = self.spec.device
 
         def generate(
             prompt: str,
@@ -179,6 +227,8 @@ class TransformersLocalModel:
         ) -> LocalTextGeneration:
             set_seed(seed)
             encoded = tokenizer(prompt, return_tensors="pt")
+            if nf4:
+                encoded = encoded.to(device)
             output = cast(Any, model).generate(
                 **encoded,
                 max_new_tokens=max_new_tokens,
