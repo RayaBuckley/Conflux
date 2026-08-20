@@ -3,7 +3,7 @@
     "integrity_scope":  "exact repository blob bytes",
     "hash_algorithm":  "sha256",
     "git_object_format":  "sha1",
-    "artifact_count":  31,
+    "artifact_count":  37,
     "packages":  [
                      {
                          "id":  "2026-07-27-engineering-and-sled",
@@ -185,9 +185,27 @@
                                                        "reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md"
                                                    ],
                           "limitations":  [
-                                              "Package cover note and manifest are archival; their content is superseded by the canonical successors listed above."
-                                          ]
-                      }
+                                               "Package cover note and manifest are archival; their content is superseded by the canonical successors listed above."
+                                           ]
+                       },
+                       {
+                           "id":  "2026-08-17-gpu-debug-scripts",
+                           "title":  "GPU debugging and model diagnostic scripts (Qwen2.5-7B NF4)",
+                           "snapshot_date":  "2026-08-17",
+                           "source_commits":  [
+                                              ],
+                           "status":  "diagnostic_archive",
+                           "supersedes":  [
+                                              ],
+                           "superseded_by":  [
+                                                ],
+                           "canonical_successors":  [
+                                                    ],
+                           "limitations":  [
+                                               "Ad-hoc diagnostic scripts; not tested, not part of the validation suite.",
+                                               "Hardcoded paths and model identifiers; will not run without local GPU and weight cache."
+                                           ]
+                       }
                   ],
     "artifacts":  [
                       {
@@ -528,8 +546,74 @@
                           "size_bytes":  568,
                           "sha256_bytes":  "7fc051a28bb9c7c9ad5a9523ea4eaf91c39d0aa62340633ff87b540c4bb4ca83",
                           "git_blob_oid":  "f9073d63c00d268b40baa656136a4ce2c407eaaf",
-                          "role":  "source_manifest",
-                          "duplicate_of":  null
-                      }
-                  ]
+                           "role":  "source_manifest",
+                           "duplicate_of":  null
+                       },
+                       {
+                           "package_id":  "2026-08-17-gpu-debug-scripts",
+                           "original_path":  "scripts/test_model_generate.py",
+                           "archive_path":  "reports/archive/2026-08-17-gpu-debug-scripts/test_model_generate.py",
+                           "media_type":  "text/x-python",
+                           "size_bytes":  1767,
+                           "sha256_bytes":  "a09a908d6bd92305cb0538aeae5d18123dd35a559e05b73cc96267e69b067500",
+                           "git_blob_oid":  "5f2539cee82a81ff91daf1e1927e21b1b0f7dfa9",
+                           "role":  "diagnostic_script",
+                           "duplicate_of":  null
+                       },
+                       {
+                           "package_id":  "2026-08-17-gpu-debug-scripts",
+                           "original_path":  "scripts/test_single_cell.py",
+                           "archive_path":  "reports/archive/2026-08-17-gpu-debug-scripts/test_single_cell.py",
+                           "media_type":  "text/x-python",
+                           "size_bytes":  1152,
+                           "sha256_bytes":  "f30aaa79cab744d3125e94fd382a39e7c09a3b97495e213671bc2e494da2377a",
+                           "git_blob_oid":  "989a6e13f7a7a4b4c36e3e11bae6e10eb142ea82",
+                           "role":  "diagnostic_script",
+                           "duplicate_of":  null
+                       },
+                       {
+                           "package_id":  "2026-08-17-gpu-debug-scripts",
+                           "original_path":  "scripts/test_raw_model_output.py",
+                           "archive_path":  "reports/archive/2026-08-17-gpu-debug-scripts/test_raw_model_output.py",
+                           "media_type":  "text/x-python",
+                           "size_bytes":  2205,
+                           "sha256_bytes":  "2357ca73dd7049f833ece9ff7412f3be1321ecb82357176ad99b0a3ef518ac87",
+                           "git_blob_oid":  "60bae637a9a851b60f4f8b282a80904bbab04111",
+                           "role":  "diagnostic_script",
+                           "duplicate_of":  null
+                       },
+                       {
+                           "package_id":  "2026-08-17-gpu-debug-scripts",
+                           "original_path":  "scripts/run_agentdojo_cells.py",
+                           "archive_path":  "reports/archive/2026-08-17-gpu-debug-scripts/run_agentdojo_cells.py",
+                           "media_type":  "text/x-python",
+                           "size_bytes":  2586,
+                           "sha256_bytes":  "121d591d439f494b9be16f3c77a35c7f933acc37952365d0cf0da3191598c52c",
+                           "git_blob_oid":  "203c298fc8662fbcae51b8de14007cebc3775e87",
+                           "role":  "diagnostic_script",
+                           "duplicate_of":  null
+                       },
+                       {
+                           "package_id":  "2026-08-17-gpu-debug-scripts",
+                           "original_path":  "scripts/update_model_config.py",
+                           "archive_path":  "reports/archive/2026-08-17-gpu-debug-scripts/update_model_config.py",
+                           "media_type":  "text/x-python",
+                           "size_bytes":  706,
+                           "sha256_bytes":  "95f6211813a94bda1371b29cd22d2fe1df24a4a9381b112bc4633c83b40232a7",
+                           "git_blob_oid":  "31a5bfabb12d90b94cd6a9ea2d67df246e006a1a",
+                           "role":  "diagnostic_script",
+                           "duplicate_of":  null
+                       },
+                       {
+                           "package_id":  "2026-08-17-gpu-debug-scripts",
+                           "original_path":  "reports/archive/2026-08-17-gpu-debug-scripts/MANIFEST.json",
+                           "archive_path":  "reports/archive/2026-08-17-gpu-debug-scripts/MANIFEST.json",
+                           "media_type":  "application/json",
+                           "size_bytes":  507,
+                           "sha256_bytes":  "5390f19cbf26f3fdfd28698e3041427cb3daa32d907fef417c99f322f8e1a1f5",
+                           "git_blob_oid":  "266dca1d54a4ad327b28b55b1beeab7d706907c1",
+                           "role":  "source_manifest",
+                           "duplicate_of":  null
+                       }
+                   ]
 }

@@ -154,13 +154,9 @@ def check_architecture(errors: list[str]) -> None:
                 errors.append(f"{path.relative_to(ROOT)}: domain imports outward {imported}")
             if path.is_relative_to(SOURCE / "ports") and imported.startswith("conflux.adapters"):
                 errors.append(f"{path.relative_to(ROOT)}: port imports adapter {imported}")
-            if path.is_relative_to(SOURCE / "planning") and imported.startswith(
-                "conflux.adapters"
-            ):
+            if path.is_relative_to(SOURCE / "planning") and imported.startswith("conflux.adapters"):
                 errors.append(f"{path.relative_to(ROOT)}: planning imports adapter {imported}")
-    benchmark_exports = (SOURCE / "adapters" / "benchmarks" / "__init__.py").read_text(
-        encoding="utf-8"
-    )
+    benchmark_exports = (SOURCE / "adapters" / "benchmarks" / "__init__.py").read_text(encoding="utf-8")
     if "agentdojo" in benchmark_exports.lower():
         errors.append("experimental AgentDojo integration is publicly re-exported")
 
@@ -224,29 +220,20 @@ def check_docs(errors: list[str]) -> None:
 
 
 def check_repository_governance(errors: list[str]) -> None:
-    result = subprocess.run(
-        ("git", "ls-files"), cwd=ROOT, check=False, capture_output=True, text=True
-    )
+    result = subprocess.run(("git", "ls-files"), cwd=ROOT, check=False, capture_output=True, text=True)
     if result.returncode != 0:
         errors.append("cannot inspect tracked top-level paths")
         return
-    tracked_directories = {
-        path.split("/", maxsplit=1)[0]
-        for path in result.stdout.splitlines()
-        if "/" in path
-    }
+    tracked_directories = {path.split("/", maxsplit=1)[0] for path in result.stdout.splitlines() if "/" in path}
     unexpected = tracked_directories - APPROVED_TOP_LEVEL_DIRECTORIES
     if unexpected:
-        errors.append(
-            "unapproved tracked top-level directories: " + ", ".join(sorted(unexpected))
-        )
+        errors.append("unapproved tracked top-level directories: " + ", ".join(sorted(unexpected)))
     if (REPORTS / "not_yet_processed").exists():
         errors.append("reports/not_yet_processed must be reconciled into the archive")
     template = DOCS / "templates" / "FEATURE_SPEC.md"
-    if not template.is_file() or "## Expected file set and change budget" not in (
-        template.read_text(encoding="utf-8")
-    ):
+    if not template.is_file() or "## Expected file set and change budget" not in (template.read_text(encoding="utf-8")):
         errors.append("feature specifications do not require an expected file set")
+
 
 def check_reports(errors: list[str]) -> None:
     catalogue = (DOCS / "CHANGE_CATALOG.md").read_text(encoding="utf-8")
@@ -308,6 +295,7 @@ def check_report_archive(errors: list[str]) -> None:
         "historical_input",
         "design_input",
         "citation_validation_required",
+        "diagnostic_archive",
     }
     for record in package_records:
         if not isinstance(record, dict) or not isinstance(record.get("id"), str):
@@ -403,11 +391,7 @@ def check_report_archive(errors: list[str]) -> None:
             "application/x-tex",
         }
         try:
-            worktree_matches = (
-                canonical_utf8_bytes(worktree) == canonical_utf8_bytes(blob)
-                if textual
-                else worktree == blob
-            )
+            worktree_matches = canonical_utf8_bytes(worktree) == canonical_utf8_bytes(blob) if textual else worktree == blob
         except UnicodeDecodeError:
             worktree_matches = False
         if not worktree_matches:
@@ -444,11 +428,7 @@ def check_report_crosswalk(errors: list[str]) -> None:
     crosswalk: Any = json.loads(REPORT_CROSSWALK.read_text(encoding="utf-8"))
     sources = crosswalk.get("sources")
     entries = crosswalk.get("entries")
-    if (
-        crosswalk.get("schema_version") != "1"
-        or not isinstance(sources, list)
-        or not isinstance(entries, list)
-    ):
+    if crosswalk.get("schema_version") != "1" or not isinstance(sources, list) or not isinstance(entries, list):
         errors.append("report task crosswalk has an invalid schema")
         return
 
@@ -485,14 +465,9 @@ def check_report_crosswalk(errors: list[str]) -> None:
             for list_name in lists:
                 records = data.get(list_name, []) if isinstance(list_name, str) else []
                 if not isinstance(records, list):
-                    errors.append(
-                        f"report task source {source_path} has invalid list {list_name}"
-                    )
+                    errors.append(f"report task source {source_path} has invalid list {list_name}")
                     continue
-                identifiers.extend(
-                    record.get("id") if isinstance(record, dict) else None
-                    for record in records
-                )
+                identifiers.extend(record.get("id") if isinstance(record, dict) else None for record in records)
         for identifier in identifiers:
             if not isinstance(identifier, str):
                 errors.append(f"report task source {source_path} has an invalid task")
@@ -544,10 +519,7 @@ def check_report_crosswalk(errors: list[str]) -> None:
         if (
             not isinstance(covered_by, list)
             or not covered_by
-            or any(
-                not isinstance(item, str) or not (ROOT / item).exists()
-                for item in covered_by
-            )
+            or any(not isinstance(item, str) or not (ROOT / item).exists() for item in covered_by)
         ):
             errors.append(f"report task {qualified} has missing coverage evidence")
         if record.get("raw_id_collision") != (raw_counts.get(raw_id, 0) > 1):
@@ -555,9 +527,7 @@ def check_report_crosswalk(errors: list[str]) -> None:
 
     if actual != expected or crosswalk.get("entry_count") != len(entries):
         errors.append("report task crosswalk does not cover every source task exactly once")
-    expected_collisions = sorted(
-        identifier for identifier, count in raw_counts.items() if count > 1
-    )
+    expected_collisions = sorted(identifier for identifier, count in raw_counts.items() if count > 1)
     if crosswalk.get("raw_id_collisions") != expected_collisions:
         errors.append("report task crosswalk collision index is stale")
     for qualified, record in qualified_records.items():
@@ -613,13 +583,9 @@ def check_task_registry(errors: list[str]) -> None:
                 registered.add(identifier)
 
     backlog = json.loads(
-        (
-            ROOT
-            / "reports"
-            / "archive"
-            / "2026-07-29-implementation-programme"
-            / "Conflux_Codex_Implementation_Backlog.json"
-        ).read_text(encoding="utf-8")
+        (ROOT / "reports" / "archive" / "2026-07-29-implementation-programme" / "Conflux_Codex_Implementation_Backlog.json").read_text(
+            encoding="utf-8"
+        )
     )
     dynamic = json.loads(
         (
@@ -688,11 +654,7 @@ def check_archived_paper(errors: list[str]) -> None:
         mode = record.get("mode")
         expected = record.get("sha256")
         expected_blob = record.get("git_blob_oid")
-        if (
-            not isinstance(mode, str)
-            or not isinstance(expected, str)
-            or not isinstance(expected_blob, str)
-        ):
+        if not isinstance(mode, str) or not isinstance(expected, str) or not isinstance(expected_blob, str):
             errors.append(f"paper archive record is incomplete: paper/{name}")
             continue
         try:
@@ -783,16 +745,12 @@ def check_coi_evidence(errors: list[str]) -> None:
     if not COI_EVIDENCE.exists():
         return
     required = set(COI_EVIDENCE_ROOT_FILES)
-    actual_root = {
-        path.name for path in COI_EVIDENCE.glob("*") if path.is_file()
-    }
+    actual_root = {path.name for path in COI_EVIDENCE.glob("*") if path.is_file()}
     if actual_root != required:
         errors.append("COI evidence root files differ from the canonical bundle")
         return
     names: set[str] = set()
-    lines = (COI_EVIDENCE / "CHECKSUMS.sha256").read_text(
-        encoding="utf-8"
-    ).splitlines()
+    lines = (COI_EVIDENCE / "CHECKSUMS.sha256").read_text(encoding="utf-8").splitlines()
     for line in lines:
         expected, separator, name = line.partition("  ")
         path = COI_EVIDENCE / name
@@ -803,15 +761,11 @@ def check_coi_evidence(errors: list[str]) -> None:
         if hashlib.sha256(canonical_text_bytes(path)).hexdigest() != expected:
             errors.append(f"COI evidence checksum changed: {name}")
     actual_content = {
-        path.relative_to(COI_EVIDENCE).as_posix()
-        for path in COI_EVIDENCE.rglob("*")
-        if path.is_file() and path.name != "CHECKSUMS.sha256"
+        path.relative_to(COI_EVIDENCE).as_posix() for path in COI_EVIDENCE.rglob("*") if path.is_file() and path.name != "CHECKSUMS.sha256"
     }
     if names != actual_content:
         errors.append("COI evidence checksum index is incomplete")
-    result: Any = json.loads(
-        (COI_EVIDENCE / "result.json").read_text(encoding="utf-8")
-    )
+    result: Any = json.loads((COI_EVIDENCE / "result.json").read_text(encoding="utf-8"))
     summary = result.get("summary", {}) if isinstance(result, dict) else {}
     if (
         result.get("complete") is not True
@@ -840,9 +794,7 @@ def check_cedar_preflight_evidence(errors: list[str]) -> None:
         errors.append("Cedar preflight files differ from the canonical bundle")
         return
     indexed: set[str] = set()
-    for line in (CEDAR_PREFLIGHT / "CHECKSUMS.sha256").read_text(
-        encoding="utf-8"
-    ).splitlines():
+    for line in (CEDAR_PREFLIGHT / "CHECKSUMS.sha256").read_text(encoding="utf-8").splitlines():
         expected, separator, name = line.partition("  ")
         path = CEDAR_PREFLIGHT / name
         if not separator or name in indexed or not path.is_file():
@@ -853,9 +805,7 @@ def check_cedar_preflight_evidence(errors: list[str]) -> None:
             errors.append(f"Cedar preflight checksum changed: {name}")
     if indexed != required - {"CHECKSUMS.sha256"}:
         errors.append("Cedar preflight checksum index is incomplete")
-    result: Any = json.loads(
-        (CEDAR_PREFLIGHT / "result.json").read_text(encoding="utf-8")
-    )
+    result: Any = json.loads((CEDAR_PREFLIGHT / "result.json").read_text(encoding="utf-8"))
     cases = result.get("cases", []) if isinstance(result, dict) else []
     if (
         result.get("classification") != "evaluation_ready"
@@ -885,9 +835,7 @@ def check_direction_evidence(errors: list[str]) -> None:
         errors.append("direction evidence files differ from the canonical bundle")
         return
     indexed: set[str] = set()
-    for line in (DIRECTION_EVIDENCE / "CHECKSUMS.sha256").read_text(
-        encoding="utf-8"
-    ).splitlines():
+    for line in (DIRECTION_EVIDENCE / "CHECKSUMS.sha256").read_text(encoding="utf-8").splitlines():
         expected, separator, name = line.partition("  ")
         path = DIRECTION_EVIDENCE / name
         if not separator or name in indexed or not path.is_file():
@@ -904,9 +852,7 @@ def check_direction_evidence(errors: list[str]) -> None:
         "agentdojo-preflight.json": 4,
     }
     for name, count in expected_cells.items():
-        result: Any = json.loads(
-            (DIRECTION_EVIDENCE / name).read_text(encoding="utf-8")
-        )
+        result: Any = json.loads((DIRECTION_EVIDENCE / name).read_text(encoding="utf-8"))
         matrix = result.get("matrix", []) if isinstance(result, dict) else []
         if (
             result.get("classification") != "evaluation_ready"
@@ -915,11 +861,7 @@ def check_direction_evidence(errors: list[str]) -> None:
             or any(cell.get("status") != "unavailable" for cell in matrix)
         ):
             errors.append(f"direction readiness result overstates execution: {name}")
-    mutations: Any = json.loads(
-        (DIRECTION_EVIDENCE / "security-mutations.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    mutations: Any = json.loads((DIRECTION_EVIDENCE / "security-mutations.json").read_text(encoding="utf-8"))
     groups = mutations.get("mutants", {}) if isinstance(mutations, dict) else {}
     mutants = [item for group in groups.values() for item in group]
     canonical = mutations.get("canonical", {}) if isinstance(mutations, dict) else {}
@@ -928,11 +870,7 @@ def check_direction_evidence(errors: list[str]) -> None:
         or mutations.get("complete") is not True
         or mutations.get("runtime_delegation_enabled") is not False
         or len(mutants) != 11
-        or any(
-            not item.get("killed")
-            or item.get("verification", {}).get("counterexample", {}).get("length") != 1
-            for item in mutants
-        )
+        or any(not item.get("killed") or item.get("verification", {}).get("counterexample", {}).get("length") != 1 for item in mutants)
         or any(result.get("verdict") != "safe" for result in canonical.values())
     ):
         errors.append("direction security mutation evidence is incomplete")
