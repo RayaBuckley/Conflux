@@ -30,6 +30,21 @@
 | Cloud policy behaviour matches a provider | Not claimed | current AWS adapter is an explicit fail-closed subset |
 | The current evidence pipeline handles allow, block, and vulnerable-control cases | Bounded evidence | `runs/smoke/`, two scripted cases, one one-step negative-control witness |
 
+### Novelty qualification
+
+Claims involving the novelty of monotonic authority reduction, provenance-based
+restriction, or source-sensitive context must be qualified against the
+classical IFC and integrity literature. The authority-intersection rule is
+structurally analogous to Biba's low-water-mark contamination; intersection
+over permission sets is a standard meet in the powerset lattice; authorised
+reads do not establish noninterference; and source-set taint and
+provenance-aware policy enforcement have extensive prior literature. See
+[ADR 012](decisions/012-foundational-security-lineage.md) and the
+[foundational security literature
+analysis](../reports/analysis/2026-08-13-foundational-security-literature.md)
+for the detailed comparison and candidate distinctions that may survive
+prior-art search.
+
 The archived paper and report packages are historical evidence, not status
 sources of truth. `reports/analysis/` reconciles them without promoting their
 snapshot claims.

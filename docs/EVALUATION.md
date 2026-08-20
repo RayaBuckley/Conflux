@@ -97,7 +97,31 @@ The retained readiness package is
 
 ## Track semantics
 
-Native SLED evaluates legacy and corrected fixtures separately from identical
+### Confidentiality hierarchy
+
+The current visibility model can be separated into three levels of
+confidentiality strength, informed by the classical IFC and declassification
+literature:
+
+**Level 1 — Read access (current):** Required inputs satisfy read policy.
+This is an access-safety property; it does not establish noninterference.
+
+**Level 2 — Observer confinement (proposed):** Effects influenced by
+confidential data are observable only by principals authorised for the
+relevant information. This is stronger than read access but does not permit
+any release beyond confinement.
+
+**Level 3 — Controlled release / declassification (proposed):** A trusted
+policy explicitly permits selected information derived from confidential
+inputs to reach a broader audience. This is declassification and should
+carry explicit release authority and robust-influence conditions: both
+whether release is authorised and which principals may influence the decision
+to perform it.
+
+These levels are cumulative. Level 1 is implemented; Levels 2 and 3 are
+reference targets for future visibility and disclosure verification.
+
+### Native SLED evaluates legacy and corrected fixtures separately from identical
 parent states. A canonical safety oracle judges every monitor, so a defective
 monitor cannot define its own success. Effects are applied only to an abstract
 evaluation state; the production executor is never invoked.

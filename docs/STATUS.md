@@ -98,7 +98,13 @@ under `runs/`:
   eight cells `model_failed` (1.5B model wraps JSON in markdown fences);
 - `runs/agentdojo-qwen-1.5b/`: six-cell AgentDojo comparison completed; all
   six cells `model_failed` (same JSON parse issue); raw upstream log
-  retained with 47 s benign inference trace.
+     retained with 47 s benign inference trace.
+
+A Qwen2.5-7B-Instruct NF4 model (RTX 4060, 8 GiB VRAM) validated on a single
+AgentDojo cell (status=complete, security=True, utility=False, model_calls=4)
+after adapter fixes for BitsAndBytesConfig import, generator caching, and
+concatenated JSON parsing. The full six-cell comparison is deferred to GPU
+availability.
 
 Offline direction evidence is retained under `runs/direction-readiness-v1/`.
 It supplies bounded native mutation evidence and readiness-only planning and
@@ -112,6 +118,19 @@ activation, richer argument-effect semantics, persistent-memory authority,
 symbolic reasoning about arbitrary generated programs, and live model-backed
 planning/AgentDojo evidence (the 1.5B model's structured output requires a
 larger model or output-constraining post-processing).
+
+## Foundational literature
+
+The [foundational security literature
+analysis](../reports/analysis/2026-08-13-foundational-security-literature.md)
+identifies the classical integrity and IFC lineage (Biba, LOMAC, Denning,
+declassification, endorsement, noninterference) underlying Principal Context
+and ITES. This lineage is now integrated into the research positioning (see
+[related work](RELATED_WORK.md), [research overview](RESEARCH_OVERVIEW.md),
+[ADR 012](decisions/012-foundational-security-lineage.md), and the [SLED-V
+property hierarchy](SLED.md)). A novelty audit and primary-source bibliography
+verification remain deferred research; no novelty claim should assert the
+absence of classical precedent without prior-art verification.
 
 ## Rationale
 

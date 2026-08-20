@@ -15,6 +15,11 @@
       "path": "tests/fixtures/agentdojo/v0.1.35/workspace-user_task_17-injection_task_1.json",
       "canonical_text_sha256": "af5742b5af892d2896cc74daf3dc13b926507aebd163fe3d8553c1c9eaf621c9",
       "role": "raw upstream AgentDojo fixture"
+    },
+    {
+      "path": "reports/analysis/2026-08-13-foundational-security-literature.md",
+      "canonical_text_sha256": "1b28e9cce9fc1c79b7802d5bd21b87f81a94f757836ae3e9040880db544b5da6",
+      "role": "foundational security literature analysis"
     }
   ]
 }

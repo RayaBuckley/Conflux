@@ -56,6 +56,57 @@ deployment claims remain future work.
 
 - [Maximal security and synthesis](../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md): formalises the claim that ITES is the maximally permissive PE-safe controller and proposes a controller-synthesis experiment.
 - [Comparative defence verification](../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md): research design for verifying contemporary agent defences against the Conflux PE property.
+- [Foundational security literature](../reports/analysis/2026-08-13-foundational-security-literature.md): classical integrity and IFC lineage underlying ITES and the property hierarchy below.
+
+## SLED-V property hierarchy
+
+The following hierarchy structures the properties that SLED-V can or should
+verify, informed by the classical IFC and integrity literature. Properties
+currently supported by native SLED are marked; the remainder are reference
+targets for future verification work.
+
+### Authority safety (supported)
+
+    AG(Execute(a) -> forall p in PrincipalContext: Authorised(p, a))
+
+No executed action violates Principal-Context authority.
+
+### Provenance monotonicity (supported)
+
+Absent an explicit trusted transformation:
+
+    PC(parent) subseteq PC(child)
+
+Influence is never silently discarded.
+
+### Delegation safety (model only, runtime disabled)
+
+Any authority increase is explained by an independently authorised delegation
+transition.
+
+### Read safety (supported)
+
+No execution receives a resource contrary to read policy.
+
+### Observational confidentiality (future work)
+
+Executions differing only in secret information produce equivalent observations
+for unauthorised principals, modulo declared declassification. This is a
+relational property requiring comparison of execution pairs, unlike the
+safety properties above which are checked on individual traces. Authorised
+reads do not establish noninterference.
+
+### Robust disclosure (future work)
+
+An unauthorised influencing principal cannot control disclosure beyond the
+permitted release policy. This connects to robust-declassification literature
+and is relevant to prompt-injection resistance for visibility/declassification
+decisions.
+
+### Liveness / utility (future work)
+
+Under an explicit competence/controller assumption, an authorised task reaches
+its goal or a defined safe abort.
 
 ## Rationale
 

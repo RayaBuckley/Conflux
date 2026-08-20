@@ -42,6 +42,18 @@ the repository has accepted, implemented, or deferred.
 | PLAN-DYN-016 | Strict four-mode aggregation exists; live observations remain gated |
 | PAPER-002, RW-001 | Generated external-result evidence and continuing related-work revision |
 
+## Foundational literature integration (partial/deferred)
+
+Source: `reports/analysis/2026-08-13-foundational-security-literature.md`.
+
+| Item | Status | Notes |
+|---|---|---|
+| Classical IFC/integrity lineage integrated into documentation | Implemented | Glossary terms, ADR 012, RELATED_WORK, RESEARCH_OVERVIEW, SECURITY_MODEL, ARCHITECTURE, SLED property hierarchy, EVALUATION confidentiality hierarchy, CLAIMS novelty qualification, STATUS, PROJECT_ANALYSIS |
+| Priority A bibliography entries | Partial | Added to manuscript/REFERENCES.md as "unverified"; primary-source checking deferred |
+| Literature matrix | Deferred | Classical integrity/IFC stream with structured comparison fields |
+| Novelty audit | Deferred | Search repository for claims made unsafe by classical precedent |
+| Manuscript migration | Deferred | Report §31 proposes manuscript structural changes; requires operator gate after primary-source reading |
+
 The complete, per-task disposition and evidence paths are in
 `docs/task-registry.json`. No gated item is promoted to a live claim merely
 because its adapter, manifest, or report source exists.

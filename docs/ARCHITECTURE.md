@@ -47,7 +47,7 @@ backends; unsupported semantics produce `UNKNOWN`.
 |---|---|---|
 | Immutable domain values | Security evidence must not change after a decision | New values replace old state |
 | Independent policy ports | Consent or visibility must never manufacture authority | More explicit decisions and events |
-| One ITES kernel | Runtime and SLED must not drift semantically | Every supported action crosses one narrow boundary |
+| One ITES kernel | Runtime and SLED must not drift semantically; the kernel is a reference monitor providing complete mediation by a small, analysable, tamper-resistant mechanism | Every supported action crosses one narrow boundary |
 | Separate exploration and execution | Alternative evaluation must not cause effects | Execution needs an exact branch certificate |
 | Planning remains above ITES | Planner structure is untrusted data, not authority | Every grounded effect is re-mediated |
 | Solver IR remains separate | A proof over an abstraction is not a runtime proof | Differential conformance is required |

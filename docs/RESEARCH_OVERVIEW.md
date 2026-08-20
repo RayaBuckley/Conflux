@@ -140,7 +140,97 @@ This motivates an ablation:
 
 The security invariant should remain ACS-derived PE prevention while utility is measured empirically.
 
-## 7. Relationship to adjacent work
+## 7. Classical security foundations
+
+The core ITES mechanism is not without classical precedent. The
+principal-sensitive authority intersection rule is structurally analogous to
+low-water-mark contamination from Biba's integrity models, operationalised in
+systems such as LOMAC. [ADR 012](decisions/012-foundational-security-lineage.md)
+records this positioning decision; the [foundational security literature
+analysis](../reports/analysis/2026-08-13-foundational-security-literature.md)
+provides the detailed comparison.
+
+### Conceptual lineage
+
+```text
+Reference monitors / complete mediation / least privilege
+                    |
+                    v
+      Mandatory information-flow models
+        /                            \
+       v                              v
+Denning / confidentiality          Biba integrity
+       |                              |
+       v                              v
+noninterference                low-water-mark policies
+       |                              |
+       v                              v
+language-based IFC                  LOMAC
+       |                              |
+       +-------------+----------------+
+                     v
+          decentralized IFC
+       declassification / endorsement
+                     |
+                     v
+       robust attacker-influence models
+                     |
+                     v
+ provenance / taint / whole-system IFC
+                     |
+                     v
+ contemporary system-level LLM-agent security
+                     |
+                     v
+        Principal Context / Conflux
+```
+
+This is not a single direct inheritance chain. These literatures solve
+different problems. The point is to prevent the dissertation from discussing
+Conflux only against work published after LLM agents appeared.
+
+### Structural similarity to low-water-mark integrity
+
+Biba's low-water-mark policy reduces a subject's effective integrity after it
+observes less-trusted information, restricting its future high-integrity
+effects. Conflux's authority-intersection rule exhibits the same monotonic
+contamination pattern: adding an influencing principal to Principal Context
+can preserve or reduce effective authority but cannot increase it.
+
+Conflux enriches this pattern by:
+1. retaining authenticated principal identities rather than only a generic
+   trust label;
+2. deriving effective authority from the organisation's existing ACS rather
+   than requiring a single integrity classification;
+3. supporting parameterised and argument-sensitive action authority.
+
+These are candidate distinctions, not established novelty claims, until a
+targeted prior-art search is complete.
+
+### Revised fourth-year story
+
+The strongest fourth-year framing is:
+
+1. Principal Context / ITES is a principal-sensitive authority
+   analogue/generalisation of low-water-mark contamination, grounded in
+   existing organisational authorisation rather than a single integrity
+   classification.
+2. The fourth-year project develops the parts not supplied by that analogy:
+   fine-grained authority semantics, explicit delegation and consent,
+   visibility/controlled disclosure, planning that avoids unnecessary
+   authority contamination, attribution, and substantially stronger
+   verification.
+3. SLED-V should distinguish ordinary safety properties from relational
+   confidentiality/noninterference properties.
+4. Contemporary LLM-agent systems such as CaMeL, Progent, PACT, and
+   causal-provenance approaches remain the closest application-domain
+   comparisons; classical security work supplies the conceptual and formal
+   foundations.
+
+The existing modern-agent landscape is retained but enriched with this
+foundational stream.
+
+## 8. Relationship to adjacent work
 
 Conflux can borrow mechanisms without adopting another system's security objective.
 
@@ -156,7 +246,7 @@ Useful ideas include:
 
 The central distinction is that Conflux asks whether influence can cause authority to exceed what the influencing principals possess in the existing ACS.
 
-## 8. Evaluation programme
+## 9. Evaluation programme
 
 The project should produce evidence at several levels:
 
@@ -168,7 +258,7 @@ The project should produce evidence at several levels:
 6. **Granularity ablations** — quantify utility recovered by finer provenance without weakening the PE invariant.
 7. **Implementation conformance** — relate production traces/transitions to the verified semantics.
 
-## 9. What is not yet established
+## 10. What is not yet established
 
 Do not infer from this overview that:
 - every richer Conflux extension has a completed proof;
@@ -179,7 +269,7 @@ Do not infer from this overview that:
 
 Those are research/evidence tasks.
 
-## 10. Suggested reviewer path
+## 11. Suggested reviewer path
 
 For a research discussion:
 1. Read this overview.

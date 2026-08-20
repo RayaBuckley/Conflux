@@ -164,6 +164,10 @@
     "persistent-memory authority",
     "symbolic arbitrary-program verification",
     "production PDP/framework integrations",
-    "live paper-result generation without matching retained evidence"
+    "live paper-result generation without matching retained evidence",
+    "foundational bibliography audit (primary-source verification of Priority A papers in manuscript/REFERENCES.md)",
+    "literature matrix (classical integrity/IFC stream with structured fields: work, year, stream, security objective, label/provenance model, authority model, downgrading model, formal guarantee, implementation, relation to Conflux)",
+    "novelty audit (search repository for claims made unsafe by classical IFC/integrity precedent)",
+    "noninterference/observational confidentiality verification (relational property requiring execution-pair comparison)"
   ]
 }

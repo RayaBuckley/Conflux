@@ -85,6 +85,23 @@ operation-specific effect semantics remain future work in the
 | Require live differential evidence before Cedar-backed activation | Successful translation and an oracle expectation do not demonstrate that an unavailable PDP agrees |
 | Fail closed on errors | Infrastructure uncertainty is not evidence of permission |
 
+### Classical foundations
+
+The ITES mediation boundary is a reference monitor for tool-using AI agents:
+it provides complete mediation of privileged effects by a small, analysable,
+tamper-resistant mechanism, separating untrusted proposal generation from
+trusted effect execution. The LLM is untrusted code requesting privileged
+operations, not a trusted security decision-maker.
+
+The authority-intersection rule is structurally analogous to low-water-mark
+contamination from Biba's integrity models: consuming information from an
+additional principal can preserve or reduce effective authority but cannot
+increase it. Conflux enriches this classical pattern with authenticated
+principal provenance and authority derived from the organisation's existing
+authorisation relation. See [ADR 012](decisions/012-foundational-security-lineage.md)
+and the [foundational security literature
+analysis](../reports/analysis/2026-08-13-foundational-security-literature.md).
+
 These rules prevent authority amplification; they do not prove that every
 authorised action matches subjective intent. Complete mediation and correct
 authentication, provenance, policy, runtime, and provider isolation remain

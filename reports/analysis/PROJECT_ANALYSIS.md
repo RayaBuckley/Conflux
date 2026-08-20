@@ -31,6 +31,7 @@ reconcile, not permission to promote a historical or convenient statement.
 | 31 July evidence-first evaluation | Required self-hosted model protocols and retained native SLED evidence | Native evidence is retained; model-dependent runners are evaluation-ready without empirical efficacy claims |
 | 2 August fourth-year direction | Proposed planning, delegation, argument policy, disclosure, attribution, verification reduction, benchmark, PDP, and governance work | Reconciled by specification 013; COI reduction is first, delegation stays disabled until its gates pass |
 | 14 August reviewer-support | Supporting drafts for reviewer onboarding, maximal-permissiveness formalisation, comparative defence verification, and experiment planning | Archived in reports/archive/2026-08-14-reviewer-support/; superseded by canonical docs and analysis reports listed in MANIFEST.json |
+| 13 August foundational security literature | Identified the classical integrity/IFC lineage (Biba, LOMAC, Denning, declassification, endorsement, noninterference) underlying Principal Context and ITES | Integrated into related-work positioning, research overview, ADR-012, SLED-V property hierarchy, glossary, and novelty-qualification note; novelty audit and primary-source bibliography verification remain deferred |
 
 The package metadata and exact source files are in
 [the archive manifest](../archive/MANIFEST.json).
@@ -110,6 +111,18 @@ tracking, privilege control, or prompt-injection defence. Its narrower focus is
 collective Principal Context derived from authenticated influence and
 interpreted through organisational policy, with shared operational and bounded
 verification semantics.
+
+The core ITES authority-intersection rule is structurally analogous to Biba's
+low-water-mark contamination: consuming information from an additional
+principal can preserve or reduce effective authority but cannot increase it.
+Classical information-flow-control research (Denning lattices, LOMAC,
+noninterference, decentralized IFC, declassification, endorsement, robust
+declassification, nonmalleable IFC) provides the conceptual and formal
+foundations. Conflux enriches this lineage with authenticated principal
+identities and authority derived from the organisation's existing ACS. This
+positioning and the candidate distinctions that may survive prior-art search
+are developed in [RELATED_WORK.md](../../docs/RELATED_WORK.md) and
+[ADR 012](../../docs/decisions/012-foundational-security-lineage.md).
 
 The useful comparison axes are model robustness, architectural isolation,
 information flow, policy expressiveness, provenance granularity, delegation,
