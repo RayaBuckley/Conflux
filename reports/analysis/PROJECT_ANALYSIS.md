@@ -15,7 +15,7 @@ Use sources in this order:
 4. this analysis;
 5. immutable archived reports and the archived previous paper.
 
-`docs/task-registry.json` owns current programme dispositions.
+`docs/evidence/task-registry.json` owns current programme dispositions.
 `docs/evidence/CLAIMS.md` owns claim strength. A conflict between sources is a defect to
 reconcile, not permission to promote a historical or convenient statement.
 
@@ -128,7 +128,7 @@ The useful comparison axes are model robustness, architectural isolation,
 information flow, policy expressiveness, provenance granularity, delegation,
 persistent state, and verification strength. Recent report citations and
 reported numbers require primary-source validation before publication; the
-current bibliography state is recorded in `manuscript/REFERENCES.md`.
+current bibliography state is recorded in `publications/manuscript/REFERENCES.md`.
 
 ## Claim strength
 

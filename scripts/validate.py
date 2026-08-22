@@ -62,8 +62,7 @@ def run(*arguments: str) -> int:
         command = " ".join(arguments)
         detail = "\n".join(tail)
         print(
-            f"::error title=Conflux validation failed ({_workflow_escape(command)})::"
-            f"{_workflow_escape(detail)}",
+            f"::error title=Conflux validation failed ({_workflow_escape(command)})::{_workflow_escape(detail)}",
             flush=True,
         )
     return return_code
@@ -81,31 +80,31 @@ def main() -> int:
     _run(
         "scripts/generate_smoke_evidence.py",
         "experiments/manifests/m3-smoke.yaml",
-        "runs/smoke",
+        "output/runs/smoke",
         "--check",
     )
-    if (ROOT / "runs" / "native-sled-reproduction-v1").is_dir():
+    if (ROOT / "output" / "runs" / "native-sled-reproduction-v1").is_dir():
         _run(
             "scripts/generate_native_sled_evidence.py",
-            "runs/native-sled-reproduction-v1",
+            "output/runs/native-sled-reproduction-v1",
             "--check",
         )
-    if (ROOT / "runs" / "sled-coi-reduction-v1").is_dir():
+    if (ROOT / "output" / "runs" / "sled-coi-reduction-v1").is_dir():
         _run(
             "scripts/generate_coi_evidence.py",
-            "runs/sled-coi-reduction-v1",
+            "output/runs/sled-coi-reduction-v1",
             "--check",
         )
-    if (ROOT / "runs" / "cedar-differential-preflight-v1").is_dir():
+    if (ROOT / "output" / "runs" / "cedar-differential-preflight-v1").is_dir():
         _run(
             "scripts/generate_cedar_preflight.py",
-            "runs/cedar-differential-preflight-v1",
+            "output/runs/cedar-differential-preflight-v1",
             "--check",
         )
-    if (ROOT / "runs" / "direction-readiness-v1").is_dir():
+    if (ROOT / "output" / "runs" / "direction-readiness-v1").is_dir():
         _run(
             "scripts/generate_direction_evidence.py",
-            "runs/direction-readiness-v1",
+            "output/runs/direction-readiness-v1",
             "--check",
         )
     _run(

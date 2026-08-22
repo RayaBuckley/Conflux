@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       # Windows is omitted until cross-platform evidence is fully deterministic
-      # (see .gitattributes runs/** text eol=lf and CRLF-normalised comparisons).
+      # (see .gitattributes output/runs/** text eol=lf and CRLF-normalised comparisons).
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12", "3.13"]

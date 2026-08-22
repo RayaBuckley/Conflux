@@ -23,7 +23,7 @@
     {
       "ids": ["EXP-001", "EXP-002", "EXP-003", "EXP-004"],
       "status": "implemented",
-      "evidence": ["experiments/", "runs/smoke/", "tests/test_experiment_manifest.py", "tests/test_smoke_evidence.py", "tests/integration/test_negative_controls.py"]
+      "evidence": ["experiments/", "output/runs/smoke/", "tests/test_experiment_manifest.py", "tests/test_smoke_evidence.py", "tests/integration/test_negative_controls.py"]
     },
     {
       "ids": ["SLEDMC-001", "SLEDMC-002", "SLEDMC-003"],
@@ -33,7 +33,7 @@
     {
       "ids": ["SLEDMC-004"],
       "status": "bounded_evidence",
-      "evidence": ["src/conflux/experiments/native_evidence.py", "tests/test_native_sled_evidence.py", "runs/native-sled-reproduction-v1/manifest.json", "runs/native-sled-reproduction-v1/result.json"]
+      "evidence": ["src/conflux/experiments/native_evidence.py", "tests/test_native_sled_evidence.py", "output/runs/native-sled-reproduction-v1/manifest.json", "output/runs/native-sled-reproduction-v1/result.json"]
     },
     {
       "ids": ["MODEL-001"],
@@ -50,7 +50,7 @@
     {
       "ids": ["AGENTDOJO-001", "AGENTDOJO-002"],
       "status": "implemented",
-      "evidence": ["external/agentdojo.lock", "docs/integrations/agentdojo.md", "src/conflux/adapters/benchmarks/agentdojo_v1.py", "tests/fixtures/agentdojo/v0.1.35/", "tests/test_agentdojo_adapter.py"]
+      "evidence": ["experiments/agentdojo.lock", "docs/integrations/agentdojo.md", "src/conflux/adapters/benchmarks/agentdojo_v1.py", "tests/fixtures/agentdojo/v0.1.35/", "tests/test_agentdojo_adapter.py"]
     },
     {
       "ids": ["AGENTDOJO-003"],
@@ -83,12 +83,12 @@
     {
       "ids": ["CI-001", "CI-002", "PAPER-001"],
       "status": "implemented",
-      "evidence": ["scripts/validate.py", "scripts/validate.ps1", ".github/workflows/validate.yml", "artifacts/validation/6fe6b584500e/", "paper/ARCHIVE_MANIFEST.json", "manuscript/"]
+      "evidence": ["scripts/validate.py", "scripts/validate.ps1", ".github/workflows/validate.yml", "output/validation/6fe6b584500e/", "publications/paper/ARCHIVE_MANIFEST.json", "publications/manuscript/"]
     },
     {
       "ids": ["PAPER-002"],
       "status": "partial",
-      "evidence": ["manuscript/conflux_fourth_year_2026.tex", "runs/smoke/"],
+      "evidence": ["publications/manuscript/conflux_fourth_year_2026.tex", "output/runs/smoke/"],
       "gap": "Real-model and external-benchmark numerical placeholders await matching retained evidence."
     },
     {
@@ -105,40 +105,40 @@
     {
       "ids": ["PLAN-DYN-016"],
       "status": "evaluation_ready",
-      "evidence": ["experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "runs/direction-readiness-v1/planning-preflight.json"],
+      "evidence": ["experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "output/runs/direction-readiness-v1/planning-preflight.json"],
       "gap": "All 32 protocol cells are available, but no self-hosted-model comparison is retained."
     },
     {
       "ids": ["DIR-PLAN-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "experiments/manifests/planning-laptop-smoke-v1.json", "src/conflux/experiments/laptop_smoke.py", "scripts/prepare_laptop_smoke.py", "tests/test_laptop_planning_smoke.py", "runs/direction-readiness-v1/laptop-planning-preflight.json"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "experiments/manifests/planning-laptop-smoke-v1.json", "src/conflux/experiments/laptop_smoke.py", "scripts/prepare_laptop_smoke.py", "tests/test_laptop_planning_smoke.py", "output/runs/direction-readiness-v1/laptop-planning-preflight.json"],
       "gap": "The fixed 16-cell dual-backend laptop smoke has not been deliberately run and retained."
     },
     {
       "ids": ["DIR-DELEG-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/delegation.py", "src/conflux/evaluation/delegation_records.py", "src/conflux/evaluation/delegation_verification.py", "tests/test_delegation_foundation.py", "runs/direction-readiness-v1/security-mutations.json"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/delegation.py", "src/conflux/evaluation/delegation_records.py", "src/conflux/evaluation/delegation_verification.py", "tests/test_delegation_foundation.py", "output/runs/direction-readiness-v1/security-mutations.json"],
       "gap": "The scoped one-use model is implemented and runtime consumption remains deliberately disabled pending live Cedar parity and activation-gate evidence."
     },
     {
       "ids": ["DIR-ARGPOL-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/policy/argument_policy.py", "src/conflux/application/policy.py", "tests/test_argument_visibility_attribution.py", "runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/policy/argument_policy.py", "src/conflux/application/policy.py", "tests/test_argument_visibility_attribution.py", "output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-VIS-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py", "tests/test_argument_visibility_attribution.py", "runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py", "tests/test_argument_visibility_attribution.py", "output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-ATTR-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ites/state.py", "src/conflux/evaluation/disclosure_verification.py", "tests/test_argument_visibility_attribution.py", "runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ites/state.py", "src/conflux/evaluation/disclosure_verification.py", "tests/test_argument_visibility_attribution.py", "output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-SLED-001"],
       "status": "bounded_evidence",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/verification/reduction.py", "tests/test_verification_reduction.py", "runs/sled-coi-reduction-v1/manifest.json", "runs/sled-coi-reduction-v1/result.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/verification/reduction.py", "tests/test_verification_reduction.py", "output/runs/sled-coi-reduction-v1/manifest.json", "output/runs/sled-coi-reduction-v1/result.json"]
     },
     {
       "ids": ["DIR-BENCH-001"],
@@ -149,7 +149,7 @@
     {
       "ids": ["DIR-PDP-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "experiments/suites/cedar-differential-v1.json", "runs/cedar-differential-preflight-v1/manifest.json", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "experiments/suites/cedar-differential-v1.json", "output/runs/cedar-differential-preflight-v1/manifest.json", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
       "gap": "Cedar was not invoked. Bounded parity requires the pinned binary to complete every differential cell with agreement."
     },
     {

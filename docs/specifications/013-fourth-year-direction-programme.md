@@ -147,10 +147,10 @@ executes generated source code; `ModeledProgram` remains inert data.
 ## Expected file set and change budget
 
 Expected changes are confined to existing owners under `src/conflux/`,
-`tests/`, `schemas/`, `experiments/`, `runs/`, `docs/`, `reports/analysis/`,
-`reports/archive/`, `manuscript/`, and existing validation scripts. New
+`tests/`, `schemas/`, `experiments/`, `output/runs/`, `docs/`, `reports/analysis/`,
+`reports/archive/`, `publications/manuscript/`, and existing validation scripts. New
 verification, policy-adapter, and test modules are allowed inside those
-owners. The retained COI bundle lives at `runs/sled-coi-reduction-v1/`.
+owners. The retained COI bundle lives at `output/runs/sled-coi-reduction-v1/`.
 
 No new top-level directory or competing status, roadmap, rationale, claim,
 architecture, or report-analysis document is approved by this specification.
@@ -181,7 +181,7 @@ wheel and CLI smoke, manuscript compilation, and `git diff --check`.
 
 ## Documentation and paper synchronisation
 
-`docs/task-registry.json` owns disposition; `docs/evidence/CLAIMS.md` owns claim
+`docs/evidence/task-registry.json` owns disposition; `docs/evidence/CLAIMS.md` owns claim
 strength; this specification owns the accepted design. Report prose stays
 historical. Manuscript numbers may be added only from a matching checksummed
 bundle and must state abstraction, bounds, runtime identity, and exclusions.

@@ -12,7 +12,7 @@ security-defect observations are superseded here by the validated M0--M4
 commits. Its dynamic-planning findings remain applicable.
 
 The raw report files and archived paper are never edited. Manuscript changes
-are made only in `manuscript/`.
+are made only in `publications/manuscript/`.
 
 ## Objective
 

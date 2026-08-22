@@ -2,7 +2,7 @@
 
 Conflux targets AgentDojo package `0.1.35`, Git tag `v0.1.35`, commit
 `a75aba7631d3ca5fb7ab938965c97ead2f9ff84b`, and benchmark `v1.2.2`.
-`external/agentdojo.lock` is authoritative. AgentDojo is MIT licensed and is
+`experiments/agentdojo.lock` is authoritative. AgentDojo is MIT licensed and is
 an optional, externally gated integration:
 
 ```text

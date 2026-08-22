@@ -41,13 +41,13 @@ CANONICAL_DOCS = {
 }
 LEGACY = {"core", "auth", "research", "compatibility"}
 FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
-PAPER = ROOT / "paper"
-MANUSCRIPT = ROOT / "manuscript"
-SMOKE = ROOT / "runs" / "smoke"
-NATIVE_SLED = ROOT / "runs" / "native-sled-reproduction-v1"
-COI_EVIDENCE = ROOT / "runs" / "sled-coi-reduction-v1"
-CEDAR_PREFLIGHT = ROOT / "runs" / "cedar-differential-preflight-v1"
-DIRECTION_EVIDENCE = ROOT / "runs" / "direction-readiness-v1"
+PAPER = ROOT / "publications" / "paper"
+MANUSCRIPT = ROOT / "publications" / "manuscript"
+SMOKE = ROOT / "output" / "runs" / "smoke"
+NATIVE_SLED = ROOT / "output" / "runs" / "native-sled-reproduction-v1"
+COI_EVIDENCE = ROOT / "output" / "runs" / "sled-coi-reduction-v1"
+CEDAR_PREFLIGHT = ROOT / "output" / "runs" / "cedar-differential-preflight-v1"
+DIRECTION_EVIDENCE = ROOT / "output" / "runs" / "direction-readiness-v1"
 COI_EVIDENCE_ROOT_FILES = (
     "CHECKSUMS.sha256",
     "RERUN.txt",
@@ -57,8 +57,8 @@ COI_EVIDENCE_ROOT_FILES = (
     "result.json",
     "table.md",
 )
-TASK_REGISTRY = DOCS / "task-registry.json"
-EVIDENCE_SOURCES = DOCS / "evidence-sources.json"
+TASK_REGISTRY = DOCS / "evidence" / "task-registry.json"
+EVIDENCE_SOURCES = DOCS / "evidence" / "evidence-sources.json"
 REPORTS = ROOT / "reports"
 REPORT_ARCHIVE = REPORTS / "archive"
 REPORT_MANIFEST = REPORT_ARCHIVE / "MANIFEST.json"
@@ -76,15 +76,12 @@ DIRECTION_TASK_IDS = {
 }
 APPROVED_TOP_LEVEL_DIRECTORIES = {
     ".github",
-    "artifacts",
     "docs",
     "examples",
     "experiments",
-    "external",
-    "manuscript",
-    "paper",
+    "output",
+    "publications",
     "reports",
-    "runs",
     "schemas",
     "scripts",
     "src",
@@ -652,26 +649,26 @@ def check_archived_paper(errors: list[str]) -> None:
     for name, record in files.items():
         path = PAPER / str(name)
         if not path.is_file():
-            errors.append(f"archived paper file is missing: paper/{name}")
+            errors.append(f"archived paper file is missing: publications/paper/{name}")
             continue
         if not isinstance(record, dict):
-            errors.append(f"paper archive record is invalid: paper/{name}")
+            errors.append(f"paper archive record is invalid: publications/paper/{name}")
             continue
         mode = record.get("mode")
         expected = record.get("sha256")
         expected_blob = record.get("git_blob_oid")
         if not isinstance(mode, str) or not isinstance(expected, str) or not isinstance(expected_blob, str):
-            errors.append(f"paper archive record is incomplete: paper/{name}")
+            errors.append(f"paper archive record is incomplete: publications/paper/{name}")
             continue
         try:
             actual = archive_digest(path, mode)
         except (UnicodeDecodeError, ValueError) as error:
-            errors.append(f"paper/{name}: {error}")
+            errors.append(f"publications/paper/{name}: {error}")
             continue
         if actual != expected:
-            errors.append(f"archived paper file changed: paper/{name}")
+            errors.append(f"archived paper file changed: publications/paper/{name}")
         if index_blob_oid(path) != expected_blob:
-            errors.append(f"archived paper Git object changed: paper/{name}")
+            errors.append(f"archived paper Git object changed: publications/paper/{name}")
 
 
 def check_manuscript(errors: list[str]) -> None:
@@ -685,7 +682,7 @@ def check_manuscript(errors: list[str]) -> None:
     }
     for name in required:
         if not (MANUSCRIPT / name).is_file():
-            errors.append(f"current manuscript file is missing: manuscript/{name}")
+            errors.append(f"current manuscript file is missing: publications/manuscript/{name}")
     if (MANUSCRIPT / "conflux_fourth_year_2026.pdf").exists():
         errors.append("generated current-manuscript PDF must be a CI artefact")
 
@@ -712,7 +709,7 @@ def check_smoke_evidence(errors: list[str]) -> None:
             continue
         actual = hashlib.sha256(canonical_text_bytes(path)).hexdigest()
         if actual != expected:
-            errors.append(f"smoke evidence checksum changed: runs/smoke/{name}")
+            errors.append(f"smoke evidence checksum changed: output/runs/smoke/{name}")
 
 
 def check_native_sled_evidence(errors: list[str]) -> None:

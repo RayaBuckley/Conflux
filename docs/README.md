@@ -22,7 +22,7 @@ owner; linked documents should reference that owner rather than restating it.
 - [Root quick start](../README.md): install and run the offline vertical slice.
 - [CLI](reference/CLI.md): commands, outputs, failures, and exit codes.
 - [Development](DEVELOPMENT.md): setup, testing ladder, and validation.
-- [Contributing](../CONTRIBUTING.md): human review and change workflow.
+- [Change workflow](../CONTRIBUTING.md): change procedure, review checklist, and commit conventions.
 - [Changelog](../CHANGELOG.md): review-level repository history.
 - [AI agent guide](AI_AGENT_GUIDE.md): trust order and drift controls.
 - [Security policy](../SECURITY.md): trust boundary and private reporting.
@@ -54,9 +54,9 @@ owner; linked documents should reference that owner rather than restating it.
 - [Related work](research/RELATED_WORK.md): positioning, not implementation status.
 - [Change catalogue](evidence/CHANGE_CATALOG.md): report-derived work grouped by theme.
 - [Status](evidence/STATUS.md): concise current capability summary.
-- [Task registry](task-registry.json): authoritative machine-readable status.
+- [Task registry](evidence/task-registry.json): authoritative machine-readable status.
 - [Report sources and analysis](../reports/README.md): reconciled historical inputs.
-- [Current manuscript](../manuscript/README.md): publication source and evidence policy.
+- [Current manuscript](../publications/manuscript/README.md): publication source and evidence policy.
 
 ## Research context
 
@@ -70,10 +70,10 @@ owner; linked documents should reference that owner rather than restating it.
 |---|---|---|
 | What does the system enforce? | code, tests, schemas, security model | Executable behavior must support the prose contract |
 | Why was a design selected? | accepted specification or ADR | Decision history should not be reconstructed from code |
-| What is implemented? | `evidence/STATUS.md` and `task-registry.json` | One human summary and one machine registry prevent drift |
+| What is implemented? | `evidence/STATUS.md` and `evidence/task-registry.json` | One human summary and one machine registry prevent drift |
 | What may be claimed? | `evidence/CLAIMS.md` and retained evidence | Implementation is not automatically empirical proof |
 | What did reports recommend? | `reports/analysis/` | Historical input needs current reconciliation |
-| What does the current paper claim? | `manuscript/` | The archived paper is intentionally frozen |
+| What does the current paper claim? | `publications/manuscript/` | The archived paper is intentionally frozen |
 
 When sources disagree, record and repair the discrepancy. Do not silently
 promote a report, manuscript statement, or passing test above the normative

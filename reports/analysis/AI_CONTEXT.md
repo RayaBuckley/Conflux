@@ -33,7 +33,7 @@ easier.
 ## Routing
 
 - Normative behavior: `docs/specifications/`, ADRs, and security documentation.
-- Current task state: `docs/task-registry.json`.
+- Current task state: `docs/evidence/task-registry.json`.
 - Claim strength: `docs/evidence/CLAIMS.md`.
 - Historical task lineage: `task-crosswalk.json`.
 - Cohesive historical interpretation: `PROJECT_ANALYSIS.md`.

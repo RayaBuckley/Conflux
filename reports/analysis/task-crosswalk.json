@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "entry_count": 128,
-  "status_owner": "docs/task-registry.json",
+  "status_owner": "docs/evidence/task-registry.json",
   "claim_owner": "docs/evidence/CLAIMS.md",
   "sources": [
     {
@@ -780,7 +780,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "BASE-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -792,7 +792,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "BASE-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -804,7 +804,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SEC-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -816,7 +816,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SEC-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -828,7 +828,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SEC-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -840,7 +840,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SEC-004",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -852,7 +852,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SEC-005",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -864,7 +864,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SEC-006",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -876,7 +876,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SEC-007",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -888,7 +888,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "TRACE-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -900,7 +900,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "TRACE-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -912,7 +912,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "ARCH-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -924,7 +924,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "ARCH-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -936,7 +936,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "ARCH-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -948,7 +948,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "ARCH-004",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -960,7 +960,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "RUNTIME-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -972,7 +972,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "RUNTIME-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -984,7 +984,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "RUNTIME-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -996,7 +996,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "RUNTIME-004",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1008,7 +1008,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "CLI-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1020,7 +1020,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "CLI-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1032,7 +1032,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "EXP-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1044,7 +1044,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "EXP-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1056,7 +1056,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "EXP-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1068,7 +1068,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "EXP-004",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1080,7 +1080,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SLEDMC-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1092,7 +1092,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SLEDMC-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1104,7 +1104,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SLEDMC-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1116,7 +1116,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "MODEL-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1128,7 +1128,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "MODEL-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1140,7 +1140,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "AGENTDOJO-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1152,7 +1152,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "AGENTDOJO-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1164,7 +1164,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "AGENTDOJO-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1176,7 +1176,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SLEDV-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1188,7 +1188,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SLEDV-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1200,7 +1200,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SLEDV-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1212,7 +1212,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "SLEDV-004",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1224,7 +1224,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -1236,7 +1236,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1248,7 +1248,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1260,7 +1260,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "CLUSTER-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1272,7 +1272,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "CLUSTER-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1284,7 +1284,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "CI-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -1296,7 +1296,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "CI-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1308,7 +1308,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PAPER-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -1320,7 +1320,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PAPER-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -1332,7 +1332,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-000",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1344,7 +1344,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-001",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1356,7 +1356,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-002",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1368,7 +1368,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-003",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1380,7 +1380,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-004",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1392,7 +1392,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-005",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1404,7 +1404,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-006",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1416,7 +1416,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-007",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1428,7 +1428,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-008",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1440,7 +1440,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-009",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1452,7 +1452,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-010",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1464,7 +1464,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-011",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1476,7 +1476,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-012",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1488,7 +1488,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-013",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1500,7 +1500,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-014",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1512,7 +1512,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-015",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1524,7 +1524,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-016",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1536,7 +1536,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "PLAN-DYN-017",
       "covered_by": [
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1549,7 +1549,7 @@
       "canonical_task_id": "DIR-PLAN-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1562,7 +1562,7 @@
       "canonical_task_id": "DIR-DELEG-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1575,7 +1575,7 @@
       "canonical_task_id": "DIR-ARGPOL-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1588,7 +1588,7 @@
       "canonical_task_id": "DIR-VIS-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1601,7 +1601,7 @@
       "canonical_task_id": "DIR-ATTR-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1614,7 +1614,7 @@
       "canonical_task_id": "DIR-SLED-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1627,7 +1627,7 @@
       "canonical_task_id": "DIR-BENCH-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1640,7 +1640,7 @@
       "canonical_task_id": "DIR-PDP-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -1653,7 +1653,7 @@
       "canonical_task_id": "DIR-GOV-001",
       "covered_by": [
         "docs/specifications/013-fourth-year-direction-programme.md",
-        "docs/task-registry.json"
+        "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
       "raw_id_collision": false

@@ -74,14 +74,14 @@ The 31 July 2026 repository baseline at commit `6fe6b584500e` passed 220 tests w
 90.25% branch coverage, all 13 schemas, deterministic regeneration, Ruff,
 strict mypy, wheel build, and installed `doctor`, `demo`, `plan demo`,
 `sled run`, and `report` smoke checks. The authoritative record is
-`artifacts/validation/6fe6b584500e/`; [the baseline](BASELINE_2026-07.md)
+`output/validation/6fe6b584500e/`; [the baseline](BASELINE_2026-07.md)
 defines what that result does and does not support. The matching GitHub run
 passed all four supported operating-system/Python combinations.
 
 Native evidence added after that baseline is independently retained under
-`runs/native-sled-reproduction-v1/`, linked to implementation commit
+`output/runs/native-sled-reproduction-v1/`, linked to implementation commit
 `d6d9857954ac7c7702fff64642d3ea9e7836948f`, and regenerates byte-for-byte.
-COI-reduction evidence is retained under `runs/sled-coi-reduction-v1/`, linked
+COI-reduction evidence is retained under `output/runs/sled-coi-reduction-v1/`, linked
 to generator commit `3c4e9884a93f84b62ddb5b1c7e52da84be073b97`. Its two
 reference-interpreter fixtures agree and reduce at least one measured model
 dimension. Z3 bounded verification with COI reduction confirmed equivalence
@@ -89,22 +89,22 @@ on both safe and unsafe fixtures; the reduced safe model drops one variable
 and one rule, and the reduced unsafe model lifts the counterexample.
 
 Laptop experimental evidence (Qwen2.5-1.5B-Instruct, RTX 4060) is retained
-under `runs/`:
+under `output/runs/`:
 
-- `runs/sled-canon-env01/`, `env02/`, `env03/`: canonical SLED verified safe
+- `output/runs/sled-canon-env01/`, `env02/`, `env03/`: canonical SLED verified safe
   at depth 12 (2 states, 1 transition each);
-- `runs/delegation-v2/`: delegation verification complete, classified
+- `output/runs/delegation-v2/`: delegation verification complete, classified
   `bounded_evidence`, all mutants killed;
-- `runs/verify-coi-safe/` and `verify-coi-unsafe/`: Z3 BMC with COI
+- `output/runs/verify-coi-safe/` and `verify-coi-unsafe/`: Z3 BMC with COI
   reduction on security-monitor IR; safe verdict bounded safe, unsafe
   verdict produces counterexample, original/reduced agree;
-- `runs/verify-coi-original-safe/` and `verify-coi-original-unsafe/`: Z3 BMC
+- `output/runs/verify-coi-original-safe/` and `verify-coi-original-unsafe/`: Z3 BMC
   with COI reduction on the larger safe-noise and unsafe-control IR fixtures
   from `sled-coi-reduction-v1`; reduction removes the noise variable and
   toggle/increment rules, both verdicts agree with originals;
-- `runs/planning-pilot-qwen-1.5b/`: four-mode planning pilot completed; all
+- `output/runs/planning-pilot-qwen-1.5b/`: four-mode planning pilot completed; all
   eight cells `model_failed` (1.5B model wraps JSON in markdown fences);
-- `runs/agentdojo-qwen-1.5b/`: six-cell AgentDojo comparison completed; all
+- `output/runs/agentdojo-qwen-1.5b/`: six-cell AgentDojo comparison completed; all
   six cells `model_failed` (same JSON parse issue); raw upstream log
      retained with 47 s benign inference trace.
 
@@ -114,13 +114,13 @@ after adapter fixes for BitsAndBytesConfig import, generator caching, and
 concatenated JSON parsing. The full six-cell comparison is deferred to GPU
 availability.
 
-Offline direction evidence is retained under `runs/direction-readiness-v1/`.
+Offline direction evidence is retained under `output/runs/direction-readiness-v1/`.
 It supplies bounded native mutation evidence and readiness-only planning and
 AgentDojo matrices. Cedar readiness is separately retained under
-`runs/cedar-differential-preflight-v1/`; its incomplete manifest and
+`output/runs/cedar-differential-preflight-v1/`; its incomplete manifest and
 `unavailable` Cedar cells are deliberate claim boundaries.
 
-`docs/task-registry.json` is the machine-readable programme status. Remaining
+`docs/evidence/task-registry.json` is the machine-readable programme status. Remaining
 research includes production policy/framework integrations, delegation
 activation, richer argument-effect semantics, persistent-memory authority,
 symbolic reasoning about arbitrary generated programs, and live model-backed

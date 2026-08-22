@@ -42,7 +42,7 @@ def _protocol() -> ExperimentProtocol:
         repetitions=1,
         bounds={"max_model_calls": 4, "max_steps": 4},
         environment={"kind": "modeled"},
-        output_directory="runs/planning-local-v1",
+        output_directory="output/runs/planning-local-v1",
         rerun_command=("conflux", "plan", "compare", "--execute-local"),
     )
 
@@ -142,10 +142,6 @@ def test_mixed_and_revoked_authority_are_blocked_at_action_time() -> None:
     result = run_planning_comparison(_protocol(), _Model())
     observations = result["observations"]
     assert isinstance(observations, list)
-    selected = [
-        item
-        for item in observations
-        if item["task_id"] in {"mixed-principal-input", "action-time-revocation"}
-    ]
+    selected = [item for item in observations if item["task_id"] in {"mixed-principal-input", "action-time-revocation"}]
     assert all(item["legitimate_blocks"] >= 1 for item in selected)
     assert all(item["security_violations"] == 0 for item in selected)

@@ -10,7 +10,7 @@ download or invoke Cedar.
 conflux policy cedar preflight \
   --bundle experiments/manifests/cedar-policy-bundle-v1.json \
   --corpus experiments/suites/cedar-differential-v1.json \
-  --output runs/cedar-preflight
+  --output output/runs/cedar-preflight
 ```
 
 This validates the configured version, commit, checksum shape, supported

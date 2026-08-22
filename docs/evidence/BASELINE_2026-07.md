@@ -7,7 +7,7 @@
 | Source commit | `6fe6b584500e84f2cbc3d15876865243c4f01440` |
 | Captured | 31 July 2026 |
 | Runtime | CPython 3.12.12 on Windows |
-| Retained evidence | `artifacts/validation/6fe6b584500e/` |
+| Retained evidence | `output/validation/6fe6b584500e/` |
 | Cross-platform CI | [run 30659302041](https://github.com/RayaBuckley/Conflux/actions/runs/30659302041): all four matrix jobs passed |
 | Manuscript CI | [run 30659302028](https://github.com/RayaBuckley/Conflux/actions/runs/30659302028): passed |
 | Result | 220 tests; 90.25% branch coverage; all validation stages passed |

@@ -37,22 +37,22 @@ Thumbs.db
 # Local experiment output
 outputs/
 results/
-runs/*
-!runs/smoke/
-!runs/smoke/**
-!runs/native-sled-reproduction-v1/
-!runs/native-sled-reproduction-v1/**
-!runs/sled-coi-reduction-v1/
-!runs/sled-coi-reduction-v1/**
-!runs/cedar-differential-preflight-v1/
-!runs/cedar-differential-preflight-v1/**
-!runs/direction-readiness-v1/
-!runs/direction-readiness-v1/**
+output/runs/*
+!output/runs/smoke/
+!output/runs/smoke/**
+!output/runs/native-sled-reproduction-v1/
+!output/runs/native-sled-reproduction-v1/**
+!output/runs/sled-coi-reduction-v1/
+!output/runs/sled-coi-reduction-v1/**
+!output/runs/cedar-differential-preflight-v1/
+!output/runs/cedar-differential-preflight-v1/**
+!output/runs/direction-readiness-v1/
+!output/runs/direction-readiness-v1/**
 data/
 *.jsonl
-!runs/smoke/*.jsonl
-!runs/native-sled-reproduction-v1/*.jsonl
-!runs/sled-coi-reduction-v1/*.jsonl
+!output/runs/smoke/*.jsonl
+!output/runs/native-sled-reproduction-v1/*.jsonl
+!output/runs/sled-coi-reduction-v1/*.jsonl
 dist/
 build/
 

@@ -3,11 +3,11 @@ name: manuscript
 on:
   push:
     paths:
-      - "manuscript/**"
+      - "publications/manuscript/**"
       - ".github/workflows/manuscript.yml"
   pull_request:
     paths:
-      - "manuscript/**"
+      - "publications/manuscript/**"
       - ".github/workflows/manuscript.yml"
 
 permissions:
@@ -25,11 +25,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes latexmk texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-science
       - name: Compile manuscript
-        working-directory: manuscript
+        working-directory: publications/manuscript
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error conflux_fourth_year_2026.tex
       - name: Retain compiled manuscript
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: conflux-fourth-year-manuscript
-          path: manuscript/conflux_fourth_year_2026.pdf
+          path: publications/manuscript/conflux_fourth_year_2026.pdf
           retention-days: 14

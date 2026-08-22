@@ -50,7 +50,7 @@ def _protocol(model: LocalModelSpec | None = None) -> ExperimentProtocol:
         repetitions=1,
         bounds={"max_states": 100, "max_transitions": 200},
         environment={"python": "3.12", "platform": "test"},
-        output_directory="runs/native",
+        output_directory="output/runs/native",
         rerun_command=("conflux", "sled", "reproduce", "--protocol", "protocol.json"),
     )
 
@@ -119,9 +119,7 @@ def test_resolved_manifest_enforces_completeness_and_failure_taxonomy() -> None:
         environment={"python": "3.12"},
         checksums={"result.json": "c" * 64},
     )
-    assert manifest.to_dict()["failures"] == [
-        {"category": "model", "detail": "weights unavailable", "case_id": "case-1"}
-    ]
+    assert manifest.to_dict()["failures"] == [{"category": "model", "detail": "weights unavailable", "case_id": "case-1"}]
     with pytest.raises(ValueError, match="completeness_mismatch"):
         ResolvedRunManifest(
             run_id="bad",

@@ -58,7 +58,7 @@ Preflight both adapters and inspect all 16 cells before invocation:
 conflux plan laptop-smoke --plan experiments/manifests/planning-laptop-smoke-v1.json --transformers-config experiments/local-runs/laptop-smoke/transformers.json --llama-config experiments/local-runs/laptop-smoke/llama_cpp_q8_0.json
 ```
 
-Add `--execute-local --output runs/laptop-planning-smoke-v1` only as a
+Add `--execute-local --output output/runs/laptop-planning-smoke-v1` only as a
 deliberate operator action. The endpoint must remain loopback. The resulting
 bundle records raw failures rather than repairing malformed tiny-model output,
 then requires human review before any larger suite or GPU run.

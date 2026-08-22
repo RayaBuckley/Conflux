@@ -8,7 +8,7 @@ This directory separates immutable research input from maintained analysis:
 - `analysis/task-crosswalk.json` namespaces historical task IDs.
 
 Use [current project status](../docs/evidence/STATUS.md) and the
-[machine-readable task registry](../docs/task-registry.json) for implementation
+[machine-readable task registry](../docs/evidence/task-registry.json) for implementation
 state. Reports do not override code, tests, schemas, accepted specifications,
 ADRs, or retained evidence.
 
@@ -22,7 +22,7 @@ therefore have separate owners.
 
 The maintained analysis should summarize a finding once, link its original
 source, and point to canonical evidence. Mutable status remains exclusively in
-`docs/task-registry.json`.
+`docs/evidence/task-registry.json`.
 
 ## Analysis reports
 

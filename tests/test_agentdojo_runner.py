@@ -46,7 +46,7 @@ def _protocol() -> ExperimentProtocol:
         repetitions=2,
         bounds={"max_model_calls": 4, "max_steps": 8},
         environment={"agentdojo": "0.1.35"},
-        output_directory="runs/agentdojo-local-v1",
+        output_directory="output/runs/agentdojo-local-v1",
         rerun_command=("conflux", "benchmark", "agentdojo", "--execute-local"),
     )
 

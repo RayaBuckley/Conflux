@@ -26,9 +26,9 @@ current Principal Context and provenance, not static prompt trust labels.
 - `src/conflux/verification`: serialisable formal subset and optional backends.
 - `tests`: offline unit, security, integration, and reproducibility tests.
 - `docs`: architecture, contracts, decisions, status, and workflows.
-- `manuscript`: current LaTeX paper and evidence-controlled generated inputs.
+- `publications/manuscript`: current LaTeX paper and evidence-controlled generated inputs.
 - `reports/analysis`: current synthesis of immutable historical reports.
-- `reports/archive` and `paper`: integrity-protected historical evidence.
+- `reports/archive` and `publications/paper`: integrity-protected historical evidence.
 
 ## Non-negotiable invariants
 

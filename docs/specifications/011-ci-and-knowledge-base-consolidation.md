@@ -33,7 +33,7 @@ Repository truth is interpreted in this order:
 5. immutable archived reports and the archived previous paper.
 
 A disagreement between levels is a defect to reconcile, not permission to
-silently select a convenient claim. `docs/task-registry.json` owns programme
+silently select a convenient claim. `docs/evidence/task-registry.json` owns programme
 status and `docs/evidence/CLAIMS.md` owns claim strength. New documentation must extend
 an existing owner where possible rather than create a competing summary.
 
@@ -43,7 +43,7 @@ The paper manifest records, per file, a checksum mode, SHA-256 digest, and Git
 blob identity. UTF-8 text uses LF-canonical content so CRLF and LF checkouts are
 equivalent; binary content uses exact bytes. An index-object change, semantic
 text edit, binary edit, missing file, or unsupported mode fails validation.
-The files under `paper/` remain unmodified.
+The files under `publications/paper/` remain unmodified.
 
 The 18 original report artefacts move into five dated packages under
 `reports/archive/`. Their repository blobs must not change. The report manifest
@@ -71,7 +71,7 @@ the archived reports. `AI_CONTEXT.md` supplies only navigation, trust order,
 invariants, and refresh instructions. Normative behavior stays in code,
 schemas, specifications, and ADRs.
 
-The canonical current paper remains the LaTeX source under `manuscript/`.
+The canonical current paper remains the LaTeX source under `publications/manuscript/`.
 Implementation statements must link to repository evidence; numerical results
 are filled only from retained result or validation artefacts. Live-model,
 AgentDojo, solver-binary, container, and cluster results remain explicitly

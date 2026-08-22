@@ -1,7 +1,7 @@
 # AI Agent Guide
 
-This file is the compact operating contract for AI-assisted changes. Human
-contributors should start with [CONTRIBUTING.md](../CONTRIBUTING.md).
+This file is the operating contract for AI-assisted changes, including review
+checklist, commit conventions, and documentation authority rules.
 
 ## Trust and authority order
 
@@ -11,7 +11,7 @@ contributors should start with [CONTRIBUTING.md](../CONTRIBUTING.md).
 3. Current architecture, security, operation, status, and claim documents
    explain the maintained system.
 4. `reports/analysis/` reconciles historical recommendations.
-5. `reports/archive/` and `paper/` are immutable historical evidence.
+5. `reports/archive/` and `publications/paper/` are immutable historical evidence.
 
 If two levels disagree, treat that as a defect. Report the discrepancy and
 repair the appropriate owner; do not choose whichever source enables a task.
@@ -61,7 +61,7 @@ intent, implementation, executable evidence, and prose to converge.
 | Programme disposition | `task-registry.json`, summarized in `evidence/STATUS.md` |
 | Claim strength or limitation | `evidence/CLAIMS.md` |
 | Historical-report interpretation | `reports/analysis/` |
-| Publication claim | current `manuscript/`, backed by retained evidence |
+| Publication claim | current `publications/manuscript/`, backed by retained evidence |
 
 Do not create a parallel roadmap, status page, glossary, task list, or claim
 ledger. Link instead of copying details.
@@ -72,3 +72,50 @@ Stop and request direction if a change would broaden authority, weaken a fail-
 closed default, edit archived evidence, require a secret or external side
 effect not already in scope, or turn missing external evidence into a claim.
 Unavailable optional tools are expected and must remain explicit.
+
+## Review checklist
+
+Use this checklist when reviewing a diff:
+
+- [ ] Architecture, package guidance, and relevant ADRs inspected.
+- [ ] Specification or decision record updated where needed.
+- [ ] Rationale and material rejected alternatives recorded.
+- [ ] Principal Context and provenance impact assessed.
+- [ ] Security cases tested: allow, deny, mixed-context, failure, immutability.
+- [ ] Appropriate tests added (unit, integration, adapter, reproducibility).
+- [ ] `python scripts/audit_repository.py` passes.
+- [ ] `python scripts/validate.py` passes.
+- [ ] Existing canonical owner updated, no competing source created.
+- [ ] Terminology and paper notes synchronised if architecture changed.
+- [ ] Diff reviewed for hidden trust assumptions, benchmark shortcuts,
+      and permission broadening.
+
+## Commit message convention
+
+Each commit should follow:
+
+```text
+<one-line summary>
+
+Security impact: <brief statement or "none">
+
+<optional rationale or detail>
+```
+
+This makes the security relevance of every change visible during diff
+review without requiring a separate PR or form.
+
+## Documentation authority
+
+- Update an existing canonical owner before creating a new document.
+- Explain why a decision exists and link to its ADR or specification.
+- Put mutable task state only in `docs/evidence/task-registry.json` and claim
+  strength only in `docs/evidence/CLAIMS.md`.
+- Do not edit archived paper or report evidence. Add current interpretation
+  outside the archive.
+- Do not enter numerical claims without retained, reproducible evidence.
+
+Use one commit per coherent change. Do not combine generated evidence with the
+implementation that produces it. Review the staged diff for permission
+broadening, hidden trust assumptions, benchmark shortcuts, secrets, and stale
+documentation before committing.

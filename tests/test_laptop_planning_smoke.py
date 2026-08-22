@@ -81,7 +81,7 @@ def _protocols() -> dict[str, ExperimentProtocol]:
             repetitions=plan.repetitions,
             bounds=dict(plan.bounds),
             environment={"execution": "modeled"},
-            output_directory=f"runs/{backend}",
+            output_directory=f"output/runs/{backend}",
             rerun_command=("conflux", "plan", "compare", "--execute-local"),
         )
         for backend, spec in specifications.items()
@@ -214,6 +214,4 @@ def test_operator_preparation_hashes_local_artifacts_without_invoking_them(
     llama = json.loads((output / "llama_cpp_q8_0.json").read_text())
     assert transformer["model"]["weight_manifest_sha256"] != "0" * 64
     assert llama["model"]["weight_manifest_sha256"] != "0" * 64
-    assert llama["environment"]["conversion_command"].startswith(
-        "convert_hf_to_gguf.py"
-    )
+    assert llama["environment"]["conversion_command"].startswith("convert_hf_to_gguf.py")

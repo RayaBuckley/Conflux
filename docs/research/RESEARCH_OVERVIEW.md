@@ -2,7 +2,7 @@
 
 > Draft reviewer-facing overview. Reconcile against the current canonical repository documentation before treating this file as normative.
 >
-> **Canonical owners:** The security model is normative in [SECURITY_MODEL.md](../reference/SECURITY_MODEL.md); implementation status in [STATUS.md](../evidence/STATUS.md) and [task-registry.json](../task-registry.json); claim strength in [CLAIMS.md](../evidence/CLAIMS.md); formal verification in [SLED.md](../reference/SLED.md); evaluation evidence in [EVALUATION.md](../evidence/EVALUATION.md); comparative defence analysis in [reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md](../../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md); maximal-permissiveness analysis in [reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md](../../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md).
+> **Canonical owners:** The security model is normative in [SECURITY_MODEL.md](../reference/SECURITY_MODEL.md); implementation status in [STATUS.md](../evidence/STATUS.md) and [task-registry.json](../evidence/task-registry.json); claim strength in [CLAIMS.md](../evidence/CLAIMS.md); formal verification in [SLED.md](../reference/SLED.md); evaluation evidence in [EVALUATION.md](../evidence/EVALUATION.md); comparative defence analysis in [reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md](../../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md); maximal-permissiveness analysis in [reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md](../../reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md).
 
 ## 1. Research problem
 
@@ -276,5 +276,5 @@ For a research discussion:
 2. Read the canonical security model.
 3. Read the current SLED/SLED-V documentation.
 4. Inspect current claims/status documents.
-5. Consult the manuscript/Part B material for the original theorem and evaluation.
+5. Consult the publications/manuscript/Part B material for the original theorem and evaluation.
 6. Inspect the implementation only after the semantics and current claims are clear.

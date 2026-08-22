@@ -23,9 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Resolve protocols only; never download, convert, or invoke a model."
-    )
+    parser = argparse.ArgumentParser(description="Resolve protocols only; never download, convert, or invoke a model.")
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--transformers-weight-manifest", type=Path, required=True)
     parser.add_argument("--transformers-runtime-version", required=True)
@@ -142,9 +140,7 @@ def _protocol(
         },
         source_commit=source_commit,
         inputs={
-            "experiments/manifests/planning-laptop-smoke-v1.json": _sha256(
-                ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
-            )
+            "experiments/manifests/planning-laptop-smoke-v1.json": _sha256(ROOT / "experiments/manifests/planning-laptop-smoke-v1.json")
         },
         model=model,
         prompts={"planner": plan.prompt_template_version},
@@ -152,7 +148,7 @@ def _protocol(
         repetitions=plan.repetitions,
         bounds=dict(plan.bounds),
         environment={"execution": "modeled_actions_only", **environment},
-        output_directory=f"runs/laptop-planning-smoke-v1/{backend}",
+        output_directory=f"output/runs/laptop-planning-smoke-v1/{backend}",
         rerun_command=(
             "conflux",
             "plan",

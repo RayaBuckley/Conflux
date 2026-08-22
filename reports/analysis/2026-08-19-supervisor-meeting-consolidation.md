@@ -3,7 +3,7 @@
 **Date:** 19 August 2026
 **Status:** Meeting preparation; not a canonical specification
 **Source:** Consolidation of canonical status, claims, task registry, and analysis reports
-**Canonical owners:** Implementation status in [STATUS.md](../../docs/evidence/STATUS.md); claim strength in [CLAIMS.md](../../docs/evidence/CLAIMS.md); programme disposition in [task-registry.json](../../docs/task-registry.json); formal verification in [SLED.md](../../docs/reference/SLED.md); evaluation evidence in [EVALUATION.md](../../docs/evidence/EVALUATION.md)
+**Canonical owners:** Implementation status in [STATUS.md](../../docs/evidence/STATUS.md); claim strength in [CLAIMS.md](../../docs/evidence/CLAIMS.md); programme disposition in [task-registry.json](../../docs/evidence/task-registry.json); formal verification in [SLED.md](../../docs/reference/SLED.md); evaluation evidence in [EVALUATION.md](../../docs/evidence/EVALUATION.md)
 
 ## 1. Project summary
 
@@ -60,7 +60,7 @@ evidence, evaluation ready, and deferred.
 
 **Evidence:** [Spec 010](../../docs/specifications/010-open-ended-dynamic-planning.md),
 [tests/planning/](../../tests/planning/),
-[runs/smoke/](../../runs/smoke/)
+[output/runs/smoke/](../../output/runs/smoke/)
 
 ### 2.3 Native SLED verification — bounded evidence
 
@@ -73,7 +73,7 @@ evidence, evaluation ready, and deferred.
   non-comparable (different semantics: canonical states vs. trace
   enumeration)
 
-**Evidence:** [runs/native-sled-reproduction-v1/](../../runs/native-sled-reproduction-v1/),
+**Evidence:** [output/runs/native-sled-reproduction-v1/](../../output/runs/native-sled-reproduction-v1/),
 linked to commit `d6d9857954ac`
 
 ### 2.4 Serialisable verification IR + COI reduction — bounded evidence
@@ -90,11 +90,11 @@ linked to commit `d6d9857954ac`
   fixtures; reduced safe model drops one variable and one rule; reduced
   unsafe model lifts the counterexample
 
-**Evidence:** [runs/sled-coi-reduction-v1/](../../runs/sled-coi-reduction-v1/),
-[runs/verify-coi-safe/](../../runs/verify-coi-safe/),
-[runs/verify-coi-unsafe/](../../runs/verify-coi-unsafe/),
-[runs/verify-coi-original-safe/](../../runs/verify-coi-original-safe/),
-[runs/verify-coi-original-unsafe/](../../runs/verify-coi-original-unsafe/)
+**Evidence:** [output/runs/sled-coi-reduction-v1/](../../output/runs/sled-coi-reduction-v1/),
+[output/runs/verify-coi-safe/](../../output/runs/verify-coi-safe/),
+[output/runs/verify-coi-unsafe/](../../output/runs/verify-coi-unsafe/),
+[output/runs/verify-coi-original-safe/](../../output/runs/verify-coi-original-safe/),
+[output/runs/verify-coi-original-unsafe/](../../output/runs/verify-coi-original-unsafe/)
 
 ### 2.5 Security extensions (Spec 013) — implemented
 
@@ -112,8 +112,8 @@ linked to commit `d6d9857954ac`
   translation, binary-identity preflight; Cedar not invoked, parity not
   claimed
 
-**Evidence:** [runs/direction-readiness-v1/security-mutations.json](../../runs/direction-readiness-v1/security-mutations.json),
-[runs/cedar-differential-preflight-v1/](../../runs/cedar-differential-preflight-v1/)
+**Evidence:** [output/runs/direction-readiness-v1/security-mutations.json](../../output/runs/direction-readiness-v1/security-mutations.json),
+[output/runs/cedar-differential-preflight-v1/](../../output/runs/cedar-differential-preflight-v1/)
 
 ### 2.6 AgentDojo integration — implemented / bounded evidence (model-failed)
 
@@ -128,8 +128,8 @@ linked to commit `d6d9857954ac`
   to GPU availability
 - Raw upstream trace retained (47s benign inference)
 
-**Evidence:** [runs/agentdojo-qwen-1.5b/](../../runs/agentdojo-qwen-1.5b/),
-[external/agentdojo.lock](../../external/agentdojo.lock),
+**Evidence:** [output/runs/agentdojo-qwen-1.5b/](../../output/runs/agentdojo-qwen-1.5b/),
+[experiments/agentdojo.lock](../../experiments/agentdojo.lock),
 [tests/test_agentdojo_runner.py](../../tests/test_agentdojo_runner.py)
 
 ### 2.7 Planning comparison — implemented / bounded evidence (model-failed)
@@ -140,7 +140,7 @@ linked to commit `d6d9857954ac`
   parse issue)
 - Offline modeled fixtures are mechanics evidence only
 
-**Evidence:** [runs/planning-pilot-qwen-1.5b/](../../runs/planning-pilot-qwen-1.5b/),
+**Evidence:** [output/runs/planning-pilot-qwen-1.5b/](../../output/runs/planning-pilot-qwen-1.5b/),
 [tests/test_planning_runner.py](../../tests/test_planning_runner.py)
 
 ### 2.8 Model adapters — evaluation ready
@@ -190,7 +190,7 @@ linked to commit `d6d9857954ac`
 - Cross-platform CI: all four OS/Python combinations passed
 - Manuscript CI: passed
 
-**Evidence:** [artifacts/validation/6fe6b584500e/](../../artifacts/validation/6fe6b584500e/),
+**Evidence:** [output/validation/6fe6b584500e/](../../output/validation/6fe6b584500e/),
 [BASELINE_2026-07.md](../../docs/evidence/BASELINE_2026-07.md)
 
 ## 3. Claim strength summary
@@ -375,7 +375,7 @@ This consolidation is consistent with and folds in:
 - [STATUS.md](../../docs/evidence/STATUS.md) — implementation status
 - [CLAIMS.md](../../docs/evidence/CLAIMS.md) — claim strength and novelty
   qualification
-- [task-registry.json](../../docs/task-registry.json) — programme
+- [task-registry.json](../../docs/evidence/task-registry.json) — programme
   disposition
 - [RESEARCH_OVERVIEW.md](../../docs/research/RESEARCH_OVERVIEW.md) — research
   problem and direction

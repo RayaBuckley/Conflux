@@ -65,7 +65,7 @@
                          "canonical_successors":  [
                                                        "docs/research/RELATED_WORK.md",
                                                        "docs/evidence/CLAIMS.md",
-                                                      "manuscript/references.bib"
+                                                       "publications/manuscript/references.bib"
                                                   ],
                          "limitations":  [
                                              "Recent citations, metadata, and reported results require primary-source validation before publication."
@@ -87,11 +87,11 @@
                                            ],
                          "canonical_successors":  [
                                                       "docs/specifications/009-report-driven-programme.md",
-                                                      "docs/task-registry.json",
-                                                      "manuscript/conflux_fourth_year_2026.tex"
+                                                       "docs/evidence/task-registry.json",
+                                                       "publications/manuscript/conflux_fourth_year_2026.tex"
                                                   ],
                          "limitations":  [
-                                             "Implementation status is historical; the supplied manuscript source is superseded by manuscript/."
+                                             "Implementation status is historical; the supplied manuscript source is superseded by publications/manuscript/."
                                          ]
                      },
                      {
@@ -110,14 +110,14 @@
                                            ],
                          "canonical_successors":  [
                                                       "docs/specifications/010-open-ended-dynamic-planning.md",
-                                                      "docs/task-registry.json"
-                                                  ],
-                         "limitations":  [
-                                             "The assessment inspected the public repository without executing a checkout; its implementation status is stale."
-                                         ]
-                     },
-                     {
-                         "id":  "2026-07-31-evidence-first-evaluation",
+                                                       "docs/evidence/task-registry.json"
+                                                   ],
+                          "limitations":  [
+                                              "The assessment inspected the public repository without executing a checkout; its implementation status is stale."
+                                          ]
+                      },
+                      {
+                          "id":  "2026-07-31-evidence-first-evaluation",
                          "title":  "Evidence-first evaluation and research exploration",
                          "snapshot_date":  "2026-07-31",
                          "source_commits":  [
@@ -133,10 +133,10 @@
                          "canonical_successors":  [
                                                       "docs/specifications/012-evidence-first-evaluation.md",
                                                        "docs/evidence/EVALUATION.md",
-                                                      "docs/task-registry.json"
-                                                  ],
-                         "limitations":  [
-                                             "Its hosted credentialed-run and executable generated-code assumptions are superseded by specification 012; live model evidence remains deliberately deferred."
+                                                       "docs/evidence/task-registry.json"
+                                                   ],
+                          "limitations":  [
+                                              "Its hosted credentialed-run and executable generated-code assumptions are superseded by specification 012; live model evidence remains deliberately deferred."
                                          ]
                      },
                      {
@@ -155,12 +155,12 @@
                                             ],
                           "canonical_successors":  [
                                                        "docs/specifications/013-fourth-year-direction-programme.md",
-                                                      "docs/task-registry.json",
-                                                      "reports/analysis/PROJECT_ANALYSIS.md"
+                                                       "docs/evidence/task-registry.json",
+                                                       "reports/analysis/PROJECT_ANALYSIS.md"
                                                   ],
                          "limitations":  [
                                              "The package contains unresolved filecite markers and open design questions; specification 013 records the accepted choices.",
-                                              "Some recommendations overlap implementation that predates the snapshot; docs/task-registry.json owns current status."
+                                              "Some recommendations overlap implementation that predates the snapshot; docs/evidence/task-registry.json owns current status."
                                           ]
                       },
                       {
