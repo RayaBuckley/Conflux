@@ -55,6 +55,7 @@ def test_empty_context_denies_effect(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-002: empty Principal Context denies all effectful actions."""
     decision = pipeline.decide(
         session=session,
         action=primitive("write"),
@@ -71,6 +72,7 @@ def test_mixed_context_requires_every_principal(
     session: Session,
     alice: Principal,
 ) -> None:
+    """SEM-005, SEM-007: every Principal in context must independently allow."""
     ungranted = Principal("mallory", "Mallory")
     decision = pipeline.decide(
         session=session,
@@ -122,6 +124,7 @@ def test_missing_consent_denies_effect(
     session: Session,
     alice: Principal,
 ) -> None:
+    """SEM-005, SEM-006: consent denial blocks even when authorised."""
     denied = replace(pipeline, consent=ExplicitConsentPolicy())
     decision = denied.decide(
         session=session,
@@ -154,6 +157,7 @@ def test_delegation_is_unsupported(
     session: Session,
     alice: Principal,
 ) -> None:
+    """SEM-016: unsupported delegation fails closed."""
     decision = pipeline.decide(
         session=session,
         action=DelegationAction("delegate"),
@@ -201,6 +205,7 @@ def test_nested_execution_accumulates_provenance_and_hits_bound(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-009: nested execution merges input provenance into context."""
     shared = environment.data_item("shared-doc")
     assert shared is not None
     report = MediatingITES(TransitionKernel(pipeline)).run(
@@ -291,6 +296,7 @@ def test_execution_reauthorises_and_observes_policy_revocation(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-013: stale context is rejected at execution time."""
     item = environment.data_item("shared-doc")
     assert item is not None
     initial_mediator = MediatingITES(TransitionKernel(pipeline))
@@ -323,6 +329,7 @@ def test_ordered_plan_stops_at_first_denial(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-011: ordered plan stops at first denial."""
     item = environment.data_item("shared-doc")
     assert item is not None
     denied = PrimitiveAction(
@@ -360,6 +367,7 @@ def test_blocked_proposal_does_not_break_execution_guarantee(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-014: rejected proposals are diagnostics, not violations."""
     unknown = Artifact("unknown", "x", Provenance.unknown())
     report = MediatingITES(TransitionKernel(pipeline)).run(
         environment=environment,
@@ -382,6 +390,7 @@ def test_execution_requires_matching_certificate(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-008, SEM-012: execution requires matching certificate."""
     item = environment.data_item("shared-doc")
     assert item is not None
     mediator = MediatingITES(TransitionKernel(pipeline))
@@ -420,6 +429,8 @@ def test_provider_failure_is_recorded_separately(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-014: provider failure is distinct from policy denial."""
+
     class FailedExecutor:
         def execute(
             self,
@@ -488,6 +499,7 @@ def test_no_proposals_complete_and_model_errors_fail_closed(
     environment: EnvironmentSnapshot,
     session: Session,
 ) -> None:
+    """SEM-016: model errors fail closed."""
     item = environment.data_item("shared-doc")
     assert item is not None
     mediator = MediatingITES(TransitionKernel(pipeline))

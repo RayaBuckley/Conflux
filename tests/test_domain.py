@@ -40,10 +40,12 @@ def test_unknown_provenance_produces_non_authority_context() -> None:
 
 
 def test_empty_principal_context_is_not_authority_bearing() -> None:
+    """SEM-002: empty context is not authority-bearing."""
     assert not PrincipalContext().is_authority_bearing
 
 
 def test_provenance_merge_never_drops_principals(alice: Principal, bob: Principal) -> None:
+    """SEM-001, SEM-003: provenance merge is monotonic."""
     left = Provenance.from_principal(alice)
     right = Provenance.from_principal(bob)
     merged = left.merge(right)
@@ -51,6 +53,7 @@ def test_provenance_merge_never_drops_principals(alice: Principal, bob: Principa
 
 
 def test_unknown_precision_dominates_merge(alice: Principal) -> None:
+    """SEM-001, SEM-003: unknown precision dominates merge."""
     merged = Provenance.from_principal(alice).merge(Provenance.unknown())
     assert merged.precision is ProvenancePrecision.UNKNOWN
     assert merged.context.unknown
@@ -64,6 +67,7 @@ def test_derivation_preserves_provenance(alice: Principal) -> None:
 
 
 def test_combination_is_monotone(alice: Principal, bob: Principal) -> None:
+    """SEM-001: merge is monotone."""
     one = Artifact("one", 1, Provenance.from_principal(alice))
     two = Artifact("two", 2, Provenance.from_principal(bob))
     combined = Artifact.combine(one, two, artifact_id="sum", value=3, activity="add")
