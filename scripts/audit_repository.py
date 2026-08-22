@@ -921,10 +921,21 @@ def check_schemas(errors: list[str]) -> None:
         errors.append(f"missing versioned schema: schemas/{name}")
 
 
+def check_docstrings(errors: list[str]) -> None:
+    """Verify that all public classes and functions in src/conflux/ have docstrings."""
+    for path in SOURCE.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                if not node.name.startswith("_") and not ast.get_docstring(node):
+                    errors.append(f"{path.relative_to(ROOT)}:{node.lineno}: public {type(node).__name__} '{node.name}' has no docstring")
+
+
 def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
     check_docs(errors)
+    check_docstrings(errors)
     check_repository_governance(errors)
     check_reports(errors)
     check_archived_paper(errors)

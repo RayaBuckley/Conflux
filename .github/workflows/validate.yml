@@ -12,12 +12,22 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-      # Windows is omitted until cross-platform evidence is fully deterministic
-      # (see .gitattributes output/runs/** text eol=lf and CRLF-normalised comparisons).
+      # Windows is informational until cross-platform evidence is fully
+      # deterministic (see .gitattributes output/runs/** text eol=lf and
+      # CRLF-normalised comparisons).
       matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.12", "3.13"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.12"
+            experimental: false
+          - os: ubuntu-latest
+            python-version: "3.13"
+            experimental: false
+          - os: windows-latest
+            python-version: "3.12"
+            experimental: true
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -39,3 +49,19 @@ jobs:
           include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 14
+
+  docs:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install with docs dependencies
+        run: python -m pip install -e ".[docs]"
+      - name: Build API documentation
+        run: python scripts/generate_api_docs.py --check

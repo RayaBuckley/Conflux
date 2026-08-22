@@ -78,6 +78,10 @@ strict mypy, wheel build, and installed `doctor`, `demo`, `plan demo`,
 defines what that result does and does not support. The matching GitHub run
 passed all four supported operating-system/Python combinations.
 
+Windows CI is included as an informational (`continue-on-error`) job;
+it will be promoted to gating once CRLF determinism for evidence
+bundles is fully resolved.
+
 Native evidence added after that baseline is independently retained under
 `output/runs/native-sled-reproduction-v1/`, linked to implementation commit
 `d6d9857954ac7c7702fff64642d3ea9e7836948f`, and regenerates byte-for-byte.

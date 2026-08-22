@@ -12,6 +12,7 @@ from scripts.audit_repository import (
     ROOT,
     archive_digest,
     check_archived_paper,
+    check_docstrings,
     check_report_archive,
     check_report_crosswalk,
     check_repository_governance,
@@ -87,3 +88,9 @@ def test_repository_governance_accepts_only_registered_owners() -> None:
 def test_supersession_cycle_detection() -> None:
     assert not supersession_has_cycle({"new": {"old"}, "old": set()})
     assert supersession_has_cycle({"first": {"second"}, "second": {"first"}})
+
+
+def test_docstring_check_passes_on_current_codebase() -> None:
+    errors: list[str] = []
+    check_docstrings(errors)
+    assert errors == []
