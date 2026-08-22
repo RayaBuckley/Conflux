@@ -47,3 +47,51 @@ Read the relevant contract, write a decision-complete specification, implement
 one coherent change, update the existing evidence and documentation owners,
 then validate and review. Generated evidence is committed after the code that
 produces it so the measured revision is unambiguous.
+
+## Troubleshooting
+
+### Python version
+
+Conflux requires Python 3.12 or newer. Check with `python --version`. If
+multiple versions are installed, use `py -3.12` (Windows) or a version
+manager (`pyenv`, `mise`) to select the correct interpreter before creating
+the virtual environment.
+
+### Virtual environment activation on Windows
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks the activation script, run
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once.
+
+### Optional dependencies
+
+Z3 solver (`z3-solver`) is optional. Without it, `conflux verify --backend z3`
+returns `UNKNOWN` with exit code 3. Install with `pip install z3-solver`.
+
+AgentDojo (`agentdojo`) is optional. Without it, `benchmark agentdojo`
+preflight reports `not_installed`. Install with `pip install agentdojo`.
+
+### CRLF / LF normalisation
+
+The repository uses `.gitattributes` to manage line endings. If you see
+checksum failures in evidence bundles, ensure Git is configured with
+`core.autocrlf = input` on Windows. Run `git add --renormalize .` after
+changing line-ending settings.
+
+### Common mypy errors
+
+- `Module "conflux" has no attribute` — install the package in editable mode
+  (`pip install -e .`) or set `PYTHONPATH=src`.
+- `Import "pytest" could not be resolved` — install dev dependencies
+  (`pip install -e ".[dev]"`).
+- `Import "hypothesis" could not be resolved` — install dev dependencies.
+
+### Cedar binary checksum mismatch
+
+The `doctor --cedar-binary` command checks the SHA-256 of the supplied binary
+against the pinned identity. If the checksum differs, download the pinned
+version or omit `--cedar-binary` to report `binary_not_supplied`.

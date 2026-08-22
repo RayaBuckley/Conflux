@@ -64,6 +64,28 @@ corpus without invoking Cedar; optional `--binary` hashes the candidate bytes.
 identity check without issuing a policy request. See the
 [Cedar integration guide](../integrations/cedar.md).
 
+## Subcommand reference
+
+| Command | Subcommand | Key flags | Description |
+|---|---|---|---|
+| `demo` | — | `--scenario`, `--output`, `--manifest`, `--select-branch` | Run a scripted scenario and write trace, result, report |
+| `sled` | `run` | `--suite`, `--output` | Bounded verification of a scenario action set |
+| `sled` | `reproduce` | `--protocol`, `--output` | Native SLED reproduction with negative controls |
+| `sled` | `delegation` | `--output` | Canonical disabled-delegation model and 7 mutants |
+| `report` | — | `RESULT_JSON`, `--json` | Validate and render a result file as Markdown or JSON |
+| `verify` | — | `--model`, `--property`, `--backend`, `--reduce`, `--output` | Formal verification with optional solver and COI reduction |
+| `doctor` | — | `--json`, `--local-model-config`, `--cedar-bundle`, `--cedar-binary` | Report local capabilities without invoking models |
+| `chat` | — | `--scenario`, `--endpoint`, `--model`, `--principal` | Interactive mediated chat loop |
+| `plan` | `demo` | `--output` | Deterministic blocked-action/recovery/subplan trace |
+| `plan` | `compare` | `--config`, `--output`, `--execute-local` | Planning comparison matrix |
+| `plan` | `pilot` | `--model-config`, `--output`, `--execute-local` | Single-backend CPU planning pilot |
+| `plan` | `laptop-smoke` | `--plan`, `--transformers-config`, `--llama-config`, `--output`, `--execute-local` | Dual-backend laptop planning smoke |
+| `benchmark` | `agentdojo translate` | `--config`, `--upstream-log`, `--output` | Translate one pinned upstream record |
+| `benchmark` | `agentdojo preflight` | `--config`, `--output` | Validate pinned suite and build protocol |
+| `benchmark` | `agentdojo run` | `--config`, `--output`, `--execute-local` | Run AgentDojo comparison (requires model) |
+| `policy` | `cedar preflight` | `--bundle`, `--corpus`, `--output` | Validate and translate Cedar corpus |
+| `model` | `resolve transformers` | `--model-id`, `--revision`, `--output` | Resolve local-transformers model artifacts |
+
 ## Exit codes
 
 | Code | Meaning |

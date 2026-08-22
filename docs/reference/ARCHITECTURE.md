@@ -41,6 +41,41 @@ is data submitted to a mediated sandbox capability, not trusted control flow.
 Runtime-to-IR differential tests define the finite subset supported by formal
 backends; unsupported semantics produce `UNKNOWN`.
 
+## Planning subsystem
+
+Open-ended dynamic plans are untrusted data structures that ITES mediates at
+every grounded effect. The planning module provides the graph, binding,
+executor, and continuation types; ITES retains the sole execution boundary.
+
+```mermaid
+flowchart LR
+    plan[Plan graph] --> ground[Ground action]
+    ground --> mediate[ITES mediation]
+    mediate --> execute[Certificate-bound execution]
+    execute --> reauth[Re-authorise next step]
+    reauth --> ground
+    mediate -->|blocked| stop[Safe stop]
+```
+
+- **Plan graph** (`planning.model`): typed node taxonomy — model calls, action
+  templates, branches, loops, continuations, approvals, delegations, subplans,
+  and terminals.
+- **Bindings** (`planning.actions`): typed argument bindings (literal, artifact,
+  node-output) resolved against a binding environment before grounding.
+- **Executor** (`planning.executor`): deterministic dynamic-plan executor that
+  grounds each action template, submits it to ITES, and records the outcome.
+  Blocked actions stop the plan or trigger a continuation patch.
+- **Continuations** (`planning.continuation`): structured plan patches (add,
+  replace, remove) applied to the plan graph during continuation.
+- **Modeled programs** (`planning.modeled_program`): inert effect graphs used for
+  static analysis and verification-IR abstraction — no execution boundary.
+- **Plan state** (`planning.state`): mutable snapshot of node statuses, outputs,
+  and trace events during execution.
+
+Every grounded effect is re-mediated at action time. The planner cannot
+manufacture authority; it can only propose actions that ITES then authorises
+or blocks based on the current Principal Context and provenance.
+
 ## Rationale
 
 | Decision | Why | Accepted cost |
