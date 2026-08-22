@@ -16,12 +16,15 @@ _SECRET_MARKERS = ("api_key", "password", "secret", "token", "credential")
 
 @dataclass(frozen=True, slots=True)
 class ExperimentCase:
+    """A single expanded experiment case with index, seed, and manifest fingerprint."""
+
     index: int
     case_id: str
     seed: int
     manifest_fingerprint: str
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this experiment case to a JSON-compatible dictionary."""
         return {
             "schema_version": "1",
             "index": self.index,
@@ -33,11 +36,14 @@ class ExperimentCase:
 
 @dataclass(frozen=True, slots=True)
 class ResumePlan:
+    """Pending and completed cases with rejected markers for safe resumption."""
+
     pending: tuple[ExperimentCase, ...]
     completed: tuple[ExperimentCase, ...]
     rejected_markers: tuple[str, ...]
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this resume plan to a JSON-compatible dictionary."""
         return {
             "schema_version": "1",
             "pending": [case.to_dict() for case in self.pending],
@@ -57,13 +63,11 @@ def expand_cases(manifest: ExperimentManifest) -> tuple[ExperimentCase, ...]:
     if len(set(raw_cases)) != len(raw_cases):
         raise ValueError("experiment cases must be unique")
     cases = cast(tuple[str, ...] | list[str], raw_cases)
-    return tuple(
-        ExperimentCase(index, case_id, manifest.seed + index, manifest.fingerprint)
-        for index, case_id in enumerate(cases)
-    )
+    return tuple(ExperimentCase(index, case_id, manifest.seed + index, manifest.fingerprint) for index, case_id in enumerate(cases))
 
 
 def plan_resume(manifest: ExperimentManifest, output: Path) -> ResumePlan:
+    """Partition expanded cases into pending and completed based on completion markers."""
     pending: list[ExperimentCase] = []
     completed: list[ExperimentCase] = []
     rejected: list[str] = []
@@ -112,9 +116,8 @@ def materialise_jobs(manifest: ExperimentManifest, output: Path) -> ResumePlan:
 
 
 def completion_marker(case: ExperimentCase, result_sha256: str) -> dict[str, object]:
-    if len(result_sha256) != 64 or any(
-        character not in "0123456789abcdef" for character in result_sha256
-    ):
+    """Create a validatable completion marker for a finished experiment case."""
+    if len(result_sha256) != 64 or any(character not in "0123456789abcdef" for character in result_sha256):
         raise ValueError("result checksum must be lowercase SHA-256")
     payload: dict[str, object] = {
         "schema_version": "1",
@@ -129,6 +132,8 @@ def completion_marker(case: ExperimentCase, result_sha256: str) -> dict[str, obj
 
 
 def assert_manifest_has_no_secrets(manifest: ExperimentManifest) -> None:
+    """Recursively inspect the manifest and raise if secret material is present."""
+
     def inspect(value: object, path: str) -> None:
         if isinstance(value, dict):
             for key, item in value.items():

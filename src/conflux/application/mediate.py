@@ -19,12 +19,16 @@ from conflux.ports import ExecutorPort, ModelPort, ProviderResult
 
 @dataclass(frozen=True, slots=True)
 class ExecutionResult:
+    """Outcome of executing a single authorised branch through the executor."""
+
     provider: ProviderResult
     report: ITESReport
 
 
 @dataclass(frozen=True, slots=True)
 class PlanExecutionResult:
+    """Outcome of executing a multi-step authorised plan through the executor."""
+
     providers: tuple[ProviderResult, ...]
     report: ITESReport
     completed: bool
@@ -32,6 +36,8 @@ class PlanExecutionResult:
 
 @dataclass(frozen=True, slots=True)
 class MediationService:
+    """Application facade that evaluates and executes actions through the ITES boundary."""
+
     mediator: MediatingITES
 
     def evaluate(
@@ -43,6 +49,7 @@ class MediationService:
         model: ModelPort,
         max_model_calls: int = 3,
     ) -> ITESReport:
+        """Run the mediator over the environment and inputs, returning the ITES report."""
         from conflux.domain import Artifact
 
         if not all(isinstance(item, Artifact) for item in initial_inputs):
@@ -65,6 +72,7 @@ class MediationService:
         environment: EnvironmentSnapshot,
         session: Session,
     ) -> ExecutionResult:
+        """Execute a single authorised branch after re-validating its certificate."""
         if branch.certificate.action_fingerprint != action_fingerprint(branch.action):
             return ExecutionResult(
                 ProviderResult(False, error="certificate_action_mismatch"),
@@ -74,11 +82,7 @@ class MediationService:
             (item for item in report.branches if item.branch_id == branch.branch_id),
             None,
         )
-        if (
-            report_branch is None
-            or report_branch.certificate is None
-            or report_branch.certificate.id != branch.certificate.id
-        ):
+        if report_branch is None or report_branch.certificate is None or report_branch.certificate.id != branch.certificate.id:
             return ExecutionResult(
                 ProviderResult(False, error="certificate_report_mismatch"),
                 report,
@@ -117,11 +121,7 @@ class MediationService:
             branch_id=branch.branch_id,
             action=branch.action,
             decision=fresh,
-            outcome=(
-                ActionOutcome.EXECUTED
-                if provider.success
-                else ActionOutcome.PROVIDER_FAILED
-            ),
+            outcome=(ActionOutcome.EXECUTED if provider.success else ActionOutcome.PROVIDER_FAILED),
             reason=provider.error or "provider_succeeded",
             terminal=True,
         )
@@ -136,6 +136,7 @@ class MediationService:
         environment: EnvironmentSnapshot,
         session: Session,
     ) -> PlanExecutionResult:
+        """Execute a multi-step authorised plan, re-authorising each step before dispatch."""
         branch = next(
             (item for item in report.branches if item.branch_id == plan.branch_id),
             None,
@@ -189,11 +190,7 @@ class MediationService:
                 branch_id=plan.branch_id,
                 action=step.action,
                 decision=fresh,
-                outcome=(
-                    ActionOutcome.EXECUTED
-                    if provider.success
-                    else ActionOutcome.PROVIDER_FAILED
-                ),
+                outcome=(ActionOutcome.EXECUTED if provider.success else ActionOutcome.PROVIDER_FAILED),
                 reason=provider.error or "provider_succeeded",
                 terminal=terminal or not provider.success,
             )

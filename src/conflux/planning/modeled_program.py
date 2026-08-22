@@ -8,6 +8,8 @@ from typing import cast
 
 @dataclass(frozen=True, slots=True)
 class ModeledEffect:
+    """An inert declared effect with read/write references and dependencies."""
+
     id: str
     action_id: str
     dependencies: tuple[str, ...]
@@ -20,13 +22,11 @@ class ModeledEffect:
         object.__setattr__(self, "dependencies", tuple(self.dependencies))
         object.__setattr__(self, "declared_reads", tuple(self.declared_reads))
         object.__setattr__(self, "declared_writes", tuple(self.declared_writes))
-        if any(
-            len(set(items)) != len(items)
-            for items in (self.dependencies, self.declared_reads, self.declared_writes)
-        ):
+        if any(len(set(items)) != len(items) for items in (self.dependencies, self.declared_reads, self.declared_writes)):
             raise ValueError(f"modeled_effect_duplicate_reference:{self.id}")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the modeled effect to a canonical dictionary."""
         return {
             "id": self.id,
             "action_id": self.action_id,
@@ -38,6 +38,8 @@ class ModeledEffect:
 
 @dataclass(frozen=True, slots=True)
 class ModeledProgram:
+    """A step-bounded graph of inert modeled effects with no execution boundary."""
+
     id: str
     max_steps: int
     effects: tuple[ModeledEffect, ...]
@@ -59,6 +61,7 @@ class ModeledProgram:
             known.add(effect.id)
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the modeled program to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
@@ -68,10 +71,12 @@ class ModeledProgram:
 
     @property
     def action_ids(self) -> tuple[str, ...]:
+        """Return the ordered action ids of all effects in the program."""
         return tuple(effect.action_id for effect in self.effects)
 
 
 def parse_modeled_program(value: object) -> ModeledProgram:
+    """Parse an untrusted dictionary into a validated ModeledProgram."""
     if not isinstance(value, dict) or set(value) != {"schema_version", "id", "max_steps", "effects"}:
         raise ValueError("modeled_program_schema_error:root")
     payload = cast(dict[str, object], value)

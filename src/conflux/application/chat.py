@@ -13,6 +13,8 @@ from .mediate import MediationService
 
 @dataclass(frozen=True, slots=True)
 class ChatTurn:
+    """Immutable result of a single chat turn routed through mediation."""
+
     report: ITESReport
     executed: bool
     reason: str
@@ -20,6 +22,8 @@ class ChatTurn:
 
 @dataclass(slots=True)
 class ChatRuntime:
+    """Stateful chat session that routes each turn through ITES mediation and execution."""
+
     environment: EnvironmentSnapshot
     session: Session
     human: Principal
@@ -34,6 +38,7 @@ class ChatRuntime:
             raise ValueError("chat Principal must be a session participant")
 
     def submit(self, text: str) -> ChatTurn:
+        """Submit a chat turn, evaluate it through mediation, and execute the authorised branch or plan."""
         if not text:
             raise ValueError("chat input must be non-empty")
         self.turn += 1
@@ -68,11 +73,7 @@ class ChatRuntime:
             )
             report = plan_result.report
             executed = plan_result.completed
-            reason = (
-                "authorised_plan_executed"
-                if executed
-                else "plan_stopped_fail_closed"
-            )
+            reason = "authorised_plan_executed" if executed else "plan_stopped_fail_closed"
         elif len(report.authorised_branches) == 1:
             result = service.execute(
                 report=report,
@@ -83,11 +84,7 @@ class ChatRuntime:
             )
             report = result.report
             executed = result.provider.success
-            reason = (
-                "authorised_branch_executed"
-                if executed
-                else result.provider.error or "provider_failed"
-            )
+            reason = "authorised_branch_executed" if executed else result.provider.error or "provider_failed"
         elif len(report.authorised_branches) > 1:
             reason = "branch_selection_required"
         self.reports.append(report)

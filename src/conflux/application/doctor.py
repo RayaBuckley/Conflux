@@ -11,6 +11,8 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class CapabilityReport:
+    """Snapshot of runtime capabilities: OS, Python, CPU, container, GPU, schedulers, and optional backends."""
+
     schema_version: str
     os: str
     python: str
@@ -22,6 +24,7 @@ class CapabilityReport:
 
     @classmethod
     def discover(cls) -> "CapabilityReport":
+        """Probe the host environment and return a populated capability report."""
         container = next(
             (name for name in ("docker", "podman") if shutil.which(name)),
             None,
@@ -30,11 +33,7 @@ class CapabilityReport:
             (name for name in ("nvidia-smi", "rocm-smi") if shutil.which(name)),
             None,
         )
-        schedulers = tuple(
-            name
-            for name in ("sinfo", "squeue", "sbatch", "qsub")
-            if shutil.which(name)
-        )
+        schedulers = tuple(name for name in ("sinfo", "squeue", "sbatch", "qsub") if shutil.which(name))
         return cls(
             schema_version="1",
             os=platform.platform(),
@@ -53,6 +52,7 @@ class CapabilityReport:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the report to a plain dictionary."""
         return {
             "schema_version": self.schema_version,
             "os": self.os,

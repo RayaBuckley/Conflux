@@ -29,6 +29,8 @@ BACKEND_LLAMA_CPP = "llama_cpp_q8_0"
 
 @dataclass(frozen=True, slots=True)
 class LaptopSmokeCell:
+    """A single cell in the laptop planning smoke matrix."""
+
     backend: str
     scenario_id: str
     mode: PlanningMode
@@ -37,11 +39,14 @@ class LaptopSmokeCell:
 
     @property
     def id(self) -> str:
+        """Return the deterministic identifier for this laptop smoke cell."""
         return f"{self.backend}:{self.scenario_id}:{self.mode.value}:r{self.repetition}:s{self.seed}"
 
 
 @dataclass(frozen=True, slots=True)
 class LaptopPlanningSmokePlan:
+    """Immutable specification for a dual-backend laptop planning smoke run."""
+
     id: str
     source_model_id: str
     source_revision: str
@@ -62,6 +67,7 @@ class LaptopPlanningSmokePlan:
     schema_version: str = "1"
 
     def __post_init__(self) -> None:
+        """Freeze mutable fields and validate the plan against its schema."""
         object.__setattr__(self, "scenario_ids", tuple(self.scenario_ids))
         object.__setattr__(self, "modes", tuple(self.modes))
         object.__setattr__(self, "backends", tuple(self.backends))
@@ -70,6 +76,7 @@ class LaptopPlanningSmokePlan:
         Draft202012Validator(load_schema("planning-laptop-smoke.schema.json")).validate(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this laptop planning smoke plan to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
@@ -93,9 +100,11 @@ class LaptopPlanningSmokePlan:
 
     @property
     def fingerprint(self) -> str:
+        """Return a content-based fingerprint of this plan."""
         return fingerprint(self.to_dict())
 
     def matrix(self) -> tuple[LaptopSmokeCell, ...]:
+        """Expand this plan into its full cross-product of laptop smoke cells."""
         return tuple(
             LaptopSmokeCell(backend, scenario, mode, repetition, self.seed)
             for backend in self.backends
@@ -106,6 +115,7 @@ class LaptopPlanningSmokePlan:
 
 
 def load_laptop_planning_smoke(path: Path) -> LaptopPlanningSmokePlan:
+    """Load and validate a laptop planning smoke plan from a JSON file."""
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
         Draft202012Validator(load_schema("planning-laptop-smoke.schema.json")).validate(payload)
@@ -137,6 +147,7 @@ def validate_laptop_protocols(
     plan: LaptopPlanningSmokePlan,
     protocols: Mapping[str, ExperimentProtocol],
 ) -> None:
+    """Validate that two backend protocols are consistent with the smoke plan."""
     if set(protocols) != set(plan.backends):
         raise ValueError("laptop_smoke_backend_pair_required")
     transformers = _model(protocols[BACKEND_TRANSFORMERS])
@@ -177,6 +188,7 @@ def run_laptop_planning_smoke(
     models: Mapping[str, LocalModelPort],
     scenarios: tuple[DiagnosticScenario, ...] | None = None,
 ) -> dict[str, object]:
+    """Execute both laptop backends and return the validated smoke result."""
     validate_laptop_protocols(plan, protocols)
     if set(models) != set(plan.backends):
         raise ValueError("laptop_smoke_model_pair_required")
@@ -196,9 +208,7 @@ def run_laptop_planning_smoke(
         "model_identities": {backend: _model(protocols[backend]).to_dict() for backend in plan.backends},
         "observations": observations,
     }
-    Draft202012Validator(
-        load_schema("planning-laptop-smoke-result.schema.json")
-    ).validate(result)
+    Draft202012Validator(load_schema("planning-laptop-smoke-result.schema.json")).validate(result)
     return result
 
 

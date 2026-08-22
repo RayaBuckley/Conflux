@@ -12,11 +12,15 @@ IR_SCHEMA_VERSION = "1"
 
 
 class Sort(StrEnum):
+    """Value sort supported by the verification IR."""
+
     BOOLEAN = "boolean"
     INTEGER = "integer"
 
 
 class ExpressionKind(StrEnum):
+    """Enumeration of supported IR expression node types."""
+
     CONSTANT = "constant"
     VARIABLE = "variable"
     NOT = "not"
@@ -32,11 +36,14 @@ Scalar: TypeAlias = bool | int
 
 @dataclass(frozen=True, slots=True)
 class Expression:
+    """Immutable IR expression node of a given kind, value, and arguments."""
+
     kind: ExpressionKind
     value: Scalar | str | None = None
     arguments: tuple["Expression", ...] = ()
 
     def __post_init__(self) -> None:
+        """Validate arity and value constraints for this expression node."""
         object.__setattr__(self, "arguments", tuple(self.arguments))
         arity = {
             ExpressionKind.CONSTANT: 0,
@@ -54,19 +61,19 @@ class Expression:
             raise ValueError(f"{self.kind.value} expression requires arguments")
         if self.kind == ExpressionKind.CONSTANT and not isinstance(self.value, (bool, int)):
             raise ValueError("constant expression requires a Boolean or integer")
-        if self.kind == ExpressionKind.VARIABLE and (
-            not isinstance(self.value, str) or not self.value
-        ):
+        if self.kind == ExpressionKind.VARIABLE and (not isinstance(self.value, str) or not self.value):
             raise ValueError("variable expression requires a name")
         if self.kind not in {ExpressionKind.CONSTANT, ExpressionKind.VARIABLE} and self.value is not None:
             raise ValueError("operator expressions cannot contain a direct value")
 
     @classmethod
     def constant(cls, value: Scalar) -> "Expression":
+        """Create a constant expression from a Boolean or integer value."""
         return cls(ExpressionKind.CONSTANT, value)
 
     @classmethod
     def variable(cls, name: str) -> "Expression":
+        """Create a variable reference expression from a name."""
         return cls(ExpressionKind.VARIABLE, name)
 
     @classmethod
@@ -75,9 +82,11 @@ class Expression:
         kind: ExpressionKind,
         *arguments: "Expression",
     ) -> "Expression":
+        """Create an operator expression with the given kind and arguments."""
         return cls(kind, arguments=arguments)
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this expression to a JSON-compatible dictionary."""
         return {
             "kind": self.kind.value,
             "value": self.value,
@@ -86,6 +95,7 @@ class Expression:
 
     @classmethod
     def from_dict(cls, value: object) -> "Expression":
+        """Deserialize an expression from a JSON-compatible dictionary."""
         if not isinstance(value, Mapping) or set(value) != {"kind", "value", "arguments"}:
             raise ValueError("malformed IR expression")
         try:
@@ -107,6 +117,8 @@ class Expression:
 
 @dataclass(frozen=True, slots=True)
 class StateVariable:
+    """A named state variable with sort, initial value, and optional bounds."""
+
     name: str
     sort: Sort
     initial: Scalar
@@ -114,27 +126,24 @@ class StateVariable:
     maximum: int | None = None
 
     def __post_init__(self) -> None:
+        """Validate the variable name, sort, initial value, and domain bounds."""
         if not self.name:
             raise ValueError("state variable name must be non-empty")
         if self.sort == Sort.BOOLEAN and not isinstance(self.initial, bool):
             raise ValueError("Boolean state variable requires a Boolean initial value")
-        if self.sort == Sort.INTEGER and (
-            not isinstance(self.initial, int) or isinstance(self.initial, bool)
-        ):
+        if self.sort == Sort.INTEGER and (not isinstance(self.initial, int) or isinstance(self.initial, bool)):
             raise ValueError("integer state variable requires an integer initial value")
-        if self.sort == Sort.BOOLEAN and (
-            self.minimum is not None or self.maximum is not None
-        ):
+        if self.sort == Sort.BOOLEAN and (self.minimum is not None or self.maximum is not None):
             raise ValueError("Boolean state variables cannot have numeric bounds")
         if self.minimum is not None and self.maximum is not None and self.minimum > self.maximum:
             raise ValueError("state variable minimum exceeds maximum")
         if self.sort == Sort.INTEGER and (
-            (self.minimum is not None and self.initial < self.minimum)
-            or (self.maximum is not None and self.initial > self.maximum)
+            (self.minimum is not None and self.initial < self.minimum) or (self.maximum is not None and self.initial > self.maximum)
         ):
             raise ValueError("integer initial value is outside its domain")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this state variable to a JSON-compatible dictionary."""
         return {
             "name": self.name,
             "sort": self.sort.value,
@@ -146,10 +155,13 @@ class StateVariable:
 
 @dataclass(frozen=True, slots=True)
 class Assignment:
+    """A guarded assignment of an expression to a state variable."""
+
     variable: str
     expression: Expression
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this assignment to a JSON-compatible dictionary."""
         return {
             "variable": self.variable,
             "expression": self.expression.to_dict(),
@@ -158,11 +170,14 @@ class Assignment:
 
 @dataclass(frozen=True, slots=True)
 class TransitionRule:
+    """A transition rule with a guard and a set of simultaneous assignments."""
+
     id: str
     guard: Expression
     assignments: tuple[Assignment, ...]
 
     def __post_init__(self) -> None:
+        """Validate that the rule has a non-empty id and unique assignment targets."""
         if not self.id:
             raise ValueError("transition rule id must be non-empty")
         object.__setattr__(self, "assignments", tuple(self.assignments))
@@ -171,6 +186,7 @@ class TransitionRule:
             raise ValueError("transition assignments must be unique")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this transition rule to a JSON-compatible dictionary."""
         return {
             "id": self.id,
             "guard": self.guard.to_dict(),
@@ -180,15 +196,19 @@ class TransitionRule:
 
 @dataclass(frozen=True, slots=True)
 class SafetyInvariant:
+    """A named safety property expressed as an invariant expression."""
+
     id: str
     expression: Expression
     description: str = ""
 
     def __post_init__(self) -> None:
+        """Validate that the invariant has a non-empty id."""
         if not self.id:
             raise ValueError("safety invariant id must be non-empty")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this safety invariant to a JSON-compatible dictionary."""
         return {
             "id": self.id,
             "expression": self.expression.to_dict(),
@@ -198,6 +218,8 @@ class SafetyInvariant:
 
 @dataclass(frozen=True, slots=True)
 class VerificationIR:
+    """A complete serializable transition-system IR for bounded verification."""
+
     id: str
     variables: tuple[StateVariable, ...]
     transitions: tuple[TransitionRule, ...]
@@ -207,6 +229,7 @@ class VerificationIR:
     schema_version: str = IR_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
+        """Validate all internal consistency and referential integrity constraints."""
         if not self.id or self.bound < 1:
             raise ValueError("verification IR requires an id and positive bound")
         if self.schema_version != IR_SCHEMA_VERSION:
@@ -233,29 +256,25 @@ class VerificationIR:
             _validate_expression(invariant.expression, variable_names)
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this verification IR to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
             "bound": self.bound,
             "assumptions": list(self.assumptions),
-            "variables": [
-                variable.to_dict()
-                for variable in sorted(self.variables, key=lambda item: item.name)
-            ],
-            "transitions": [
-                rule.to_dict() for rule in sorted(self.transitions, key=lambda item: item.id)
-            ],
-            "invariants": [
-                item.to_dict() for item in sorted(self.invariants, key=lambda item: item.id)
-            ],
+            "variables": [variable.to_dict() for variable in sorted(self.variables, key=lambda item: item.name)],
+            "transitions": [rule.to_dict() for rule in sorted(self.transitions, key=lambda item: item.id)],
+            "invariants": [item.to_dict() for item in sorted(self.invariants, key=lambda item: item.id)],
         }
 
     @property
     def fingerprint(self) -> str:
+        """Return a content-based fingerprint of this verification IR."""
         return fingerprint(self.to_dict())
 
     @classmethod
     def from_dict(cls, value: object) -> "VerificationIR":
+        """Deserialize a verification IR from a JSON-compatible dictionary."""
         if not isinstance(value, Mapping):
             raise ValueError("verification IR must be an object")
         expected = {

@@ -26,6 +26,8 @@ DEFENCE_NAMES = ("ites", "no_defence", "union_permissions", "initiator_only", "l
 
 @dataclass(frozen=True, slots=True)
 class AbstractExecutionState:
+    """Counts of proposed, authorised, blocked, and unauthorised effects in one run."""
+
     proposed: int
     authorised: int
     blocked: int
@@ -35,6 +37,7 @@ class AbstractExecutionState:
     unauthorised_effects: int
 
     def to_dict(self) -> dict[str, int]:
+        """Serialize this abstract execution state to a JSON-compatible dictionary."""
         return {
             "proposed": self.proposed,
             "authorised": self.authorised,
@@ -48,12 +51,15 @@ class AbstractExecutionState:
 
 @dataclass(frozen=True, slots=True)
 class CanonicalExecutionOracle:
+    """Oracle that checks a transition against the canonical decision pipeline."""
+
     pipeline: DecisionPipeline
     session: Session
     environment: EnvironmentSnapshot
     name: str = "canonical_execution_oracle"
 
     def violation(self, transition: Transition[BranchState, Action]) -> str | None:
+        """Return a violation message if an authorised transition is denied by the oracle."""
         if transition.target.status != BranchStatus.AUTHORISED:
             return None
         decision = self.pipeline.decide(
@@ -69,6 +75,7 @@ def run_native_reproduction(
     protocol: ExperimentProtocol,
     root: Path | None = None,
 ) -> dict[str, object]:
+    """Run the paired native SLED reproduction and return the validated result."""
     if protocol.track != "native_sled" or protocol.model is not None:
         raise ValueError("native_sled_protocol_required")
     selected_root = root or _default_reproduction_root()
@@ -99,9 +106,7 @@ def run_native_reproduction(
             }
         )
     controls = _negative_controls(bounds)
-    baseline = json.loads(
-        (selected_root / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8")
-    )
+    baseline = json.loads((selected_root / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8"))
     result: dict[str, object] = {
         "schema_version": "2",
         "protocol_fingerprint": protocol.fingerprint,

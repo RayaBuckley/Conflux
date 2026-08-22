@@ -14,6 +14,8 @@ PLAN_SCHEMA_VERSION = "1"
 
 
 class NodeKind(StrEnum):
+    """Enumerates the kinds of nodes in a plan graph."""
+
     MODEL_CALL = "model_call"
     ACTION_TEMPLATE = "action_template"
     BRANCH = "branch"
@@ -26,6 +28,8 @@ class NodeKind(StrEnum):
 
 
 class TerminalOutcome(StrEnum):
+    """Enumerates terminal outcomes for a plan run."""
+
     SUCCEEDED = "succeeded"
     SAFE_STOP = "safe_stop"
     FAILED = "failed"
@@ -33,6 +37,8 @@ class TerminalOutcome(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class ModelCallNode:
+    """Plan node that invokes a value model and binds its output."""
+
     id: str
     prompt: Binding
     output_name: str
@@ -48,6 +54,8 @@ class ModelCallNode:
 
 @dataclass(frozen=True, slots=True)
 class ActionTemplateNode:
+    """Plan node that grounds and mediates an action template."""
+
     id: str
     template: ActionTemplate
     control_provenance: Provenance
@@ -65,6 +73,8 @@ class ActionTemplateNode:
 
 @dataclass(frozen=True, slots=True)
 class BranchNode:
+    """Plan node that selects between two targets based on a condition."""
+
     id: str
     condition: Binding
     when_true: str
@@ -81,6 +91,8 @@ class BranchNode:
 
 @dataclass(frozen=True, slots=True)
 class LoopNode:
+    """Plan node that iterates a body until a condition or iteration bound is met."""
+
     id: str
     condition: Binding
     body_node_id: str
@@ -100,6 +112,8 @@ class LoopNode:
 
 @dataclass(frozen=True, slots=True)
 class ContinuePlanningNode:
+    """Plan node that requests a continuation patch from the planner."""
+
     id: str
     observation_bindings: tuple[Binding, ...]
     trigger: str
@@ -116,6 +130,8 @@ class ContinuePlanningNode:
 
 @dataclass(frozen=True, slots=True)
 class ApprovalNode:
+    """Plan node that blocks until an approval decision is received."""
+
     id: str
     request: str
     control_provenance: Provenance
@@ -130,6 +146,8 @@ class ApprovalNode:
 
 @dataclass(frozen=True, slots=True)
 class DelegationNode:
+    """Plan node that delegates execution to a scoped sub-agent."""
+
     id: str
     scope: str
     control_provenance: Provenance
@@ -144,6 +162,8 @@ class DelegationNode:
 
 @dataclass(frozen=True, slots=True)
 class SubplanNode:
+    """Plan node that executes a referenced child subplan."""
+
     id: str
     child_plan_id: str
     control_provenance: Provenance
@@ -158,6 +178,8 @@ class SubplanNode:
 
 @dataclass(frozen=True, slots=True)
 class TerminalNode:
+    """Plan node that terminates the run with a final outcome."""
+
     id: str
     outcome: TerminalOutcome
     reason: str
@@ -186,6 +208,8 @@ PlanNode: TypeAlias = (
 
 @dataclass(frozen=True, slots=True)
 class Plan:
+    """Immutable plan graph with nodes, subplans, and invocation provenance."""
+
     id: str
     goal: str
     nodes: tuple[PlanNode, ...]
@@ -204,31 +228,30 @@ class Plan:
 
     @property
     def node_ids(self) -> frozenset[str]:
+        """Return a frozenset of all node ids in the plan."""
         return frozenset(node.id for node in self.nodes)
 
     def node(self, node_id: str) -> PlanNode:
+        """Return the node with the given id or raise."""
         try:
             return next(node for node in self.nodes if node.id == node_id)
         except StopIteration as error:
             raise ValueError(f"unknown plan node: {node_id}") from error
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the plan to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
             "goal": self.goal,
             "invocation_provenance": self.invocation_provenance.to_dict(),
-            "nodes": [
-                node_to_dict(node)
-                for node in sorted(self.nodes, key=lambda item: (item.id, node_fingerprint(item)))
-            ],
-            "subplans": [
-                plan.to_dict() for plan in sorted(self.subplans, key=lambda item: item.id)
-            ],
+            "nodes": [node_to_dict(node) for node in sorted(self.nodes, key=lambda item: (item.id, node_fingerprint(item)))],
+            "subplans": [plan.to_dict() for plan in sorted(self.subplans, key=lambda item: item.id)],
         }
 
     @property
     def fingerprint(self) -> str:
+        """Return the content fingerprint of the plan."""
         return fingerprint(self.to_dict())
 
 
@@ -303,6 +326,7 @@ def _common_dict(node: PlanNode) -> dict[str, object]:
 
 
 def node_to_dict(node: PlanNode) -> dict[str, object]:
+    """Serialise a plan node to a canonical dictionary."""
     result = _common_dict(node)
     if isinstance(node, ModelCallNode):
         result.update(prompt=node.prompt.to_dict(), output_name=node.output_name)
@@ -343,6 +367,7 @@ def node_to_dict(node: PlanNode) -> dict[str, object]:
 
 
 def node_fingerprint(node: PlanNode) -> str:
+    """Return the content fingerprint of a plan node."""
     return fingerprint(node_to_dict(node))
 
 

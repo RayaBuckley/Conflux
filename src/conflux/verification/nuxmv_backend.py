@@ -18,6 +18,8 @@ from .results import FormalVerdict, FormalVerificationResult
 
 @dataclass(frozen=True, slots=True)
 class NuXmvOutcome:
+    """Captured stdout, stderr, and version from a nuXmv invocation."""
+
     exit_code: int
     stdout: str
     stderr: str
@@ -25,6 +27,8 @@ class NuXmvOutcome:
 
 
 class NuXmvRunner(Protocol):
+    """Protocol for executing a nuXmv binary on a model file."""
+
     def run(
         self,
         binary: str,
@@ -35,6 +39,8 @@ class NuXmvRunner(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class SubprocessNuXmvRunner:
+    """Runs nuXmv as a local subprocess with a configurable timeout."""
+
     timeout_seconds: float = 120.0
 
     def run(
@@ -43,6 +49,7 @@ class SubprocessNuXmvRunner:
         model_path: Path,
         commands: str,
     ) -> NuXmvOutcome:
+        """Execute the nuXmv binary on the model file with the given commands."""
         try:
             version = subprocess.run(  # noqa: S603
                 (binary, "-h"),
@@ -98,6 +105,8 @@ def _wsl_available() -> bool:
 
 @dataclass(frozen=True, slots=True)
 class WslNuXmvRunner:
+    """Runs nuXmv inside WSL, bridging the Windows/Linux file-system boundary."""
+
     timeout_seconds: float = 120.0
 
     def run(
@@ -106,6 +115,7 @@ class WslNuXmvRunner:
         model_path: Path,
         commands: str,
     ) -> NuXmvOutcome:
+        """Execute nuXmv under WSL using a temporary shared model file."""
         wsl_dir = _WSL_TMP / f"conflux-nuxmv-{os.getpid()}-{id(model_path)}"
         wsl_dir.mkdir(parents=True, exist_ok=True)
         smv_file = wsl_dir / "model.smv"
@@ -155,6 +165,8 @@ class WslNuXmvRunner:
 
 @dataclass(frozen=True, slots=True)
 class NuXmvBackend:
+    """Optional nuXmv IC3 backend for the supported Boolean IR subset."""
+
     binary: str = "nuXmv"
     runner: NuXmvRunner = field(default_factory=lambda: WslNuXmvRunner() if _wsl_available() else SubprocessNuXmvRunner())
     availability: Callable[[str], bool] = field(
@@ -164,6 +176,7 @@ class NuXmvBackend:
     )
 
     def verify(self, ir: VerificationIR) -> FormalVerificationResult:
+        """Verify Boolean IR invariants using nuXmv IC3, returning a formal result."""
         unsupported = tuple(variable.name for variable in ir.variables if variable.sort != Sort.BOOLEAN)
         if unsupported:
             return self._unknown(

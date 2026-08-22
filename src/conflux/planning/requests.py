@@ -12,6 +12,8 @@ from .model import Plan
 
 @dataclass(frozen=True, slots=True)
 class PlanBudgets:
+    """Immutable resource bounds for a plan execution."""
+
     max_nodes: int = 128
     max_transitions: int = 512
     max_planner_calls: int = 16
@@ -22,19 +24,23 @@ class PlanBudgets:
     max_elapsed_seconds: float = 300.0
 
     def __post_init__(self) -> None:
-        if min(
-            self.max_nodes,
-            self.max_transitions,
-            self.max_planner_calls,
-            self.max_continuation_depth,
-            self.max_loop_iterations,
-            self.max_effects,
-            self.max_output_bytes,
-            self.max_elapsed_seconds,
-        ) <= 0:
+        if (
+            min(
+                self.max_nodes,
+                self.max_transitions,
+                self.max_planner_calls,
+                self.max_continuation_depth,
+                self.max_loop_iterations,
+                self.max_effects,
+                self.max_output_bytes,
+                self.max_elapsed_seconds,
+            )
+            <= 0
+        ):
             raise ValueError("all planning bounds must be positive")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the budgets to a canonical dictionary."""
         return {
             "max_nodes": self.max_nodes,
             "max_transitions": self.max_transitions,
@@ -49,6 +55,8 @@ class PlanBudgets:
 
 @dataclass(frozen=True, slots=True)
 class PlanningRequest:
+    """Side-effect-free request for an initial plan from the planner."""
+
     request_id: str
     goal: str
     observations: tuple[Artifact[Any], ...]
@@ -62,6 +70,7 @@ class PlanningRequest:
         object.__setattr__(self, "observations", tuple(self.observations))
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the planning request to a canonical dictionary."""
         return {
             "request_id": self.request_id,
             "goal": self.goal,
@@ -74,11 +83,14 @@ class PlanningRequest:
 
     @property
     def fingerprint(self) -> str:
+        """Return the content fingerprint of the planning request."""
         return fingerprint(self.to_dict())
 
 
 @dataclass(frozen=True, slots=True)
 class ContinuationRequest:
+    """Request for a continuation patch from the planner mid-execution."""
+
     request_id: str
     plan: Plan
     completed_node_ids: tuple[str, ...]
@@ -110,6 +122,7 @@ class ContinuationRequest:
         trigger: str,
         control_provenance: Provenance,
     ) -> "ContinuationRequest":
+        """Construct a ContinuationRequest with derived provenance."""
         sources = [plan.invocation_provenance, control_provenance]
         sources.extend(observation.provenance for observation in observations)
         provenance = provenance_union(*sources).with_activity(f"continuation:{request_id}")
@@ -125,14 +138,13 @@ class ContinuationRequest:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the continuation request to a canonical dictionary."""
         return {
             "request_id": self.request_id,
             "plan_id": self.plan.id,
             "plan_fingerprint": self.plan.fingerprint,
             "completed_node_ids": list(self.completed_node_ids),
-            "observations": [
-                {"id": item.id, "fingerprint": item.fingerprint} for item in self.observations
-            ],
+            "observations": [{"id": item.id, "fingerprint": item.fingerprint} for item in self.observations],
             "catalogue_fingerprint": self.catalogue_fingerprint,
             "remaining_budgets": self.remaining_budgets.to_dict(),
             "trigger": self.trigger,
@@ -141,8 +153,8 @@ class ContinuationRequest:
 
     @property
     def fingerprint(self) -> str:
+        """Return the content fingerprint of the continuation request."""
         return fingerprint(self.to_dict())
 
 
 __all__ = ["ContinuationRequest", "PlanBudgets", "PlanningRequest"]
-

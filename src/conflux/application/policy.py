@@ -30,6 +30,8 @@ from conflux.ports import (
 
 @dataclass(frozen=True, slots=True)
 class DecisionPipeline:
+    """Composes authorisation, read, visibility, consent, and argument decisions for an action."""
+
     authorisation: AuthorisationPort
     read: ReadPolicyPort
     visibility: VisibilityPolicyPort
@@ -44,6 +46,7 @@ class DecisionPipeline:
         context: PrincipalContext,
         environment: EnvironmentSnapshot,
     ) -> ActionDecision:
+        """Produce the composite action decision for the given context and environment."""
         safe_control = isinstance(action, (StopAction, NoOpAction))
         if not context.is_authority_bearing and not safe_control:
             return _context_denial(context)

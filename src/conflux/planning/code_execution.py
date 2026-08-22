@@ -11,6 +11,8 @@ from conflux.domain import Artifact, Permission, Provenance, fingerprint, proven
 
 @dataclass(frozen=True, slots=True)
 class CapabilityEnvelope:
+    """Immutable sandbox capability envelope for code execution."""
+
     runtime_image: str
     workspace: str
     read_paths: tuple[str, ...] = ()
@@ -36,17 +38,21 @@ class CapabilityEnvelope:
             "credential_capabilities",
             tuple(self.credential_capabilities),
         )
-        if min(
-            self.timeout_seconds,
-            self.memory_bytes,
-            self.process_limit,
-            self.output_bytes,
-        ) <= 0:
+        if (
+            min(
+                self.timeout_seconds,
+                self.memory_bytes,
+                self.process_limit,
+                self.output_bytes,
+            )
+            <= 0
+        ):
             raise ValueError("sandbox resource limits must be positive")
         for path in (self.workspace, *self.read_paths, *self.write_paths):
             _validate_relative_path(path)
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the capability envelope to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "runtime_image": self.runtime_image,
@@ -63,10 +69,12 @@ class CapabilityEnvelope:
 
     @property
     def fingerprint(self) -> str:
+        """Return the content fingerprint of the capability envelope."""
         return fingerprint(self.to_dict())
 
     @classmethod
     def from_dict(cls, value: object) -> "CapabilityEnvelope":
+        """Parse a dictionary into a validated CapabilityEnvelope."""
         if not isinstance(value, Mapping):
             raise ValueError("capability envelope must be an object")
         payload = MappingProxyType(dict(value))
@@ -104,6 +112,8 @@ class CapabilityEnvelope:
 
 @dataclass(frozen=True, slots=True)
 class CodeExecutionRequest:
+    """A typed request to execute code in a sandboxed capability envelope."""
+
     id: str
     source: Artifact[str]
     inputs: tuple[Artifact[Any], ...]
@@ -125,6 +135,7 @@ class CodeExecutionRequest:
 
     @property
     def output_provenance(self) -> Provenance:
+        """Return the combined provenance of source, inputs, and runtime."""
         return provenance_union(
             self.source.provenance,
             *(item.provenance for item in self.inputs),
@@ -132,6 +143,7 @@ class CodeExecutionRequest:
         ).with_activity(f"execute_code:{self.id}")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the code execution request to a canonical dictionary."""
         return {
             "id": self.id,
             "source_id": self.source.id,
@@ -145,17 +157,21 @@ class CodeExecutionRequest:
 
     @property
     def fingerprint(self) -> str:
+        """Return the content fingerprint of the code execution request."""
         return fingerprint(self.to_dict())
 
 
 @dataclass(frozen=True, slots=True)
 class CodeOutput:
+    """A single output artifact produced by code execution."""
+
     path: str
     sha256: str
     size: int
     artifact: Artifact[bytes]
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the code output to a canonical dictionary."""
         return {
             "path": self.path,
             "sha256": self.sha256,
@@ -167,6 +183,8 @@ class CodeOutput:
 
 @dataclass(frozen=True, slots=True)
 class CodeExecutionResult:
+    """Outcome of a code execution including outputs and observed I/O."""
+
     success: bool
     request_fingerprint: str
     runtime_image: str
@@ -181,6 +199,7 @@ class CodeExecutionResult:
     failure_category: str | None = None
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the code execution result to a canonical dictionary."""
         return {
             "success": self.success,
             "request_fingerprint": self.request_fingerprint,
@@ -198,6 +217,7 @@ class CodeExecutionResult:
 
 
 def code_operation_permission() -> Permission:
+    """Return the permission required to execute code."""
     return Permission("execute_code")
 
 
@@ -216,9 +236,7 @@ def _string(value: object, label: str) -> str:
 
 
 def _strings(value: object, label: str) -> tuple[str, ...]:
-    if not isinstance(value, (list, tuple)) or not all(
-        isinstance(item, str) and item for item in value
-    ):
+    if not isinstance(value, (list, tuple)) or not all(isinstance(item, str) and item for item in value):
         raise ValueError(f"{label} must be an array of non-empty strings")
     return tuple(value)
 

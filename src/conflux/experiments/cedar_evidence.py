@@ -29,6 +29,7 @@ CEDAR_EVIDENCE_FILES = frozenset(
 
 
 def generate_cedar_preflight_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> None:
+    """Generate the offline Cedar preflight evidence bundle into *output*."""
     root = repo_root or _ROOT
     bundle_source = root / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
     corpus_source = root / "experiments" / "suites" / "cedar-differential-v1.json"
@@ -87,9 +88,8 @@ def generate_cedar_preflight_bundle(source_commit: str, output: Path, *, repo_ro
 
 
 def compare_cedar_preflight_bundle(retained: Path, regenerated: Path) -> tuple[str, ...]:
-    names = {path.name for path in retained.iterdir() if path.is_file()} | {
-        path.name for path in regenerated.iterdir() if path.is_file()
-    }
+    """Return file names that are missing or differ between two Cedar evidence bundles."""
+    names = {path.name for path in retained.iterdir() if path.is_file()} | {path.name for path in regenerated.iterdir() if path.is_file()}
     return tuple(
         name
         for name in sorted(names)
@@ -100,6 +100,7 @@ def compare_cedar_preflight_bundle(retained: Path, regenerated: Path) -> tuple[s
 
 
 def verify_cedar_preflight_checksums(output: Path) -> tuple[str, ...]:
+    """Return file names whose checksums are missing or mismatched in the bundle."""
     checksum_path = output / "CHECKSUMS.sha256"
     if not checksum_path.is_file():
         return ("CHECKSUMS.sha256",)
@@ -127,9 +128,7 @@ def _table(result: dict[str, object]) -> str:
         f"{len(cast(list[object], row['translated_requests']))} |"
         for row in rows
     )
-    return "\n".join(
-        (*lines, "", "Cedar was not invoked; this table is readiness evidence, not parity evidence.", "")
-    )
+    return "\n".join((*lines, "", "Cedar was not invoked; this table is readiness evidence, not parity evidence.", ""))
 
 
 def _write_json(path: Path, payload: object) -> None:

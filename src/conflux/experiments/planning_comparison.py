@@ -16,6 +16,8 @@ from conflux.domain import canonical_json
 
 
 class PlanningMode(StrEnum):
+    """Enumeration of the four planning modes compared in the report."""
+
     REACTIVE = "reactive"
     STATIC = "static"
     DYNAMIC = "dynamic"
@@ -24,6 +26,8 @@ class PlanningMode(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class PlanningObservation:
+    """A single planning observation with security, utility, and resource metrics."""
+
     task_id: str
     mode: PlanningMode
     security_passed: bool
@@ -39,6 +43,7 @@ class PlanningObservation:
 
     @classmethod
     def from_dict(cls, value: dict[str, object]) -> "PlanningObservation":
+        """Deserialize a planning observation from a JSON-compatible dictionary."""
         Draft202012Validator(load_schema("planning-observation.schema.json")).validate(value)
         return cls(
             task_id=cast(str, value["task_id"]),
@@ -59,6 +64,7 @@ class PlanningObservation:
 def aggregate_planning_comparison(
     observations: tuple[PlanningObservation, ...],
 ) -> dict[str, object]:
+    """Aggregate observations across all four planning modes into a validated result."""
     if not observations:
         raise ValueError("planning comparison requires observations")
     grouped: dict[PlanningMode, list[PlanningObservation]] = defaultdict(list)
@@ -85,9 +91,7 @@ def aggregate_planning_comparison(
             "plan_nodes": sum(item.plan_nodes for item in items),
             "sensitive_reads": sum(item.sensitive_reads for item in items),
             "max_context_size": max(item.max_context_size for item in items),
-            "statuses": [
-                {"task_id": item.task_id, "status": item.status} for item in items
-            ],
+            "statuses": [{"task_id": item.task_id, "status": item.status} for item in items],
         }
     result: dict[str, object] = {
         "schema_version": "1",
@@ -99,6 +103,7 @@ def aggregate_planning_comparison(
 
 
 def generate_planning_report(input_directory: Path, output: Path) -> dict[str, object]:
+    """Load observation files, aggregate them, and write the planning comparison report."""
     observations: list[PlanningObservation] = []
     for path in sorted(input_directory.glob("*.json")):
         value = json.loads(path.read_text(encoding="utf-8"))

@@ -52,6 +52,7 @@ DISCLOSURE_PROPERTIES = (
 
 
 def generate_direction_evidence_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> None:
+    """Generate the offline direction-readiness and security-mutation evidence bundle."""
     root = repo_root or _ROOT
     laptop_plan = root / "experiments/manifests/planning-laptop-smoke-v1.json"
     planning_suite = root / "experiments/suites/planning-diagnostic-v1.yaml"
@@ -113,9 +114,8 @@ def generate_direction_evidence_bundle(source_commit: str, output: Path, *, repo
 
 
 def compare_direction_evidence_bundle(retained: Path, regenerated: Path) -> tuple[str, ...]:
-    names = {path.name for path in retained.iterdir() if path.is_file()} | {
-        path.name for path in regenerated.iterdir() if path.is_file()
-    }
+    """Return file names that are missing or differ between two direction evidence bundles."""
+    names = {path.name for path in retained.iterdir() if path.is_file()} | {path.name for path in regenerated.iterdir() if path.is_file()}
     return tuple(
         name
         for name in sorted(names)
@@ -167,9 +167,7 @@ def _laptop_preflight(laptop_plan: Path, planning_source: Path) -> dict[str, obj
         "seeds": [plan.seed],
         "repetitions": plan.repetitions,
         "bounds": dict(plan.bounds),
-        "matrix": [
-            {"cell_id": cell.id, "status": "unavailable"} for cell in plan.matrix()
-        ],
+        "matrix": [{"cell_id": cell.id, "status": "unavailable"} for cell in plan.matrix()],
         "expected_resources": {
             "transformers": ["local_model_cache", "laptop_cpu_or_gpu"],
             "llama_cpp_q8_0": ["pinned_local_binary", "local_gguf", "loopback_endpoint"],
@@ -186,11 +184,7 @@ def _laptop_preflight(laptop_plan: Path, planning_source: Path) -> dict[str, obj
 
 def _planning_preflight(planning_source: Path) -> dict[str, object]:
     scenarios = load_default_planning_diagnostic_suite()
-    cells = [
-        f"{scenario.id}:{mode.value}:r0:s0"
-        for scenario in scenarios
-        for mode in PlanningMode
-    ]
+    cells = [f"{scenario.id}:{mode.value}:r0:s0" for scenario in scenarios for mode in PlanningMode]
     payload = {
         "schema_version": "1",
         "id": "planning-diagnostic-v1",
@@ -221,11 +215,7 @@ def _planning_preflight(planning_source: Path) -> dict[str, object]:
 
 
 def _agentdojo_preflight() -> dict[str, object]:
-    cells = tuple(
-        AgentDojoCell(attacked, defence, 0, 0)
-        for attacked in (False, True)
-        for defence in ("no_defence", "ites")
-    )
+    cells = tuple(AgentDojoCell(attacked, defence, 0, 0) for attacked in (False, True) for defence in ("no_defence", "ites"))
     payload = {
         "schema_version": "1",
         "id": "agentdojo-v0.1.35-smoke",
@@ -248,9 +238,7 @@ def _agentdojo_preflight() -> dict[str, object]:
         "seeds": [0],
         "repetitions": 1,
         "bounds": {"max_model_calls": 8},
-        "matrix": [
-            {**cell.to_dict(), "status": "unavailable"} for cell in cells
-        ],
+        "matrix": [{**cell.to_dict(), "status": "unavailable"} for cell in cells],
         "expected_resources": ["agentdojo_0.1.35", "self_hosted_model"],
         "exclusions": [
             "AgentDojo was not installed or invoked",
@@ -263,18 +251,12 @@ def _agentdojo_preflight() -> dict[str, object]:
 
 def _security_mutations() -> dict[str, object]:
     bounds = VerificationBounds(1, 4, 4, 1)
-    disclosure_canonical = ExplicitStateChecker().verify(
-        DisclosureVerificationSystem(), DISCLOSURE_PROPERTIES, bounds
-    )
-    delegation_canonical = ExplicitStateChecker().verify(
-        DelegationVerificationSystem(), DELEGATION_PROPERTIES, bounds
-    )
+    disclosure_canonical = ExplicitStateChecker().verify(DisclosureVerificationSystem(), DISCLOSURE_PROPERTIES, bounds)
+    delegation_canonical = ExplicitStateChecker().verify(DelegationVerificationSystem(), DELEGATION_PROPERTIES, bounds)
     disclosure = [
         _mutation_result(
             mutation.value,
-            ExplicitStateChecker().verify(
-                DisclosureVerificationSystem(mutation), DISCLOSURE_PROPERTIES, bounds
-            ),
+            ExplicitStateChecker().verify(DisclosureVerificationSystem(mutation), DISCLOSURE_PROPERTIES, bounds),
         )
         for mutation in DisclosureMutation
         if mutation is not DisclosureMutation.CANONICAL
@@ -282,9 +264,7 @@ def _security_mutations() -> dict[str, object]:
     delegation = [
         _mutation_result(
             mutation.value,
-            ExplicitStateChecker().verify(
-                DelegationVerificationSystem(mutation), DELEGATION_PROPERTIES, bounds
-            ),
+            ExplicitStateChecker().verify(DelegationVerificationSystem(mutation), DELEGATION_PROPERTIES, bounds),
         )
         for mutation in DelegationMutation
         if mutation is not DelegationMutation.CANONICAL
@@ -315,9 +295,7 @@ def _mutation_result(mutation: str, result: Any) -> dict[str, object]:
     counterexample = verification["counterexample"]
     return {
         "mutation": mutation,
-        "killed": verification["verdict"] == "unsafe"
-        and counterexample is not None
-        and counterexample["length"] == 1,
+        "killed": verification["verdict"] == "unsafe" and counterexample is not None and counterexample["length"] == 1,
         "verification": verification,
     }
 

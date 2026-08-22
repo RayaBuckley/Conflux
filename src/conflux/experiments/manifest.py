@@ -17,6 +17,8 @@ from conflux.domain import canonical_json, fingerprint
 
 @dataclass(frozen=True, slots=True)
 class ExperimentManifest:
+    """Immutable, schema-validated experiment manifest with a content fingerprint."""
+
     id: str
     suite: str
     suite_version: str
@@ -33,6 +35,7 @@ class ExperimentManifest:
     schema_version: str = "1"
 
     def __post_init__(self) -> None:
+        """Freeze mapping fields and validate against the manifest schema."""
         for name in ("bounds", "model", "provider", "policy", "machine"):
             object.__setattr__(
                 self,
@@ -40,11 +43,10 @@ class ExperimentManifest:
                 MappingProxyType(dict(cast(Mapping[str, object], getattr(self, name)))),
             )
         object.__setattr__(self, "rerun_command", tuple(self.rerun_command))
-        Draft202012Validator(load_schema("experiment-manifest.schema.json")).validate(
-            self.to_dict()
-        )
+        Draft202012Validator(load_schema("experiment-manifest.schema.json")).validate(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this manifest to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
@@ -64,9 +66,11 @@ class ExperimentManifest:
 
     @property
     def fingerprint(self) -> str:
+        """Return a content-based fingerprint of this manifest."""
         return fingerprint(self.to_dict())
 
     def materialise(self, directory: Path) -> Path:
+        """Write the manifest and rerun command into *directory* and return the manifest path."""
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / "manifest.json"
         path.write_text(
@@ -83,6 +87,7 @@ class ExperimentManifest:
 
 
 def load_manifest(path: Path) -> ExperimentManifest:
+    """Load and validate an experiment manifest from a YAML or JSON file."""
     try:
         payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, YAMLError) as error:
@@ -90,9 +95,7 @@ def load_manifest(path: Path) -> ExperimentManifest:
     if not isinstance(payload, dict):
         raise ValueError("manifest_root_must_be_mapping")
     try:
-        Draft202012Validator(load_schema("experiment-manifest.schema.json")).validate(
-            payload
-        )
+        Draft202012Validator(load_schema("experiment-manifest.schema.json")).validate(payload)
     except ValidationError as error:
         location = ".".join(str(item) for item in error.absolute_path) or "<root>"
         raise ValueError(f"manifest_schema_error:{location}:{error.message}") from error

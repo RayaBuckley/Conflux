@@ -22,6 +22,8 @@ def _frozen(value: Mapping[str, object]) -> Mapping[str, object]:
 
 @dataclass(frozen=True, slots=True)
 class ExperimentProtocol:
+    """Immutable, schema-validated version-two experiment protocol."""
+
     id: str
     track: str
     suite: Mapping[str, object]
@@ -38,6 +40,7 @@ class ExperimentProtocol:
     schema_version: str = "2"
 
     def __post_init__(self) -> None:
+        """Freeze mutable fields and validate against the protocol schema."""
         for name in ("suite", "inputs", "prompts", "bounds", "environment"):
             object.__setattr__(self, name, _frozen(cast(Mapping[str, object], getattr(self, name))))
         object.__setattr__(self, "seeds", tuple(self.seeds))
@@ -45,6 +48,7 @@ class ExperimentProtocol:
         _validate("experiment-protocol-v2.schema.json", self.to_dict(), "protocol")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this protocol to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
@@ -64,9 +68,11 @@ class ExperimentProtocol:
 
     @property
     def fingerprint(self) -> str:
+        """Return a content-based fingerprint of this protocol."""
         return fingerprint(self.to_dict())
 
     def materialise(self, directory: Path) -> Path:
+        """Write the protocol and rerun command into *directory* and return the path."""
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / "protocol.json"
         path.write_text(canonical_json(self.to_dict()) + "\n", encoding="utf-8", newline="\n")
@@ -76,16 +82,21 @@ class ExperimentProtocol:
 
 @dataclass(frozen=True, slots=True)
 class RunFailure:
+    """A categorized failure record for an experiment run."""
+
     category: str
     detail: str
     case_id: str | None = None
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this run failure to a JSON-compatible dictionary."""
         return {"category": self.category, "detail": self.detail, "case_id": self.case_id}
 
 
 @dataclass(frozen=True, slots=True)
 class ResolvedRunManifest:
+    """Immutable, schema-validated manifest summarizing a resolved experiment run."""
+
     run_id: str
     track: str
     protocol_fingerprint: str
@@ -99,6 +110,7 @@ class ResolvedRunManifest:
     schema_version: str = "2"
 
     def __post_init__(self) -> None:
+        """Freeze fields and validate completeness and schema compliance."""
         object.__setattr__(self, "exclusions", tuple(self.exclusions))
         object.__setattr__(self, "failures", tuple(self.failures))
         object.__setattr__(self, "environment", _frozen(self.environment))
@@ -108,6 +120,7 @@ class ResolvedRunManifest:
             raise ValueError("run_manifest_completeness_mismatch")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this resolved run manifest to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "run_id": self.run_id,
@@ -132,6 +145,7 @@ def _validate(schema: str, payload: object, label: str) -> None:
 
 
 def load_protocol(path: Path) -> ExperimentProtocol:
+    """Load and validate an experiment protocol from a YAML or JSON file."""
     payload = _load_mapping(path, "protocol")
     _validate("experiment-protocol-v2.schema.json", payload, "protocol")
     model_payload = cast(dict[str, Any] | None, payload["model"])

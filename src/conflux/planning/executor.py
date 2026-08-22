@@ -49,11 +49,14 @@ from .state import (
 
 @dataclass(frozen=True, slots=True)
 class DynamicPlanResult:
+    """Outcome of a dynamic plan execution including state and mediation reports."""
+
     state: PlanExecutionState
     mediation_reports: tuple[ITESReport, ...]
     completed: bool
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the result to a canonical dictionary."""
         return {
             "schema_version": "1",
             "completed": self.completed,
@@ -64,6 +67,8 @@ class DynamicPlanResult:
 
 @dataclass(frozen=True, slots=True)
 class DynamicPlanExecutor:
+    """Deterministic executor that mediates every grounded effect of a plan."""
+
     planner: PlannerPort
     value_model: ValueModelPort
     mediation: MediationService
@@ -75,6 +80,7 @@ class DynamicPlanExecutor:
     clock: Callable[[], float] = time.monotonic
 
     def run(self, request: PlanningRequest) -> DynamicPlanResult:
+        """Execute a planning request from the initial plan onward."""
         if request.catalogue_fingerprint != self.catalogue.fingerprint:
             return self._initial_failure(
                 request,
@@ -102,6 +108,7 @@ class DynamicPlanExecutor:
         artifacts: tuple[Artifact[Any], ...] = (),
         state: PlanExecutionState | None = None,
     ) -> DynamicPlanResult:
+        """Execute a plan to completion or a bounded stop."""
         current = state or PlanExecutionState.initial(plan, artifacts)
         reports: list[ITESReport] = []
         started = self.clock()
@@ -214,9 +221,7 @@ class DynamicPlanExecutor:
         if state.planner_calls >= self.budgets.max_planner_calls:
             return self._incomplete(state, "planner_call_bound", node_id=node.id)
         prompt = resolve_binding(node.prompt, self._bindings(state))
-        response = self.value_model.produce(
-            ValueRequest(f"{state.run_id}:{node.id}:{state.node_state(node.id).attempts}", node.id, prompt)
-        )
+        response = self.value_model.produce(ValueRequest(f"{state.run_id}:{node.id}:{state.node_state(node.id).attempts}", node.id, prompt))
         state = replace(state, planner_calls=state.planner_calls + 1).emit(
             "plan.model_responded",
             node_id=node.id,
@@ -303,13 +308,10 @@ class DynamicPlanExecutor:
         authorised = report.authorised_branches
         if not authorised:
             reason = _report_denial(report)
-            state = (
-                state.with_node(node.id, NodeStatus.BLOCKED, reason=reason)
-                .emit(
-                    "plan.node_blocked",
-                    node_id=node.id,
-                    payload={"reason": reason, "mediation_run_id": report.run_id},
-                )
+            state = state.with_node(node.id, NodeStatus.BLOCKED, reason=reason).emit(
+                "plan.node_blocked",
+                node_id=node.id,
+                payload={"reason": reason, "mediation_run_id": report.run_id},
             )
             if node.on_block is not None:
                 state = state.activate(node.on_block)
@@ -331,27 +333,20 @@ class DynamicPlanExecutor:
         state = replace(state, effects=state.effects + 1)
         if not execution.provider.success:
             reason = execution.provider.error or "provider_failed"
-            state = (
-                state.with_node(node.id, NodeStatus.FAILED, reason=reason)
-                .emit(
-                    "plan.node_failed",
-                    node_id=node.id,
-                    payload={
-                        "reason": reason,
-                        "mediation_run_id": execution.report.run_id,
-                    },
-                )
+            state = state.with_node(node.id, NodeStatus.FAILED, reason=reason).emit(
+                "plan.node_failed",
+                node_id=node.id,
+                payload={
+                    "reason": reason,
+                    "mediation_run_id": execution.report.run_id,
+                },
             )
             if action.operation == "execute_code":
                 outcome = execution.provider.outcome
                 state = state.emit(
                     "code.failed",
                     node_id=node.id,
-                    payload=(
-                        outcome.to_dict()
-                        if isinstance(outcome, CodeExecutionResult)
-                        else {"reason": reason}
-                    ),
+                    payload=(outcome.to_dict() if isinstance(outcome, CodeExecutionResult) else {"reason": reason}),
                 )
             if node.on_failure is not None:
                 state = state.activate(node.on_failure)
@@ -409,15 +404,9 @@ class DynamicPlanExecutor:
             state = state.emit(
                 "code.completed",
                 node_id=node.id,
-                payload=(
-                    outcome.to_dict()
-                    if isinstance(outcome, CodeExecutionResult)
-                    else {"outcome_fingerprint": fingerprint(outcome)}
-                ),
+                payload=(outcome.to_dict() if isinstance(outcome, CodeExecutionResult) else {"outcome_fingerprint": fingerprint(outcome)}),
             )
-        unused = tuple(
-            target for target in (node.on_block, node.on_failure) if target is not None
-        )
+        unused = tuple(target for target in (node.on_block, node.on_failure) if target is not None)
         return state.skip(*unused, reason="action_succeeded"), execution.report
 
     def _branch_node(
@@ -492,14 +481,9 @@ class DynamicPlanExecutor:
             return self._incomplete(state, "planner_call_bound", node_id=node.id)
         if state.continuation_depth >= self.budgets.max_continuation_depth:
             return self._incomplete(state, "continuation_depth_bound", node_id=node.id)
-        observations = tuple(
-            resolve_binding(binding, self._bindings(state))
-            for binding in node.observation_bindings
-        )
+        observations = tuple(resolve_binding(binding, self._bindings(state)) for binding in node.observation_bindings)
         completed = tuple(
-            item.node_id
-            for item in state.nodes
-            if item.status in {NodeStatus.SUCCEEDED, NodeStatus.FAILED, NodeStatus.BLOCKED}
+            item.node_id for item in state.nodes if item.status in {NodeStatus.SUCCEEDED, NodeStatus.FAILED, NodeStatus.BLOCKED}
         )
         request = ContinuationRequest.create(
             request_id=f"{state.run_id}:{node.id}:{state.node_state(node.id).attempts}",
@@ -540,10 +524,7 @@ class DynamicPlanExecutor:
                 node_id=node.id,
                 payload={"reason": response.record.error or "missing_patch"},
             )
-        history = {
-            item.node_id: HistoricalNodeStatus(item.status.value)
-            for item in state.nodes
-        }
+        history = {item.node_id: HistoricalNodeStatus(item.status.value) for item in state.nodes}
         try:
             application = apply_patch(
                 state.plan,
@@ -568,19 +549,16 @@ class DynamicPlanExecutor:
         )
         if node.id in application.removed_node_ids:
             raise ValueError("continuation patch removed its running node")
-        return (
-            state.with_node(node.id, NodeStatus.SUCCEEDED, reason="patch_applied")
-            .emit(
-                "plan.patch_applied",
-                node_id=node.id,
-                payload={
-                    "patch_fingerprint": response.patch.fingerprint,
-                    "added_node_ids": list(application.added_node_ids),
-                    "removed_node_ids": list(application.removed_node_ids),
-                    "added_subplan_ids": list(application.added_subplan_ids),
-                    "plan": application.plan.to_dict(),
-                },
-            )
+        return state.with_node(node.id, NodeStatus.SUCCEEDED, reason="patch_applied").emit(
+            "plan.patch_applied",
+            node_id=node.id,
+            payload={
+                "patch_fingerprint": response.patch.fingerprint,
+                "added_node_ids": list(application.added_node_ids),
+                "removed_node_ids": list(application.removed_node_ids),
+                "added_subplan_ids": list(application.added_subplan_ids),
+                "plan": application.plan.to_dict(),
+            },
         )
 
     def _subplan_node(
@@ -808,6 +786,7 @@ class _OneActionModel:
     action: Action
 
     def propose(self, inputs: tuple[Artifact[Any], ...]) -> ProposalBatch:
+        """Return a single-alternative batch wrapping the configured action."""
         _ = inputs
         return ProposalBatch.alternatives(self.action)
 

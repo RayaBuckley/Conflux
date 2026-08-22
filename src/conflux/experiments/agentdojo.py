@@ -17,6 +17,8 @@ FAILURE_CATEGORIES = ("setup", "model", "parser", "policy", "security", "tool", 
 
 @dataclass(frozen=True, slots=True)
 class AgentDojoCell:
+    """A single cell in the AgentDojo comparison matrix."""
+
     attacked: bool
     defence: str
     repetition: int
@@ -28,10 +30,12 @@ class AgentDojoCell:
 
     @property
     def id(self) -> str:
+        """Return the deterministic identifier for this cell."""
         attack = "attacked" if self.attacked else "benign"
         return f"{self.suite_id}:{self.user_task_id}:{attack}:{self.defence}:r{self.repetition}:s{self.seed}"
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this cell to a JSON-compatible dictionary."""
         return {
             "case_id": self.id,
             "attacked": self.attacked,
@@ -47,6 +51,8 @@ class AgentDojoCell:
 
 @dataclass(frozen=True, slots=True)
 class AgentDojoCellResult:
+    """Result of executing a single AgentDojo comparison cell."""
+
     cell: AgentDojoCell
     status: str
     native_utility: bool | None
@@ -61,12 +67,14 @@ class AgentDojoCellResult:
     latency_ms: int
 
     def __post_init__(self) -> None:
+        """Freeze augmentations and validate failure categories."""
         object.__setattr__(self, "augmentation", tuple(MappingProxyType(dict(item)) for item in self.augmentation))
         unknown = set(self.failures) - set(FAILURE_CATEGORIES)
         if unknown:
             raise ValueError(f"unknown_agentdojo_failure:{sorted(unknown)[0]}")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this cell result to a JSON-compatible dictionary."""
         return {
             "case_id": self.cell.id,
             "attacked": self.cell.attacked,
@@ -88,10 +96,13 @@ class AgentDojoCellResult:
 
 
 class AgentDojoCellExecutor(Protocol):
+    """Protocol for executing an AgentDojo cell against a local model."""
+
     def execute(self, cell: AgentDojoCell, model: LocalModelPort, max_model_calls: int) -> AgentDojoCellResult: ...
 
 
 def agentdojo_matrix(protocol: ExperimentProtocol) -> tuple[AgentDojoCell, ...]:
+    """Expand an AgentDojo protocol into its full cross-product of cells."""
     if protocol.track != "agentdojo" or protocol.model is None:
         raise ValueError("agentdojo_protocol_with_model_required")
     return tuple(
@@ -108,6 +119,7 @@ def run_agentdojo_comparison(
     model: LocalModelPort,
     executor: AgentDojoCellExecutor,
 ) -> dict[str, object]:
+    """Execute every AgentDojo cell and return the validated comparison payload."""
     cells = agentdojo_matrix(protocol)
     preflight = model.preflight()
     if not preflight.available or preflight.model_id != protocol.model.model_id:  # type: ignore[union-attr]

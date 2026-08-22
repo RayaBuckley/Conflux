@@ -43,6 +43,7 @@ def generate_smoke_bundle(
     *,
     repo_root: Path | None = None,
 ) -> tuple[Path, ...]:
+    """Generate the small deterministic M3 evidence bundle into *output*."""
     root = repo_root or _ROOT
     output.mkdir(parents=True, exist_ok=True)
     manifest.materialise(output)
@@ -53,10 +54,7 @@ def generate_smoke_bundle(
 
     records = list(trace_records(authorised)) + list(trace_records(blocked))
     clock = DeterministicClock()
-    normalised = tuple(
-        replace_record(record, sequence=index, timestamp=clock.at(index))
-        for index, record in enumerate(records)
-    )
+    normalised = tuple(replace_record(record, sequence=index, timestamp=clock.at(index)) for index, record in enumerate(records))
     raw_content = "".join(canonical_json(record) + "\n" for record in normalised)
     raw_path = output / "raw.jsonl"
     raw_path.write_text(raw_content, encoding="utf-8", newline="\n")
@@ -98,13 +96,9 @@ def generate_smoke_bundle(
             "authorised": authorised.authorised_count + blocked.authorised_count,
             "blocked": authorised.blocked_count + blocked.blocked_count,
             "executed": authorised.executed_count + blocked.executed_count,
-            "provider_failed": (
-                authorised.provider_failed_count + blocked.provider_failed_count
-            ),
+            "provider_failed": (authorised.provider_failed_count + blocked.provider_failed_count),
             "incomplete": authorised.incomplete_count + blocked.incomplete_count,
-            "negative_counterexample_length": (
-                negative.counterexample.length if negative.counterexample else None
-            ),
+            "negative_counterexample_length": (negative.counterexample.length if negative.counterexample else None),
         },
         trace_path="raw.jsonl",
         trace_sha256=raw_hash,
@@ -125,6 +119,7 @@ def replace_record(
     sequence: int,
     timestamp: str,
 ) -> dict[str, object]:
+    """Return a copy of *record* with updated sequence and timestamp fields."""
     result = dict(record)
     result["sequence"] = sequence
     result["timestamp"] = timestamp
@@ -143,13 +138,17 @@ def _run(path: Path, *, execute: bool) -> ITESReport:
     if execute:
         if len(report.authorised_branches) != 1:
             raise RuntimeError("smoke_authorised_case_did_not_yield_one_branch")
-        report = MediationService(mediator).execute(
-            report=report,
-            branch=report.authorised_branches[0],
-            executor=InMemoryExecutor(),
-            environment=scenario.environment,
-            session=scenario.session,
-        ).report
+        report = (
+            MediationService(mediator)
+            .execute(
+                report=report,
+                branch=report.authorised_branches[0],
+                executor=InMemoryExecutor(),
+                environment=scenario.environment,
+                session=scenario.session,
+            )
+            .report
+        )
     return report
 
 
@@ -192,10 +191,7 @@ def _table(result: RunResult) -> str:
 
 
 def _write_checksums(output: Path) -> None:
-    lines = (
-        f"{_canonical_file_sha256(output / name)}  {name}"
-        for name in BUNDLE_FILES
-    )
+    lines = (f"{_canonical_file_sha256(output / name)}  {name}" for name in BUNDLE_FILES)
     (output / "checksums.sha256").write_text(
         "\n".join(lines) + "\n",
         encoding="utf-8",

@@ -7,6 +7,8 @@ from enum import StrEnum
 
 
 class FormalVerdict(StrEnum):
+    """Enumeration of possible formal verification outcomes."""
+
     SAFE = "safe"
     BOUNDED_SAFE = "bounded_safe"
     UNSAFE = "unsafe"
@@ -15,6 +17,8 @@ class FormalVerdict(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class FormalVerificationResult:
+    """Immutable record of a formal verification backend's outcome."""
+
     verdict: FormalVerdict
     backend: str
     ir_hash: str
@@ -28,6 +32,7 @@ class FormalVerificationResult:
     schema_version: str = "1"
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this verification result to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "verdict": self.verdict.value,

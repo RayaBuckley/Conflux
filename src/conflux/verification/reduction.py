@@ -16,6 +16,8 @@ REDUCTION_SCHEMA_VERSION = "1"
 
 @dataclass(frozen=True, slots=True)
 class WitnessLiftingEvidence:
+    """Evidence that a reduced-model witness can be lifted to the original."""
+
     strategy: str
     rule_ids_preserved: bool
     projected_variables: tuple[str, ...]
@@ -23,6 +25,7 @@ class WitnessLiftingEvidence:
     reason: str | None = None
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this witness-lifting evidence to a JSON-compatible dictionary."""
         return {
             "strategy": self.strategy,
             "rule_ids_preserved": self.rule_ids_preserved,
@@ -34,6 +37,8 @@ class WitnessLiftingEvidence:
 
 @dataclass(frozen=True, slots=True)
 class VerificationReduction:
+    """A cone-of-influence reduction of a verification IR."""
+
     original_fingerprint: str
     reduced_fingerprint: str
     reduced_ir: VerificationIR
@@ -49,6 +54,7 @@ class VerificationReduction:
     schema_version: str = REDUCTION_SCHEMA_VERSION
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this reduction to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "original_fingerprint": self.original_fingerprint,
@@ -68,6 +74,8 @@ class VerificationReduction:
 
 @dataclass(frozen=True, slots=True)
 class ReferenceSafetyResult:
+    """The outcome of a reference breadth-first bounded safety check."""
+
     verdict: FormalVerdict
     states: int
     transitions: int
@@ -75,6 +83,7 @@ class ReferenceSafetyResult:
     counterexample: tuple[dict[str, object], ...] = ()
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this reference safety result to a JSON-compatible dictionary."""
         return {
             "verdict": self.verdict.value,
             "states": self.states,
@@ -86,6 +95,8 @@ class ReferenceSafetyResult:
 
 @dataclass(frozen=True, slots=True)
 class ReductionComparison:
+    """Comparison of original and reduced reference safety checks with witness lifting."""
+
     reduction: VerificationReduction
     original: ReferenceSafetyResult
     reduced: ReferenceSafetyResult
@@ -93,6 +104,7 @@ class ReductionComparison:
     failure: str | None = None
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this reduction comparison to a JSON-compatible dictionary."""
         return {
             "schema_version": REDUCTION_SCHEMA_VERSION,
             "reduction": self.reduction.to_dict(),
@@ -168,18 +180,10 @@ def reduce_cone_of_influence(
         for rule in ir.transitions
         if any(assignment.variable in relevant for assignment in rule.assignments)
     )
-    removed_variable_names = tuple(
-        sorted({item.name for item in ir.variables} - relevant)
-    )
+    removed_variable_names = tuple(sorted({item.name for item in ir.variables} - relevant))
     retained_rule_ids = tuple(sorted(rule.id for rule in retained_rules))
-    removed_rule_ids = tuple(
-        sorted({item.id for item in ir.transitions} - set(retained_rule_ids))
-    )
-    if (
-        not removed_variable_names
-        and not removed_rule_ids
-        and len(selected) == len(ir.invariants)
-    ):
+    removed_rule_ids = tuple(sorted({item.id for item in ir.transitions} - set(retained_rule_ids)))
+    if not removed_variable_names and not removed_rule_ids and len(selected) == len(ir.invariants):
         return _unchanged(ir, selected_ids, assumptions, "cone_is_already_complete")
     reduced = replace(
         ir,

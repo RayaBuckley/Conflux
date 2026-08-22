@@ -39,11 +39,7 @@ def load_default_planning_diagnostic_suite() -> tuple[DiagnosticScenario, ...]:
 
     candidates = (
         _ROOT / "experiments" / "suites" / "planning-diagnostic-v1.yaml",
-        Path(sysconfig.get_path("data"))
-        / "share"
-        / "conflux"
-        / "experiments"
-        / "planning-diagnostic-v1.yaml",
+        Path(sysconfig.get_path("data")) / "share" / "conflux" / "experiments" / "planning-diagnostic-v1.yaml",
     )
     for candidate in candidates:
         if candidate.is_file():
@@ -53,6 +49,8 @@ def load_default_planning_diagnostic_suite() -> tuple[DiagnosticScenario, ...]:
 
 @dataclass(frozen=True, slots=True)
 class DiagnosticAction:
+    """A single modeled action in a planning diagnostic scenario."""
+
     id: str
     permission: str
     resource_id: str
@@ -67,6 +65,8 @@ class DiagnosticAction:
 
 @dataclass(frozen=True, slots=True)
 class DiagnosticScenario:
+    """A planning diagnostic scenario with principals, actions, and revocations."""
+
     id: str
     distinguishes: str
     principals: tuple[str, ...]
@@ -75,6 +75,7 @@ class DiagnosticScenario:
     max_steps: int
 
     def resolve(self, action_id: str) -> DiagnosticAction:
+        """Return the action with the given id or raise ValueError."""
         try:
             return next(action for action in self.actions if action.id == action_id)
         except StopIteration as error:
@@ -83,6 +84,8 @@ class DiagnosticScenario:
 
 @dataclass(frozen=True, slots=True)
 class PlanningCell:
+    """A single cell in the planning comparison matrix."""
+
     scenario: DiagnosticScenario
     mode: PlanningMode
     repetition: int
@@ -90,15 +93,19 @@ class PlanningCell:
 
     @property
     def id(self) -> str:
+        """Return the deterministic identifier for this planning cell."""
         return f"{self.scenario.id}:{self.mode.value}:r{self.repetition}:s{self.seed}"
 
 
 @dataclass(frozen=True, slots=True)
 class ModeledWorld:
+    """Accumulated modeled effects and goal-reached status for a planning run."""
+
     applied_effects: tuple[str, ...] = ()
     goal_reached: bool = False
 
     def apply(self, action: DiagnosticAction) -> "ModeledWorld":
+        """Return a new world with the action applied and goal potentially reached."""
         return ModeledWorld(self.applied_effects + (action.id,), self.goal_reached or action.goal)
 
 
@@ -123,6 +130,7 @@ class _Metrics:
 
 
 def load_planning_diagnostic_suite(path: Path) -> tuple[DiagnosticScenario, ...]:
+    """Load and validate a planning diagnostic suite from a YAML file."""
     try:
         payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, YAMLError) as error:
@@ -165,6 +173,7 @@ def load_planning_diagnostic_suite(path: Path) -> tuple[DiagnosticScenario, ...]
 
 
 def planning_matrix(protocol: ExperimentProtocol, scenarios: tuple[DiagnosticScenario, ...]) -> tuple[PlanningCell, ...]:
+    """Expand a planning protocol into its full cross-product of cells."""
     if protocol.track != "planning" or protocol.model is None:
         raise ValueError("planning_protocol_with_model_required")
     scenarios = select_planning_scenarios(protocol, scenarios)
@@ -182,6 +191,7 @@ def run_planning_comparison(
     model: LocalModelPort,
     scenarios: tuple[DiagnosticScenario, ...] | None = None,
 ) -> dict[str, object]:
+    """Execute every planning cell and return the validated comparison payload."""
     selected = select_planning_scenarios(
         protocol,
         scenarios or load_default_planning_diagnostic_suite(),
@@ -353,8 +363,7 @@ def _mediate(scenario: DiagnosticScenario, action: DiagnosticAction) -> tuple[st
     principals = {identifier: Principal(identifier, identifier.title()) for identifier in scenario.principals}
     readers = frozenset(principals.values())
     data = tuple(
-        DataItem(f"influence:{identifier}", identifier, frozenset({principals[identifier]}), readers)
-        for identifier in action.context
+        DataItem(f"influence:{identifier}", identifier, frozenset({principals[identifier]}), readers) for identifier in action.context
     )
     resource = ResourceRef("modeled", action.resource_id, "abstract")
     environment = EnvironmentSnapshot(f"planning:{scenario.id}", data, (resource,))
@@ -436,9 +445,7 @@ def select_planning_scenarios(
     configured = protocol.suite.get("case_ids")
     if configured is None:
         return scenarios
-    if not isinstance(configured, list) or not all(
-        isinstance(identifier, str) for identifier in configured
-    ):
+    if not isinstance(configured, list) or not all(isinstance(identifier, str) for identifier in configured):
         raise ValueError("planning_case_ids_invalid")
     by_id = {scenario.id: scenario for scenario in scenarios}
     unknown = tuple(identifier for identifier in configured if identifier not in by_id)

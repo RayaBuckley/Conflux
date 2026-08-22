@@ -17,6 +17,7 @@ from conflux.evaluation import (
 
 
 def comparison(depth: int = 8) -> dict[str, object]:
+    """Compare trace enumeration and state exploration at a given depth."""
     if depth < 1:
         raise ValueError("comparison depth must be positive")
     equivalent = AbstractEffect(
@@ -84,9 +85,7 @@ def _enumerate_traces(
     system: WorstCasePlanningSystem,
     depth: int,
 ) -> tuple[int, int]:
-    queue: deque[tuple[PlanningModelState, int]] = deque(
-        (state, 0) for state in system.initial_states()
-    )
+    queue: deque[tuple[PlanningModelState, int]] = deque((state, 0) for state in system.initial_states())
     states = len(queue)
     transitions = 0
     while queue:

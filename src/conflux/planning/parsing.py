@@ -39,6 +39,7 @@ from .model import (
 
 
 def parse_binding(value: object, *, trusted_provenance: Provenance) -> Binding:
+    """Parse untrusted JSON into a validated Binding with trusted provenance."""
     payload = _object(value, "binding")
     kind = _string(payload.get("kind"), "binding.kind")
     if kind == "literal":
@@ -57,6 +58,7 @@ def parse_binding(value: object, *, trusted_provenance: Provenance) -> Binding:
 
 
 def parse_template(value: object, *, trusted_provenance: Provenance) -> ActionTemplate:
+    """Parse untrusted JSON into a validated ActionTemplate."""
     payload = _object(value, "action template")
     _keys(
         payload,
@@ -77,9 +79,7 @@ def parse_template(value: object, *, trusted_provenance: Provenance) -> ActionTe
             )
         )
     try:
-        visibility = ActionVisibility(
-            _string(payload.get("visibility"), "template.visibility")
-        )
+        visibility = ActionVisibility(_string(payload.get("visibility"), "template.visibility"))
     except ValueError as error:
         raise ValueError("unsupported template visibility") from error
     return ActionTemplate(
@@ -92,14 +92,12 @@ def parse_template(value: object, *, trusted_provenance: Provenance) -> ActionTe
 
 
 def parse_node(value: object, *, trusted_provenance: Provenance) -> PlanNode:
+    """Parse untrusted JSON into a validated PlanNode of the appropriate kind."""
     payload = _object(value, "plan node")
     kind = _string(payload.get("kind"), "node.kind")
     common = {"id", "kind", "dependencies", "control_provenance"}
     node_id = _string(payload.get("id"), "node.id")
-    dependencies = tuple(
-        _string(item, "node dependency")
-        for item in _array(payload.get("dependencies"), "node.dependencies")
-    )
+    dependencies = tuple(_string(item, "node dependency") for item in _array(payload.get("dependencies"), "node.dependencies"))
     if kind == "model_call":
         _keys(payload, common | {"prompt", "output_name"}, "model-call node")
         return ModelCallNode(
@@ -229,6 +227,7 @@ def parse_node(value: object, *, trusted_provenance: Provenance) -> PlanNode:
 
 
 def parse_plan(value: object, *, trusted_provenance: Provenance) -> Plan:
+    """Parse untrusted JSON into a validated Plan with subplans."""
     payload = _object(value, "plan")
     _keys(
         payload,
@@ -245,14 +244,8 @@ def parse_plan(value: object, *, trusted_provenance: Provenance) -> Plan:
     version = _string(payload.get("schema_version"), "plan.schema_version")
     if version != PLAN_SCHEMA_VERSION:
         raise ValueError(f"unsupported plan schema version: {version}")
-    nodes = tuple(
-        parse_node(item, trusted_provenance=trusted_provenance)
-        for item in _array(payload.get("nodes"), "plan.nodes")
-    )
-    subplans = tuple(
-        parse_plan(item, trusted_provenance=trusted_provenance)
-        for item in _array(payload.get("subplans"), "plan.subplans")
-    )
+    nodes = tuple(parse_node(item, trusted_provenance=trusted_provenance) for item in _array(payload.get("nodes"), "plan.nodes"))
+    subplans = tuple(parse_plan(item, trusted_provenance=trusted_provenance) for item in _array(payload.get("subplans"), "plan.subplans"))
     return Plan(
         _string(payload.get("id"), "plan.id"),
         _string(payload.get("goal"), "plan.goal"),
@@ -264,6 +257,7 @@ def parse_plan(value: object, *, trusted_provenance: Provenance) -> Plan:
 
 
 def parse_plan_patch(value: object, *, trusted_provenance: Provenance) -> PlanPatch:
+    """Parse untrusted JSON into a validated PlanPatch."""
     payload = _object(value, "plan patch")
     _keys(payload, {"schema_version", "id", "plan_id", "operations"}, "plan patch")
     version = _string(payload.get("schema_version"), "patch.schema_version")
@@ -296,8 +290,7 @@ def parse_plan_patch(value: object, *, trusted_provenance: Provenance) -> PlanPa
                 _string(operation.get("id"), "operation.id"),
                 kind,
                 tuple(
-                    parse_node(node, trusted_provenance=trusted_provenance)
-                    for node in _array(operation.get("nodes"), "operation.nodes")
+                    parse_node(node, trusted_provenance=trusted_provenance) for node in _array(operation.get("nodes"), "operation.nodes")
                 ),
                 tuple(
                     _string(target, "target_node_id")
@@ -353,10 +346,7 @@ def _integer(value: object, label: str) -> int:
 def _keys(payload: Mapping[str, object], expected: set[str], label: str) -> None:
     actual = set(payload)
     if actual != expected:
-        raise ValueError(
-            f"{label} fields do not match schema; missing={sorted(expected - actual)}, "
-            f"unknown={sorted(actual - expected)}"
-        )
+        raise ValueError(f"{label} fields do not match schema; missing={sorted(expected - actual)}, unknown={sorted(actual - expected)}")
 
 
 __all__ = [

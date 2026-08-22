@@ -13,6 +13,8 @@ PATCH_SCHEMA_VERSION = "1"
 
 
 class PatchKind(StrEnum):
+    """Enumerates the kinds of operations a plan patch can perform."""
+
     APPEND = "append"
     REPLACE = "replace"
     SPAWN_SUBPLAN = "spawn_subplan"
@@ -20,6 +22,8 @@ class PatchKind(StrEnum):
 
 
 class HistoricalNodeStatus(StrEnum):
+    """Mirror of NodeStatus used to enforce immutable history during patching."""
+
     PENDING = "pending"
     READY = "ready"
     RUNNING = "running"
@@ -30,11 +34,14 @@ class HistoricalNodeStatus(StrEnum):
 
     @property
     def immutable_history(self) -> bool:
+        """Return True if the status indicates a node whose history cannot be mutated."""
         return self != HistoricalNodeStatus.PENDING
 
 
 @dataclass(frozen=True, slots=True)
 class PatchOperation:
+    """A single append, replace, spawn, or terminate operation within a patch."""
+
     id: str
     kind: PatchKind
     nodes: tuple[PlanNode, ...] = ()
@@ -55,12 +62,11 @@ class PatchOperation:
             raise ValueError("replace operation requires targets and replacement nodes")
         if self.kind == PatchKind.SPAWN_SUBPLAN and not self.subplans:
             raise ValueError("spawn operation requires subplans")
-        if self.kind == PatchKind.TERMINATE and (
-            self.terminal_outcome is None or not self.terminal_reason
-        ):
+        if self.kind == PatchKind.TERMINATE and (self.terminal_outcome is None or not self.terminal_reason):
             raise ValueError("terminate operation requires outcome and reason")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the patch operation to a canonical dictionary."""
         from .model import node_to_dict
 
         return {
@@ -69,15 +75,15 @@ class PatchOperation:
             "nodes": [node_to_dict(node) for node in self.nodes],
             "target_node_ids": list(self.target_node_ids),
             "subplans": [plan.to_dict() for plan in self.subplans],
-            "terminal_outcome": (
-                self.terminal_outcome.value if self.terminal_outcome is not None else None
-            ),
+            "terminal_outcome": (self.terminal_outcome.value if self.terminal_outcome is not None else None),
             "terminal_reason": self.terminal_reason,
         }
 
 
 @dataclass(frozen=True, slots=True)
 class PlanPatch:
+    """An immutable set of operations to apply to a plan."""
+
     id: str
     plan_id: str
     operations: tuple[PatchOperation, ...]
@@ -94,23 +100,24 @@ class PlanPatch:
             raise ValueError("patch operations must be non-empty and uniquely identified")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the plan patch to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
             "plan_id": self.plan_id,
-            "operations": [
-                operation.to_dict()
-                for operation in sorted(self.operations, key=lambda item: (item.id, item.kind.value))
-            ],
+            "operations": [operation.to_dict() for operation in sorted(self.operations, key=lambda item: (item.id, item.kind.value))],
         }
 
     @property
     def fingerprint(self) -> str:
+        """Return the content fingerprint of the plan patch."""
         return fingerprint(self.to_dict())
 
 
 @dataclass(frozen=True, slots=True)
 class PatchApplication:
+    """Result of applying a patch: the updated plan and changed node ids."""
+
     plan: Plan
     added_node_ids: tuple[str, ...]
     removed_node_ids: tuple[str, ...]
@@ -125,6 +132,7 @@ def apply_patch(
     history: dict[str, HistoricalNodeStatus],
     request_provenance: Provenance,
 ) -> PatchApplication:
+    """Apply a patch to a plan, preserving immutable node history."""
     if patch.plan_id != plan.id:
         raise ValueError("patch targets a different plan")
     nodes = list(plan.nodes)
@@ -137,24 +145,16 @@ def apply_patch(
     for operation in sorted(patch.operations, key=lambda item: (item.id, item.kind.value)):
         if operation.kind == PatchKind.REPLACE:
             removal = _replacement_closure(tuple(nodes), operation.target_node_ids)
-            immutable = {
-                node_id
-                for node_id in removal
-                if history.get(node_id, HistoricalNodeStatus.PENDING).immutable_history
-            }
+            immutable = {node_id for node_id in removal if history.get(node_id, HistoricalNodeStatus.PENDING).immutable_history}
             if immutable:
                 raise ValueError(f"patch cannot mutate completed history: {sorted(immutable)}")
             nodes = [node for node in nodes if node.id not in removal]
             removed.extend(sorted(removal))
-            inherited = tuple(
-                _inherit_control(node, request_provenance) for node in operation.nodes
-            )
+            inherited = tuple(_inherit_control(node, request_provenance) for node in operation.nodes)
             nodes.extend(inherited)
             added.extend(node.id for node in inherited)
         elif operation.kind == PatchKind.APPEND:
-            inherited = tuple(
-                _inherit_control(node, request_provenance) for node in operation.nodes
-            )
+            inherited = tuple(_inherit_control(node, request_provenance) for node in operation.nodes)
             nodes.extend(inherited)
             added.extend(node.id for node in inherited)
         elif operation.kind == PatchKind.SPAWN_SUBPLAN:
@@ -217,9 +217,7 @@ def _replacement_closure(
 
 
 def _inherit_control(node: PlanNode, provenance: Provenance) -> PlanNode:
-    inherited = provenance_union(node.control_provenance, provenance).with_activity(
-        f"continuation:{node.id}"
-    )
+    inherited = provenance_union(node.control_provenance, provenance).with_activity(f"continuation:{node.id}")
     return replace(node, control_provenance=inherited)
 
 

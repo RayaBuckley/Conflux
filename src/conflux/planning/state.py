@@ -12,6 +12,8 @@ from .model import Plan, node_fingerprint
 
 
 class NodeStatus(StrEnum):
+    """Enumerates execution statuses for a plan node."""
+
     PENDING = "pending"
     READY = "ready"
     RUNNING = "running"
@@ -41,12 +43,15 @@ class PlanRunStatus(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class NodeState:
+    """Tracks the execution status and attempts of a single plan node."""
+
     node_id: str
     status: NodeStatus = NodeStatus.PENDING
     attempts: int = 0
     reason: str = ""
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the node state to a canonical dictionary."""
         return {
             "node_id": self.node_id,
             "status": self.status.value,
@@ -57,15 +62,19 @@ class NodeState:
 
 @dataclass(frozen=True, slots=True)
 class NodeOutput:
+    """A named artifact produced by a plan node."""
+
     node_id: str
     name: str
     artifact: Artifact[Any]
 
     @property
     def key(self) -> tuple[str, str]:
+        """Return the (node_id, name) lookup key for this output."""
         return (self.node_id, self.name)
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the node output to a canonical dictionary."""
         return {
             "node_id": self.node_id,
             "name": self.name,
@@ -75,6 +84,8 @@ class NodeOutput:
 
 @dataclass(frozen=True, slots=True)
 class PlanTraceEvent:
+    """Immutable, replayable trace event for a plan execution."""
+
     sequence: int
     event_type: str
     run_id: str
@@ -87,6 +98,7 @@ class PlanTraceEvent:
 
     @property
     def id(self) -> str:
+        """Return the content fingerprint uniquely identifying this event."""
         return fingerprint(
             {
                 "schema_version": self.schema_version,
@@ -101,6 +113,7 @@ class PlanTraceEvent:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the trace event to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "event_id": self.id,
@@ -117,6 +130,8 @@ class PlanTraceEvent:
 
 @dataclass(frozen=True, slots=True)
 class PlanExecutionState:
+    """Immutable execution state for a single plan run."""
+
     run_id: str
     plan: Plan
     nodes: tuple[NodeState, ...]
@@ -138,6 +153,7 @@ class PlanExecutionState:
         plan: Plan,
         artifacts: tuple[Artifact[Any], ...] = (),
     ) -> "PlanExecutionState":
+        """Create the initial execution state for a plan and input artifacts."""
         artifacts = tuple(artifacts)
         gated = _gated_nodes(plan)
         activated = plan.node_ids - gated
@@ -163,20 +179,24 @@ class PlanExecutionState:
         )
 
     def node_state(self, node_id: str) -> NodeState:
+        """Return the state of the given node or raise."""
         try:
             return next(item for item in self.nodes if item.node_id == node_id)
         except StopIteration as error:
             raise ValueError(f"unknown execution node: {node_id}") from error
 
     def node_outputs(self) -> dict[tuple[str, str], Artifact[Any]]:
+        """Return a dict mapping (node_id, name) keys to output artifacts."""
         return {item.key: item.artifact for item in self.outputs}
 
     def artifacts(self) -> dict[str, Artifact[Any]]:
+        """Return a dict of all available artifacts keyed by id."""
         result = {item.id: item for item in self.initial_artifacts}
         result.update({item.artifact.id: item.artifact for item in self.outputs})
         return result
 
     def loop_count(self, node_id: str) -> int:
+        """Return the current iteration count for a loop node."""
         return dict(self.loop_iterations).get(node_id, 0)
 
     def with_node(
@@ -187,6 +207,7 @@ class PlanExecutionState:
         reason: str = "",
         increment_attempts: bool = False,
     ) -> "PlanExecutionState":
+        """Return a new state with the given node's status updated."""
         updated: list[NodeState] = []
         found = False
         for item in self.nodes:
@@ -207,10 +228,12 @@ class PlanExecutionState:
         return replace(self, nodes=tuple(updated))
 
     def with_output(self, output: NodeOutput) -> "PlanExecutionState":
+        """Return a new state with the given output added or replaced."""
         retained = tuple(item for item in self.outputs if item.key != output.key)
         return replace(self, outputs=retained + (output,))
 
     def activate(self, *node_ids: str) -> "PlanExecutionState":
+        """Return a new state with the given nodes activated."""
         unknown = set(node_ids) - self.plan.node_ids
         if unknown:
             raise ValueError(f"cannot activate unknown nodes: {sorted(unknown)}")
@@ -220,12 +243,14 @@ class PlanExecutionState:
         )
 
     def deactivate(self, *node_ids: str) -> "PlanExecutionState":
+        """Return a new state with the given nodes deactivated."""
         return replace(
             self,
             activated_node_ids=self.activated_node_ids - frozenset(node_ids),
         )
 
     def skip(self, *node_ids: str, reason: str) -> "PlanExecutionState":
+        """Return a new state with pending nodes marked as skipped."""
         state = self
         for node_id in node_ids:
             item = state.node_state(node_id)
@@ -234,6 +259,7 @@ class PlanExecutionState:
         return state
 
     def increment_loop(self, node_id: str) -> "PlanExecutionState":
+        """Return a new state with the loop iteration count incremented."""
         counts = dict(self.loop_iterations)
         counts[node_id] = counts.get(node_id, 0) + 1
         return replace(self, loop_iterations=tuple(sorted(counts.items())))
@@ -247,6 +273,7 @@ class PlanExecutionState:
         payload: dict[str, object] | None = None,
         causal_parent_ids: tuple[str, ...] | None = None,
     ) -> "PlanExecutionState":
+        """Return a new state with a trace event appended."""
         parents = causal_parent_ids
         if parents is None:
             parents = (self.events[-1].id,) if self.events else ()
@@ -263,13 +290,12 @@ class PlanExecutionState:
         return replace(self, events=self.events + (event,))
 
     def replace_plan(self, plan: Plan, *, removed_node_ids: tuple[str, ...]) -> "PlanExecutionState":
+        """Return a new state with the plan replaced and stale nodes removed."""
         removed = set(removed_node_ids)
         existing = {item.node_id: item for item in self.nodes if item.node_id not in removed}
         nodes = tuple(existing.get(node.id, NodeState(node.id)) for node in plan.nodes)
         gated = _gated_nodes(plan)
-        newly_ungated = {
-            node.id for node in plan.nodes if node.id not in existing and node.id not in gated
-        }
+        newly_ungated = {node.id for node in plan.nodes if node.id not in existing and node.id not in gated}
         return replace(
             self,
             plan=plan,
@@ -279,6 +305,7 @@ class PlanExecutionState:
 
     @property
     def state_key(self) -> str:
+        """Return a fingerprint summarising the full execution state."""
         return fingerprint(
             {
                 "plan": self.plan.fingerprint,
@@ -295,6 +322,7 @@ class PlanExecutionState:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the execution state to a canonical dictionary."""
         return {
             "schema_version": "1",
             "run_id": self.run_id,
@@ -331,6 +359,7 @@ def _gated_nodes(plan: Plan) -> frozenset[str]:
 
 
 def ready_nodes(state: PlanExecutionState) -> tuple[str, ...]:
+    """Return ids of pending, activated nodes whose dependencies have succeeded."""
     ready: list[tuple[str, str]] = []
     statuses = {item.node_id: item.status for item in state.nodes}
     for node in state.plan.nodes:

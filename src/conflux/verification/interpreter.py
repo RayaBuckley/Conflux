@@ -16,6 +16,7 @@ from .ir import (
 
 
 def evaluate(expression: Expression, state: dict[str, Scalar]) -> Scalar:
+    """Evaluate an IR expression against a state mapping and return the result."""
     if expression.kind == ExpressionKind.CONSTANT:
         assert isinstance(expression.value, (bool, int))
         return expression.value
@@ -37,6 +38,7 @@ def evaluate(expression: Expression, state: dict[str, Scalar]) -> Scalar:
 
 
 def initial_state(ir: VerificationIR) -> dict[str, Scalar]:
+    """Return the initial state mapping for a verification IR."""
     return {variable.name: variable.initial for variable in ir.variables}
 
 
@@ -44,6 +46,7 @@ def successors(
     ir: VerificationIR,
     state: dict[str, Scalar],
 ) -> tuple[tuple[str, dict[str, Scalar]], ...]:
+    """Return all domain-valid successor states of a state under the IR transitions."""
     result: list[tuple[str, dict[str, Scalar]]] = []
     variables = {variable.name: variable for variable in ir.variables}
     for rule in sorted(ir.transitions, key=lambda item: item.id):
@@ -59,11 +62,14 @@ def successors(
 
 @dataclass(frozen=True, slots=True)
 class RuntimeTransitionRecord:
+    """A single observed runtime transition with source, rule id, and target."""
+
     source: dict[str, Scalar]
     rule_id: str
     target: dict[str, Scalar]
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this runtime transition record to a JSON-compatible dictionary."""
         return {
             "source": self.source,
             "rule_id": self.rule_id,
@@ -73,12 +79,15 @@ class RuntimeTransitionRecord:
 
 @dataclass(frozen=True, slots=True)
 class DifferentialConformanceResult:
+    """Result of checking runtime transitions against the IR semantics."""
+
     conforms: bool
     ir_hash: str
     corpus_hash: str
     mismatches: tuple[str, ...]
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this conformance result to a JSON-compatible dictionary."""
         return {
             "conforms": self.conforms,
             "ir_hash": self.ir_hash,
@@ -91,12 +100,10 @@ def differential_conformance(
     ir: VerificationIR,
     records: tuple[RuntimeTransitionRecord, ...],
 ) -> DifferentialConformanceResult:
+    """Check that every runtime transition record is a valid IR transition."""
     mismatches: list[str] = []
     for index, record in enumerate(records):
-        expected = {
-            (rule_id, fingerprint(target))
-            for rule_id, target in successors(ir, record.source)
-        }
+        expected = {(rule_id, fingerprint(target)) for rule_id, target in successors(ir, record.source)}
         observed = (record.rule_id, fingerprint(record.target))
         if observed not in expected:
             mismatches.append(f"record[{index}] is not an IR transition")

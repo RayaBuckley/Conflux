@@ -33,6 +33,8 @@ from conflux.domain import (
 
 @dataclass(frozen=True, slots=True)
 class CedarDifferentialCase:
+    """A single Cedar differential test case with expected oracle decisions."""
+
     id: str
     principal_ids: tuple[str, ...]
     allowed_principal_ids: frozenset[str]
@@ -46,6 +48,7 @@ class CedarDifferentialCase:
     expected_reason: str
 
     def __post_init__(self) -> None:
+        """Validate that grants reference known principals and identifiers are non-empty."""
         object.__setattr__(self, "principal_ids", tuple(self.principal_ids))
         object.__setattr__(self, "allowed_principal_ids", frozenset(self.allowed_principal_ids))
         object.__setattr__(
@@ -60,6 +63,7 @@ class CedarDifferentialCase:
             raise ValueError("Cedar case grants refer to an unknown Principal")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this Cedar differential case to a JSON-compatible dictionary."""
         return {
             "id": self.id,
             "principal_ids": list(self.principal_ids),
@@ -77,12 +81,15 @@ class CedarDifferentialCase:
 
 @dataclass(frozen=True, slots=True)
 class CedarDifferentialCorpus:
+    """A collection of Cedar differential test cases with a request bound."""
+
     id: str
     cases: tuple[CedarDifferentialCase, ...]
     max_requests: int
     schema_version: str = "1"
 
     def __post_init__(self) -> None:
+        """Validate corpus identity, case uniqueness, and request bound."""
         object.__setattr__(self, "cases", tuple(self.cases))
         if not self.id or not self.cases or self.max_requests < 1:
             raise ValueError("Cedar corpus requires identity, cases, and a positive bound")
@@ -93,6 +100,7 @@ class CedarDifferentialCorpus:
             raise ValueError("Cedar corpus exceeds its request bound")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this Cedar corpus to a JSON-compatible dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
@@ -117,6 +125,7 @@ class _UnavailableCaptureRunner:
 
 
 def load_cedar_bundle(path: Path) -> CedarPolicyBundle:
+    """Load and validate a Cedar policy bundle from a JSON file."""
     payload = _load_json(path, "cedar_bundle")
     _validate("cedar-policy-bundle.schema.json", payload, "cedar_bundle")
     binary = cast(dict[str, str], payload["binary"])
@@ -131,6 +140,7 @@ def load_cedar_bundle(path: Path) -> CedarPolicyBundle:
 
 
 def load_cedar_corpus(path: Path) -> CedarDifferentialCorpus:
+    """Load and validate a Cedar differential corpus from a JSON file."""
     payload = _load_json(path, "cedar_corpus")
     _validate("cedar-differential-corpus.schema.json", payload, "cedar_corpus")
     return CedarDifferentialCorpus(
@@ -141,9 +151,7 @@ def load_cedar_corpus(path: Path) -> CedarDifferentialCorpus:
                 id=str(item["id"]),
                 principal_ids=tuple(cast(list[str], item["principal_ids"])),
                 allowed_principal_ids=frozenset(cast(list[str], item["allowed_principal_ids"])),
-                argument_allowed_principal_ids=frozenset(
-                    cast(list[str], item["argument_allowed_principal_ids"])
-                ),
+                argument_allowed_principal_ids=frozenset(cast(list[str], item["argument_allowed_principal_ids"])),
                 argument_name=str(item["argument_name"]),
                 argument_role=ArgumentRole(str(item["argument_role"])),
                 argument_value=str(item["argument_value"]),
@@ -161,6 +169,7 @@ def cedar_differential_preflight(
     bundle: CedarPolicyBundle,
     corpus: CedarDifferentialCorpus,
 ) -> dict[str, object]:
+    """Run the offline Cedar differential preflight without invoking the binary."""
     results = [_preflight_case(bundle, case) for case in corpus.cases]
     request_count = sum(len(cast(list[object], result["translated_requests"])) for result in results)
     if request_count > corpus.max_requests:

@@ -9,6 +9,8 @@ from conflux.domain import fingerprint
 
 @dataclass(frozen=True, slots=True)
 class PlannerRecord:
+    """Deterministic record of a single planner call (initial or continuation)."""
+
     planner_id: str
     planner_version: str
     configuration_hash: str
@@ -25,11 +27,7 @@ class PlannerRecord:
     def __post_init__(self) -> None:
         if not self.planner_id or not self.planner_version:
             raise ValueError("planner identity and version must be non-empty")
-        usage = tuple(
-            item
-            for item in (self.input_tokens, self.output_tokens, self.latency_ms)
-            if item is not None
-        )
+        usage = tuple(item for item in (self.input_tokens, self.output_tokens, self.latency_ms) if item is not None)
         if usage and min(usage) < 0:
             raise ValueError("planner usage values cannot be negative")
 
@@ -46,6 +44,7 @@ class PlannerRecord:
         raw_response: str,
         error: str | None = None,
     ) -> "PlannerRecord":
+        """Construct a PlannerRecord by fingerprinting configuration, request, and response."""
         return cls(
             planner_id,
             planner_version,
@@ -58,6 +57,7 @@ class PlannerRecord:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the planner record to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "planner_id": self.planner_id,

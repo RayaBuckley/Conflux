@@ -29,6 +29,8 @@ from .z3_backend import verify_with_z3
 
 @dataclass(frozen=True, slots=True)
 class EffectSummary:
+    """Summary of a plan node's authorisation and execution status."""
+
     node_id: str
     authorised: bool
     executed: bool
@@ -37,12 +39,15 @@ class EffectSummary:
 
 @dataclass(frozen=True, slots=True)
 class PlanAbstraction:
+    """Result of abstracting a dynamic plan into a verification IR or unsupported list."""
+
     ir: VerificationIR | None
     assumptions: tuple[str, ...]
     unsupported: tuple[str, ...]
 
     @property
     def supported(self) -> bool:
+        """Return True if the plan was fully abstracted without unsupported features."""
         return self.ir is not None and not self.unsupported
 
 
@@ -53,6 +58,7 @@ def abstract_plan(
     effect_summaries: tuple[EffectSummary, ...],
     bound: int,
 ) -> PlanAbstraction:
+    """Conservatively abstract a dynamic plan into a serializable verification IR."""
     if bound < 1:
         raise ValueError("plan verification bound must be positive")
     summaries = {item.node_id: item for item in effect_summaries}
@@ -95,16 +101,12 @@ def abstract_plan(
                     (
                         Assignment(
                             "unauthorised_executed",
-                            Expression.constant(
-                                summary.executed and not summary.authorised
-                            ),
+                            Expression.constant(summary.executed and not summary.authorised),
                         ),
                         Assignment(
                             "capability_violated",
                             Expression.constant(
-                                summary.executed
-                                and operation.operation == "execute_code"
-                                and not summary.within_capability_envelope
+                                summary.executed and operation.operation == "execute_code" and not summary.within_capability_envelope
                             ),
                         ),
                     )
@@ -116,9 +118,7 @@ def abstract_plan(
                         Expression.constant(True),
                     )
                 )
-            transitions.append(
-                TransitionRule(rule_id, step_guard, tuple(assignments))
-            )
+            transitions.append(TransitionRule(rule_id, step_guard, tuple(assignments)))
     assumptions = (
         "every continuation produces only schema-valid patches within the declared node bound",
         "every grounded effect is mediated at action time by the canonical kernel",
@@ -174,6 +174,7 @@ def verify_plan(
     bound: int,
     backend: str = "z3",
 ) -> FormalVerificationResult:
+    """Abstract a plan and verify it with the selected formal backend."""
     abstraction = abstract_plan(
         plan,
         catalogue=catalogue,

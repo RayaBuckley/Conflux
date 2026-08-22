@@ -153,6 +153,7 @@ def generate_coi_evidence_bundle(source_commit: str, output: Path, *, repo_root:
 
 
 def compare_coi_evidence_bundle(expected: Path, regenerated: Path) -> tuple[str, ...]:
+    """Return file paths that are missing or differ between two COI evidence bundles."""
     expected_files = {path.relative_to(expected).as_posix(): path for path in expected.rglob("*") if path.is_file()}
     regenerated_files = {path.relative_to(regenerated).as_posix(): path for path in regenerated.rglob("*") if path.is_file()}
     changed = set(expected_files) ^ set(regenerated_files)
@@ -163,6 +164,7 @@ def compare_coi_evidence_bundle(expected: Path, regenerated: Path) -> tuple[str,
 
 
 def verify_coi_evidence_checksums(directory: Path) -> tuple[str, ...]:
+    """Return file paths whose checksums are missing or mismatched in the bundle."""
     checksum_file = directory / "CHECKSUMS.sha256"
     if not checksum_file.is_file():
         return ("CHECKSUMS.sha256",)

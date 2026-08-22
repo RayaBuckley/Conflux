@@ -11,6 +11,7 @@ from .results import FormalVerdict, FormalVerificationResult
 
 
 def verify_with_z3(ir: VerificationIR) -> FormalVerificationResult:
+    """Verify bounded safety of the IR using the optional Z3 bounded-model-checking backend."""
     try:
         import z3  # type: ignore[import-not-found,import-untyped,unused-ignore]
     except ImportError:
@@ -28,9 +29,7 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
     for variable in ir.variables:
         for step in range(ir.bound + 1):
             variables[(variable.name, step)] = (
-                z3.Bool(f"{variable.name}__{step}")
-                if variable.sort == Sort.BOOLEAN
-                else z3.Int(f"{variable.name}__{step}")
+                z3.Bool(f"{variable.name}__{step}") if variable.sort == Sort.BOOLEAN else z3.Int(f"{variable.name}__{step}")
             )
     solver = z3.Solver()
     for variable in ir.variables:
@@ -64,13 +63,7 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
                     *updates,
                 )
             )
-        stutter = z3.And(
-            *(
-                variables[(variable.name, step + 1)]
-                == variables[(variable.name, step)]
-                for variable in ir.variables
-            )
-        )
+        stutter = z3.And(*(variables[(variable.name, step + 1)] == variables[(variable.name, step)] for variable in ir.variables))
         solver.add(z3.Or(*alternatives, stutter))
     query_hash = fingerprint(
         {
@@ -90,14 +83,7 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
     failure_step = None
     for step in range(ir.bound + 1):
         solver.push()
-        solver.add(
-            z3.Or(
-                *(
-                    z3.Not(_expression(invariant.expression, step, variables, z3))
-                    for invariant in ir.invariants
-                )
-            )
-        )
+        solver.add(z3.Or(*(z3.Not(_expression(invariant.expression, step, variables, z3)) for invariant in ir.invariants)))
         result = solver.check()
         if result == z3.unknown:
             reason = solver.reason_unknown()
@@ -170,10 +156,7 @@ def _expression(
     if expression.kind == ExpressionKind.VARIABLE:
         assert isinstance(expression.value, str)
         return variables[(expression.value, step)]
-    values = tuple(
-        _expression(argument, step, variables, z3)
-        for argument in expression.arguments
-    )
+    values = tuple(_expression(argument, step, variables, z3) for argument in expression.arguments)
     if expression.kind == ExpressionKind.NOT:
         return z3.Not(values[0])
     if expression.kind == ExpressionKind.AND:
@@ -206,9 +189,7 @@ def _unknown(
         fingerprint(
             {
                 "backend": "z3",
-                "version": (
-                    str(z3.get_version_string()) if z3 is not None else "unavailable"
-                ),
+                "version": (str(z3.get_version_string()) if z3 is not None else "unavailable"),
             }
         ),
         None,
