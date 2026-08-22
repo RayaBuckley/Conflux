@@ -171,7 +171,7 @@ def check_docs(errors: list[str]) -> None:
     current_markdown = (
         ROOT / "README.md",
         ROOT / "AGENTS.md",
-        ROOT / "CONTRIBUTING.md",
+        ROOT / "WORKFLOW.md",
         ROOT / "SECURITY.md",
         *DOCS.rglob("*.md"),
         *MANUSCRIPT.glob("*.md"),
@@ -196,7 +196,7 @@ def check_docs(errors: list[str]) -> None:
 
     rationale_docs = {
         ROOT / "README.md",
-        ROOT / "CONTRIBUTING.md",
+        ROOT / "WORKFLOW.md",
         ROOT / "SECURITY.md",
         DOCS / "OVERVIEW.md",
         DOCS / "DEVELOPMENT.md",

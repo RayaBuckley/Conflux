@@ -41,7 +41,7 @@ current Principal Context and provenance, not static prompt trust labels.
 
 ## Workflow and conventions
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the change workflow, review
+See [WORKFLOW.md](WORKFLOW.md) for the change workflow, review
 checklist, and commit message convention. See
 [docs/AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md) for the AI-agent
 collaboration contract, trust order, documentation routing, and stop

@@ -60,7 +60,7 @@ registry.
 
 ## Documentation and manuscript decisions
 
-The root README is a short runnable entry point. `CONTRIBUTING.md` is the human
+The root README is a short runnable entry point. `WORKFLOW.md` is the human
 workflow, while `docs/AI_AGENT_GUIDE.md` is the concise machine-collaboration
 contract. The documentation hub routes readers by goal and records ownership.
 Core explanatory documents include a compact rationale section and link to

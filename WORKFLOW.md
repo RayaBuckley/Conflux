@@ -1,4 +1,4 @@
-# Change workflow
+# Workflow
 
 Conflux is developed primarily with AI coding tools. The change procedure,
 review checklist, commit conventions, and documentation authority rules live in
