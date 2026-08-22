@@ -94,6 +94,7 @@ EXIT_INVALID_EVIDENCE = 4
 
 
 def _parser() -> argparse.ArgumentParser:
+    """Build the argparse subcommand tree for the ``conflux`` CLI."""
     parser = argparse.ArgumentParser(prog="conflux")
     commands = parser.add_subparsers(dest="command", required=True)
 
@@ -223,6 +224,10 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """Entry point dispatching to the requested subcommand.
+
+    Returns the appropriate exit code (0, 2, 3, or 4).
+    """
     arguments = _parser().parse_args(argv)
     try:
         command = str(arguments.command)
@@ -259,6 +264,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _model_artifacts(arguments: argparse.Namespace) -> int:
+    """Resolve operator-owned local-transformers model snapshots into manifest files."""
     if str(arguments.model_command) != "resolve" or str(arguments.resolve_command) != "transformers":
         return _unavailable("unsupported_model_artifact_command")
     model_id = str(arguments.model_id)
@@ -320,6 +326,7 @@ def _model_artifacts(arguments: argparse.Namespace) -> int:
 
 
 def _demo(arguments: argparse.Namespace) -> int:
+    """Run a deterministic scripted scenario and write trace, result, and report."""
     scenario = load_scenario(cast(Path, arguments.scenario))
     manifest = load_manifest(cast(Path, arguments.manifest)) if arguments.manifest is not None else None
     mediator = MediatingITES(TransitionKernel(scenario.pipeline))
@@ -373,6 +380,7 @@ def _demo(arguments: argparse.Namespace) -> int:
 
 
 def _sled(arguments: argparse.Namespace) -> int:
+    """Dispatch SLED subcommands: ``run``, ``reproduce``, and ``delegation``."""
     if str(arguments.sled_command) == "reproduce":
         protocol = load_protocol(cast(Path, arguments.protocol))
         reproduction = run_native_reproduction(protocol)
@@ -420,6 +428,7 @@ def _sled(arguments: argparse.Namespace) -> int:
 
 
 def _report(arguments: argparse.Namespace) -> int:
+    """Validate and render a result JSON file as Markdown or canonical JSON."""
     payload = cast(
         dict[str, Any],
         json.loads(cast(Path, arguments.result).read_text(encoding="utf-8")),
@@ -431,6 +440,7 @@ def _report(arguments: argparse.Namespace) -> int:
 
 
 def _verify(arguments: argparse.Namespace) -> int:
+    """Run formal verification with an optional solver backend and COI reduction."""
     model_path = cast(Path | None, arguments.model)
     if model_path is None:
         raise ValueError("verification_model_required")
@@ -521,6 +531,7 @@ def _verification_summary(
     backend: str,
     reduced: bool,
 ) -> str:
+    """Render a human-readable Markdown summary of a formal verification result."""
     verdict = str(result["verdict"])
     bound = int(cast(int, result["bound"]))
     claim = {
@@ -590,6 +601,7 @@ def _verification_summary(
 
 
 def _render_result(payload: dict[str, Any]) -> str:
+    """Render a version-1 run result payload as a Markdown summary."""
     diagnostics = cast(dict[str, object], payload["diagnostics"])
     utility = cast(dict[str, object], payload["utility"])
     security = cast(dict[str, object], payload.get("security", {}))
@@ -634,6 +646,7 @@ def _render_result(payload: dict[str, Any]) -> str:
 
 
 def _doctor(arguments: argparse.Namespace) -> int:
+    """Report local capabilities without invoking models, containers, solvers, or GPUs."""
     report = CapabilityReport.discover()
     local_config = cast(Path | None, arguments.local_model_config)
     local = None
@@ -675,6 +688,7 @@ def _doctor(arguments: argparse.Namespace) -> int:
 
 
 def _chat(arguments: argparse.Namespace) -> int:
+    """Run the interactive mediated chat loop using an OpenAI-compatible endpoint."""
     scenario = load_scenario(cast(Path, arguments.scenario))
     principal_id = str(arguments.principal) if arguments.principal else min(scenario.session.participants).id
     human = next(
@@ -722,6 +736,7 @@ def _chat(arguments: argparse.Namespace) -> int:
 
 
 def _plan(arguments: argparse.Namespace) -> int:
+    """Dispatch planning subcommands: ``demo``, ``compare``, ``pilot``, and ``laptop-smoke``."""
     if str(arguments.plan_command) == "pilot":
         return _cpu_pilot(arguments)
     if str(arguments.plan_command) == "laptop-smoke":
@@ -761,6 +776,7 @@ def _plan(arguments: argparse.Namespace) -> int:
 
 
 def _cpu_pilot(arguments: argparse.Namespace) -> int:
+    """Preflight or run the single-backend CPU planning pilot."""
     configuration = cast(Path, arguments.model_config)
     resolved = load_resolved_local_model(configuration)
     output = cast(Path, arguments.output)
@@ -845,6 +861,7 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
 
 
 def _laptop_smoke(arguments: argparse.Namespace) -> int:
+    """Preflight or run the dual-backend laptop planning smoke matrix."""
     plan = load_laptop_planning_smoke(cast(Path, arguments.plan))
     protocols = {
         BACKEND_TRANSFORMERS: load_protocol(cast(Path, arguments.transformers_config)),
@@ -934,6 +951,7 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
 
 
 def _benchmark(arguments: argparse.Namespace) -> int:
+    """Dispatch AgentDojo benchmark subcommands: ``translate``, ``preflight``, and ``run``."""
     if str(arguments.benchmark_command) != "agentdojo":
         return _unavailable(f"unsupported_benchmark:{arguments.benchmark_command}")
     command = str(arguments.agentdojo_command)
@@ -1030,6 +1048,7 @@ def _agentdojo_pilot_protocol(
     output: Path,
     source_commit: str,
 ) -> ExperimentProtocol:
+    """Build a pinned AgentDojo pilot protocol from a resolved local-model configuration."""
     schemas = Path("experiments/suites/agentdojo-tool-schemas-v1.json")
     exceptions = Path("experiments/suites/agentdojo-annotation-exceptions-v1.json")
     return ExperimentProtocol(
@@ -1072,6 +1091,7 @@ def _agentdojo_pilot_protocol(
 
 
 def _local_model(protocol: ExperimentProtocol) -> SelfHostedOpenAIModel | TransformersLocalModel:
+    """Construct the appropriate local-model adapter from a protocol specification."""
     if protocol.model is None:
         raise ValueError("self_hosted_model_protocol_required")
     if protocol.model.backend == "openai_compatible":
@@ -1082,6 +1102,7 @@ def _local_model(protocol: ExperimentProtocol) -> SelfHostedOpenAIModel | Transf
 
 
 def _preflight_dict(preflight: LocalModelPreflight) -> dict[str, object]:
+    """Serialise a local-model preflight result into a JSON-compatible dictionary."""
     return {
         "backend": preflight.backend,
         "model_id": preflight.model_id,
@@ -1097,6 +1118,7 @@ def _preflight_dict(preflight: LocalModelPreflight) -> dict[str, object]:
 
 
 def _emit_preflight(payload: dict[str, object], output: Path | None) -> None:
+    """Write a preflight JSON file and print the payload to stdout."""
     if output is not None:
         output.mkdir(parents=True, exist_ok=True)
         path = output / "preflight.json"
@@ -1106,6 +1128,7 @@ def _emit_preflight(payload: dict[str, object], output: Path | None) -> None:
 
 
 def _sled_delegation(output: Path) -> int:
+    """Run the canonical disabled-delegation model and its seven negative controls."""
     bounds = VerificationBounds(1, 4, 4, 1)
     canonical = ExplicitStateChecker().verify(DelegationVerificationSystem(), DELEGATION_PROPERTIES, bounds)
     mutants = []
@@ -1136,6 +1159,7 @@ def _sled_delegation(output: Path) -> int:
 
 
 def _policy(arguments: argparse.Namespace) -> int:
+    """Dispatch optional policy-adapter subcommands (currently only Cedar preflight)."""
     if str(arguments.policy_command) != "cedar" or str(arguments.cedar_command) != "preflight":
         return _unavailable("unsupported_policy_command")
     bundle = load_cedar_bundle(cast(Path, arguments.bundle))
@@ -1152,6 +1176,7 @@ def _policy(arguments: argparse.Namespace) -> int:
 
 
 def _cedar_identity_preflight(bundle: CedarPolicyBundle, binary: Path | None) -> dict[str, object]:
+    """Check a candidate Cedar binary against the pinned identity without invoking it."""
     expected = bundle.binary
     available = binary is not None and binary.is_file()
     actual_sha256 = None
@@ -1182,15 +1207,18 @@ def _cedar_identity_preflight(bundle: CedarPolicyBundle, binary: Path | None) ->
 
 
 def _text_sha256(path: Path) -> str:
+    """Return the SHA-256 of a file's canonical (LF-normalised) UTF-8 text."""
     content = path.read_text(encoding="utf-8").replace("\r\n", "\n")
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 def _file_sha256(path: Path) -> str:
+    """Return the raw-byte SHA-256 of a file."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _git_head() -> str:
+    """Return the current Git HEAD commit hash."""
     result = subprocess.run(
         ("git", "rev-parse", "HEAD"),
         check=False,
@@ -1210,6 +1238,7 @@ def _write_cpu_pilot_bundle(
     records: list[dict[str, object]],
     output: Path,
 ) -> None:
+    """Write the CPU planning pilot result, raw model log, table, manifest, and checksums."""
     output.mkdir(parents=True, exist_ok=True)
     protocol.materialise(output)
     (output / "result.json").write_text(
@@ -1298,6 +1327,7 @@ def _write_cpu_pilot_bundle(
 
 
 def _planning_failure_category(status: str) -> str:
+    """Map a planning observation status to a failure category label."""
     return {
         "parser_failed": "parser",
         "modeled_program_failed": "parser",
@@ -1313,12 +1343,14 @@ def _write_protocol_result(
     result: dict[str, object],
     output: Path,
 ) -> None:
+    """Materialise a protocol and write its result JSON to the output directory."""
     output.mkdir(parents=True, exist_ok=True)
     protocol.materialise(output)
     (output / "result.json").write_text(canonical_json(result) + "\n", encoding="utf-8", newline="\n")
 
 
 def _result_schema(payload: dict[str, Any]) -> str:
+    """Determine the schema name for a result payload based on its structure."""
     if "model_identities" in payload and "observations" in payload:
         return "planning-laptop-smoke-result.schema.json"
     if payload.get("schema_version") != "2":
@@ -1333,6 +1365,7 @@ def _result_schema(payload: dict[str, Any]) -> str:
 
 
 def _render_any_result(payload: dict[str, Any]) -> str:
+    """Dispatch result rendering to the appropriate format-specific renderer."""
     if payload.get("schema_version") != "2":
         return _render_result(payload)
     if "pairs" in payload:
@@ -1343,6 +1376,7 @@ def _render_any_result(payload: dict[str, Any]) -> str:
 
 
 def _render_native_sled_result(payload: dict[str, Any]) -> str:
+    """Render a native SLED result payload as Markdown."""
     pairs = cast(list[dict[str, object]], payload.get("pairs", []))
     complete = payload.get("complete", False)
     lines = [
@@ -1376,6 +1410,7 @@ def _render_native_sled_result(payload: dict[str, Any]) -> str:
 
 
 def _render_agentdojo_result(payload: dict[str, Any]) -> str:
+    """Render an AgentDojo comparison result payload as Markdown."""
     cells = cast(list[dict[str, object]], payload.get("cells", []))
     complete = payload.get("complete", False)
     lines = [
@@ -1408,6 +1443,7 @@ def _render_agentdojo_result(payload: dict[str, Any]) -> str:
 
 
 def _render_planning_result(payload: dict[str, Any]) -> str:
+    """Render a planning comparison result payload as Markdown."""
     observations = cast(list[dict[str, object]], payload.get("observations", []))
     complete = payload.get("complete", False)
     lines = [
@@ -1435,6 +1471,7 @@ def _render_planning_result(payload: dict[str, Any]) -> str:
 
 
 def _print_demo_summary(payload: dict[str, Any], output: Path) -> None:
+    """Print a concise human-readable summary of a demo run to stdout."""
     diagnostics = cast(dict[str, object], payload["diagnostics"])
     utility = cast(dict[str, object], payload["utility"])
     security = cast(dict[str, object], payload.get("security", {}))
@@ -1462,6 +1499,7 @@ def _print_demo_summary(payload: dict[str, Any], output: Path) -> None:
 
 
 def _print_sled_summary(verification_dict: dict[str, object]) -> None:
+    """Print a concise human-readable SLED verdict summary to stdout."""
     verdict = verification_dict.get("verdict", "unknown")
     statistics = cast(dict[str, object], verification_dict.get("statistics", {}))
     bounds = cast(dict[str, object], verification_dict.get("bounds", {}))
@@ -1496,6 +1534,7 @@ def _print_sled_summary(verification_dict: dict[str, object]) -> None:
 
 
 def _print_plan_summary(result_payload: DynamicPlanResult) -> None:
+    """Print a concise human-readable dynamic-plan summary to stdout."""
     state = result_payload.state
     print(f"Plan status: {state.status.value}, completed: {result_payload.completed}")
     node_ids = [e.node_id for e in state.events if e.event_type == "plan.node_activated" and e.node_id is not None]
@@ -1509,6 +1548,7 @@ def _print_plan_summary(result_payload: DynamicPlanResult) -> None:
 
 
 def _unavailable(reason: str) -> int:
+    """Print an unavailability reason to stderr and return the usage exit code."""
     print(reason, file=sys.stderr)
     return EXIT_USAGE
 
