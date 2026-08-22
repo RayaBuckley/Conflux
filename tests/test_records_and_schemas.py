@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
+import pytest
 from jsonschema import Draft202012Validator
 
 from conflux.application import DecisionPipeline
@@ -24,6 +25,8 @@ from conflux.ites import MediatingITES, TransitionKernel
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = ROOT / "schemas"
+
+pytestmark = pytest.mark.integration
 
 
 class NoOpModel:
@@ -45,9 +48,7 @@ def test_checked_in_schemas_are_valid() -> None:
 
 
 def test_proposal_and_verification_records_validate() -> None:
-    Draft202012Validator(_schema("proposal-batch-v2.schema.json")).validate(
-        ProposalBatch.alternatives(NoOpAction("noop")).to_dict()
-    )
+    Draft202012Validator(_schema("proposal-batch-v2.schema.json")).validate(ProposalBatch.alternatives(NoOpAction("noop")).to_dict())
     result: VerificationResult[object, object] = VerificationResult(
         VerificationVerdict.SAFE,
         1,
@@ -60,11 +61,7 @@ def test_proposal_and_verification_records_validate() -> None:
 
 
 def test_golden_trace_event_validates() -> None:
-    event = json.loads(
-        (ROOT / "tests" / "fixtures" / "traces" / "minimal-event.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    event = json.loads((ROOT / "tests" / "fixtures" / "traces" / "minimal-event.json").read_text(encoding="utf-8"))
     Draft202012Validator(_schema("trace-event.schema.json")).validate(event)
 
 

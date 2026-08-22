@@ -32,6 +32,8 @@ from conflux.ites import BranchStatus, MediatingITES, TransitionKernel
 from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy
 from conflux.ports import ProviderResult
 
+pytestmark = pytest.mark.security
+
 
 def primitive(
     action_id: str,

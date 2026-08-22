@@ -24,6 +24,8 @@ from conflux.domain import (
 )
 from conflux.ites import BranchState, TransitionKernel
 
+pytestmark = pytest.mark.security
+
 
 @dataclass(frozen=True, slots=True)
 class SemanticCase:

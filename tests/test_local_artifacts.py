@@ -23,6 +23,8 @@ from conflux.ports import LocalModelPreflight, LocalModelSpec
 MODEL_ID = "HuggingFaceTB/SmolLM2-360M-Instruct"
 REVISION = "c38281e01d0c0b0c36eac2f5bcb5b51fa2e803fc"
 
+pytestmark = pytest.mark.adapter
+
 
 def _snapshot(root: Path) -> Path:
     snapshot = root / "model" / "snapshots" / REVISION
@@ -137,23 +139,26 @@ def test_resolution_rejects_changed_and_dangling_files(tmp_path: Path) -> None:
 def test_model_resolve_cli_writes_reviewable_configuration(tmp_path: Path) -> None:
     snapshot = _snapshot(tmp_path)
     output = tmp_path / "resolved"
-    assert main(
-        [
-            "model",
-            "resolve",
-            "transformers",
-            "--model-id",
-            MODEL_ID,
-            "--revision",
-            REVISION,
-            "--snapshot",
-            str(snapshot),
-            "--runtime-version",
-            "transformers-test",
-            "--output",
-            str(output),
-        ]
-    ) == 0
+    assert (
+        main(
+            [
+                "model",
+                "resolve",
+                "transformers",
+                "--model-id",
+                MODEL_ID,
+                "--revision",
+                REVISION,
+                "--snapshot",
+                str(snapshot),
+                "--runtime-version",
+                "transformers-test",
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
     assert (output / "artifact-manifest.json").is_file()
     resolved = load_resolved_local_model(output / "transformers.json")
     assert resolved.spec.device == "cpu"
@@ -181,19 +186,22 @@ def test_agentdojo_preflight_builds_six_cell_protocol_from_resolved_model(
         lambda _: SimpleNamespace(to_dict=lambda: {"schema_version": "fixture"}),
     )
     output = tmp_path / "agentdojo"
-    assert main(
-        [
-            "benchmark",
-            "agentdojo",
-            "preflight",
-            "--model-config",
-            str(configuration),
-            "--source-commit",
-            "a" * 40,
-            "--output",
-            str(output),
-        ]
-    ) == 0
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "preflight",
+                "--model-config",
+                str(configuration),
+                "--source-commit",
+                "a" * 40,
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
     protocol = json.loads((output / "protocol.json").read_text())
     preflight = json.loads((output / "preflight.json").read_text())
     assert protocol["schema_version"] == "2"

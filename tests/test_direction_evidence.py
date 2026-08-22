@@ -5,10 +5,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from conflux.experiments import (
     compare_direction_evidence_bundle,
     generate_direction_evidence_bundle,
 )
+
+pytestmark = pytest.mark.reproducibility
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -28,22 +32,12 @@ def test_direction_bundle_separates_readiness_from_bounded_evidence(
         assert payload["complete"] is False
         assert len(payload["matrix"]) == cells
         assert all(cell["status"] == "unavailable" for cell in payload["matrix"])
-    mutations = json.loads(
-        (output / "security-mutations.json").read_text(encoding="utf-8")
-    )
+    mutations = json.loads((output / "security-mutations.json").read_text(encoding="utf-8"))
     assert mutations["classification"] == "bounded_evidence"
     assert mutations["canonical"]["disclosure"]["verdict"] == "safe"
     assert mutations["canonical"]["delegation"]["verdict"] == "safe"
-    assert all(
-        item["killed"]
-        for group in mutations["mutants"].values()
-        for item in group
-    )
-    assert all(
-        item["verification"]["counterexample"]["length"] == 1
-        for group in mutations["mutants"].values()
-        for item in group
-    )
+    assert all(item["killed"] for group in mutations["mutants"].values() for item in group)
+    assert all(item["verification"]["counterexample"]["length"] == 1 for group in mutations["mutants"].values() for item in group)
 
 
 def test_direction_bundle_regenerates_byte_identically(tmp_path: Path) -> None:

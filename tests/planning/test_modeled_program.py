@@ -9,6 +9,8 @@ import pytest
 
 from conflux.planning import ModeledEffect, ModeledProgram, parse_modeled_program
 
+pytestmark = pytest.mark.security
+
 
 def _program() -> ModeledProgram:
     return ModeledProgram(
@@ -48,16 +50,9 @@ def test_modeled_program_module_has_no_code_execution_surface() -> None:
     path = Path(__file__).resolve().parents[2] / "src" / "conflux" / "planning" / "modeled_program.py"
     tree = ast.parse(path.read_text(encoding="utf-8"))
     forbidden_calls = {"eval", "exec", "compile", "system", "run", "Popen"}
-    calls = {
-        node.func.id
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-    }
+    calls = {node.func.id for node in ast.walk(tree) if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
     imports = {
-        alias.name.split(".")[0]
-        for node in ast.walk(tree)
-        if isinstance(node, (ast.Import, ast.ImportFrom))
-        for alias in node.names
+        alias.name.split(".")[0] for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom)) for alias in node.names
     }
     assert not calls & forbidden_calls
     assert not imports & {"subprocess", "runpy", "importlib"}

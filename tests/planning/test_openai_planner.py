@@ -23,6 +23,8 @@ from conflux.planning import (
     TerminalOutcome,
 )
 
+pytestmark = pytest.mark.adapter
+
 
 @dataclass
 class Response:
@@ -50,9 +52,7 @@ class Transport:
         json: dict[str, object],
         timeout: float,
     ) -> HTTPResponse:
-        self.calls.append(
-            {"url": url, "headers": headers, "json": json, "timeout": timeout}
-        )
+        self.calls.append({"url": url, "headers": headers, "json": json, "timeout": timeout})
         return self.responses.pop(0)
 
 

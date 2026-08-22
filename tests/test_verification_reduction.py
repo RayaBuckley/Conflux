@@ -24,6 +24,8 @@ from conflux.verification import (
     reduce_cone_of_influence,
 )
 
+pytestmark = pytest.mark.security
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -80,9 +82,7 @@ def test_reduction_closes_over_guards_rhs_and_simultaneous_assignments() -> None
     assert reduction.removed_variables == ("noise", "noise_cycle")
     assert reduction.retained_rules == ("apply-control", "disable-guard")
     assert reduction.removed_rules == ("irrelevant-cycle",)
-    apply = next(
-        rule for rule in reduction.reduced_ir.transitions if rule.id == "apply-control"
-    )
+    apply = next(rule for rule in reduction.reduced_ir.transitions if rule.id == "apply-control")
     assert tuple(item.variable for item in apply.assignments) == ("safe", "control")
     assert reduction.reduced_ir.bound == reducible_ir().bound
     assert reduction.reduced_ir.assumptions == reducible_ir().assumptions
@@ -94,19 +94,13 @@ def test_reduction_is_deterministic_and_schema_valid() -> None:
     assert first.to_dict() == second.to_dict()
     schema = cast(
         dict[str, object],
-        json.loads(
-            (ROOT / "schemas" / "verification-reduction.schema.json").read_text(
-                encoding="utf-8"
-            )
-        ),
+        json.loads((ROOT / "schemas" / "verification-reduction.schema.json").read_text(encoding="utf-8")),
     )
     Draft202012Validator(schema).validate(first.to_dict())
 
 
 def test_safe_original_and_reduced_models_agree() -> None:
-    comparison = compare_cone_of_influence(
-        reducible_ir(), ("safe-remains-true",)
-    )
+    comparison = compare_cone_of_influence(reducible_ir(), ("safe-remains-true",))
     assert comparison.equivalent
     assert comparison.original.verdict == FormalVerdict.SAFE
     assert comparison.reduced.verdict == FormalVerdict.SAFE
@@ -115,9 +109,7 @@ def test_safe_original_and_reduced_models_agree() -> None:
 
 
 def test_shortest_reduced_counterexample_lifts_to_original() -> None:
-    comparison = compare_cone_of_influence(
-        reducible_ir(unsafe=True), ("safe-remains-true",)
-    )
+    comparison = compare_cone_of_influence(reducible_ir(unsafe=True), ("safe-remains-true",))
     assert comparison.equivalent
     assert comparison.original.verdict == FormalVerdict.UNSAFE
     assert comparison.reduced.verdict == FormalVerdict.UNSAFE
@@ -141,9 +133,7 @@ def test_multiple_invariants_select_the_union_of_dependencies() -> None:
             ),
         ),
     )
-    reduction = reduce_cone_of_influence(
-        expanded, ("safe-remains-true", "bounded-noise")
-    )
+    reduction = reduce_cone_of_influence(expanded, ("safe-remains-true", "bounded-noise"))
     assert "noise" in reduction.retained_variables
     assert "noise_cycle" in reduction.removed_variables
 
@@ -181,9 +171,7 @@ def test_complete_cone_returns_unchanged_explicit_fallback() -> None:
 
 def test_empty_selection_means_all_and_invalid_selections_fail_closed() -> None:
     ir = reducible_ir()
-    assert reduce_cone_of_influence(ir, ()).invariant_ids == (
-        "safe-remains-true",
-    )
+    assert reduce_cone_of_influence(ir, ()).invariant_ids == ("safe-remains-true",)
     with pytest.raises(ValueError, match="unknown verification invariants"):
         reduce_cone_of_influence(ir, ("missing",))
     with pytest.raises(ValueError, match="must be unique"):

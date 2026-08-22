@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from conflux.application import DecisionPipeline
 from conflux.domain import (
     Artifact,
@@ -50,6 +52,8 @@ from .mutants import (
     VisibilityImpliesRead,
     with_read_policy,
 )
+
+pytestmark = pytest.mark.mutation
 
 
 def _pipeline(

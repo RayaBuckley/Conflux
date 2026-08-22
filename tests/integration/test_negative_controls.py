@@ -42,6 +42,8 @@ from conflux.policy import (
     SnapshotReadPolicy,
 )
 
+pytestmark = pytest.mark.integration
+
 
 @dataclass(frozen=True, slots=True)
 class ControlCase:

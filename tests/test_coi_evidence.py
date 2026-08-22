@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import cast
 
+import pytest
 from jsonschema import Draft202012Validator
 
 from conflux.experiments import (
@@ -13,6 +14,8 @@ from conflux.experiments import (
     generate_coi_evidence_bundle,
     verify_coi_evidence_checksums,
 )
+
+pytestmark = pytest.mark.reproducibility
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,11 +34,7 @@ def test_coi_bundle_is_deterministic_complete_and_reduced(tmp_path: Path) -> Non
     )
     schema = cast(
         dict[str, object],
-        json.loads(
-            (ROOT / "schemas/verification-reduction-result.schema.json").read_text(
-                encoding="utf-8"
-            )
-        ),
+        json.loads((ROOT / "schemas/verification-reduction-result.schema.json").read_text(encoding="utf-8")),
     )
     Draft202012Validator(schema).validate(result)
     summary = cast(dict[str, object], result["summary"])

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from conflux.domain import WRITE, Principal, Provenance
 from conflux.planning import (
     ActionTemplate,
@@ -23,6 +25,8 @@ from conflux.verification import (
     successors,
     verify_plan,
 )
+
+pytestmark = pytest.mark.security
 
 
 def fixture() -> tuple[Plan, OperationCatalogue]:

@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import pytest
+
 from conflux.domain import Principal, PrincipalContext, Provenance, ProvenancePrecision
+
+pytestmark = pytest.mark.security
 
 alice = Principal("alice", "Alice")
 bob = Principal("bob", "Bob")

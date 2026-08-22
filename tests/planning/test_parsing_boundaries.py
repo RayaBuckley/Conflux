@@ -9,6 +9,8 @@ import pytest
 from conflux.domain import Principal, Provenance
 from conflux.planning import parse_node, parse_plan, parse_plan_patch
 
+pytestmark = pytest.mark.security
+
 
 def _provenance() -> Provenance:
     return Provenance.from_principal(Principal("alice", "Alice"), source="trusted")

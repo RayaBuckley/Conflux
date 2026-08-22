@@ -5,12 +5,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from conflux.experiments import (
     NATIVE_EVIDENCE_FILES,
     compare_native_sled_bundle,
     generate_native_sled_bundle,
     verify_native_sled_checksums,
 )
+
+pytestmark = pytest.mark.reproducibility
 
 ROOT = Path(__file__).resolve().parents[1]
 

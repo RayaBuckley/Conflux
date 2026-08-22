@@ -44,6 +44,8 @@ from conflux.planning import (
 
 ROOT = Path(__file__).resolve().parents[2]
 
+pytestmark = pytest.mark.security
+
 
 def provenance(*principals: Principal, source: str = "fixture") -> Provenance:
     return Provenance(
@@ -388,9 +390,7 @@ def test_planning_request_and_schema_records_validate(alice: Principal) -> None:
     )
     patch_schema = cast(
         dict[str, object],
-        json.loads(
-            (ROOT / "schemas" / "plan-patch.schema.json").read_text(encoding="utf-8")
-        ),
+        json.loads((ROOT / "schemas" / "plan-patch.schema.json").read_text(encoding="utf-8")),
     )
     Draft202012Validator(plan_schema).validate(plan.to_dict())
     patch = PlanPatch(
@@ -410,14 +410,20 @@ def test_planning_request_and_schema_records_validate(alice: Principal) -> None:
         plan.to_dict(),
         trusted_provenance=provenance(alice),
     )
-    assert parse_plan(
-        parsed_plan.to_dict(),
-        trusted_provenance=provenance(alice),
-    ).fingerprint == parsed_plan.fingerprint
-    assert parse_plan_patch(
-        patch.to_dict(),
-        trusted_provenance=provenance(alice),
-    ).fingerprint == patch.fingerprint
+    assert (
+        parse_plan(
+            parsed_plan.to_dict(),
+            trusted_provenance=provenance(alice),
+        ).fingerprint
+        == parsed_plan.fingerprint
+    )
+    assert (
+        parse_plan_patch(
+            patch.to_dict(),
+            trusted_provenance=provenance(alice),
+        ).fingerprint
+        == patch.fingerprint
+    )
 
 
 def test_parser_ignores_model_supplied_provenance(

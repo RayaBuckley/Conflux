@@ -21,6 +21,8 @@ from conflux.experiments import (
 from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResponse
 from scripts.prepare_laptop_smoke import main as prepare_laptop_smoke
 
+pytestmark = pytest.mark.integration
+
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_PATH = ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
 

@@ -18,17 +18,13 @@ from scripts.audit_repository import (
     supersession_has_cycle,
 )
 
+pytestmark = pytest.mark.integration
+
 
 def test_development_install_contains_nonisolated_build_requirements() -> None:
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-    build_requirements = {
-        requirement.split(">=")[0]
-        for requirement in project["build-system"]["requires"]
-    }
-    development_requirements = {
-        requirement.split(">=")[0]
-        for requirement in project["project"]["optional-dependencies"]["dev"]
-    }
+    build_requirements = {requirement.split(">=")[0] for requirement in project["build-system"]["requires"]}
+    development_requirements = {requirement.split(">=")[0] for requirement in project["project"]["optional-dependencies"]["dev"]}
     assert build_requirements <= development_requirements
 
 

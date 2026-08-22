@@ -53,6 +53,9 @@ from conflux.policy import (
     SessionAudienceVisibilityPolicy,
 )
 
+pytestmark = pytest.mark.security
+
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -307,9 +310,7 @@ def test_attribution_is_structured_conservative_and_model_text_is_untrusted(
     assert record.conservative_influence.principals == frozenset({alice})
     assert record.redaction_requirements == ("destination",)
     assert not record.model_explanation_trusted
-    assert explain_attribution(record, DisclosureLevel.REDACTED) == explain_attribution(
-        record, DisclosureLevel.REDACTED
-    )
+    assert explain_attribution(record, DisclosureLevel.REDACTED) == explain_attribution(record, DisclosureLevel.REDACTED)
     with pytest.raises(ValueError, match="cannot be marked trusted"):
         AttributionRecord((), PrincipalContext(), (), (), (), "claim", True)
 
@@ -358,9 +359,7 @@ def test_actual_selector_property_rejects_missing_argument_decision(
     parent = BranchState.initial((source.to_artifact(),))
     base_decision = pipeline.decide(
         session=session,
-        action=PrimitiveAction(
-            "write", "write", Permission("write"), ResourceRef("test", "out", "document")
-        ),
+        action=PrimitiveAction("write", "write", Permission("write"), ResourceRef("test", "out", "document")),
         context=PrincipalContext(frozenset({alice})),
         environment=environment,
     )

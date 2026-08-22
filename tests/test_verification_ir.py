@@ -30,6 +30,8 @@ from conflux.verification import (
     verify_with_z3,
 )
 
+pytestmark = pytest.mark.security
+
 ROOT = Path(__file__).resolve().parents[1]
 
 

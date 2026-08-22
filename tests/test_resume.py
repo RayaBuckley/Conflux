@@ -14,6 +14,8 @@ from conflux.experiments import (
     plan_resume,
 )
 
+pytestmark = pytest.mark.integration
+
 
 def _manifest(*, model: dict[str, object] | None = None) -> ExperimentManifest:
     return ExperimentManifest(

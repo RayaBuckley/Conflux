@@ -41,6 +41,8 @@ from conflux.domain import (
 ROOT = Path(__file__).resolve().parents[1]
 ZERO_SHA = "0" * 64
 
+pytestmark = pytest.mark.adapter
+
 
 def _bundle(*, binary_sha256: str = ZERO_SHA) -> CedarPolicyBundle:
     return CedarPolicyBundle(

@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import pytest
+
 from conflux.experiments.sled_comparison import comparison
+
+pytestmark = pytest.mark.reproducibility
 
 
 def test_state_exploration_deduplicates_equivalent_continuations() -> None:

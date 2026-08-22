@@ -58,6 +58,14 @@ docs = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-p no:cacheprovider --basetemp=.local/pytest"
+markers = [
+    "security: security invariant tests",
+    "integration: cross-boundary integration tests",
+    "adapter: external adapter contract tests",
+    "reproducibility: deterministic regeneration tests",
+    "slow: tests that take >1s",
+    "mutation: mutation killing tests",
+]
 [tool.coverage.run]
 branch = true
 source = ["conflux"]

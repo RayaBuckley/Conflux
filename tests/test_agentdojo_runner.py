@@ -16,6 +16,8 @@ from conflux.experiments import (
 )
 from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResponse
 
+pytestmark = pytest.mark.adapter
+
 
 def _protocol() -> ExperimentProtocol:
     return ExperimentProtocol(

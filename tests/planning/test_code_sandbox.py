@@ -52,6 +52,8 @@ from conflux.policy import (
 
 PINNED_IMAGE = "python@sha256:" + "a" * 64
 
+pytestmark = pytest.mark.integration
+
 
 def provenance(principal: Principal, source: str) -> Provenance:
     return Provenance.from_principal(principal, source=source)
@@ -95,8 +97,7 @@ def code_action(alice: Principal, capability: CapabilityEnvelope) -> Action:
             TemplateArgument(
                 "source",
                 LiteralBinding(
-                    "from pathlib import Path\n"
-                    "Path('outputs/result.txt').write_text('ok')\n",
+                    "from pathlib import Path\nPath('outputs/result.txt').write_text('ok')\n",
                     source,
                 ),
             ),
@@ -166,9 +167,7 @@ def test_pinned_container_command_has_no_shell_or_host_workspace_mount(
     assert result.success
     assert isinstance(result.outcome, CodeExecutionResult)
     sandbox = result.outcome
-    assert sandbox.outputs[0].artifact.provenance.principals == frozenset(
-        {alice, runtime}
-    )
+    assert sandbox.outputs[0].artifact.provenance.principals == frozenset({alice, runtime})
     command = runner.commands[0]
     assert command[:3] == ("docker", "run", "--rm")
     assert ("--network", "none") == command[3:5]
@@ -335,9 +334,7 @@ def test_generated_code_effect_is_mediated_and_traced(
     )
     plan = Plan("code-plan", "run confined code", (node, done), source_provenance)
     pipeline = DecisionPipeline(
-        InMemoryAuthorisationPolicy(
-            frozenset({PolicyGrant(alice.id, "execute_code", "demo")})
-        ),
+        InMemoryAuthorisationPolicy(frozenset({PolicyGrant(alice.id, "execute_code", "demo")})),
         AllowInternalReadPolicy(),
         SessionVisibilityPolicy(),
         ExplicitConsentPolicy(frozenset({node.id})),
@@ -350,9 +347,7 @@ def test_generated_code_effect_is_mediated_and_traced(
         DockerCodeSandboxExecutor(
             tmp_path,
             provenance(runtime, "attestation"),
-            runner=RecordingRunner(
-                CommandOutcome(0, outputs={"result.txt": b"ok"})
-            ),
+            runner=RecordingRunner(CommandOutcome(0, outputs={"result.txt": b"ok"})),
             availability=lambda _: True,
         ),
         OperationCatalogue((schema,)),

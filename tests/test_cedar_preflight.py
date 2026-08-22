@@ -23,6 +23,8 @@ ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = ROOT / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
 CORPUS = ROOT / "experiments" / "suites" / "cedar-differential-v1.json"
 
+pytestmark = pytest.mark.adapter
+
 
 def test_cedar_preflight_covers_required_corpus_without_invoking_binary() -> None:
     bundle = load_cedar_bundle(BUNDLE)

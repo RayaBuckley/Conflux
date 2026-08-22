@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from conflux.domain import Principal, Provenance
 from conflux.planning import (
     CandidateSecurity,
@@ -11,6 +13,8 @@ from conflux.planning import (
     TerminalOutcome,
     select_plan,
 )
+
+pytestmark = pytest.mark.security
 
 
 def plan(identifier: str) -> Plan:
@@ -116,8 +120,6 @@ def test_tie_breaking_uses_stable_plan_fingerprint() -> None:
 
 
 def test_no_eligible_candidate_returns_explicit_empty_selection() -> None:
-    selection = select_plan(
-        (candidate("unknown", security=CandidateSecurity.UNKNOWN),)
-    )
+    selection = select_plan((candidate("unknown", security=CandidateSecurity.UNKNOWN),))
     assert selection.selected is None
     assert selection.ranked_plan_ids == ()

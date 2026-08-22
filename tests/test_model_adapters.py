@@ -18,6 +18,8 @@ from conflux.domain import Artifact, EnvironmentSnapshot, Provenance, Session
 from conflux.evaluation import RunResult, trace_records
 from conflux.ites import MediatingITES, TransitionKernel
 
+pytestmark = pytest.mark.adapter
+
 
 def _proposal(*, resource: bool = False) -> str:
     action: dict[str, object] = {
@@ -77,9 +79,7 @@ class Transport:
         json: dict[str, object],
         timeout: float,
     ) -> HTTPResponse:
-        self.calls.append(
-            {"url": url, "headers": headers, "json": json, "timeout": timeout}
-        )
+        self.calls.append({"url": url, "headers": headers, "json": json, "timeout": timeout})
         return self.responses.pop(0)
 
 

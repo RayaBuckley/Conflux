@@ -22,6 +22,8 @@ from conflux.adapters.models.openai_compatible import HTTPResponse
 from conflux.experiments import LocalModelSpec
 from conflux.ports import LocalModelRequest
 
+pytestmark = pytest.mark.adapter
+
 
 def _spec(backend: str = "openai_compatible", endpoint: str | None = "http://127.0.0.1:8000/v1") -> LocalModelSpec:
     return LocalModelSpec(

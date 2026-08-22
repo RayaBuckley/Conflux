@@ -20,6 +20,8 @@ from conflux.domain import (
     canonical_json,
 )
 
+pytestmark = pytest.mark.security
+
 
 def test_principal_is_identity_only(alice: Principal) -> None:
     assert alice.id == "alice"
@@ -98,9 +100,9 @@ def test_proposal_batch_is_immutable_and_serialisable() -> None:
     batch = ProposalBatch.ordered_plan(action)
     assert batch.mode is ProposalMode.ORDERED_PLAN
     assert batch.to_dict()["proposals"] == [
-            {
-                "schema_version": "2",
-                "id": "noop",
+        {
+            "schema_version": "2",
+            "id": "noop",
             "kind": "no_op",
             "visibility": "internal",
             "input_ids": [],

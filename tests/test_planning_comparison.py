@@ -13,6 +13,8 @@ from conflux.experiments import (
     generate_planning_report,
 )
 
+pytestmark = pytest.mark.reproducibility
+
 
 def _observation(mode: PlanningMode, task_id: str = "task") -> PlanningObservation:
     return PlanningObservation(
@@ -44,10 +46,7 @@ def test_aggregate_separates_security_utility_and_incomplete_runs() -> None:
 def test_aggregate_requires_all_modes_and_identical_tasks() -> None:
     with pytest.raises(ValueError, match="missing modes"):
         aggregate_planning_comparison((_observation(PlanningMode.REACTIVE),))
-    observations = tuple(
-        _observation(mode, "different" if mode == PlanningMode.STATIC else "task")
-        for mode in PlanningMode
-    )
+    observations = tuple(_observation(mode, "different" if mode == PlanningMode.STATIC else "task") for mode in PlanningMode)
     with pytest.raises(ValueError, match="identical task IDs"):
         aggregate_planning_comparison(observations)
 

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import pytest
+
 from conflux.application import DecisionPipeline
 from conflux.domain import Artifact, EnvironmentSnapshot, NoOpAction, Principal, Provenance, Session
 from conflux.evaluation import (
@@ -18,6 +20,8 @@ from conflux.evaluation import (
     VerificationVerdict,
 )
 from conflux.ites import BranchState, TransitionKernel
+
+pytestmark = pytest.mark.security
 
 
 @dataclass(frozen=True)
@@ -102,9 +106,7 @@ def test_ites_white_box_properties_are_executable(
     environment: EnvironmentSnapshot,
 ) -> None:
     principal = Principal("alice", "Alice")
-    initial = BranchState.initial(
-        (Artifact("input", "x", Provenance.from_principal(principal)),)
-    )
+    initial = BranchState.initial((Artifact("input", "x", Provenance.from_principal(principal)),))
     system = ITESVerificationSystem(
         (initial,),
         (NoOpAction("noop"),),

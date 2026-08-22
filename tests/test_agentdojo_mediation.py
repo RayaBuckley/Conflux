@@ -6,6 +6,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+import pytest
+
 from conflux.adapters.benchmarks.agentdojo_annotations import (
     AnnotationProfile,
     pilot_annotations,
@@ -13,6 +15,8 @@ from conflux.adapters.benchmarks.agentdojo_annotations import (
 from conflux.adapters.benchmarks.agentdojo_local import AgentDojoActionMediator
 from conflux.domain import Action
 from conflux.ports import ProviderResult
+
+pytestmark = pytest.mark.adapter
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -29,9 +33,7 @@ class _Executor:
 def test_attacked_search_adds_injection_provenance_and_blocks_delete() -> None:
     executor = _Executor([])
     mediator = AgentDojoActionMediator(attacked=True, defence="ites_conservative")
-    assert {principal.id for principal in mediator.session.participants} == {
-        "agentdojo:user"
-    }
+    assert {principal.id for principal in mediator.session.participants} == {"agentdojo:user"}
     assert mediator.mediate("search_emails", {"query": "hiking"}, executor).success
     assert len(executor.calls) == 1 and all(executor.calls[0])
     assert {principal.id for principal in mediator.environment.data[-1].authors} == {
@@ -77,26 +79,14 @@ def test_missing_unknown_and_unreviewed_selector_arguments_deny() -> None:
     mediator = AgentDojoActionMediator(attacked=False, defence="ites_oracle")
     executor = _Executor([])
     assert mediator.mediate("search_emails", {}, executor).error == "unsupported_arguments"
-    assert (
-        mediator.mediate("search_emails", {"query": "x", "recipient": "y"}, executor).error
-        == "unsupported_arguments"
-    )
+    assert mediator.mediate("search_emails", {"query": "x", "recipient": "y"}, executor).error == "unsupported_arguments"
     assert mediator.mediate("delete_file", {"file_id": "999"}, executor).error == "policy_blocked"
     assert not executor.calls
 
 
 def test_reviewed_annotations_match_checked_experiment_inputs() -> None:
-    schemas = json.loads(
-        (ROOT / "experiments/suites/agentdojo-tool-schemas-v1.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    exceptions = json.loads(
-        (
-            ROOT
-            / "experiments/suites/agentdojo-annotation-exceptions-v1.json"
-        ).read_text(encoding="utf-8")
-    )
+    schemas = json.loads((ROOT / "experiments/suites/agentdojo-tool-schemas-v1.json").read_text(encoding="utf-8"))
+    exceptions = json.loads((ROOT / "experiments/suites/agentdojo-annotation-exceptions-v1.json").read_text(encoding="utf-8"))
     annotations = pilot_annotations(AnnotationProfile.CONSERVATIVE)
     assert schemas["operations"] == {
         name: {
@@ -105,6 +95,4 @@ def test_reviewed_annotations_match_checked_experiment_inputs() -> None:
         }
         for name, schema in sorted(annotations.operations.items())
     }
-    assert exceptions["reviewed_values"] == {
-        key: list(values) for key, values in annotations.reviewed_values.items()
-    }
+    assert exceptions["reviewed_values"] == {key: list(values) for key, values in annotations.reviewed_values.items()}

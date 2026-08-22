@@ -9,6 +9,7 @@ setup. Local environments and ordinary run output are ignored.
 Use the narrowest useful feedback first, then finish with the repository gate.
 
 1. Run the affected unit or integration file with `python -m pytest -q`.
+   Use `python -m pytest -m "not slow" -q` to skip slow (Hypothesis) tests.
 2. Run Ruff and strict mypy over changed Python boundaries.
 3. Run `python scripts/audit_repository.py` after architecture, evidence, or
    documentation changes.

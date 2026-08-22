@@ -12,6 +12,8 @@ from conflux.cli import EXIT_OK, main
 from conflux.domain import fingerprint
 from conflux.experiments import ExperimentManifest, load_manifest
 
+pytestmark = pytest.mark.integration
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -86,10 +88,7 @@ def test_demo_copies_manifest_and_links_hash(tmp_path: Path) -> None:
 
 def test_all_versioned_suite_scenarios_load_with_stable_distinct_ids() -> None:
     suites = ROOT / "experiments" / "suites"
-    scenarios = tuple(
-        load_scenario(path)
-        for path in sorted(suites.glob("*/*.yaml"))
-    )
+    scenarios = tuple(load_scenario(path) for path in sorted(suites.glob("*/*.yaml")))
     identifiers = {scenario.id for scenario in scenarios}
     assert len(scenarios) == 6
     assert len(identifiers) == 6

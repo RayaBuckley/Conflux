@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -22,6 +23,8 @@ from conflux.ites import BranchState, TransitionKernel
 from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy, PolicyGrant, SessionVisibilityPolicy, SnapshotReadPolicy
 
 from .strategies import artifacts, primitive_actions, principal_contexts, provenances
+
+pytestmark = pytest.mark.slow
 
 _PERMIT_ALL = InMemoryAuthorisationPolicy(
     frozenset(

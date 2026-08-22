@@ -15,6 +15,8 @@ from conflux.experiments import (
     load_protocol,
 )
 
+pytestmark = pytest.mark.integration
+
 
 def _model() -> LocalModelSpec:
     return LocalModelSpec(

@@ -27,6 +27,8 @@ from conflux.domain import (
 )
 from conflux.ites import MediatingITES, TransitionKernel
 
+pytestmark = pytest.mark.adapter
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -68,8 +70,7 @@ def test_scenario_loader_builds_a_mediatable_canonical_scenario() -> None:
 def test_scenario_loader_rejects_unknown_fields_and_references(tmp_path: Path) -> None:
     bad_field = tmp_path / "bad-field.yaml"
     bad_field.write_text(
-        (ROOT / "tests" / "fixtures" / "scenarios" / "basic.yaml").read_text(encoding="utf-8")
-        + "\nunknown: true\n",
+        (ROOT / "tests" / "fixtures" / "scenarios" / "basic.yaml").read_text(encoding="utf-8") + "\nunknown: true\n",
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="scenario_schema_error"):
@@ -107,11 +108,7 @@ def test_scenario_loader_rejects_unknown_fields_and_references(tmp_path: Path) -
 
 
 def test_scenario_loader_parses_every_declarative_action_kind(tmp_path: Path) -> None:
-    payload = yaml.safe_load(
-        (ROOT / "tests" / "fixtures" / "scenarios" / "basic.yaml").read_text(
-            encoding="utf-8"
-        )
-    )
+    payload = yaml.safe_load((ROOT / "tests" / "fixtures" / "scenarios" / "basic.yaml").read_text(encoding="utf-8"))
     payload["model"] = {
         "schema_version": "1",
         "mode": "ordered_plan",

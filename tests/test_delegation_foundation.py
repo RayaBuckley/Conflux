@@ -46,6 +46,8 @@ from conflux.evaluation import (
 )
 from conflux.policy import SessionAudienceVisibilityPolicy
 
+pytestmark = pytest.mark.security
+
 ROOT = Path(__file__).resolve().parents[1]
 CERTIFICATE_ID = sha256(b"issuance-certificate").hexdigest()
 NONCE = sha256(b"one-use-nonce").hexdigest()
@@ -114,12 +116,8 @@ def test_grant_is_immutable_round_trips_and_validates(
     bob: Principal,
 ) -> None:
     grant = _grant(alice, bob)
-    assert delegation_request_from_dict(
-        grant.request.to_dict(), principals={"alice": alice, "bob": bob}
-    ) == grant.request
-    assert delegation_grant_from_dict(
-        grant.to_dict(), principals={"alice": alice, "bob": bob}
-    ) == grant
+    assert delegation_request_from_dict(grant.request.to_dict(), principals={"alice": alice, "bob": bob}) == grant.request
+    assert delegation_grant_from_dict(grant.to_dict(), principals={"alice": alice, "bob": bob}) == grant
     schema = json.loads((ROOT / "schemas" / "delegation-grant.schema.json").read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(grant.to_dict())
     with pytest.raises(FrozenInstanceError):
@@ -243,9 +241,7 @@ def test_delegation_lifecycle_records_are_attributed_and_projectable(
         DelegationEventType.IDEMPOTENT_RETRY,
         DelegationEventType.REVOKED,
     ]
-    validator = Draft202012Validator(
-        json.loads((ROOT / "schemas" / "delegation-trace.schema.json").read_text(encoding="utf-8"))
-    )
+    validator = Draft202012Validator(json.loads((ROOT / "schemas" / "delegation-trace.schema.json").read_text(encoding="utf-8")))
     for record in (issued, used, retry, revoked):
         validator.validate(record.to_dict())
         assert record.attribution.conservative_influence.principals == frozenset({alice, bob})
@@ -293,9 +289,7 @@ def test_scope_expiry_revocation_and_ordering_fail_closed(
             store,
             grant,
             bob,
-            argument=DelegationArgumentFact(
-                "destination", ArgumentRole.DESTINATION, fingerprint("elsewhere")
-            ),
+            argument=DelegationArgumentFact("destination", ArgumentRole.DESTINATION, fingerprint("elsewhere")),
         )
     elif case == "expired":
         result = _consume(store, grant, bob, used_at="2026-08-03T00:00:00Z")

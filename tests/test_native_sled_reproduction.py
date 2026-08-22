@@ -4,10 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from jsonschema import Draft202012Validator
 
 from conflux.adapters.scenarios import load_schema
 from conflux.experiments import ExperimentProtocol, run_native_reproduction
+
+pytestmark = pytest.mark.reproducibility
 
 
 def _protocol() -> ExperimentProtocol:

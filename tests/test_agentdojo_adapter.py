@@ -15,13 +15,9 @@ from conflux.adapters.benchmarks.agentdojo_v1 import (
     write_translation,
 )
 
-FIXTURE = (
-    Path(__file__).parent
-    / "fixtures"
-    / "agentdojo"
-    / "v0.1.35"
-    / "workspace-user_task_17-injection_task_1.json"
-)
+pytestmark = pytest.mark.adapter
+
+FIXTURE = Path(__file__).parent / "fixtures" / "agentdojo" / "v0.1.35" / "workspace-user_task_17-injection_task_1.json"
 
 
 def test_real_upstream_log_translation_preserves_ids_and_metrics(tmp_path: Path) -> None:
@@ -96,9 +92,7 @@ def test_suite_translation_is_explicit_stable_and_versioned() -> None:
         ({"messages": [{"role": "developer"}]}, "unknown_message_role"),
     ],
 )
-def test_upstream_log_parser_fails_closed(
-    tmp_path: Path, mutation: dict[str, object], message: str
-) -> None:
+def test_upstream_log_parser_fails_closed(tmp_path: Path, mutation: dict[str, object], message: str) -> None:
     payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
     for key, value in mutation.items():
         if value is ...:

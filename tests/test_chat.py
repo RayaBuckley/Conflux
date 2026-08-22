@@ -14,6 +14,8 @@ from conflux.cli import EXIT_OK, EXIT_USAGE, main
 from conflux.domain import Principal
 from conflux.ites import MediatingITES, TransitionKernel
 
+pytestmark = pytest.mark.integration
+
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO = ROOT / "examples" / "basic.yaml"
 

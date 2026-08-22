@@ -6,9 +6,13 @@ import json
 from dataclasses import dataclass, replace
 from pathlib import Path
 
+import pytest
+
 from conflux.domain import canonical_json, fingerprint
 from conflux.experiments import ExperimentProtocol, LocalModelSpec, load_planning_diagnostic_suite, run_planning_comparison
 from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResponse
+
+pytestmark = pytest.mark.integration
 
 ROOT = Path(__file__).resolve().parents[1]
 

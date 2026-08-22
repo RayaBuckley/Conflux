@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from conflux.evaluation import (
     AbstractEffect,
     AbstractPatchKind,
@@ -14,6 +16,8 @@ from conflux.evaluation import (
     VerificationVerdict,
     WorstCasePlanningSystem,
 )
+
+pytestmark = pytest.mark.security
 
 
 def patches() -> tuple[AbstractPlanPatch, ...]:

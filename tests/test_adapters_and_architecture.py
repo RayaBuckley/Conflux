@@ -19,6 +19,8 @@ from conflux.domain import Artifact, NoOpAction, Principal, Provenance, action_f
 from conflux.execution import Operation
 from conflux.policy import OwnerAuthorisationPolicy
 
+pytestmark = pytest.mark.integration
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -144,27 +146,24 @@ def test_owner_policy_is_normal_policy_oracle() -> None:
         Permission("write"),
         ResourceRef("x", "r", "doc", {"owner_id": "owner"}),
     )
-    assert OwnerAuthorisationPolicy().decide(
-        principal,
-        action,
-        EnvironmentSnapshot("e"),
-    ).allowed
+    assert (
+        OwnerAuthorisationPolicy()
+        .decide(
+            principal,
+            action,
+            EnvironmentSnapshot("e"),
+        )
+        .allowed
+    )
 
 
 def test_no_legacy_packages_or_imports() -> None:
     forbidden = {"conflux.core", "conflux.auth", "conflux.research", "conflux.compatibility"}
     source = ROOT / "src" / "conflux"
-    assert not any(
-        list((source / name).glob("*.py"))
-        for name in ("core", "auth", "research", "compatibility")
-    )
+    assert not any(list((source / name).glob("*.py")) for name in ("core", "auth", "research", "compatibility"))
     for path in source.rglob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"))
-        imports = {
-            node.module
-            for node in ast.walk(tree)
-            if isinstance(node, ast.ImportFrom) and node.module is not None
-        }
+        imports = {node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom) and node.module is not None}
         assert not any(any(name == item or name.startswith(f"{item}.") for item in forbidden) for name in imports)
 
 

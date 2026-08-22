@@ -58,6 +58,8 @@ from conflux.policy import (
 )
 from conflux.ports import AuthorisationPort
 
+pytestmark = pytest.mark.integration
+
 
 def source(principal: Principal, label: str = "fixture") -> Provenance:
     return Provenance.from_principal(principal, source=label)
@@ -490,9 +492,7 @@ def test_authenticated_outcome_contract_blocks_malformed_provider_result(
     )
     plan = Plan("outcome-contract", "validate provider output", (action,), provenance)
     pipeline = DecisionPipeline(
-        InMemoryAuthorisationPolicy(
-            frozenset({PolicyGrant("alice", "write", "safe.txt")})
-        ),
+        InMemoryAuthorisationPolicy(frozenset({PolicyGrant("alice", "write", "safe.txt")})),
         AllowInternalReadPolicy(),
         SessionVisibilityPolicy(),
         ExplicitConsentPolicy(frozenset({action.id})),
@@ -613,11 +613,7 @@ def test_unsupported_authority_nodes_block_without_effect(
     category: str,
 ) -> None:
     trusted = source(alice)
-    node = (
-        ApprovalNode(node.id, node.request, trusted)
-        if isinstance(node, ApprovalNode)
-        else DelegationNode(node.id, node.scope, trusted)
-    )
+    node = ApprovalNode(node.id, node.request, trusted) if isinstance(node, ApprovalNode) else DelegationNode(node.id, node.scope, trusted)
     result = executor(
         alice=alice,
         planner=ScriptedPlanner({}, {}),

@@ -20,6 +20,8 @@ from conflux.cli import (
 from conflux.experiments import ExperimentProtocol, load_protocol
 from conflux.ports import LocalModelPreflight
 
+pytestmark = pytest.mark.integration
+
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO = ROOT / "examples" / "basic.yaml"
 AGENTDOJO_FIXTURE = ROOT / "tests" / "fixtures" / "agentdojo" / "v0.1.35" / "workspace-user_task_17-injection_task_1.json"
