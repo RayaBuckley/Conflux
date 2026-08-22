@@ -118,6 +118,7 @@ def main() -> int:
         "--cov-fail-under=89",
         f"--basetemp={SESSION_ROOT / 'pytest'}",
     )
+    _run(sys.executable, "-m", "pytest", "--doctest-modules", "src/conflux/domain", "-q")
     _run("-m", "ruff", "check", "src", "tests", "scripts")
     _run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
     _run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")

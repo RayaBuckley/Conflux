@@ -58,29 +58,29 @@ class TestPrincipalContextMerge:
     """SEM-001: PrincipalContext.merge forms a join semilattice."""
 
     @given(a=principal_contexts(), b=principal_contexts())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_commutative(self, a: PrincipalContext, b: PrincipalContext) -> None:
         assert a.merge(b) == b.merge(a)
 
     @given(a=principal_contexts(), b=principal_contexts(), c=principal_contexts())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_associative(self, a: PrincipalContext, b: PrincipalContext, c: PrincipalContext) -> None:
         assert a.merge(b).merge(c) == a.merge(b.merge(c))
 
     @given(a=principal_contexts())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_idempotent(self, a: PrincipalContext) -> None:
         assert a.merge(a) == a
 
     @given(a=principal_contexts(), b=principal_contexts())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_monotone_principals(self, a: PrincipalContext, b: PrincipalContext) -> None:
         result = a.merge(b)
         assert a.principals.issubset(result.principals)
         assert b.principals.issubset(result.principals)
 
     @given(a=principal_contexts(), b=st.just(PrincipalContext(unknown=True)))
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_unknown_absorbing(self, a: PrincipalContext, b: PrincipalContext) -> None:
         assert a.merge(b).unknown
         assert b.merge(a).unknown
@@ -90,7 +90,7 @@ class TestIsAuthorityBearing:
     """SEM-002: is_authority_bearing guard."""
 
     @given(ctx=principal_contexts())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_authority_bearing_iff_nonempty_and_known(self, ctx: PrincipalContext) -> None:
         expected = bool(ctx.principals) and not ctx.unknown
         assert ctx.is_authority_bearing == expected
@@ -100,35 +100,35 @@ class TestProvenanceMerge:
     """SEM-003: Provenance.merge forms a commutative monoid."""
 
     @given(a=provenances(), b=provenances())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_commutative(self, a: Provenance, b: Provenance) -> None:
         assert a.merge(b) == b.merge(a)
 
     @given(a=provenances(), b=provenances(), c=provenances())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_associative(self, a: Provenance, b: Provenance, c: Provenance) -> None:
         assert a.merge(b).merge(c) == a.merge(b.merge(c))
 
     @given(a=provenances())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_idempotent(self, a: Provenance) -> None:
         assert a.merge(a) == a
 
     @given(a=provenances(), b=provenances())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_merge_preserves_all_principals(self, a: Provenance, b: Provenance) -> None:
         result = a.merge(b)
         assert a.principals.issubset(result.principals)
         assert b.principals.issubset(result.principals)
 
     @given(a=provenances(), b=provenances())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_precision_not_more_precise_than_inputs(self, a: Provenance, b: Provenance) -> None:
         result = a.merge(b)
         assert result.precision.value >= min(a.precision.value, b.precision.value)
 
     @given(a=provenances(), b=provenances())
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_attestation_conjunction(self, a: Provenance, b: Provenance) -> None:
         result = a.merge(b)
         if a.attested and b.attested:
@@ -137,7 +137,7 @@ class TestProvenanceMerge:
             assert not result.attested
 
     @given(a=provenances(), b=st.just(Provenance(precision=ProvenancePrecision.UNKNOWN, attested=False)))
-    @settings(max_examples=100, deadline=None)
+    @settings(max_examples=200, deadline=None)
     def test_unknown_provenance_dominates_precision(self, a: Provenance, b: Provenance) -> None:
         result = a.merge(b)
         assert result.precision == ProvenancePrecision.UNKNOWN
@@ -147,7 +147,7 @@ class TestKernelInvariants:
     """SEM-008, SEM-012: Kernel transition invariants."""
 
     @given(art=artifacts(), action=primitive_actions())
-    @settings(max_examples=50, deadline=None)
+    @settings(max_examples=100, deadline=None)
     def test_context_monotone_through_kernel(self, art: Artifact[object], action: PrimitiveAction) -> None:
         parent = BranchState.initial((art,))
         consent_ids = {action.id}
@@ -172,7 +172,7 @@ class TestKernelInvariants:
                 )
 
     @given(art=artifacts(), action=primitive_actions())
-    @settings(max_examples=50, deadline=None)
+    @settings(max_examples=100, deadline=None)
     def test_certificate_branch_id_matches(self, art: Artifact[object], action: PrimitiveAction) -> None:
         parent = BranchState.initial((art,))
         consent_ids = {action.id}
