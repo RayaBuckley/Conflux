@@ -10,6 +10,8 @@ from conflux.domain import Artifact, ProposalBatch
 
 
 class ModelPort(Protocol):
+    """Boundary for deterministic or real model proposal generation."""
+
     def propose(self, inputs: tuple[Artifact[Any], ...]) -> ProposalBatch:
         """Return a typed proposal batch without performing side effects."""
         ...
@@ -62,6 +64,7 @@ class LocalModelSpec:
             raise ValueError("transformers_endpoint_forbidden")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the model specification to a plain dictionary."""
         return {
             "backend": self.backend,
             "model_id": self.model_id,
@@ -101,6 +104,8 @@ class LocalModelRequest:
 
 @dataclass(frozen=True, slots=True)
 class LocalModelResponse:
+    """Immutable response from a structured self-hosted model call."""
+
     request_id: str
     model_id: str
     payload: Mapping[str, object]
@@ -115,6 +120,8 @@ class LocalModelResponse:
 
 @dataclass(frozen=True, slots=True)
 class LocalModelPreflight:
+    """Result of checking local model availability and identity."""
+
     backend: str
     model_id: str
     available: bool
@@ -133,9 +140,13 @@ class LocalModelPreflight:
 class LocalModelPort(Protocol):
     """Structured self-hosted inference; it never performs tool effects."""
 
-    def preflight(self) -> LocalModelPreflight: ...
+    def preflight(self) -> LocalModelPreflight:
+        """Check model availability, identity, and network scope."""
+        ...
 
-    def generate(self, request: LocalModelRequest) -> LocalModelResponse: ...
+    def generate(self, request: LocalModelRequest) -> LocalModelResponse:
+        """Generate a structured response without side effects."""
+        ...
 
 
 __all__ = [

@@ -214,6 +214,7 @@ class _OneActionModel:
     action: PrimitiveAction
 
     def propose(self, inputs: tuple[Artifact[Any], ...]) -> ProposalBatch:
+        """Return a single-action proposal batch wrapping the bound action."""
         _ = inputs
         return ProposalBatch.alternatives(self.action)
 
@@ -225,6 +226,7 @@ class _RuntimeExecutor:
     arguments: dict[str, object]
 
     def execute(self, action: object, *, certificate_id: str, action_fingerprint: str) -> ProviderResult:
+        """Execute the bound tool call and return the provider result."""
         _ = action
         if not certificate_id or not action_fingerprint:
             return ProviderResult(False, error="certificate_binding_missing")
@@ -246,6 +248,7 @@ class _LocalPipelineModel:
         messages: Sequence[dict[str, object]] = (),
         extra_args: dict[str, object] | None = None,
     ) -> tuple[str, object, object, Sequence[dict[str, object]], dict[str, object]]:
+        """Query the local model for a tool call or final answer, appending the assistant message."""
         from agentdojo.functions_runtime import FunctionCall  # type: ignore[import-not-found,import-untyped,unused-ignore]
         from agentdojo.types import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
             ChatAssistantMessage,
@@ -300,6 +303,7 @@ class _MediatedToolExecutor:
         messages: Sequence[dict[str, object]] = (),
         extra_args: dict[str, object] | None = None,
     ) -> tuple[str, object, object, Sequence[dict[str, object]], dict[str, object]]:
+        """Mediate tool calls from the latest assistant message through the ITES pipeline."""
         from agentdojo.types import (  # type: ignore[import-not-found,import-untyped,unused-ignore]
             ChatToolResultMessage,
             text_content_block_from_string,
@@ -317,6 +321,7 @@ class _MediatedToolExecutor:
             arguments = cast(dict[str, object], call.args)
 
             def invoke(tool_name: str, args: dict[str, object]) -> tuple[object, str | None]:
+                """Invoke a tool function through the AgentDojo runtime."""
                 return cast(tuple[object, str | None], cast(Any, runtime).run_function(env, tool_name, args))
 
             outcome = self.mediator.mediate(name, arguments, _RuntimeExecutor(invoke, name, arguments))

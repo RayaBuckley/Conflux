@@ -13,6 +13,8 @@ OutputT = TypeVar("OutputT")
 
 @dataclass(frozen=True, slots=True)
 class Operation(Generic[InputT, OutputT]):
+    """Named, pure transform that preserves artifact provenance."""
+
     name: str
     transform: Callable[[InputT], OutputT]
 
@@ -21,6 +23,7 @@ class Operation(Generic[InputT, OutputT]):
             raise ValueError("Operation.name must be non-empty")
 
     def run(self, artifact: Artifact[InputT], *, output_id: str) -> Artifact[OutputT]:
+        """Apply the transform and return a new artifact with extended provenance."""
         return Artifact(
             id=output_id,
             value=self.transform(artifact.value),

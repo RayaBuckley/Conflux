@@ -21,10 +21,7 @@ def canonical_value(value: Any) -> Any:
     if is_dataclass(value) and not isinstance(value, type):
         return canonical_value(asdict(value))
     if isinstance(value, Mapping):
-        return {
-            str(key): canonical_value(item)
-            for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
-        }
+        return {str(key): canonical_value(item) for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))}
     if isinstance(value, Set):
         converted = [canonical_value(item) for item in value]
         return sorted(converted, key=lambda item: json.dumps(item, sort_keys=True))
@@ -34,10 +31,12 @@ def canonical_value(value: Any) -> Any:
 
 
 def canonical_json(value: Any) -> str:
+    """Serialise a value to deterministic, compact JSON."""
     return json.dumps(canonical_value(value), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def fingerprint(value: Any) -> str:
+    """Return the lowercase SHA-256 hex digest of the canonical JSON."""
     return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
 
 

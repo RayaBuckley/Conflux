@@ -16,6 +16,8 @@ from conflux.domain import (
 
 @dataclass(frozen=True, slots=True)
 class PolicyGrant:
+    """Immutable triple of principal, permission, and optional resource scope."""
+
     principal_id: str
     permission: str
     resource_id: str | None = None
@@ -35,6 +37,7 @@ class InMemoryAuthorisationPolicy:
         action: Action,
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Return an authorisation decision based on matching policy grants."""
         _ = environment
         if not isinstance(action, PrimitiveAction):
             return Decision(

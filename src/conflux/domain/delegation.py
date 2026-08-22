@@ -15,6 +15,8 @@ from .serialization import fingerprint
 
 @dataclass(frozen=True, slots=True)
 class DelegationArgumentConstraint:
+    """A pinned argument constraint that a delegation request enforces."""
+
     name: str
     role: ArgumentRole
     value_fingerprint: str
@@ -25,6 +27,7 @@ class DelegationArgumentConstraint:
         _require_sha256(self.value_fingerprint, "delegation argument")
 
     def to_dict(self) -> dict[str, str]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "name": self.name,
             "role": self.role.value,
@@ -34,6 +37,8 @@ class DelegationArgumentConstraint:
 
 @dataclass(frozen=True, slots=True)
 class DelegationArgumentFact:
+    """An observed argument fact presented for delegation consumption."""
+
     name: str
     role: ArgumentRole
     value_fingerprint: str
@@ -46,6 +51,8 @@ class DelegationArgumentFact:
 
 @dataclass(frozen=True, slots=True)
 class DelegationRequest:
+    """An attenuating, one-use delegation request issued by a principal."""
+
     issuer: Principal
     beneficiary: Principal
     operation_id: str
@@ -78,9 +85,11 @@ class DelegationRequest:
 
     @property
     def fingerprint(self) -> str:
+        """Return the lowercase SHA-256 fingerprint of the request."""
         return fingerprint(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "schema_version": self.schema_version,
             "issuer_id": self.issuer.id,
@@ -99,6 +108,8 @@ class DelegationRequest:
 
 @dataclass(frozen=True, slots=True)
 class ScopedDelegationGrant:
+    """A one-use grant materialising a delegation request."""
+
     request: DelegationRequest
     issued_at: str
     issuance_certificate_id: str
@@ -114,9 +125,11 @@ class ScopedDelegationGrant:
 
     @property
     def id(self) -> str:
+        """Return the deterministic fingerprint-based grant identity."""
         return fingerprint(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "schema_version": self.schema_version,
             "request": self.request.to_dict(),
@@ -128,6 +141,8 @@ class ScopedDelegationGrant:
 
 @dataclass(frozen=True, slots=True)
 class DelegationUseRecord:
+    """An immutable record of a delegation grant consumption attempt."""
+
     grant_id: str
     idempotency_key: str
     request_fingerprint: str
@@ -144,6 +159,8 @@ class DelegationUseRecord:
 
 @dataclass(frozen=True, slots=True)
 class DelegationConsumption:
+    """The result of consuming a delegation grant, with a use record."""
+
     snapshot: DelegationStoreSnapshot
     record: DelegationUseRecord
     idempotent_retry: bool = False
@@ -151,6 +168,8 @@ class DelegationConsumption:
 
 @dataclass(frozen=True, slots=True)
 class DelegationStoreSnapshot:
+    """An immutable snapshot of grants, revocations, and use records."""
+
     grants: tuple[ScopedDelegationGrant, ...] = ()
     revoked_ids: frozenset[str] = frozenset()
     uses: tuple[DelegationUseRecord, ...] = ()
@@ -165,11 +184,13 @@ class DelegationStoreSnapshot:
             raise ValueError("delegation grant IDs must be unique")
 
     def add(self, grant: ScopedDelegationGrant) -> DelegationStoreSnapshot:
+        """Return a snapshot with the grant added, deduplicating by ID."""
         if any(item.id == grant.id for item in self.grants):
             return self
         return replace(self, grants=tuple(sorted(self.grants + (grant,), key=lambda item: item.id)))
 
     def revoke(self, revocation_id: str) -> DelegationStoreSnapshot:
+        """Return a snapshot with the given revocation ID marked revoked."""
         if not revocation_id:
             raise ValueError("revocation ID must be non-empty")
         return replace(self, revoked_ids=self.revoked_ids | {revocation_id})
@@ -188,6 +209,7 @@ class DelegationStoreSnapshot:
         context: PrincipalContext,
         decision_certificate_id: str,
     ) -> DelegationConsumption:
+        """Attempt to consume a grant, enforcing scope, idempotency, and one-use."""
         if not idempotency_key:
             raise ValueError("delegation idempotency key must be non-empty")
         _require_sha256(decision_certificate_id, "delegation use decision certificate")
@@ -199,8 +221,7 @@ class DelegationStoreSnapshot:
                 "operation_version": operation_version,
                 "resource": resource.to_dict(),
                 "arguments": [
-                    {"name": item.name, "role": item.role.value, "value_fingerprint": item.value_fingerprint}
-                    for item in arguments
+                    {"name": item.name, "role": item.role.value, "value_fingerprint": item.value_fingerprint} for item in arguments
                 ],
                 "used_at": used_at,
                 "context": context.to_dict(),
@@ -278,10 +299,12 @@ class AtomicDelegationStore:
 
     @property
     def snapshot(self) -> DelegationStoreSnapshot:
+        """Return the current immutable snapshot under the lock."""
         with self._lock:
             return self._snapshot
 
     def consume(self, **kwargs: object) -> DelegationConsumption:
+        """Atomically consume a grant and update the internal snapshot."""
         with self._lock:
             result = self._snapshot.consume(**kwargs)  # type: ignore[arg-type]
             self._snapshot = result.snapshot
@@ -293,12 +316,22 @@ def delegation_request_from_dict(
     *,
     principals: dict[str, Principal],
 ) -> DelegationRequest:
+    """Deserialise a delegation request, resolving principals by ID."""
     if not isinstance(payload, dict):
         raise ValueError("delegation request must be an object")
     expected = {
-        "schema_version", "issuer_id", "beneficiary_id", "operation_id",
-        "operation_version", "resource", "argument_constraints", "expires_at",
-        "revocation_id", "remaining_use_count", "redelegable", "issuance_provenance",
+        "schema_version",
+        "issuer_id",
+        "beneficiary_id",
+        "operation_id",
+        "operation_version",
+        "resource",
+        "argument_constraints",
+        "expires_at",
+        "revocation_id",
+        "remaining_use_count",
+        "redelegable",
+        "issuance_provenance",
     }
     if set(payload) != expected or payload.get("schema_version") != "1":
         raise ValueError("unsupported or malformed delegation request")
@@ -360,13 +393,19 @@ def delegation_grant_from_dict(
     *,
     principals: dict[str, Principal],
 ) -> ScopedDelegationGrant:
-    if not isinstance(payload, dict) or set(payload) != {
-        "schema_version",
-        "request",
-        "issued_at",
-        "issuance_certificate_id",
-        "one_use_nonce",
-    } or payload.get("schema_version") != "1":
+    """Deserialise a scoped delegation grant, resolving principals by ID."""
+    if (
+        not isinstance(payload, dict)
+        or set(payload)
+        != {
+            "schema_version",
+            "request",
+            "issued_at",
+            "issuance_certificate_id",
+            "one_use_nonce",
+        }
+        or payload.get("schema_version") != "1"
+    ):
         raise ValueError("unsupported or malformed delegation grant")
     try:
         return ScopedDelegationGrant(

@@ -125,6 +125,7 @@ def _parse_scenario(payload: dict[str, Any]) -> LoadedScenario:
         raise ValueError("duplicate_principal_id")
 
     def resolve_principals(identifiers: list[str]) -> frozenset[Principal]:
+        """Resolve a list of principal identifiers to ``Principal`` objects."""
         try:
             return frozenset(by_id[identifier] for identifier in identifiers)
         except KeyError as error:

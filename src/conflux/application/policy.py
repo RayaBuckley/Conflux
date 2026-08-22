@@ -215,6 +215,7 @@ def _context_denial(context: PrincipalContext) -> ActionDecision:
     reason = "unknown_principal_context" if context.unknown else "empty_principal_context"
 
     def denial(category: DecisionCategory) -> Decision:
+        """Return a deny decision for the given category."""
         return Decision(category, False, reason, "ites-kernel", "1")
 
     return ActionDecision(

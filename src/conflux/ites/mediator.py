@@ -21,6 +21,8 @@ from .state import (
 
 @dataclass(frozen=True, slots=True)
 class MediatingITES:
+    """Deterministic branch exploration driver over the canonical ITES kernel."""
+
     kernel: TransitionKernel
 
     def run(
@@ -32,6 +34,7 @@ class MediatingITES:
         model: ModelPort,
         max_model_calls: int = 3,
     ) -> ITESReport:
+        """Run the kernel against *model* proposals until bound or terminal."""
         if max_model_calls < 1:
             raise ValueError("max_model_calls must be at least 1")
         root = BranchState.initial(initial_inputs)
@@ -140,9 +143,7 @@ def _assess(
     max_calls: int,
 ) -> tuple[SafetyAssessment, ...]:
     authorised = tuple(branch for branch in branches if branch.status == BranchStatus.AUTHORISED)
-    no_bad_authorisation = all(
-        branch.decision is not None and branch.decision.allowed for branch in authorised
-    )
+    no_bad_authorisation = all(branch.decision is not None and branch.decision.allowed for branch in authorised)
     no_unauthorised_execution = all(
         event.decision is None or event.decision.allowed
         for branch in branches

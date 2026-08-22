@@ -10,6 +10,8 @@ SUPPORTED_KEYS = frozenset({"Effect", "Action", "Resource"})
 
 @dataclass(frozen=True, slots=True)
 class AWSSubsetDecision:
+    """Outcome of evaluating an AWS-style policy statement."""
+
     allowed: bool
     reason: str
 
@@ -20,6 +22,7 @@ def evaluate_statement(
     action: str,
     resource: str,
 ) -> AWSSubsetDecision:
+    """Evaluate an AWS-style statement against an action and resource."""
     unsupported = set(statement) - SUPPORTED_KEYS
     if unsupported:
         return AWSSubsetDecision(False, f"unsupported_fields:{','.join(sorted(unsupported))}")

@@ -114,6 +114,7 @@ class _UnavailableCaptureRunner:
         self.requests: list[CedarRequest] = []
 
     def evaluate(self, bundle: CedarPolicyBundle, request: CedarRequest) -> CedarRunnerResult:
+        """Capture the request and return an unavailable result without invoking Cedar."""
         _ = bundle
         self.requests.append(request)
         return CedarRunnerResult(

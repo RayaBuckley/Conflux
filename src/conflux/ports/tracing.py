@@ -7,7 +7,11 @@ from typing import Any, Protocol
 
 
 class TraceSink(Protocol):
-    def append(self, record: Mapping[str, Any]) -> None: ...
+    """Append-only trace boundary for structured records."""
+
+    def append(self, record: Mapping[str, Any]) -> None:
+        """Append one structured trace record."""
+        ...
 
 
 __all__ = ["TraceSink"]

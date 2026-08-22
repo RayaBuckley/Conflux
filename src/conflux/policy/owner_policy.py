@@ -9,6 +9,8 @@ from conflux.domain import Action, Decision, DecisionCategory, EnvironmentSnapsh
 
 @dataclass(frozen=True, slots=True)
 class OwnerAuthorisationPolicy:
+    """Authorisation policy that grants the resource owner, never as a bypass."""
+
     policy_id: str = "owner-authorisation"
     policy_version: str = "1"
 
@@ -18,11 +20,10 @@ class OwnerAuthorisationPolicy:
         action: Action,
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Return an authorisation decision granting the resource owner."""
         _ = environment
         owner_id = (
-            action.resource.attributes.get("owner_id")
-            if isinstance(action, PrimitiveAction) and action.resource is not None
-            else None
+            action.resource.attributes.get("owner_id") if isinstance(action, PrimitiveAction) and action.resource is not None else None
         )
         allowed = owner_id == principal.id
         return Decision(

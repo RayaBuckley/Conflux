@@ -24,6 +24,7 @@ class NodeStatus(StrEnum):
 
     @property
     def terminal(self) -> bool:
+        """Return whether this status is terminal."""
         return self in {
             NodeStatus.SUCCEEDED,
             NodeStatus.FAILED,
@@ -33,6 +34,8 @@ class NodeStatus(StrEnum):
 
 
 class PlanRunStatus(StrEnum):
+    """Terminal status of a plan execution run."""
+
     RUNNING = "running"
     SUCCEEDED = "succeeded"
     SAFE_STOP = "safe_stop"

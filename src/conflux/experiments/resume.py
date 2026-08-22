@@ -135,6 +135,7 @@ def assert_manifest_has_no_secrets(manifest: ExperimentManifest) -> None:
     """Recursively inspect the manifest and raise if secret material is present."""
 
     def inspect(value: object, path: str) -> None:
+        """Recursively inspect a value for secret material at the given path."""
         if isinstance(value, dict):
             for key, item in value.items():
                 lowered = str(key).lower()

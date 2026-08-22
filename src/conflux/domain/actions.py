@@ -17,6 +17,8 @@ from .serialization import canonical_value, fingerprint
 
 
 class ActionKind(StrEnum):
+    """Discriminates concrete action variants in the action union."""
+
     PRIMITIVE = "primitive"
     NESTED = "nested"
     MESSAGE = "message"
@@ -26,12 +28,16 @@ class ActionKind(StrEnum):
 
 
 class ActionVisibility(StrEnum):
+    """Audience classes that may observe an action's transcript entry."""
+
     INTERNAL = "internal"
     PARTICIPANTS = "participants"
     TRANSCRIPT = "transcript"
 
 
 class ProposalMode(StrEnum):
+    """Whether a batch offers alternatives or an ordered plan."""
+
     ALTERNATIVES = "alternatives"
     ORDERED_PLAN = "ordered_plan"
 
@@ -48,6 +54,8 @@ AUTHORITY_BEARING_ARGUMENT_ROLES = frozenset(
 
 @dataclass(frozen=True, slots=True)
 class ActionArgument:
+    """A named, provenance-bearing argument bound to an action operation."""
+
     name: str
     role: ArgumentRole
     value_fingerprint: str
@@ -71,6 +79,7 @@ class ActionArgument:
         provenance: Provenance,
         redacted_value: object | None = None,
     ) -> "ActionArgument":
+        """Create an argument, fingerprinting the value and canonicalising redactions."""
         return cls(
             name,
             role,
@@ -81,9 +90,11 @@ class ActionArgument:
 
     @property
     def authority_bearing(self) -> bool:
+        """Return True when the argument role carries authority for authorisation."""
         return self.role in AUTHORITY_BEARING_ARGUMENT_ROLES
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "name": self.name,
             "role": self.role.value,
@@ -95,6 +106,8 @@ class ActionArgument:
 
 @dataclass(frozen=True, slots=True)
 class OperationArgumentSchema:
+    """Declares the argument roles an operation expects for binding."""
+
     operation: str
     version: str
     roles: Mapping[str, ArgumentRole]
@@ -112,6 +125,7 @@ class OperationArgumentSchema:
         *,
         redacted_values: Mapping[str, object] | None = None,
     ) -> tuple[ActionArgument, ...]:
+        """Bind supplied values to the schema, returning ordered ActionArguments."""
         missing = set(self.roles) - set(values)
         unknown = set(values) - set(self.roles)
         if missing or unknown:
@@ -134,6 +148,8 @@ class OperationArgumentSchema:
 
 @dataclass(frozen=True, slots=True)
 class PrimitiveAction:
+    """An effectful operation on a resource with typed arguments."""
+
     id: str
     operation: str
     permission: Permission
@@ -158,6 +174,8 @@ class PrimitiveAction:
 
 @dataclass(frozen=True, slots=True)
 class NestedExecutionAction:
+    """An action that wraps nested input artifacts for sub-execution."""
+
     id: str
     inputs: tuple[Artifact[Any], ...]
     visibility: ActionVisibility = ActionVisibility.INTERNAL
@@ -171,6 +189,8 @@ class NestedExecutionAction:
 
 @dataclass(frozen=True, slots=True)
 class MessageAction:
+    """A message addressed to session participants."""
+
     id: str
     message: str
     inputs: tuple[Artifact[Any], ...] = ()
@@ -185,6 +205,8 @@ class MessageAction:
 
 @dataclass(frozen=True, slots=True)
 class DelegationAction:
+    """An action carrying a trusted delegation request."""
+
     id: str
     request: DelegationRequest | None = None
     inputs: tuple[Artifact[Any], ...] = ()
@@ -201,6 +223,8 @@ class DelegationAction:
 
 @dataclass(frozen=True, slots=True)
 class StopAction:
+    """A signal to halt further execution."""
+
     id: str
     reason: str = "stopped"
     inputs: tuple[Artifact[Any], ...] = ()
@@ -214,6 +238,8 @@ class StopAction:
 
 @dataclass(frozen=True, slots=True)
 class NoOpAction:
+    """A placeholder action with no effect."""
+
     id: str
     label: str = "no-op"
     inputs: tuple[Artifact[Any], ...] = ()
@@ -231,6 +257,8 @@ Proposal: TypeAlias = Action
 
 @dataclass(frozen=True, slots=True)
 class ProposalBatch:
+    """A schema-versioned batch of proposals offered as alternatives or a plan."""
+
     mode: ProposalMode
     proposals: tuple[Action, ...]
     schema_version: str = "2"
@@ -242,13 +270,16 @@ class ProposalBatch:
 
     @classmethod
     def alternatives(cls, *proposals: Action) -> "ProposalBatch":
+        """Construct a batch of alternative proposals."""
         return cls(ProposalMode.ALTERNATIVES, proposals)
 
     @classmethod
     def ordered_plan(cls, *proposals: Action) -> "ProposalBatch":
+        """Construct a batch representing an ordered plan of proposals."""
         return cls(ProposalMode.ORDERED_PLAN, proposals)
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "schema_version": self.schema_version,
             "mode": self.mode.value,
@@ -257,14 +288,17 @@ class ProposalBatch:
 
     @property
     def fingerprint(self) -> str:
+        """Return the lowercase SHA-256 fingerprint of the batch."""
         return fingerprint(self.to_dict())
 
 
 def action_inputs(action: Action) -> tuple[Artifact[Any], ...]:
+    """Return the input artifacts of an action."""
     return action.inputs
 
 
 def action_provenance(action: Action) -> Provenance:
+    """Return the union provenance of an action's inputs and arguments."""
     provenances = tuple(item.provenance for item in action.inputs)
     if isinstance(action, PrimitiveAction):
         provenances += tuple(argument.provenance for argument in action.arguments)
@@ -272,6 +306,7 @@ def action_provenance(action: Action) -> Provenance:
 
 
 def action_to_dict(action: Action) -> dict[str, object]:
+    """Serialise an action to a deterministic JSON-compatible dictionary."""
     result: dict[str, object] = {
         "schema_version": "2",
         "id": action.id,
@@ -298,10 +333,12 @@ def action_to_dict(action: Action) -> dict[str, object]:
 
 
 def action_fingerprint(action: Action) -> str:
+    """Return the lowercase SHA-256 fingerprint of an action."""
     return fingerprint(action_to_dict(action))
 
 
 def action_sort_key(action: Action) -> tuple[str, str, str]:
+    """Return a deterministic sort key for ordering actions."""
     return (action.kind.value, action.id, action_fingerprint(action))
 
 

@@ -9,6 +9,8 @@ from typing import Any, Mapping
 
 @dataclass(frozen=True, slots=True)
 class ResourceRef:
+    """An immutable provider-neutral resource identity."""
+
     provider: str
     resource_id: str
     resource_type: str
@@ -20,6 +22,7 @@ class ResourceRef:
         object.__setattr__(self, "attributes", MappingProxyType(dict(self.attributes)))
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "provider": self.provider,
             "resource_id": self.resource_id,
@@ -29,6 +32,7 @@ class ResourceRef:
 
     @property
     def key(self) -> tuple[str, str, str]:
+        """Return a hashable triple identifying the resource."""
         return (self.provider, self.resource_type, self.resource_id)
 
 

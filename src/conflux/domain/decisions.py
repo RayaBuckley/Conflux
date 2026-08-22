@@ -20,6 +20,8 @@ from .identity import PrincipalContext
 
 
 class DecisionCategory(StrEnum):
+    """Independent dimensions along which a policy decision is evaluated."""
+
     AUTHORISATION = "authorisation"
     READ = "read"
     VISIBILITY = "visibility"
@@ -28,6 +30,8 @@ class DecisionCategory(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class Decision:
+    """An immutable single-dimension policy decision with evidence."""
+
     category: DecisionCategory
     allowed: bool
     reason: str
@@ -40,6 +44,7 @@ class Decision:
             raise ValueError("Decision reason and policy identity must be non-empty")
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "category": self.category.value,
             "allowed": self.allowed,
@@ -52,6 +57,8 @@ class Decision:
 
 @dataclass(frozen=True, slots=True)
 class ActionDecision:
+    """The composite of independent decisions for a single action."""
+
     context: PrincipalContext
     authorisation: Decision
     read: Decision
@@ -61,10 +68,12 @@ class ActionDecision:
 
     @property
     def allowed(self) -> bool:
+        """Return True only when every decision dimension allows the action."""
         return all(decision.allowed for decision in self.decisions)
 
     @property
     def decisions(self) -> tuple[Decision, ...]:
+        """Return all non-optional decision dimensions as a tuple."""
         return (
             (self.authorisation, self.argument_authorisation, self.read, self.visibility, self.consent)
             if self.argument_authorisation is not None
@@ -72,6 +81,7 @@ class ActionDecision:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "context": self.context.to_dict(),
             "allowed": self.allowed,

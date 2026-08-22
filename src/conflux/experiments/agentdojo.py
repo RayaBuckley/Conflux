@@ -98,7 +98,9 @@ class AgentDojoCellResult:
 class AgentDojoCellExecutor(Protocol):
     """Protocol for executing an AgentDojo cell against a local model."""
 
-    def execute(self, cell: AgentDojoCell, model: LocalModelPort, max_model_calls: int) -> AgentDojoCellResult: ...
+    def execute(self, cell: AgentDojoCell, model: LocalModelPort, max_model_calls: int) -> AgentDojoCellResult:
+        """Execute an AgentDojo cell and return the captured result."""
+        ...
 
 
 def agentdojo_matrix(protocol: ExperimentProtocol) -> tuple[AgentDojoCell, ...]:

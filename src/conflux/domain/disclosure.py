@@ -13,6 +13,8 @@ from .serialization import canonical_value, fingerprint
 
 
 class EventClass(StrEnum):
+    """Classifies transcript events for audience visibility decisions."""
+
     DECLARATION = "declaration"
     DECISION = "decision"
     OUTCOME = "outcome"
@@ -21,6 +23,8 @@ class EventClass(StrEnum):
 
 
 class DisclosureLevel(StrEnum):
+    """Granularity at which an event is disclosed to an audience."""
+
     NONE = "none"
     EXISTENCE = "existence"
     REDACTED = "redacted"
@@ -29,6 +33,8 @@ class DisclosureLevel(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class AudienceVisibilityDecision:
+    """An immutable per-audience disclosure decision for an event class."""
+
     audience: Principal
     event_class: EventClass
     level: DisclosureLevel
@@ -41,6 +47,7 @@ class AudienceVisibilityDecision:
             raise ValueError("audience visibility decision requires policy evidence")
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "audience_id": self.audience.id,
             "event_class": self.event_class.value,
@@ -53,6 +60,8 @@ class AudienceVisibilityDecision:
 
 @dataclass(frozen=True, slots=True)
 class AttributionRecord:
+    """Conservative attribution evidence with verified inputs and uncertainty."""
+
     verified_input_ids: tuple[str, ...]
     conservative_influence: PrincipalContext
     policy_evidence: tuple[str, ...]
@@ -72,9 +81,11 @@ class AttributionRecord:
 
     @property
     def fingerprint(self) -> str:
+        """Return the lowercase SHA-256 fingerprint of the record."""
         return fingerprint(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "schema_version": self.schema_version,
             "verified_input_ids": list(self.verified_input_ids),
@@ -94,6 +105,7 @@ def attribution_for_action(
     *,
     model_explanation: str | None = None,
 ) -> AttributionRecord:
+    """Compute conservative attribution evidence for an action in a context."""
     inputs = action_inputs(action)
     arguments = tuple(item for item in getattr(action, "arguments", ()) if isinstance(item, ActionArgument))
     provenances = tuple(item.provenance for item in inputs) + tuple(item.provenance for item in arguments)
@@ -157,6 +169,7 @@ def explain_attribution(
     record: AttributionRecord,
     level: DisclosureLevel,
 ) -> str | None:
+    """Return a human-readable explanation of attribution at a disclosure level."""
     if level == DisclosureLevel.NONE:
         return None
     if level == DisclosureLevel.EXISTENCE:
@@ -174,6 +187,7 @@ def explain_attribution(
 
 
 def cast_principal_ids(context: PrincipalContext) -> tuple[str, ...]:
+    """Return the sorted IDs of principals in a context."""
     return tuple(sorted(principal.id for principal in context.principals))
 
 

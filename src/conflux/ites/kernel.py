@@ -50,6 +50,8 @@ from .state import (
 
 
 class DecisionEngine(Protocol):
+    """Protocol for engines that authorise actions against principal context."""
+
     def decide(
         self,
         *,
@@ -57,11 +59,14 @@ class DecisionEngine(Protocol):
         action: Action,
         context: PrincipalContext,
         environment: EnvironmentSnapshot,
-    ) -> ActionDecision: ...
+    ) -> ActionDecision:
+        """Return the policy decision for *action* under *context*."""
 
 
 @dataclass(frozen=True, slots=True)
 class TransitionKernel:
+    """The sole pure ITES transition kernel enforcing complete mediation."""
+
     decisions: DecisionEngine
 
     def expand_batch(
@@ -73,6 +78,7 @@ class TransitionKernel:
         environment: EnvironmentSnapshot,
         model_calls: int,
     ) -> tuple[BranchState, ...]:
+        """Expand a proposal batch into one or more mediated child branches."""
         if batch.mode == ProposalMode.ALTERNATIVES:
             ordered = tuple(sorted(batch.proposals, key=action_sort_key))
             return tuple(

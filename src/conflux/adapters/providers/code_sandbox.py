@@ -45,7 +45,9 @@ class CommandRunner(Protocol):
         workspace: Path,
         timeout_seconds: float,
         output_bytes: int,
-    ) -> CommandOutcome: ...
+    ) -> CommandOutcome:
+        """Run the command in the workspace with timeout and output limits."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)

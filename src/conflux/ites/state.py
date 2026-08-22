@@ -22,6 +22,8 @@ CERTIFICATE_SCHEMA_VERSION = "2"
 
 
 class BranchStatus(StrEnum):
+    """Lifecycle status of a branch within the ITES kernel."""
+
     ACTIVE = "active"
     AUTHORISED = "authorised"
     BLOCKED = "blocked"
@@ -32,6 +34,8 @@ class BranchStatus(StrEnum):
 
 
 class ActionOutcome(StrEnum):
+    """Outcome of an action as recorded in the trace."""
+
     PROPOSED = "proposed"
     AUTHORISED = "authorised"
     BLOCKED = "blocked"
@@ -43,6 +47,8 @@ class ActionOutcome(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class TraceEvent:
+    """Immutable record of one kernel decision in the execution trace."""
+
     sequence: int
     branch_id: str
     parent_branch_id: str | None
@@ -56,6 +62,7 @@ class TraceEvent:
 
     @property
     def id(self) -> str:
+        """Stable fingerprint identifying this trace event."""
         return fingerprint(
             {
                 "branch_id": self.branch_id,
@@ -66,6 +73,7 @@ class TraceEvent:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise this trace event to a dictionary."""
         attribution = attribution_for_action(self.action, self.context, self.decision) if self.action is not None else None
         return {
             "schema_version": self.schema_version,
@@ -86,6 +94,8 @@ class TraceEvent:
 
 @dataclass(frozen=True, slots=True)
 class DecisionCertificate:
+    """Cryptographic-style binding of a decision to action, context, and policy versions."""
+
     id: str
     action_fingerprint: str
     context_fingerprint: str
@@ -103,6 +113,7 @@ class DecisionCertificate:
         branch_id: str,
         decision: ActionDecision,
     ) -> "DecisionCertificate":
+        """Issue a certificate binding the decision to the action and context."""
         policy_versions = tuple(f"{item.policy_id}@{item.policy_version}" for item in decision.decisions)
         action_hash = action_fingerprint(action)
         context_hash = context.fingerprint
@@ -123,6 +134,7 @@ class DecisionCertificate:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise this certificate to a dictionary."""
         return {
             "schema_version": self.schema_version,
             "id": self.id,
@@ -136,6 +148,8 @@ class DecisionCertificate:
 
 @dataclass(frozen=True, slots=True)
 class AuthorisedStep:
+    """An authorised action paired with its decision and certificate."""
+
     action: Action
     decision: ActionDecision
     certificate: DecisionCertificate
@@ -143,6 +157,8 @@ class AuthorisedStep:
 
 @dataclass(frozen=True, slots=True)
 class BranchState:
+    """Immutable state of a single branch in the ITES kernel."""
+
     branch_id: str
     parent_branch_id: str | None
     depth: int
@@ -158,6 +174,7 @@ class BranchState:
 
     @classmethod
     def initial(cls, inputs: tuple[Artifact[Any], ...]) -> "BranchState":
+        """Create the root branch from initial inputs."""
         if inputs:
             provenance = provenance_union(*(artifact.provenance for artifact in inputs))
             context = provenance.context
@@ -167,6 +184,7 @@ class BranchState:
 
     @property
     def state_key(self) -> str:
+        """Stable fingerprint of the branch state for deduplication."""
         return fingerprint(
             {
                 "inputs": [artifact.fingerprint for artifact in self.inputs],
@@ -178,11 +196,14 @@ class BranchState:
         )
 
     def append(self, event: TraceEvent) -> "BranchState":
+        """Return a new branch with *event* appended to the trace."""
         return replace(self, trace=self.trace + (event,))
 
 
 @dataclass(frozen=True, slots=True)
 class AuthorisedBranch:
+    """A terminal authorised branch with its decision evidence."""
+
     action: Action
     decision: ActionDecision
     certificate: DecisionCertificate
@@ -191,18 +212,23 @@ class AuthorisedBranch:
 
 @dataclass(frozen=True, slots=True)
 class AuthorisedPlan:
+    """A sequence of authorised steps within a single branch."""
+
     steps: tuple[AuthorisedStep, ...]
     branch_id: str
 
 
 @dataclass(frozen=True, slots=True)
 class SafetyAssessment:
+    """A named safety property verdict with supporting evidence."""
+
     name: str
     holds: bool
     details: str
     evidence: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise this assessment to a dictionary."""
         return {
             "name": self.name,
             "holds": self.holds,
@@ -213,6 +239,8 @@ class SafetyAssessment:
 
 @dataclass(frozen=True, slots=True)
 class ITESReport:
+    """Immutable report of a complete ITES run with branches and assessments."""
+
     run_id: str
     branches: tuple[BranchState, ...]
     assessments: tuple[SafetyAssessment, ...]
@@ -223,6 +251,7 @@ class ITESReport:
 
     @property
     def authorised_branches(self) -> tuple[AuthorisedBranch, ...]:
+        """Terminal branches whose action was authorised with a certificate."""
         result: list[AuthorisedBranch] = []
         for branch in self.branches:
             if (
@@ -243,6 +272,7 @@ class ITESReport:
 
     @property
     def authorised_plans(self) -> tuple[AuthorisedPlan, ...]:
+        """Multi-step authorised plans extracted from authorised branches."""
         return tuple(
             AuthorisedPlan(branch.authorised_steps, branch.branch_id)
             for branch in self.branches
@@ -251,26 +281,32 @@ class ITESReport:
 
     @property
     def proposed_count(self) -> int:
+        """Total number of proposed trace events across all branches."""
         return sum(event.outcome == ActionOutcome.PROPOSED for branch in self.branches for event in branch.trace)
 
     @property
     def blocked_count(self) -> int:
+        """Total number of blocked trace events across all branches."""
         return sum(event.outcome == ActionOutcome.BLOCKED for branch in self.branches for event in branch.trace)
 
     @property
     def authorised_count(self) -> int:
+        """Total number of authorised trace events across all branches."""
         return sum(event.outcome == ActionOutcome.AUTHORISED for branch in self.branches for event in branch.trace)
 
     @property
     def executed_count(self) -> int:
+        """Total number of executed trace events across all branches."""
         return sum(event.outcome == ActionOutcome.EXECUTED for branch in self.branches for event in branch.trace)
 
     @property
     def provider_failed_count(self) -> int:
+        """Total number of provider-failed trace events across all branches."""
         return sum(event.outcome == ActionOutcome.PROVIDER_FAILED for branch in self.branches for event in branch.trace)
 
     @property
     def incomplete_count(self) -> int:
+        """Total number of incomplete trace events across all branches."""
         return sum(event.outcome == ActionOutcome.INCOMPLETE for branch in self.branches for event in branch.trace)
 
     def record_execution(
@@ -349,6 +385,7 @@ class ITESReport:
         return replace(self, branches=branches, assessments=assessments)
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise this report to a dictionary."""
         return {
             "trace_schema_version": self.trace_schema_version,
             "run_id": self.run_id,

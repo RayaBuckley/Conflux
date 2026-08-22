@@ -34,7 +34,9 @@ class NuXmvRunner(Protocol):
         binary: str,
         model_path: Path,
         commands: str,
-    ) -> NuXmvOutcome: ...
+    ) -> NuXmvOutcome:
+        """Execute the nuXmv binary on the model file with the given commands."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)

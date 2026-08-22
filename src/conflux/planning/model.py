@@ -302,6 +302,7 @@ def _reject_dependency_cycles(by_id: dict[str, PlanNode]) -> None:
     visited: set[str] = set()
 
     def visit(node_id: str) -> None:
+        """Depth-first traversal that raises on implicit dependency cycles."""
         if node_id in visiting:
             raise ValueError("implicit dependency cycle; use LoopNode for cycles")
         if node_id in visited:

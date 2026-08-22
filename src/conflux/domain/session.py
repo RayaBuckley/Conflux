@@ -9,6 +9,8 @@ from .identity import Principal
 
 @dataclass(frozen=True, slots=True)
 class Session:
+    """An immutable mediation-session context binding participants."""
+
     id: str
     participants: frozenset[Principal] = field(default_factory=frozenset)
 

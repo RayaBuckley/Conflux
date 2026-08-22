@@ -42,12 +42,16 @@ SUPPORTED_FEATURES = frozenset(
 
 
 class CedarDecision(StrEnum):
+    """Cedar authorization decision enum."""
+
     ALLOW = "ALLOW"
     DENY = "DENY"
 
 
 @dataclass(frozen=True, slots=True)
 class CedarBinaryIdentity:
+    """Pinned identity of the Cedar CLI binary."""
+
     version: str
     commit: str
     sha256: str
@@ -58,11 +62,14 @@ class CedarBinaryIdentity:
         _require_sha256(self.sha256, "Cedar binary")
 
     def to_dict(self) -> dict[str, str]:
+        """Serialise the binary identity to a canonical dictionary."""
         return {"version": self.version, "commit": self.commit, "sha256": self.sha256}
 
 
 @dataclass(frozen=True, slots=True)
 class CedarPolicyBundle:
+    """Immutable Cedar policy bundle with schema, policies, entities, and binary identity."""
+
     bundle_id: str
     schema_json: str
     policies: str
@@ -88,9 +95,11 @@ class CedarPolicyBundle:
 
     @property
     def fingerprint(self) -> str:
+        """Return the content fingerprint of the policy bundle."""
         return fingerprint(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the policy bundle to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "bundle_id": self.bundle_id,
@@ -104,6 +113,8 @@ class CedarPolicyBundle:
 
 @dataclass(frozen=True, slots=True)
 class CedarRequest:
+    """Cedar authorization request with principal, action, resource, and context."""
+
     principal: str
     action: str
     resource: str
@@ -157,7 +168,9 @@ class CedarRunnerResult:
 class CedarRunnerPort(Protocol):
     """Port for executing Cedar authorization requests against a policy bundle."""
 
-    def evaluate(self, bundle: CedarPolicyBundle, request: CedarRequest) -> CedarRunnerResult: ...
+    def evaluate(self, bundle: CedarPolicyBundle, request: CedarRequest) -> CedarRunnerResult:
+        """Evaluate a Cedar request against the given policy bundle."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)

@@ -20,7 +20,9 @@ RESULT_SCHEMA_VERSION = "1"
 class SerializableRecord(Protocol):
     """Protocol for records that can serialise to a dictionary."""
 
-    def to_dict(self) -> dict[str, object]: ...
+    def to_dict(self) -> dict[str, object]:
+        """Serialise the record to a canonical dictionary."""
+        ...
 
 
 class RunStatus(StrEnum):
@@ -223,6 +225,7 @@ def trace_records(
         payload: dict[str, object],
         parents: tuple[str, ...] = (),
     ) -> str:
+        """Append a trace record and return its event identifier."""
         nonlocal sequence
         record = _record(
             schema_version=report.trace_schema_version,

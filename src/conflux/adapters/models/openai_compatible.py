@@ -26,12 +26,18 @@ class HTTPResponse(Protocol):
     """Minimal protocol for an HTTP response."""
 
     @property
-    def status_code(self) -> int: ...
+    def status_code(self) -> int:
+        """Return the HTTP status code."""
+        ...
 
     @property
-    def text(self) -> str: ...
+    def text(self) -> str:
+        """Return the raw response body as text."""
+        ...
 
-    def json(self) -> object: ...
+    def json(self) -> object:
+        """Parse and return the response body as JSON."""
+        ...
 
 
 class HTTPTransport(Protocol):
@@ -44,7 +50,9 @@ class HTTPTransport(Protocol):
         headers: dict[str, str],
         json: dict[str, object],
         timeout: float,
-    ) -> HTTPResponse: ...
+    ) -> HTTPResponse:
+        """POST JSON to the given URL and return the response."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -217,6 +225,7 @@ class _HttpxTransport:
         json: dict[str, object],
         timeout: float,
     ) -> HTTPResponse:
+        """POST JSON using httpx and return the response."""
         try:
             import httpx  # type: ignore[import-not-found,unused-ignore]
         except ImportError as error:

@@ -7,6 +7,8 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True, order=True)
 class Permission:
+    """A provider-neutral permission name used by authorisation decisions."""
+
     name: str
 
     def __post_init__(self) -> None:
@@ -25,6 +27,7 @@ DELEGATE = Permission("delegate")
 
 
 def normalise_permission(value: Permission | str) -> Permission:
+    """Coerce a string or Permission into a canonical Permission value."""
     return value if isinstance(value, Permission) else Permission(value)
 
 

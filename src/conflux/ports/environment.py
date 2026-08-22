@@ -8,7 +8,11 @@ from conflux.domain import EnvironmentSnapshot
 
 
 class EnvironmentPort(Protocol):
-    def snapshot(self) -> EnvironmentSnapshot: ...
+    """Provider materialisation boundary for environment snapshots."""
+
+    def snapshot(self) -> EnvironmentSnapshot:
+        """Capture the current provider environment as an immutable snapshot."""
+        ...
 
 
 __all__ = ["EnvironmentPort"]

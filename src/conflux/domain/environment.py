@@ -14,6 +14,8 @@ from .resources import ResourceRef
 
 @dataclass(frozen=True, slots=True)
 class DataItem:
+    """A provider-neutral data value with authorship and reader sets."""
+
     id: str
     value: Any
     authors: frozenset[Principal] = field(default_factory=frozenset)
@@ -30,6 +32,7 @@ class DataItem:
         object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
     def to_artifact(self) -> Artifact[Any]:
+        """Convert this data item into a provenance-bearing artifact."""
         provenance = (
             Provenance.from_principals(self.authors).with_activity("environment_input")
             if self.authors
@@ -46,6 +49,8 @@ class DataItem:
 
 @dataclass(frozen=True, slots=True)
 class EnvironmentSnapshot:
+    """An immutable snapshot of environment data and resources."""
+
     id: str
     data: tuple[DataItem, ...] = ()
     resources: tuple[ResourceRef, ...] = ()
@@ -62,12 +67,15 @@ class EnvironmentSnapshot:
             raise ValueError("EnvironmentSnapshot data ids must be unique")
 
     def data_item(self, item_id: str) -> DataItem | None:
+        """Return the data item with the given id, or None."""
         return next((item for item in self.data if item.id == item_id), None)
 
     def resource(self, resource_id: str) -> ResourceRef | None:
+        """Return the resource reference with the given id, or None."""
         return next((item for item in self.resources if item.resource_id == resource_id), None)
 
     def artifacts(self) -> tuple[Artifact[Any], ...]:
+        """Convert all data items in the snapshot into artifacts."""
         return tuple(item.to_artifact() for item in self.data)
 
 

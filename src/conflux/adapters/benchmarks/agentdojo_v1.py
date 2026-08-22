@@ -36,40 +36,60 @@ class AgentDojoFailure(StrEnum):
 
 
 class _ModelSchema(Protocol):
-    def model_json_schema(self) -> dict[str, object]: ...
+    def model_json_schema(self) -> dict[str, object]:
+        """Return the JSON schema for the model's parameters."""
+        ...
 
 
 class _UpstreamFunction(Protocol):
     @property
-    def name(self) -> str: ...
+    def name(self) -> str:
+        """Return the tool's name."""
+        ...
 
     @property
-    def description(self) -> str: ...
+    def description(self) -> str:
+        """Return the tool's description."""
+        ...
 
     @property
-    def parameters(self) -> _ModelSchema: ...
+    def parameters(self) -> _ModelSchema:
+        """Return the tool's parameter schema."""
+        ...
 
 
 class _UpstreamTask(Protocol):
     @property
-    def ID(self) -> str: ...
+    def ID(self) -> str:
+        """Return the task's upstream identifier."""
+        ...
 
 
 class _UpstreamSuite(Protocol):
     @property
-    def name(self) -> str: ...
+    def name(self) -> str:
+        """Return the suite's name."""
+        ...
 
     @property
-    def benchmark_version(self) -> tuple[int, int, int]: ...
+    def benchmark_version(self) -> tuple[int, int, int]:
+        """Return the suite's benchmark version as a semantic triple."""
+        ...
 
     @property
-    def tools(self) -> Sequence[_UpstreamFunction]: ...
+    def tools(self) -> Sequence[_UpstreamFunction]:
+        """Return the suite's available tools."""
+        ...
 
     @property
-    def user_tasks(self) -> MappingABC[str, _UpstreamTask]: ...
+    def user_tasks(self) -> MappingABC[str, _UpstreamTask]:
+        """Return the suite's user tasks keyed by identifier."""
+        ...
 
     @property
-    def injection_tasks(self) -> MappingABC[str, _UpstreamTask]: ...
+    def injection_tasks(self) -> MappingABC[str, _UpstreamTask]:
+        """Return the suite's injection tasks keyed by identifier."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)

@@ -18,6 +18,8 @@ from conflux.domain import (
 
 @dataclass(frozen=True, slots=True)
 class ArgumentPolicyGrant:
+    """Immutable grant linking a principal to a specific action-argument role."""
+
     principal_id: str
     operation: str
     argument_name: str
@@ -35,6 +37,8 @@ class ArgumentPolicyGrant:
 
 @dataclass(frozen=True, slots=True)
 class InMemoryArgumentAuthorisationPolicy:
+    """Pointwise authorisation policy backed by a set of argument grants."""
+
     grants: frozenset[ArgumentPolicyGrant] = field(default_factory=frozenset)
     policy_id: str = "in-memory-argument-policy"
     policy_version: str = "1"
@@ -49,6 +53,7 @@ class InMemoryArgumentAuthorisationPolicy:
         argument: ActionArgument,
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Return an authorisation decision for a single action argument."""
         _ = environment
         if not isinstance(action, PrimitiveAction):
             return Decision(

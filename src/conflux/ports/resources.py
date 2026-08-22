@@ -10,12 +10,16 @@ from conflux.domain import Action
 
 @dataclass(frozen=True, slots=True)
 class ProviderResult:
+    """Immutable outcome of an authorised provider execution."""
+
     success: bool
     outcome: object | None = None
     error: str | None = None
 
 
 class ExecutorPort(Protocol):
+    """Authorised effect execution boundary."""
+
     def execute(
         self,
         action: Action,

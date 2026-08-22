@@ -25,6 +25,8 @@ from conflux.domain import (
 
 @dataclass(frozen=True, slots=True)
 class SnapshotReadPolicy:
+    """Read policy that grants only principals listed in the snapshot's readers."""
+
     policy_id: str = "snapshot-read-policy"
     policy_version: str = "1"
 
@@ -34,6 +36,7 @@ class SnapshotReadPolicy:
         artifact: Artifact[Any],
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Return a read decision based on the snapshot's readers list."""
         item = environment.data_item(artifact.id)
         allowed = item is not None and principal in item.readers
         return Decision(
@@ -48,10 +51,13 @@ class SnapshotReadPolicy:
 
 @dataclass(frozen=True, slots=True)
 class SessionVisibilityPolicy:
+    """Visibility policy checking principals against session participants."""
+
     policy_id: str = "session-visibility-policy"
     policy_version: str = "1"
 
     def decide(self, session: Session, action: Action, context: PrincipalContext) -> Decision:
+        """Return a visibility decision based on session participation."""
         if action.visibility == ActionVisibility.INTERNAL:
             allowed = True
             reason = "internal"
@@ -77,6 +83,7 @@ class ExplicitConsentPolicy:
     policy_version: str = "1"
 
     def decide(self, session: Session, action: Action, context: PrincipalContext) -> Decision:
+        """Return a consent decision for explicitly approved or safe actions."""
         _ = session, context
         safe_control = isinstance(action, (StopAction, NoOpAction))
         allowed = safe_control or action.id in self.approved_action_ids
@@ -105,6 +112,7 @@ class SessionAudienceVisibilityPolicy:
         action: Action | None,
         context: PrincipalContext,
     ) -> AudienceVisibilityDecision:
+        """Return a disclosure-level decision for one audience and event class."""
         _ = action
         if audience not in session.participants:
             level = DisclosureLevel.NONE
@@ -144,6 +152,7 @@ class AllowInternalReadPolicy:
         artifact: Artifact[Any],
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Unconditionally allow internal reads; for model-checking fixtures."""
         _ = principal, artifact, environment
         return Decision(
             DecisionCategory.READ,

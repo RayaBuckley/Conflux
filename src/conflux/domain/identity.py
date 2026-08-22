@@ -28,6 +28,7 @@ class Principal:
             raise ValueError("Principal fields must be non-empty")
 
     def to_dict(self) -> dict[str, str]:
+        """Return a deterministic JSON-compatible representation."""
         return {"id": self.id, "name": self.name, "kind": self.kind}
 
 
@@ -43,28 +44,34 @@ class PrincipalContext:
 
     @classmethod
     def from_principals(cls, principals: frozenset[Principal]) -> "PrincipalContext":
+        """Return a context that is unknown when the principal set is empty."""
         return cls(principals=principals, unknown=not principals)
 
     @property
     def is_authority_bearing(self) -> bool:
+        """Return True when the context is non-empty and not unknown."""
         return bool(self.principals) and not self.unknown
 
     def extend(self, *principals: Principal, unknown: bool = False) -> "PrincipalContext":
+        """Return a context extended with additional principals."""
         return PrincipalContext(
             principals=self.principals | frozenset(principals),
             unknown=self.unknown or unknown,
         )
 
     def merge(self, other: "PrincipalContext") -> "PrincipalContext":
+        """Return the join-semilattice merge of two contexts."""
         return PrincipalContext(
             principals=self.principals | other.principals,
             unknown=self.unknown or other.unknown,
         )
 
     def contains(self, principal: Principal) -> bool:
+        """Return True when the context includes the given principal."""
         return principal in self.principals
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "principal_ids": sorted(principal.id for principal in self.principals),
             "unknown": self.unknown,
@@ -72,6 +79,7 @@ class PrincipalContext:
 
     @property
     def fingerprint(self) -> str:
+        """Return the lowercase SHA-256 fingerprint of the context."""
         return fingerprint(self.to_dict())
 
 

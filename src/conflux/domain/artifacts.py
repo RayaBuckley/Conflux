@@ -13,6 +13,8 @@ T = TypeVar("T")
 
 @dataclass(frozen=True, slots=True)
 class Artifact(Generic[T]):
+    """An immutable value paired with security provenance."""
+
     id: str
     value: T
     provenance: Provenance
@@ -24,6 +26,7 @@ class Artifact(Generic[T]):
             raise ValueError("Artifact.id must be non-empty")
 
     def derive(self, *, artifact_id: str, value: T, activity: str) -> "Artifact[T]":
+        """Return a new artifact derived from this one with an added provenance activity."""
         return Artifact(
             id=artifact_id,
             value=value,
@@ -40,13 +43,16 @@ class Artifact(Generic[T]):
         value: T,
         activity: str,
     ) -> "Artifact[T]":
+        """Create a new artifact whose provenance is the union of the inputs."""
         provenance = provenance_union(*(artifact.provenance for artifact in artifacts)).with_activity(activity)
         return cls(id=artifact_id, value=value, provenance=provenance)
 
     def with_label(self, label: str | None) -> "Artifact[T]":
+        """Return a copy of this artifact with a different label."""
         return replace(self, label=label)
 
     def to_dict(self) -> dict[str, object]:
+        """Return a deterministic JSON-compatible representation."""
         return {
             "id": self.id,
             "value": self.value,
@@ -57,6 +63,7 @@ class Artifact(Generic[T]):
 
     @property
     def fingerprint(self) -> str:
+        """Return the lowercase SHA-256 fingerprint of the artifact."""
         return fingerprint(self.to_dict())
 
 

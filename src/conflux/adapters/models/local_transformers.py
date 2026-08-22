@@ -233,6 +233,7 @@ class TransformersLocalModel:
             top_p: float,
             seed: int,
         ) -> LocalTextGeneration:
+            """Generate text from the model and return content with token counts."""
             set_seed(seed)
             encoded = tokenizer(prompt, return_tensors="pt")
             if nf4:

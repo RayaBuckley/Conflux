@@ -4,6 +4,8 @@ from enum import StrEnum
 
 
 class ArgumentRole(StrEnum):
+    """Classifies the role an action argument plays in authority evaluation."""
+
     CONTENT = "content"
     RESOURCE = "resource"
     RECIPIENT = "recipient"
