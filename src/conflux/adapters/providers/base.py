@@ -11,9 +11,12 @@ from conflux.ports import ProviderResult
 
 @dataclass(frozen=True, slots=True)
 class StaticEnvironmentProvider:
+    """Provider that always returns the same fixed environment snapshot."""
+
     environment: EnvironmentSnapshot
 
     def snapshot(self) -> EnvironmentSnapshot:
+        """Return the static environment snapshot."""
         return self.environment
 
 
@@ -30,6 +33,7 @@ class RecordingExecutor:
         certificate_id: str,
         action_fingerprint: str,
     ) -> ProviderResult:
+        """Execute the action, rejecting any certificate-action mismatch."""
         if not certificate_id or action_fingerprint != fingerprint_action(action):
             return ProviderResult(False, error="certificate_action_mismatch")
         self.executed.append(action.id)

@@ -121,9 +121,11 @@ class CedarRequest:
 
     @property
     def fingerprint(self) -> str:
+        """Stable fingerprint of the Cedar request."""
         return fingerprint(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the request to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "principal": self.principal,
@@ -135,6 +137,8 @@ class CedarRequest:
 
 @dataclass(frozen=True, slots=True)
 class CedarRunnerResult:
+    """Result of invoking the Cedar CLI: availability, decision, reason, and diagnostics."""
+
     available: bool
     decision: CedarDecision | None
     reason: str
@@ -151,11 +155,15 @@ class CedarRunnerResult:
 
 
 class CedarRunnerPort(Protocol):
+    """Port for executing Cedar authorization requests against a policy bundle."""
+
     def evaluate(self, bundle: CedarPolicyBundle, request: CedarRequest) -> CedarRunnerResult: ...
 
 
 @dataclass(frozen=True, slots=True)
 class CedarCliRunner:
+    """Invoke the hash-pinned Cedar binary via subprocess to evaluate requests."""
+
     binary_path: Path
     timeout_seconds: float = 5.0
 
@@ -164,6 +172,7 @@ class CedarCliRunner:
             raise ValueError("Cedar timeout must be positive")
 
     def evaluate(self, bundle: CedarPolicyBundle, request: CedarRequest) -> CedarRunnerResult:
+        """Validate the bundle and authorize the request via the pinned Cedar binary."""
         try:
             binary = self.binary_path.resolve(strict=True)
         except OSError as error:
@@ -253,6 +262,8 @@ class CedarCliRunner:
 
 @dataclass(frozen=True, slots=True)
 class CedarAuthorisationPolicy:
+    """Cedar-backed authorisation policy that mediates principal/action/resource decisions."""
+
     bundle: CedarPolicyBundle
     runner: CedarRunnerPort
     operation_versions: Mapping[str, str] = field(default_factory=dict)
@@ -277,6 +288,7 @@ class CedarAuthorisationPolicy:
 
     @property
     def policy_version(self) -> str:
+        """Composite policy version string from Cedar version and bundle fingerprint."""
         return f"{CEDAR_VERSION}:{self.bundle.fingerprint}"
 
     def decide(
@@ -285,6 +297,7 @@ class CedarAuthorisationPolicy:
         action: Action,
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Authorize a primitive action for a principal in the given environment."""
         request_or_reason = self._request(principal, action, environment)
         if isinstance(request_or_reason, str):
             return self._deny(request_or_reason)
@@ -297,6 +310,7 @@ class CedarAuthorisationPolicy:
         argument: ActionArgument,
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Authorize a single argument under decision for a primitive action."""
         request_or_reason = self._request(principal, action, environment, argument=argument)
         if isinstance(request_or_reason, str):
             return self._deny(request_or_reason)
@@ -371,14 +385,18 @@ class CedarAuthorisationPolicy:
 
 @dataclass(frozen=True, slots=True)
 class CedarArgumentAuthorisationPolicy:
+    """Delegate argument-level authorisation to a wrapped :class:`CedarAuthorisationPolicy`."""
+
     adapter: CedarAuthorisationPolicy
 
     @property
     def policy_id(self) -> str:
+        """Policy identifier inherited from the wrapped adapter."""
         return self.adapter.policy_id
 
     @property
     def policy_version(self) -> str:
+        """Policy version inherited from the wrapped adapter."""
         return self.adapter.policy_version
 
     def decide(
@@ -388,6 +406,7 @@ class CedarArgumentAuthorisationPolicy:
         argument: ActionArgument,
         environment: EnvironmentSnapshot,
     ) -> Decision:
+        """Authorize a single argument by delegating to the adapter's ``decide_argument``."""
         return self.adapter.decide_argument(principal, action, argument, environment)
 
 

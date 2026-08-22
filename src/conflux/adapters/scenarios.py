@@ -48,6 +48,8 @@ INSTALLED_SCHEMAS = Path(sysconfig.get_path("data")) / "share" / "conflux" / "sc
 
 @dataclass(frozen=True, slots=True)
 class LoadedScenario:
+    """A fully resolved scenario ready for execution: environment, session, pipeline, and model proposals."""
+
     id: str
     environment: EnvironmentSnapshot
     session: Session
@@ -57,6 +59,7 @@ class LoadedScenario:
 
 
 def load_schema(name: str) -> dict[str, Any]:
+    """Load a JSON schema by name from the repository or installed package."""
     installed = _installed_schema_path(name)
     schema_path = next(
         (
@@ -100,6 +103,7 @@ def _resolved_scenario_schema() -> dict[str, Any]:
 
 
 def load_scenario(path: Path) -> LoadedScenario:
+    """Parse and validate a YAML scenario file into a fully resolved ``LoadedScenario``."""
     try:
         payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, YAMLError) as error:
@@ -115,10 +119,7 @@ def load_scenario(path: Path) -> LoadedScenario:
 
 
 def _parse_scenario(payload: dict[str, Any]) -> LoadedScenario:
-    principals = tuple(
-        Principal(str(item["id"]), str(item["name"]), str(item["kind"]))
-        for item in payload["principals"]
-    )
+    principals = tuple(Principal(str(item["id"]), str(item["name"]), str(item["kind"])) for item in payload["principals"])
     by_id = {principal.id: principal for principal in principals}
     if len(by_id) != len(principals):
         raise ValueError("duplicate_principal_id")
@@ -154,9 +155,7 @@ def _parse_scenario(payload: dict[str, Any]) -> LoadedScenario:
         )
         for item in payload["grants"]
     )
-    unknown_grants = sorted(
-        grant.principal_id for grant in grants if grant.principal_id not in by_id
-    )
+    unknown_grants = sorted(grant.principal_id for grant in grants if grant.principal_id not in by_id)
     if unknown_grants:
         raise ValueError(f"unknown_grant_principal:{unknown_grants[0]}")
     pipeline = DecisionPipeline(
@@ -192,6 +191,7 @@ def parse_proposal_batch(
     payload: dict[str, Any],
     inputs: tuple[Artifact[Any], ...],
 ) -> ProposalBatch:
+    """Validate a proposal-batch payload and resolve it against available inputs."""
     try:
         Draft202012Validator(load_schema("proposal-batch.schema.json")).validate(payload)
     except ValidationError as error:

@@ -24,6 +24,8 @@ from conflux.ports import ProviderResult
 
 @dataclass(frozen=True, slots=True)
 class CommandOutcome:
+    """Captured result of a sandboxed command: exit code, streams, outputs, and limits."""
+
     exit_code: int | None
     stdout: bytes = b""
     stderr: bytes = b""
@@ -34,6 +36,8 @@ class CommandOutcome:
 
 
 class CommandRunner(Protocol):
+    """Protocol for running a tokenised command in a bounded workspace."""
+
     def run(
         self,
         command: tuple[str, ...],
@@ -58,6 +62,7 @@ class SubprocessCommandRunner:
         timeout_seconds: float,
         output_bytes: int,
     ) -> CommandOutcome:
+        """Execute the command, enforcing timeout and output-byte limits."""
         stdout_path = workspace / ".stdout"
         stderr_path = workspace / ".stderr"
         started = time.monotonic()
@@ -121,11 +126,8 @@ class DockerCodeSandboxExecutor:
         certificate_id: str,
         action_fingerprint: str,
     ) -> ProviderResult:
-        if (
-            not isinstance(action, PrimitiveAction)
-            or not certificate_id
-            or action_fingerprint != fingerprint_action(action)
-        ):
+        """Execute a certified ``execute_code`` action inside a pinned Docker container."""
+        if not isinstance(action, PrimitiveAction) or not certificate_id or action_fingerprint != fingerprint_action(action):
             return ProviderResult(False, error="certificate_action_mismatch")
         if action.operation != "execute_code":
             return ProviderResult(False, error="unsupported_code_action")

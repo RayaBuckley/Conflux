@@ -23,6 +23,8 @@ class ModelProviderError(RuntimeError):
 
 
 class HTTPResponse(Protocol):
+    """Minimal protocol for an HTTP response."""
+
     @property
     def status_code(self) -> int: ...
 
@@ -33,6 +35,8 @@ class HTTPResponse(Protocol):
 
 
 class HTTPTransport(Protocol):
+    """Protocol for an HTTP transport that can POST JSON."""
+
     def post(
         self,
         url: str,
@@ -45,11 +49,14 @@ class HTTPTransport(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class RawResponseRecord:
+    """An immutable record of a raw HTTP response from a model provider."""
+
     status_code: int
     body_sha256: str
     body: object
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this response record to a canonical dictionary."""
         return {
             "status_code": self.status_code,
             "body_sha256": self.body_sha256,
@@ -59,6 +66,8 @@ class RawResponseRecord:
 
 @dataclass(slots=True)
 class OpenAICompatibleModel:
+    """Vendor-neutral adapter for an OpenAI-compatible proposal model."""
+
     endpoint: str
     model: str
     allowed_resources: frozenset[tuple[str, str, str]]
@@ -81,6 +90,7 @@ class OpenAICompatibleModel:
         self.allowed_resources = frozenset(self.allowed_resources)
 
     def available(self) -> bool:
+        """Return whether the API key and HTTP transport are available."""
         if not os.environ.get(self.api_key_env):
             return False
         if self.transport is not None:
@@ -90,6 +100,7 @@ class OpenAICompatibleModel:
         return find_spec("httpx") is not None
 
     def propose(self, inputs: tuple[Artifact[Any], ...]) -> ProposalBatch:
+        """Request a structured proposal batch from the model for the given artifacts."""
         api_key = os.environ.get(self.api_key_env)
         if not api_key:
             raise ModelProviderError(f"missing_secret_environment:{self.api_key_env}")
@@ -99,8 +110,7 @@ class OpenAICompatibleModel:
                 {
                     "role": "system",
                     "content": (
-                        "Return only a JSON proposal batch matching the supplied schema. "
-                        "Never claim authority or execute an action."
+                        "Return only a JSON proposal batch matching the supplied schema. Never claim authority or execute an action."
                     ),
                 },
                 {

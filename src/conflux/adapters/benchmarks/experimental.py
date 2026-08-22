@@ -8,6 +8,8 @@ from typing import Any, Mapping
 
 @dataclass(frozen=True, slots=True)
 class ExternalBenchmarkRecord:
+    """Validated record from an external benchmark run."""
+
     schema: str
     task_id: str
     secure: bool
@@ -15,6 +17,7 @@ class ExternalBenchmarkRecord:
 
 
 def parse_external_record(payload: Mapping[str, Any], *, supported_schema: str) -> ExternalBenchmarkRecord:
+    """Parse and validate an external benchmark record, raising on mismatch."""
     if payload.get("schema") != supported_schema:
         raise ValueError("unsupported external benchmark schema")
     required = ("task_id", "secure", "useful")

@@ -11,12 +11,16 @@ from conflux.domain import ArgumentRole, OperationArgumentSchema, canonical_json
 
 
 class AnnotationProfile(StrEnum):
+    """Annotation strictness profile for AgentDojo pilot annotations."""
+
     CONSERVATIVE = "conservative"
     ORACLE = "oracle"
 
 
 @dataclass(frozen=True, slots=True)
 class AgentDojoAnnotations:
+    """Frozen annotation set mapping tool names to argument schemas."""
+
     profile: AnnotationProfile
     operations: Mapping[str, OperationArgumentSchema]
     reviewed_values: Mapping[str, tuple[str, ...]]
@@ -32,9 +36,11 @@ class AgentDojoAnnotations:
 
     @property
     def fingerprint(self) -> str:
+        """Return the SHA-256 fingerprint of the annotation set."""
         return fingerprint(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the annotations to a canonical dictionary."""
         return {
             "version": self.version,
             "profile": self.profile.value,
@@ -45,9 +51,7 @@ class AgentDojoAnnotations:
                 }
                 for name, schema in sorted(self.operations.items())
             },
-            "reviewed_values": {
-                key: list(values) for key, values in sorted(self.reviewed_values.items())
-            },
+            "reviewed_values": {key: list(values) for key, values in sorted(self.reviewed_values.items())},
         }
 
 
@@ -73,6 +77,7 @@ def pilot_annotations(profile: AnnotationProfile) -> AgentDojoAnnotations:
 
 
 def annotations_json(profile: AnnotationProfile) -> str:
+    """Return the canonical JSON encoding of the pilot annotations."""
     return canonical_json(pilot_annotations(profile).to_dict())
 
 

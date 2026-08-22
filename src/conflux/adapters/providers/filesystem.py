@@ -10,11 +10,14 @@ from conflux.domain import DataItem, EnvironmentSnapshot, Principal
 
 @dataclass(frozen=True, slots=True)
 class FilesystemSnapshotProvider:
+    """Materialise a read-only environment snapshot from a filesystem root."""
+
     root: Path
     author: Principal
     readers: frozenset[Principal]
 
     def snapshot(self) -> EnvironmentSnapshot:
+        """Build an :class:`EnvironmentSnapshot` from all files beneath the root."""
         root = self.root.resolve()
         if not root.is_dir():
             raise ValueError("filesystem root must be a directory")

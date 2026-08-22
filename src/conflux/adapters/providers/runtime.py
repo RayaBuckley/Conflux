@@ -28,6 +28,7 @@ class InMemoryExecutor:
         certificate_id: str,
         action_fingerprint: str,
     ) -> ProviderResult:
+        """Execute the action in memory, enforcing certificate-based idempotency."""
         if not certificate_id or action_fingerprint != fingerprint_action(action):
             return ProviderResult(False, error="certificate_action_mismatch")
         bound = self.certificate_bindings.get(certificate_id)
@@ -51,6 +52,7 @@ class InMemoryExecutor:
         self.outcomes[certificate_id] = result
         return result
 
+
 @dataclass(slots=True)
 class ConfinedFilesystemExecutor:
     """Write UTF-8 files beneath one root; dry-run unless explicitly enabled."""
@@ -67,6 +69,7 @@ class ConfinedFilesystemExecutor:
         certificate_id: str,
         action_fingerprint: str,
     ) -> ProviderResult:
+        """Execute a certified write action, enforcing confinement and idempotency."""
         if not certificate_id or action_fingerprint != fingerprint_action(action):
             return ProviderResult(False, error="certificate_action_mismatch")
         bound = self.certificate_bindings.get(certificate_id)
@@ -109,9 +112,7 @@ class ConfinedFilesystemExecutor:
             "path": target.relative_to(root).as_posix(),
             "sha256": hashlib.sha256(content).hexdigest(),
             "precondition_sha256": current,
-            "idempotency_key": str(
-                action.resource.attributes.get("idempotency_key", certificate_id)
-            ),
+            "idempotency_key": str(action.resource.attributes.get("idempotency_key", certificate_id)),
             "dry_run": self.dry_run,
         }
         if self.dry_run:

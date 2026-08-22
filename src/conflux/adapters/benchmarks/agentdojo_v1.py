@@ -24,6 +24,8 @@ INTEGRATION_SCHEMA = "conflux.agentdojo.v1"
 
 
 class AgentDojoFailure(StrEnum):
+    """Failure categories for AgentDojo benchmark results."""
+
     SETUP = "setup"
     MODEL = "model"
     PARSER = "parser"
@@ -72,6 +74,8 @@ class _UpstreamSuite(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class AgentDojoTool:
+    """Immutable description of a single AgentDojo tool."""
+
     upstream_id: str
     description: str
     input_schema: Mapping[str, object]
@@ -80,6 +84,7 @@ class AgentDojoTool:
         object.__setattr__(self, "input_schema", MappingProxyType(dict(self.input_schema)))
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the tool description to a canonical dictionary."""
         return {
             "upstream_id": self.upstream_id,
             "description": self.description,
@@ -89,6 +94,8 @@ class AgentDojoTool:
 
 @dataclass(frozen=True, slots=True)
 class AgentDojoSuite:
+    """Immutable metadata describing a pinned AgentDojo benchmark suite."""
+
     upstream_package_version: str
     benchmark_version: str
     suite_id: str
@@ -97,6 +104,7 @@ class AgentDojoSuite:
     tools: tuple[AgentDojoTool, ...]
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the suite metadata to a canonical dictionary."""
         return {
             "schema": INTEGRATION_SCHEMA,
             "upstream_package_version": self.upstream_package_version,
@@ -110,6 +118,8 @@ class AgentDojoSuite:
 
 @dataclass(frozen=True, slots=True)
 class AgentDojoResult:
+    """Translated result of a single AgentDojo benchmark run."""
+
     upstream_package_version: str
     benchmark_version: str
     suite_id: str
@@ -134,6 +144,7 @@ class AgentDojoResult:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the result to a canonical dictionary."""
         return {
             "schema": INTEGRATION_SCHEMA,
             "upstream_package_version": self.upstream_package_version,
@@ -170,6 +181,7 @@ def load_pinned_suite(suite_id: str) -> AgentDojoSuite:
 
 
 def translate_suite(upstream: _UpstreamSuite) -> AgentDojoSuite:
+    """Convert an upstream suite object into the immutable Conflux wrapper."""
     expected_version = tuple(int(part) for part in BENCHMARK_VERSION.removeprefix("v").split("."))
     if upstream.benchmark_version != expected_version:
         raise ValueError(f"unsupported_agentdojo_benchmark:{upstream.benchmark_version!r}")
@@ -214,11 +226,15 @@ def parse_upstream_log(path: Path) -> AgentDojoResult:
         "security",
         "duration",
     }
-    unknown = set(payload) - expected - {
-        "evaluation_timestamp",
-        "agentdojo_package_version",
-        "benchmark_version",
-    }
+    unknown = (
+        set(payload)
+        - expected
+        - {
+            "evaluation_timestamp",
+            "agentdojo_package_version",
+            "benchmark_version",
+        }
+    )
     if unknown:
         raise ValueError(f"agentdojo_parser_failure:unknown_fields:{','.join(sorted(unknown))}")
     for key in expected:
@@ -260,6 +276,7 @@ def parse_upstream_log(path: Path) -> AgentDojoResult:
 
 
 def write_translation(result: AgentDojoResult, path: Path) -> None:
+    """Write the translated result as canonical JSON to ``path``."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(canonical_json(result.to_dict()) + "\n", encoding="utf-8", newline="\n")
 
@@ -271,6 +288,7 @@ def classify_conflux_outcome(
     native_security: bool | None,
     native_utility: bool | None,
 ) -> tuple[AgentDojoFailure, ...]:
+    """Derive Conflux failure categories from policy and native outcomes."""
     failures: list[AgentDojoFailure] = []
     if policy_blocked:
         failures.append(AgentDojoFailure.POLICY)
@@ -317,10 +335,7 @@ def _optional_bool(value: object, key: str) -> bool | None:
 
 
 def _string_map(value: object) -> dict[str, str]:
-    if not isinstance(value, dict) or any(
-        not isinstance(key, str) or not isinstance(item, str)
-        for key, item in value.items()
-    ):
+    if not isinstance(value, dict) or any(not isinstance(key, str) or not isinstance(item, str) for key, item in value.items()):
         raise ValueError("agentdojo_parser_failure:injections_not_string_map")
     return cast(dict[str, str], value)
 

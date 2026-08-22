@@ -17,16 +17,21 @@ from conflux.ports import LocalModelSpec
 
 @dataclass(frozen=True, slots=True)
 class LocalArtifactFile:
+    """A single file entry within a local model artifact manifest."""
+
     path: str
     size: int
     sha256: str
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize this file entry to a canonical dictionary."""
         return {"path": self.path, "size": self.size, "sha256": self.sha256}
 
 
 @dataclass(frozen=True, slots=True)
 class LocalArtifactManifest:
+    """Manifest of all files comprising a local model snapshot."""
+
     model_id: str
     revision: str
     tokenizer_id: str
@@ -48,6 +53,7 @@ class LocalArtifactManifest:
         Draft202012Validator(load_schema("local-artifact-manifest.schema.json")).validate(self.to_dict())
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize the manifest to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "model_id": self.model_id,
@@ -60,11 +66,14 @@ class LocalArtifactManifest:
 
     @property
     def fingerprint(self) -> str:
+        """Return the canonical fingerprint of this manifest."""
         return fingerprint(self.to_dict())
 
 
 @dataclass(frozen=True, slots=True)
 class ResolvedLocalModel:
+    """A locally resolved transformers model with verified artifact manifest."""
+
     spec: LocalModelSpec
     snapshot_path: Path
     manifest: LocalArtifactManifest
@@ -85,6 +94,7 @@ class ResolvedLocalModel:
             raise ValueError("resolved_model_identity_mismatch")
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize the resolved model to a canonical dictionary."""
         return {
             "schema_version": self.schema_version,
             "spec": self.spec.to_dict(),
@@ -102,6 +112,7 @@ def resolve_transformers_snapshot(
     tokenizer_id: str | None = None,
     tokenizer_revision: str | None = None,
 ) -> tuple[LocalArtifactManifest, tuple[str, ...]]:
+    """Scan a local snapshot directory and build a verified artifact manifest."""
     snapshot = snapshot_path.resolve(strict=True)
     if not snapshot.is_dir():
         raise ValueError("local_snapshot_not_directory")
@@ -137,11 +148,7 @@ def resolve_transformers_snapshot(
     )
     cache_root = model_root.parent
     incomplete = tuple(sorted(cache_root.rglob("*.incomplete")))
-    warnings = (
-        (f"unreferenced_incomplete_cache_entries:{len(incomplete)}",)
-        if incomplete
-        else ()
-    )
+    warnings = (f"unreferenced_incomplete_cache_entries:{len(incomplete)}",) if incomplete else ()
     return manifest, warnings
 
 
@@ -149,6 +156,7 @@ def verify_transformers_snapshot(
     snapshot_path: Path,
     manifest: LocalArtifactManifest,
 ) -> tuple[str, ...]:
+    """Re-derive a snapshot manifest and verify it matches the given manifest."""
     regenerated, warnings = resolve_transformers_snapshot(
         snapshot_path,
         model_id=manifest.model_id,
@@ -162,11 +170,13 @@ def verify_transformers_snapshot(
 
 
 def write_resolved_local_model(value: ResolvedLocalModel, path: Path) -> None:
+    """Write a resolved local model record to ``path`` as canonical JSON."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(canonical_json(value.to_dict()) + "\n", encoding="utf-8", newline="\n")
 
 
 def load_resolved_local_model(path: Path) -> ResolvedLocalModel:
+    """Load and verify a resolved local model record from ``path``."""
     try:
         payload = cast(dict[str, object], json.loads(path.read_text(encoding="utf-8")))
         if set(payload) != {"schema_version", "spec", "snapshot_path", "manifest", "warnings"}:

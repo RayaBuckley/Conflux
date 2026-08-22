@@ -82,6 +82,7 @@ class AgentDojoActionMediator:
         arguments: dict[str, object],
         executor: ExecutorPort,
     ) -> ProviderResult:
+        """Mediate a single tool call through the ITES policy pipeline."""
         profile = AnnotationProfile.ORACLE if self.defence == "ites_oracle" else AnnotationProfile.CONSERVATIVE
         annotations = pilot_annotations(profile)
         schema = annotations.operations.get(tool_name)
@@ -333,9 +334,12 @@ class _MediatedToolExecutor:
 
 @dataclass(frozen=True, slots=True)
 class PinnedAgentDojoCellExecutor:
+    """Execute AgentDojo cells through the pinned upstream pipeline."""
+
     log_directory: Path
 
     def execute(self, cell: AgentDojoCell, model: LocalModelPort, max_model_calls: int) -> AgentDojoCellResult:
+        """Run a single AgentDojo cell and return the captured result."""
         try:
             installed = importlib.metadata.version("agentdojo")
         except importlib.metadata.PackageNotFoundError:

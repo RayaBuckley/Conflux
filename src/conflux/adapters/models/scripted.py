@@ -10,6 +10,8 @@ from conflux.domain import Artifact, ProposalBatch
 
 @dataclass(slots=True)
 class ScriptedModel:
+    """Deterministic model that replays a fixed sequence of proposal batches."""
+
     batches: tuple[ProposalBatch, ...]
     repeat_last: bool = False
     calls: int = 0
@@ -21,6 +23,7 @@ class ScriptedModel:
             raise ValueError("scripted model requires at least one proposal batch")
 
     def propose(self, inputs: tuple[Artifact[Any], ...]) -> ProposalBatch:
+        """Return the next scripted proposal batch for the given inputs."""
         self.input_fingerprints.append(tuple(item.fingerprint for item in inputs))
         if self.calls >= len(self.batches):
             if not self.repeat_last:

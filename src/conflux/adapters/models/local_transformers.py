@@ -43,6 +43,8 @@ def _extract_first_json(text: str) -> dict[str, object]:
 
 
 class LocalTextGenerator(Protocol):
+    """Callable protocol for local text generation."""
+
     def __call__(
         self,
         prompt: str,
@@ -56,6 +58,8 @@ class LocalTextGenerator(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class LocalTextGeneration:
+    """Result of a local text generation call."""
+
     content: str
     prompt_tokens: int | None = None
     output_tokens: int | None = None
@@ -63,6 +67,8 @@ class LocalTextGeneration:
 
 @dataclass(slots=True)
 class TransformersLocalModel:
+    """Adapter for a locally resolved transformers model."""
+
     spec: LocalModelSpec
     generator: LocalTextGenerator | None = field(default=None, repr=False)
     clock: Callable[[], float] = field(default=time.monotonic, repr=False)
@@ -75,6 +81,7 @@ class TransformersLocalModel:
             raise ValueError("transformers_spec_required")
 
     def preflight(self) -> LocalModelPreflight:
+        """Return availability, dependency, and artifact-identity metadata."""
         dependency = self.generator is not None or find_spec("transformers") is not None
         artifact = self.generator is not None or (self.snapshot_path is not None and self.artifact_manifest is not None)
         identity = False
@@ -114,6 +121,7 @@ class TransformersLocalModel:
         )
 
     def generate(self, request: LocalModelRequest) -> LocalModelResponse:
+        """Generate structured output from the local model and validate it."""
         if self.generator is None:
             self.generator = self._load_generator()
         generator = self.generator

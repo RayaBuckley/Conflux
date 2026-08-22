@@ -23,6 +23,8 @@ from conflux.ports import (
 
 @dataclass(slots=True)
 class ScriptedPlanner:
+    """Deterministic planner that replays scripted plan and patch fixtures."""
+
     initial: Mapping[str, object]
     continuations: Mapping[str, object]
     planner_id: str = "scripted-planner"
@@ -30,6 +32,7 @@ class ScriptedPlanner:
     records: list[PlannerRecord] = field(default_factory=list)
 
     def initial_plan(self, request: PlanningRequest) -> InitialPlanResponse:
+        """Return a scripted initial plan for the given planning request."""
         payload = self._lookup(self.initial, request.request_id, request.fingerprint)
         try:
             plan = parse_plan(payload, trusted_provenance=request.provenance)
@@ -40,6 +43,7 @@ class ScriptedPlanner:
         return InitialPlanResponse(plan, record)
 
     def continue_plan(self, request: ContinuationRequest) -> ContinuationResponse:
+        """Return a scripted plan patch for the given continuation request."""
         payload = self._lookup(self.continuations, request.request_id, request.fingerprint)
         try:
             patch = parse_plan_patch(payload, trusted_provenance=request.provenance)
@@ -89,12 +93,15 @@ class ScriptedPlanner:
 
 @dataclass(slots=True)
 class ScriptedValueModel:
+    """Deterministic value model that replays scripted output artifacts."""
+
     outputs: Mapping[str, Artifact[Any]]
     planner_id: str = "scripted-value-model"
     planner_version: str = "1"
     records: list[PlannerRecord] = field(default_factory=list)
 
     def produce(self, request: ValueRequest) -> ValueResponse:
+        """Return a scripted output artifact for the given value request."""
         output = self.outputs.get(request.request_id, self.outputs.get(request.node_id))
         error = None if output is not None else "scripted_value_missing"
         record = PlannerRecord.create(
@@ -108,9 +115,7 @@ class ScriptedValueModel:
             },
             response=output.to_dict() if output is not None else {"error": error},
             parsed=output.to_dict() if output is not None else None,
-            raw_response=canonical_json(
-                output.to_dict() if output is not None else {"error": error}
-            ),
+            raw_response=canonical_json(output.to_dict() if output is not None else {"error": error}),
             error=error,
         )
         self.records.append(record)

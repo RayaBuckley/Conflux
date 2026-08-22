@@ -38,6 +38,8 @@ ParsedT = TypeVar("ParsedT", Plan, PlanPatch)
 
 @dataclass(slots=True)
 class OpenAICompatiblePlanner:
+    """Structured OpenAI-compatible adapter for initial plans and plan patches."""
+
     endpoint: str
     model: str
     catalogue: OperationCatalogue
@@ -58,15 +60,11 @@ class OpenAICompatiblePlanner:
             raise ValueError("planner endpoint must use HTTPS or loopback HTTP")
         if not self.model or not self.api_key_env:
             raise ValueError("planner model and API-key environment name are required")
-        if (
-            self.timeout_seconds <= 0
-            or self.max_retries < 0
-            or self.max_repairs < 0
-            or self.backoff_seconds < 0
-        ):
+        if self.timeout_seconds <= 0 or self.max_retries < 0 or self.max_repairs < 0 or self.backoff_seconds < 0:
             raise ValueError("invalid planner timeout, retry, or repair policy")
 
     def available(self) -> bool:
+        """Return whether the API key and HTTP transport are available."""
         if not os.environ.get(self.api_key_env):
             return False
         if self.transport is not None:
@@ -76,6 +74,7 @@ class OpenAICompatiblePlanner:
         return find_spec("httpx") is not None
 
     def initial_plan(self, request: PlanningRequest) -> InitialPlanResponse:
+        """Request an initial plan from the model for the given planning request."""
         if request.catalogue_fingerprint != self.catalogue.fingerprint:
             return InitialPlanResponse(
                 None,
@@ -96,6 +95,7 @@ class OpenAICompatiblePlanner:
         return InitialPlanResponse(parsed, record)
 
     def continue_plan(self, request: ContinuationRequest) -> ContinuationResponse:
+        """Request a plan patch from the model for the given continuation request."""
         if request.catalogue_fingerprint != self.catalogue.fingerprint:
             return ContinuationResponse(
                 None,
@@ -189,16 +189,13 @@ class OpenAICompatiblePlanner:
                             {
                                 "role": "assistant",
                                 "content": (
-                                    content
-                                    if "content" in locals() and isinstance(content, str)
-                                    else canonical_json(last_response)
+                                    content if "content" in locals() and isinstance(content, str) else canonical_json(last_response)
                                 ),
                             },
                             {
                                 "role": "system",
                                 "content": (
-                                    "The response was rejected. Return a complete replacement "
-                                    f"JSON object only. Error: {last_error}"
+                                    f"The response was rejected. Return a complete replacement JSON object only. Error: {last_error}"
                                 ),
                             },
                         )

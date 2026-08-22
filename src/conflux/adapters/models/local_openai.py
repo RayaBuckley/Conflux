@@ -30,6 +30,8 @@ class LocalModelFailure(RuntimeError):
 
 @dataclass(slots=True)
 class SelfHostedOpenAIModel:
+    """Adapter for a self-hosted OpenAI-compatible local model server."""
+
     spec: LocalModelSpec
     transport: HTTPTransport | None = field(default=None, repr=False)
     timeout_seconds: float = 60.0
@@ -43,6 +45,7 @@ class SelfHostedOpenAIModel:
             raise ValueError("local_model_timeout_invalid")
 
     def preflight(self) -> LocalModelPreflight:
+        """Return availability and network-scope metadata for this model."""
         available = self.transport is not None or find_spec("httpx") is not None
         return LocalModelPreflight(
             backend=self.spec.backend,
@@ -53,6 +56,7 @@ class SelfHostedOpenAIModel:
         )
 
     def generate(self, request: LocalModelRequest) -> LocalModelResponse:
+        """Send a structured chat-completion request and validate the response."""
         endpoint = cast(str, self.spec.endpoint).rstrip("/") + "/chat/completions"
         body: dict[str, object] = {
             "model": self.spec.model_id,
