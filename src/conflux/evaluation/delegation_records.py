@@ -19,6 +19,8 @@ from conflux.domain import (
 
 
 class DelegationEventType(StrEnum):
+    """Canonical event types in the delegation lifecycle."""
+
     ISSUED = "delegation.issued"
     USED = "delegation.used"
     DENIED = "delegation.denied"
@@ -29,6 +31,8 @@ class DelegationEventType(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class DelegationTraceRecord:
+    """Audience-projectable record of a single delegation lifecycle event."""
+
     event_type: DelegationEventType
     grant: ScopedDelegationGrant
     context: PrincipalContext
@@ -45,6 +49,7 @@ class DelegationTraceRecord:
 
     @property
     def event_class(self) -> EventClass:
+        """Classify this event as declaration, error, or outcome."""
         if self.event_type is DelegationEventType.ISSUED:
             return EventClass.DECLARATION
         if self.event_type in {DelegationEventType.DENIED, DelegationEventType.EXPIRED}:
@@ -53,13 +58,10 @@ class DelegationTraceRecord:
 
     @property
     def attribution(self) -> AttributionRecord:
+        """Conservative attribution derived from grant and consumption provenance."""
         request = self.grant.request
         influence = self.context.merge(request.issuance_provenance.context)
-        uncertainty = (
-            ("unknown_principal_context",)
-            if influence.unknown
-            else ()
-        )
+        uncertainty = ("unknown_principal_context",) if influence.unknown else ()
         evidence = [f"issuance_certificate:{self.grant.issuance_certificate_id}"]
         if self.certificate_binding is not None:
             evidence.append(f"use_certificate_binding:{self.certificate_binding}")
@@ -72,6 +74,7 @@ class DelegationTraceRecord:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the delegation trace record to a schema-compliant dictionary."""
         request = self.grant.request
         payload = {
             "grant_id": self.grant.id,
@@ -106,6 +109,7 @@ class DelegationTraceRecord:
         }
 
     def project(self, decision: AudienceVisibilityDecision) -> dict[str, object] | None:
+        """Project this record for a given audience visibility decision."""
         return project_record(self.to_dict(), decision)
 
 
@@ -113,6 +117,7 @@ def issuance_record(
     grant: ScopedDelegationGrant,
     context: PrincipalContext,
 ) -> DelegationTraceRecord:
+    """Create a delegation-issued trace record."""
     return DelegationTraceRecord(
         DelegationEventType.ISSUED,
         grant,
@@ -132,6 +137,7 @@ def consumption_record(
     *,
     sequence: int,
 ) -> DelegationTraceRecord:
+    """Create a delegation consumption, denial, expiry, or retry trace record."""
     record = consumption.record
     if consumption.idempotent_retry:
         event_type = DelegationEventType.IDEMPOTENT_RETRY
@@ -161,6 +167,7 @@ def revocation_record(
     sequence: int,
     revoked_at: str,
 ) -> DelegationTraceRecord:
+    """Create a delegation-revoked trace record, validating the snapshot."""
     if grant.request.revocation_id not in snapshot.revoked_ids:
         raise ValueError("delegation revocation is not present in the snapshot")
     return DelegationTraceRecord(

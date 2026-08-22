@@ -18,10 +18,14 @@ RESULT_SCHEMA_VERSION = "1"
 
 
 class SerializableRecord(Protocol):
+    """Protocol for records that can serialise to a dictionary."""
+
     def to_dict(self) -> dict[str, object]: ...
 
 
 class RunStatus(StrEnum):
+    """Terminal status of an evaluation run."""
+
     COMPLETED = "completed"
     INCOMPLETE = "incomplete"
     FAILED = "failed"
@@ -29,15 +33,20 @@ class RunStatus(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class UtilityOutcome:
+    """Captures whether the task completed and any utility details."""
+
     completed: bool
     details: str = ""
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the utility outcome to a dictionary."""
         return {"completed": self.completed, "details": self.details}
 
 
 @dataclass(frozen=True, slots=True)
 class RunResult:
+    """Versioned summary of a complete evaluation run with security and utility metrics."""
+
     run_id: str
     status: RunStatus
     source: dict[str, object]
@@ -61,6 +70,7 @@ class RunResult:
         trace_path: str = "trace.jsonl",
         trace_sha256: str = "",
     ) -> "RunResult":
+        """Build a run result from an ITES report and optional provenance metadata."""
         assessments: dict[str, object] = {
             item.name: {
                 "holds": item.holds,
@@ -70,15 +80,9 @@ class RunResult:
             for item in report.assessments
         }
         failed = report.provider_failed_count > 0 or any(
-            event.action is None and event.reason.startswith("model_error:")
-            for branch in report.branches
-            for event in branch.trace
+            event.action is None and event.reason.startswith("model_error:") for branch in report.branches for event in branch.trace
         )
-        status = (
-            RunStatus.FAILED
-            if failed
-            else (RunStatus.INCOMPLETE if report.incomplete else RunStatus.COMPLETED)
-        )
+        status = RunStatus.FAILED if failed else (RunStatus.INCOMPLETE if report.incomplete else RunStatus.COMPLETED)
         return cls(
             report.run_id,
             status,
@@ -104,6 +108,7 @@ class RunResult:
         )
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the run result to a schema-compliant dictionary."""
         return {
             "schema_version": self.schema_version,
             "run_id": self.run_id,
@@ -120,14 +125,18 @@ class RunResult:
 
 @dataclass(frozen=True, slots=True)
 class DeterministicClock:
+    """Reproducible timestamp generator with a fixed start and step."""
+
     start: datetime = field(default_factory=lambda: datetime(2000, 1, 1, tzinfo=UTC))
     step: timedelta = timedelta(microseconds=1)
 
     def at(self, sequence: int) -> str:
+        """Return the ISO timestamp at the given sequence offset."""
         return (self.start + self.step * sequence).isoformat().replace("+00:00", "Z")
 
 
 def action_event_type(event: TraceEvent) -> str:
+    """Map a trace event's outcome to a canonical event type string."""
     if event.outcome == ActionOutcome.BLOCKED and event.action is None:
         if "ModelOutputError" in event.reason:
             return "model.parse_failed"
@@ -203,6 +212,7 @@ def trace_records(
     report: ITESReport,
     clock: DeterministicClock = DeterministicClock(),
 ) -> tuple[dict[str, object], ...]:
+    """Convert an ITES report into a flat, causally ordered sequence of trace records."""
     records: list[dict[str, object]] = []
     sequence = 0
     last_by_branch: dict[str, str] = {}
@@ -238,22 +248,14 @@ def trace_records(
             "trace_schema_version": report.trace_schema_version,
         },
     )
-    unique_events = {
-        (event.branch_id, event.id): event
-        for branch in report.branches
-        for event in branch.trace
-    }
+    unique_events = {(event.branch_id, event.id): event for branch in report.branches for event in branch.trace}
     created: set[str] = set()
     for event in sorted(
         unique_events.values(),
         key=lambda item: (item.depth, item.branch_id, item.sequence, item.id),
     ):
         if event.branch_id not in created:
-            parent_id = (
-                last_by_branch.get(event.parent_branch_id, run_start)
-                if event.parent_branch_id
-                else run_start
-            )
+            parent_id = last_by_branch.get(event.parent_branch_id, run_start) if event.parent_branch_id else run_start
             emit(
                 "branch.created",
                 event.branch_id,
@@ -295,10 +297,7 @@ def trace_records(
             },
             (parent,),
         )
-    run_failed = any(
-        event.action is None and event.reason.startswith("model_error:")
-        for event in unique_events.values()
-    )
+    run_failed = any(event.action is None and event.reason.startswith("model_error:") for event in unique_events.values())
     emit(
         "run.failed" if run_failed else "run.completed",
         "run",
@@ -307,24 +306,20 @@ def trace_records(
             "model_calls": report.model_calls,
             "branch_count": len(report.branches),
         },
-        tuple(
-            last_by_branch[branch.branch_id]
-            for branch in sorted(report.branches, key=lambda item: item.branch_id)
-        ),
+        tuple(last_by_branch[branch.branch_id] for branch in sorted(report.branches, key=lambda item: item.branch_id)),
     )
     return tuple(records)
 
 
 def write_trace(report: ITESReport, path: Path) -> str:
-    content = "".join(
-        json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n"
-        for record in trace_records(report)
-    )
+    """Write trace records to a JSONL file and return its SHA-256 hash."""
+    content = "".join(json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n" for record in trace_records(report))
     path.write_text(content, encoding="utf-8", newline="\n")
     return sha256(content.encode("utf-8")).hexdigest()
 
 
 def write_result(result: RunResult, path: Path) -> None:
+    """Write a run result as canonical JSON to the given path."""
     path.write_text(canonical_json(result.to_dict()) + "\n", encoding="utf-8", newline="\n")
 
 
@@ -383,15 +378,14 @@ def write_plan_trace(
     path: Path,
     clock: DeterministicClock = DeterministicClock(),
 ) -> str:
-    content = "".join(
-        json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n"
-        for record in plan_trace_records(state, clock)
-    )
+    """Write planner trace records to a JSONL file and return its SHA-256 hash."""
+    content = "".join(json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n" for record in plan_trace_records(state, clock))
     path.write_text(content, encoding="utf-8", newline="\n")
     return sha256(content.encode("utf-8")).hexdigest()
 
 
 def write_plan_result(result: SerializableRecord, path: Path) -> None:
+    """Write a plan result as canonical JSON to the given path."""
     path.write_text(
         canonical_json(result.to_dict()) + "\n",
         encoding="utf-8",

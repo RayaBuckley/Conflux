@@ -13,6 +13,8 @@ ActionT = TypeVar("ActionT")
 
 @dataclass(frozen=True, slots=True)
 class Transition(Generic[StateT, ActionT]):
+    """A labelled state transition from a source to a target via an action."""
+
     source: StateT
     action: ActionT
     target: StateT
@@ -20,6 +22,8 @@ class Transition(Generic[StateT, ActionT]):
 
 
 class TransitionSystem(Protocol[StateT, ActionT]):
+    """Protocol for a finite transition system explored by the model checker."""
+
     def initial_states(self) -> tuple[StateT, ...]: ...
 
     def enabled(self, state: StateT) -> tuple[ActionT, ...]: ...
@@ -36,6 +40,8 @@ class TransitionSystem(Protocol[StateT, ActionT]):
 
 
 class SafetyProperty(Protocol[StateT, ActionT]):
+    """Protocol for a stateless safety property checked on each transition."""
+
     @property
     def name(self) -> str: ...
 
@@ -44,6 +50,8 @@ class SafetyProperty(Protocol[StateT, ActionT]):
 
 @dataclass(frozen=True, slots=True)
 class VerificationBounds:
+    """Resource limits bounding the explicit-state exploration."""
+
     max_depth: int = 8
     max_states: int = 10_000
     max_transitions: int = 50_000
@@ -55,6 +63,8 @@ class VerificationBounds:
 
 
 class VerificationVerdict(StrEnum):
+    """Outcome classification of a bounded verification run."""
+
     SAFE = "safe"
     BOUNDED_SAFE = "bounded_safe"
     UNSAFE = "unsafe"
@@ -63,17 +73,22 @@ class VerificationVerdict(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class Counterexample(Generic[StateT, ActionT]):
+    """A minimal violating transition trace for a safety property."""
+
     property_name: str
     reason: str
     transitions: tuple[Transition[StateT, ActionT], ...]
 
     @property
     def length(self) -> int:
+        """Number of transitions in the counterexample trace."""
         return len(self.transitions)
 
 
 @dataclass(frozen=True, slots=True)
 class VerificationResult(Generic[StateT, ActionT]):
+    """Full result of a bounded verification run including statistics and witnesses."""
+
     verdict: VerificationVerdict
     unique_states: int
     transitions: int
@@ -84,6 +99,7 @@ class VerificationResult(Generic[StateT, ActionT]):
     error: str | None = None
 
     def to_dict(self) -> dict[str, object]:
+        """Serialise the result to a schema-compliant dictionary."""
         return {
             "schema_version": "1",
             "verdict": self.verdict.value,
@@ -123,6 +139,7 @@ class ExplicitStateChecker:
         properties: tuple[SafetyProperty[StateT, ActionT], ...],
         bounds: VerificationBounds = VerificationBounds(),
     ) -> VerificationResult[StateT, ActionT]:
+        """Run bounded model checking, catching errors as unknown verdicts."""
         try:
             return self._verify(system, properties, bounds)
         except Exception as error:
@@ -194,10 +211,7 @@ class ExplicitStateChecker:
                     visited[target_key] = target
                     predecessor[target_key] = (source_key, transition)
                     queue.append((target, depth + 1))
-                if truncated and (
-                    transitions >= bounds.max_transitions
-                    or len(visited) >= bounds.max_states
-                ):
+                if truncated and (transitions >= bounds.max_transitions or len(visited) >= bounds.max_states):
                     break
 
         verdict = VerificationVerdict.BOUNDED_SAFE if truncated else VerificationVerdict.SAFE
