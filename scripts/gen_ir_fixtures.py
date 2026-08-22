@@ -1,4 +1,5 @@
 """Generate VerificationIR fixtures for formal verification."""
+
 from __future__ import annotations
 
 import json
@@ -63,12 +64,12 @@ def main() -> None:
 
     safe_ir = security_monitor_ir(authorised=True)
     safe_path = runs / "ir-security-monitor.json"
-    safe_path.write_text(json.dumps(safe_ir.to_dict(), indent=2) + "\n", encoding="utf-8")
+    safe_path.write_text(json.dumps(safe_ir.to_dict(), indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"Wrote safe IR to {safe_path} ({os.path.getsize(safe_path)} bytes)")
 
     unsafe_ir = security_monitor_ir(authorised=False)
     unsafe_path = runs / "ir-security-monitor-unsafe.json"
-    unsafe_path.write_text(json.dumps(unsafe_ir.to_dict(), indent=2) + "\n", encoding="utf-8")
+    unsafe_path.write_text(json.dumps(unsafe_ir.to_dict(), indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"Wrote unsafe IR to {unsafe_path} ({os.path.getsize(unsafe_path)} bytes)")
 
 

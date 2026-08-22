@@ -29,6 +29,9 @@
 | Self-hosted model output is reproducible across hardware or runtimes | Not claimed | identity and sampling are recorded, but no model-generated bundle or cross-hardware comparison is retained |
 | Cloud policy behaviour matches a provider | Not claimed | current AWS adapter is an explicit fail-closed subset |
 | The current evidence pipeline handles allow, block, and vulnerable-control cases | Bounded evidence | `output/runs/smoke/`, two scripted cases, one one-step negative-control witness |
+| Observational confidentiality holds on finite IR fixtures | Bounded evidence | IR self-composition with Z3 BMC; safe fixture bounded safe, unsafe fixture produces counterexample showing observation divergence; bounded to finite product state spaces; not a noninterference proof |
+| Dual-LLM satisfies its own property Q but violates Conflux PE | Bounded evidence | `tests/test_defence_models.py`; Dual-LLM native property (processor never executes) is SAFE; Dual-LLM PE property is UNSAFE with counterexample; ITES reference PE property is SAFE; finite IR models only |
+| ITES defective requester-only controller violates PE | Bounded evidence | `tests/test_defence_models.py`; REQUESTER_ONLY negative control is UNSAFE with PE counterexample; ITES reference is SAFE |
 
 ### Novelty qualification
 

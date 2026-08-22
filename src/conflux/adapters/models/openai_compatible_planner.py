@@ -166,6 +166,7 @@ class OpenAICompatiblePlanner:
                     },
                 },
             }
+            content: str | None = None
             try:
                 response = self._post(payload, secret)
                 body = response.json()
@@ -188,9 +189,7 @@ class OpenAICompatiblePlanner:
                         (
                             {
                                 "role": "assistant",
-                                "content": (
-                                    content if "content" in locals() and isinstance(content, str) else canonical_json(last_response)
-                                ),
+                                "content": (content if isinstance(content, str) else canonical_json(last_response)),
                             },
                             {
                                 "role": "system",

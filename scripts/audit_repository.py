@@ -74,6 +74,12 @@ DIRECTION_TASK_IDS = {
     "DIR-PDP-001",
     "DIR-GOV-001",
 }
+ADDITIONAL_TASK_IDS = {
+    "SLEDV-005",
+    "COMP-001",
+    "COMP-002",
+    "COMP-003",
+}
 APPROVED_TOP_LEVEL_DIRECTORIES = {
     ".github",
     "docs",
@@ -603,6 +609,7 @@ def check_task_registry(errors: list[str]) -> None:
     expected.update(task["id"] for task in dynamic["recommended_planning_tasks"])
     expected.update(("SEC-008", "SLEDMC-004"))
     expected.update(DIRECTION_TASK_IDS)
+    expected.update(ADDITIONAL_TASK_IDS)
     for identifier in sorted(expected - registered):
         errors.append(f"task registry missing report task {identifier}")
     for identifier in sorted(registered - expected):
@@ -931,6 +938,33 @@ def check_docstrings(errors: list[str]) -> None:
                     errors.append(f"{path.relative_to(ROOT)}:{node.lineno}: public {type(node).__name__} '{node.name}' has no docstring")
 
 
+def check_evidence_line_endings(errors: list[str]) -> None:
+    """Verify that tracked evidence files use LF line endings.
+
+    Historical ``.log`` files under ``output/validation/`` are excluded because
+    they are manually captured console transcripts, not script-generated
+    evidence.  Their CRLF endings are a ``core.autocrlf`` artefact that does not
+    affect reproducibility.
+    """
+    evidence_dirs = [
+        SMOKE,
+        NATIVE_SLED,
+        COI_EVIDENCE,
+        CEDAR_PREFLIGHT,
+        DIRECTION_EVIDENCE,
+        ROOT / "output" / "validation",
+    ]
+    for directory in evidence_dirs:
+        if not directory.is_dir():
+            continue
+        for path in sorted(directory.rglob("*")):
+            if not path.is_file() or path.suffix == ".log":
+                continue
+            raw = path.read_bytes()
+            if b"\r\n" in raw:
+                errors.append(f"CRLF line ending in evidence file: {path.relative_to(ROOT)}")
+
+
 def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
@@ -946,6 +980,7 @@ def main() -> int:
     check_cedar_preflight_evidence(errors)
     check_direction_evidence(errors)
     check_schemas(errors)
+    check_evidence_line_endings(errors)
     if not (ROOT / "SECURITY.md").is_file():
         errors.append("missing repository security policy: SECURITY.md")
     if errors:

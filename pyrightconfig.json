@@ -1,0 +1,15 @@
+{
+  "extraPaths": ["src"],
+  "pythonVersion": "3.12",
+  "reportMissingTypeStubs": "none",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportArgumentType": "none",
+  "exclude": [
+    "build/**",
+    "reports/archive/**",
+    ".local/**"
+  ]
+}

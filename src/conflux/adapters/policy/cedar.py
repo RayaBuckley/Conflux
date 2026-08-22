@@ -206,9 +206,9 @@ class CedarCliRunner:
                 schema_path = root / "schema.json"
                 policy_path = root / "policies.cedar"
                 entity_path = root / "entities.json"
-                schema_path.write_text(bundle.schema_json + "\n", encoding="utf-8")
-                policy_path.write_text(bundle.policies, encoding="utf-8")
-                entity_path.write_text(bundle.entities_json + "\n", encoding="utf-8")
+                schema_path.write_text(bundle.schema_json + "\n", encoding="utf-8", newline="\n")
+                policy_path.write_text(bundle.policies, encoding="utf-8", newline="\n")
+                entity_path.write_text(bundle.entities_json + "\n", encoding="utf-8", newline="\n")
                 validation = self._invoke(
                     (
                         str(binary),

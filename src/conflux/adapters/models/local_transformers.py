@@ -175,7 +175,7 @@ class TransformersLocalModel:
 
     def _load_generator(self) -> LocalTextGenerator:
         try:
-            from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed  # type: ignore[import-not-found,unused-ignore]
+            from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
         except ImportError as error:
             raise LocalModelFailure("dependency", "optional_dependency_unavailable:transformers") from error
         if self.snapshot_path is None or self.artifact_manifest is None:
@@ -193,10 +193,10 @@ class TransformersLocalModel:
         nf4 = self.spec.dtype == "nf4"
         if nf4:
             try:
-                from transformers import BitsAndBytesConfig as _BnBConfig  # type: ignore[import-not-found,unused-ignore]
+                from transformers import BitsAndBytesConfig as _BnBConfig
             except ImportError as error:
                 raise LocalModelFailure("dependency", "optional_dependency_unavailable:transformers") from error
-            import torch  # type: ignore[import-not-found,unused-ignore]
+            import torch
 
             quantization_config = _BnBConfig(  # type: ignore[no-untyped-call]
                 load_in_4bit=True,

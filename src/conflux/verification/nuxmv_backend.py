@@ -122,7 +122,7 @@ class WslNuXmvRunner:
         wsl_dir.mkdir(parents=True, exist_ok=True)
         smv_file = wsl_dir / "model.smv"
         try:
-            smv_file.write_text(model_path.read_text(encoding="utf-8"), encoding="utf-8")
+            smv_file.write_text(model_path.read_text(encoding="utf-8"), encoding="utf-8", newline="\n")
             linux_model = f"/tmp/{wsl_dir.name}/model.smv"
             wsl_prefix: tuple[str, ...] = ("wsl", "-d", _WSL_DISTRIBUTION, "--")
             try:

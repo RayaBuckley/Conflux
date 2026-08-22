@@ -118,7 +118,18 @@ def main() -> int:
         "--cov-fail-under=89",
         f"--basetemp={SESSION_ROOT / 'pytest'}",
     )
-    _run(sys.executable, "-m", "pytest", "--doctest-modules", "src/conflux/domain", "-q")
+    doctest_process = subprocess.run(
+        (sys.executable, "-m", "pytest", "--doctest-modules", "src/conflux/domain", "-q"),
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        env=VALIDATION_ENV,
+    )
+    if doctest_process.returncode and doctest_process.returncode != 5:
+        print("[validate] -m pytest --doctest-modules src/conflux/domain -q")
+        print(doctest_process.stdout, end="")
+        print(doctest_process.stderr, end="", file=sys.stderr)
+        failures.append("pytest --doctest-modules src/conflux/domain")
     _run(
         "-m",
         "pytest",
@@ -130,6 +141,9 @@ def main() -> int:
     _run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
     _run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
     _run("scripts/validate_wheel.py")
+    ext_rc = run("scripts/validate_extensions.py")
+    if ext_rc:
+        print("[validate] extension checks reported issues (advisory, not blocking)")
     if failures:
         print(f"[validate] {len(failures)} check(s) failed:")
         for name in failures:

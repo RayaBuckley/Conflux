@@ -58,7 +58,7 @@ def _write_protocol(path: Path, track: str, output: Path) -> None:
         "output_directory": str(output),
         "rerun_command": ["conflux", track],
     }
-    path.write_text(json.dumps(payload), encoding="utf-8")
+    path.write_text(json.dumps(payload), encoding="utf-8", newline="\n")
 
 
 def main() -> int:
@@ -86,9 +86,7 @@ def main() -> int:
             text=True,
         )
         smoke_environment = os.environ.copy()
-        dependency_path = next(
-            path for path in site.getsitepackages() if path.endswith("site-packages")
-        )
+        dependency_path = next(path for path in site.getsitepackages() if path.endswith("site-packages"))
         smoke_environment["PYTHONPATH"] = dependency_path
         doctor = subprocess.run(
             (str(command), "doctor", "--json"),
@@ -156,9 +154,7 @@ def main() -> int:
             text=True,
             env=smoke_environment,
         )
-        verification = json.loads(
-            (sled_output / "verification.json").read_text(encoding="utf-8")
-        )
+        verification = json.loads((sled_output / "verification.json").read_text(encoding="utf-8"))
         if verification["verdict"] != "safe":
             raise RuntimeError("installed SLED smoke did not exhaust the finite fixture")
 
@@ -171,14 +167,8 @@ def main() -> int:
             text=True,
             env=smoke_environment,
         )
-        delegation = json.loads(
-            (delegation_output / "delegation-verification.json").read_text(
-                encoding="utf-8"
-            )
-        )
-        if delegation["runtime_enabled"] or not all(
-            item["killed"] for item in delegation["mutants"]
-        ):
+        delegation = json.loads((delegation_output / "delegation-verification.json").read_text(encoding="utf-8"))
+        if delegation["runtime_enabled"] or not all(item["killed"] for item in delegation["mutants"]):
             raise RuntimeError("installed delegation verification gates are incomplete")
 
         native_protocol = Path(temporary) / "native-protocol.json"

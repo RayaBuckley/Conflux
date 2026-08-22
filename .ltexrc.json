@@ -1,0 +1,66 @@
+{
+  "ltex.language": "en-GB",
+  "ltex.dictionary": {
+    "en-GB": [
+      "agentdojo",
+      "authorisation",
+      "authorised",
+      "behaviour",
+      "canonicalise",
+      "cedar",
+      "checksums",
+      "combinatorial",
+      "conflux",
+      "defences",
+      "denormalised",
+      "fingerprinting",
+      "hashable",
+      "hashes",
+      "ites",
+      "laptop",
+      "mallory",
+      "markdownlint",
+      "mediator",
+      "minimisation",
+      "modelled",
+      "modelling",
+      "mypy",
+      "nuXmv",
+      "optimisation",
+      "organisational",
+      "parametrised",
+      "pdoc",
+      "preflight",
+      "principal",
+      "principals",
+      "provenance",
+      "pyright",
+      "pylance",
+      "pytest",
+      "reauthorises",
+      "reproducibility",
+      "serialisable",
+      "serialise",
+      "sled",
+      "subcommand",
+      "subcommands",
+      "untrusted",
+      "verifier"
+    ]
+  },
+  "ltex.disabledRules": {
+    "en-GB": [
+      "MORFOLOGIK_RULE_EN_US",
+      "MORFOLOGIK_RULE_EN_GB",
+      "OXFORD_SPELLING_Z_NOT_S",
+      "EN_SPLIT_WORDS_HYPHEN",
+      "ENGLISH_WORD_REPEAT_BEGINNING_RULE",
+      "COMMA_COMPOUND_SENTENCE_2",
+      "EN_A_VS_AN",
+      "AFFECT_EFFECT"
+    ]
+  },
+  "ltex.enabledRules": {
+    "en-GB": []
+  }
+}

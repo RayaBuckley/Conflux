@@ -1,0 +1,9 @@
+{
+  "name": "conflux-extension-checks",
+  "private": true,
+  "description": "Optional Node.js tooling for markdownlint and cspell checks.",
+  "devDependencies": {
+    "markdownlint-cli2": "^0.16.0",
+    "cspell": "^8.0.0"
+  }
+}

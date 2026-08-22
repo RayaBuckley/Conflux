@@ -47,6 +47,8 @@ def main() -> int:
     output.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
         [sys.executable, "-m", "pdoc", "--no-config", "conflux", "-o", str(output)],
+        capture_output=True,
+        text=True,
     )
     if result.returncode != 0:
         return result.returncode

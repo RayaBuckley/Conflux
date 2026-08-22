@@ -27,7 +27,7 @@
 | Modeled program | Inert graph of declared effects with no execution boundary; used for static analysis and verification IR abstraction | `planning.modeled_program` |
 | Cone of influence reduction | Variable-reduction technique that removes state variables irrelevant to a given safety property before model checking | `verification.reduction` |
 | Direction readiness | Pre-flight assessment of whether an experiment direction has all required evidence, manifests, and schemas in place | `experiments.direction_evidence` |
-| PARC translation | Translation of external benchmark results (e.g. AgentDojo) into the native Conflux result schema for comparison | `adapters.benchmarks` |
+| PARC translation | Mapping of external benchmark results (e.g. AgentDojo) into the native Conflux result schema for comparison | `adapters.benchmarks` |
 | Capability envelope | Declaration of a code-execution capability including its required permission, resource scope, and declared effects | `planning.code_execution` |
 | Plan patch | Structured edit (add, replace, remove) applied to a dynamic plan graph during continuation | `planning.continuation` |
 | Modeled effect | Declared read/write dependency of a planned action on named artifact bindings | `planning.modeled_program` |
@@ -36,5 +36,5 @@
 | Differential conformance | Comparison of runtime transition behaviour against the verification IR to detect divergence | `verification.interpreter` |
 | Delegation grant | Scoped, time-bound authorisation transfer from one Principal to another that cannot manufacture authority | `domain.delegation` |
 
-Use "human user" only for an explicitly human interface actor. Otherwise use
+Use "human user" only for an explicitly human interface actor. Otherwise, use
 Principal.

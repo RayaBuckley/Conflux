@@ -227,7 +227,7 @@ class _HttpxTransport:
     ) -> HTTPResponse:
         """POST JSON using httpx and return the response."""
         try:
-            import httpx  # type: ignore[import-not-found,unused-ignore]
+            import httpx
         except ImportError as error:
             raise ModelProviderError("optional_dependency_unavailable:httpx") from error
         return cast(

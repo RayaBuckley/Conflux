@@ -55,7 +55,7 @@ def test_openai_compatible_model_unavailable_fails_closed() -> None:
     else:
         original = None
     try:
-        sys.modules["httpx"] = None
+        sys.modules["httpx"] = None  # type: ignore[assignment]
         if "conflux.adapters.models.openai_compatible" in sys.modules:
             del sys.modules["conflux.adapters.models.openai_compatible"]
         from conflux.adapters.models.openai_compatible import OpenAICompatibleModel

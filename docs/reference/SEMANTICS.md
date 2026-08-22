@@ -90,7 +90,7 @@ dimension allows:
 ActionDecision.allowed == auth.allow ∧ arg_auth.allow? ∧ read.allow ∧ vis.allow ∧ consent.allow
 ```
 
-where `arg_auth` is required when present and ignored when absent. No single
+Where `arg_auth` is required when present and ignored when absent. No single
 dimension can override a denial in another.
 
 | Aspect | Location |
@@ -169,7 +169,7 @@ decrease (more Principals must each independently allow).
 
 ### SEM-010: Branch isolation (alternative siblings)
 
-In `ALTERNATIVES` mode, each proposal branches independently from the same
+In `ALTERNATIVES` mode, each proposal branches independently of the same
 parent. Sibling branches never observe each other's context:
 
 ```

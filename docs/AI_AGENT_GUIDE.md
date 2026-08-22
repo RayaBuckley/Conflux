@@ -24,7 +24,7 @@ repair the appropriate owner; do not choose whichever source enables a task.
 - Consent and model output never manufacture authority.
 - Deny unsupported delegation, unknown schemas, missing consent, policy
   errors, stale certificates, and unavailable effect boundaries.
-- Keep alternative branches isolated and exploration side-effect free.
+- Keep alternative branches isolated and exploration side effect free.
 - Keep benchmark behavior out of the domain and ITES kernel.
 - Separate implemented behavior, bounded evidence, empirical results, and
   hypotheses in every claim.

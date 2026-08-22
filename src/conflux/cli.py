@@ -374,7 +374,7 @@ def _demo(arguments: argparse.Namespace) -> int:
     )
     result_path = output / "result.json"
     write_result(result, result_path)
-    (output / "report.md").write_text(_render_result(result.to_dict()), encoding="utf-8")
+    (output / "report.md").write_text(_render_result(result.to_dict()), encoding="utf-8", newline="\n")
     _print_demo_summary(result.to_dict(), output)
     return EXIT_OK
 
@@ -422,7 +422,7 @@ def _sled(arguments: argparse.Namespace) -> int:
     output = cast(Path, arguments.output)
     output.mkdir(parents=True, exist_ok=True)
     path = output / "verification.json"
-    path.write_text(canonical_json(verification.to_dict()) + "\n", encoding="utf-8")
+    path.write_text(canonical_json(verification.to_dict()) + "\n", encoding="utf-8", newline="\n")
     _print_sled_summary(verification.to_dict())
     return EXIT_RUNTIME if verification.verdict.value == "unknown" else EXIT_OK
 

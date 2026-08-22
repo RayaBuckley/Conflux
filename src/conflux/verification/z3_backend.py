@@ -13,7 +13,7 @@ from .results import FormalVerdict, FormalVerificationResult
 def verify_with_z3(ir: VerificationIR) -> FormalVerificationResult:
     """Verify bounded safety of the IR using the optional Z3 bounded-model-checking backend."""
     try:
-        import z3  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        import z3
     except ImportError:
         return _unknown(ir, "optional_dependency_unavailable:z3")
     try:

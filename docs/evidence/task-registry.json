@@ -156,6 +156,18 @@
       "ids": ["DIR-GOV-001"],
       "status": "implemented",
       "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "docs/templates/FEATURE_SPEC.md", "docs/AI_AGENT_GUIDE.md", "scripts/audit_repository.py"]
+    },
+    {
+      "ids": ["SLEDV-005"],
+      "status": "bounded_evidence",
+      "evidence": ["src/conflux/verification/self_composition.py", "tests/test_self_composition.py", "docs/reference/SLED.md"],
+      "gap": "IR self-composition with Z3 BMC on finite fixtures; not a noninterference proof"
+    },
+    {
+      "ids": ["COMP-001", "COMP-002", "COMP-003"],
+      "status": "bounded_evidence",
+      "evidence": ["src/conflux/verification/defence_models.py", "tests/test_defence_models.py"],
+      "gap": "Finite IR models of Dual-LLM and ITES only; no CaMeL model; no implementation conformance"
     }
   ],
   "deferred_research": [

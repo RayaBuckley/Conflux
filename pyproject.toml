@@ -85,6 +85,7 @@ omit = [
 [tool.ruff]
 line-length = 140
 target-version = "py312"
+extend-exclude = ["reports/archive", "build"]
 [tool.ruff.lint]
 select = [
     "E",
@@ -94,6 +95,9 @@ select = [
 [tool.mypy]
 python_version = "3.12"
 strict = true
+[[tool.mypy.overrides]]
+module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*"]
+ignore_missing_imports = true
 [tool.setuptools]
 package-dir = { "" = "src" }
 [tool.setuptools.packages.find]

@@ -61,6 +61,7 @@ class DecisionEngine(Protocol):
         environment: EnvironmentSnapshot,
     ) -> ActionDecision:
         """Return the policy decision for *action* under *context*."""
+        ...
 
 
 @dataclass(frozen=True, slots=True)

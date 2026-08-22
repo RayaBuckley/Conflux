@@ -194,7 +194,7 @@ def load_pinned_suite(suite_id: str) -> AgentDojoSuite:
         raise RuntimeError("agentdojo_setup_failure:not_installed") from error
     if installed != PACKAGE_VERSION:
         raise RuntimeError(f"agentdojo_setup_failure:unsupported_package:{installed}")
-    from agentdojo.task_suite.load_suites import get_suite  # type: ignore[import-untyped]
+    from agentdojo.task_suite.load_suites import get_suite
 
     upstream = cast(_UpstreamSuite, get_suite(BENCHMARK_VERSION, suite_id))
     return translate_suite(upstream)

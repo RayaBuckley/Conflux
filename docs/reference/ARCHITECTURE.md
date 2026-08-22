@@ -30,8 +30,8 @@ flowchart LR
   aggregate evidence without redefining security decisions.
 
 Models return immutable proposal batches. Alternatives branch independently
-from one parent; ordered-plan steps propagate state, stop at the first denial
-or provider failure, and are never pre-authorised. Exploration is side-effect
+of one parent; ordered-plan steps propagate state, stop at the first denial
+or provider failure, and are never pre-authorised. Exploration is side effect
 free. A selected effect executes only with its exact, freshly checked decision
 certificate.
 

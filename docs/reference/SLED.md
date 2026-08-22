@@ -1,7 +1,7 @@
 # SLED Native Verification
 
 SLED explores a typed transition system breadth-first, memoises canonical
-future-relevant state, retains predecessor edges, and reports a shortest
+future-relevant state, retains predecessor edges, and reports the shortest
 discovered counterexample.
 
 | Verdict | Meaning |
@@ -88,13 +88,21 @@ transition.
 
 No execution receives a resource contrary to read policy.
 
-### Observational confidentiality (future work)
+### Observational confidentiality (bounded evidence)
 
 Executions differing only in secret information produce equivalent observations
 for unauthorised principals, modulo declared declassification. This is a
 relational property requiring comparison of execution pairs, unlike the
 safety properties above which are checked on individual traces. Authorised
 reads do not establish noninterference.
+
+Verification uses IR self-composition (Barthe, D'Argenio, and Rezk 2004):
+the verification IR is doubled into a product system with primed variable
+copies, confidentiality invariants assert `observable == observable__prime`,
+and the existing Z3 BMC backend and COI reducer verify the product without
+modification. The encoding is bounded: it produces `bounded_evidence`, not a
+proof of unbounded noninterference. See
+`src/conflux/verification/self_composition.py`.
 
 ### Robust disclosure (future work)
 

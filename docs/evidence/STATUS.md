@@ -78,9 +78,9 @@ strict mypy, wheel build, and installed `doctor`, `demo`, `plan demo`,
 defines what that result does and does not support. The matching GitHub run
 passed all four supported operating-system/Python combinations.
 
-Windows CI is included as an informational (`continue-on-error`) job;
-it will be promoted to gating once CRLF determinism for evidence
-bundles is fully resolved.
+Windows CI is now gating; CRLF determinism for evidence bundles is enforced
+via `newline="\n"` on all evidence-generating `write_text` calls and a
+`check_evidence_line_endings` audit check.
 
 Native evidence added after that baseline is independently retained under
 `output/runs/native-sled-reproduction-v1/`, linked to implementation commit
@@ -123,6 +123,18 @@ It supplies bounded native mutation evidence and readiness-only planning and
 AgentDojo matrices. Cedar readiness is separately retained under
 `output/runs/cedar-differential-preflight-v1/`; its incomplete manifest and
 `unavailable` Cedar cells are deliberate claim boundaries.
+
+- observational confidentiality is verified via IR self-composition with
+  Z3 BMC; the product IR doubles variables and rules in lockstep, adds
+  confidentiality invariants (`observable == observable__prime`), and applies
+  COI reduction; safe fixtures are bounded safe, unsafe fixtures produce
+  counterexamples showing observation divergence; this is bounded evidence,
+  not a noninterference proof;
+- comparative defence verification has IR models of the Dual-LLM baseline,
+  its native property Q (processor never executes), an ITES reference, and a
+  defective requester-only controller; the Dual-LLM model satisfies Q but
+  violates PE with a counterexample, while ITES preserves PE; these are
+  finite IR models, not implementation-conformance evidence;
 
 `docs/evidence/task-registry.json` is the machine-readable programme status. Remaining
 research includes production policy/framework integrations, delegation

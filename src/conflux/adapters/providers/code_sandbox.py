@@ -11,7 +11,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Mapping, Protocol
 
-from conflux.domain import Artifact, PrimitiveAction, Provenance, canonical_json, fingerprint
+from conflux.domain import Action, Artifact, PrimitiveAction, Provenance, canonical_json, fingerprint
 from conflux.domain import action_fingerprint as fingerprint_action
 from conflux.planning.code_execution import (
     CapabilityEnvelope,
@@ -123,7 +123,7 @@ class DockerCodeSandboxExecutor:
 
     def execute(
         self,
-        action: object,
+        action: Action,
         *,
         certificate_id: str,
         action_fingerprint: str,

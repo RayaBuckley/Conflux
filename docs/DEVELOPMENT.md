@@ -96,3 +96,20 @@ changing line-ending settings.
 The `doctor --cedar-binary` command checks the SHA-256 of the supplied binary
 against the pinned identity. If the checksum differs, download the pinned
 version or omit `--cedar-binary` to report `binary_not_supplied`.
+
+### Extension checks (advisory)
+
+The repository includes configuration files for VS Code extensions that
+suppress false positives and standardise style:
+
+- `.markdownlint.json` — markdownlint rule configuration.
+- `cspell.json` — spell-checker word list (British English, `en-GB`).
+- `.ltexrc.json` — LTeX grammar and spell-check configuration (British English).
+- `.editorconfig` — editor indentation and line-ending conventions.
+
+Run `python scripts/validate_extensions.py` to execute markdownlint, cspell,
+and LTeX checks from the command line. The script uses `npx` for the
+Node.js tools (`npm install` to set up) and the VS Code extension's bundled
+LTeX CLI. It exits 0 when all available tools pass or when no tools are
+installed. The `validate.py` entry point runs this script as a non-blocking
+advisory step.
