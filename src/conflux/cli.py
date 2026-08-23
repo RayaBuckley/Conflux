@@ -781,7 +781,7 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
     resolved = load_resolved_local_model(configuration)
     output = cast(Path, arguments.output)
     source_commit = str(arguments.source_commit or _git_head())
-    suite_path = Path("experiments/suites/planning-diagnostic-v1.yaml")
+    suite_path = Path("research/experiments/suites/planning-diagnostic-v1.yaml")
     protocol = ExperimentProtocol(
         id="planning-cpu-pilot-v1",
         track="planning",
@@ -792,7 +792,7 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
         },
         source_commit=source_commit,
         inputs={
-            "experiments/suites/planning-diagnostic-v1.yaml": _text_sha256(suite_path),
+            "research/experiments/suites/planning-diagnostic-v1.yaml": _text_sha256(suite_path),
             "local-artifact-manifest": resolved.manifest.fingerprint,
         },
         model=resolved.spec,
@@ -1049,8 +1049,8 @@ def _agentdojo_pilot_protocol(
     source_commit: str,
 ) -> ExperimentProtocol:
     """Build a pinned AgentDojo pilot protocol from a resolved local-model configuration."""
-    schemas = Path("experiments/suites/agentdojo-tool-schemas-v1.json")
-    exceptions = Path("experiments/suites/agentdojo-annotation-exceptions-v1.json")
+    schemas = Path("research/experiments/suites/agentdojo-tool-schemas-v1.json")
+    exceptions = Path("research/experiments/suites/agentdojo-annotation-exceptions-v1.json")
     return ExperimentProtocol(
         id="agentdojo-local-pilot-v2",
         track="agentdojo",

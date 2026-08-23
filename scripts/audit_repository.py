@@ -41,14 +41,14 @@ CANONICAL_DOCS = {
 }
 LEGACY = {"core", "auth", "research", "compatibility"}
 FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
-PAPER = ROOT / "publications" / "paper"
-MANUSCRIPT = ROOT / "publications" / "manuscript"
-WORKSHOP = ROOT / "publications" / "workshop"
-SMOKE = ROOT / "output" / "runs" / "smoke"
-NATIVE_SLED = ROOT / "output" / "runs" / "native-sled-reproduction-v1"
-COI_EVIDENCE = ROOT / "output" / "runs" / "sled-coi-reduction-v1"
-CEDAR_PREFLIGHT = ROOT / "output" / "runs" / "cedar-differential-preflight-v1"
-DIRECTION_EVIDENCE = ROOT / "output" / "runs" / "direction-readiness-v1"
+PAPER = ROOT / "research" / "publications" / "paper"
+MANUSCRIPT = ROOT / "research" / "publications" / "manuscript"
+WORKSHOP = ROOT / "research" / "publications" / "workshop"
+SMOKE = ROOT / "research" / "output" / "runs" / "smoke"
+NATIVE_SLED = ROOT / "research" / "output" / "runs" / "native-sled-reproduction-v1"
+COI_EVIDENCE = ROOT / "research" / "output" / "runs" / "sled-coi-reduction-v1"
+CEDAR_PREFLIGHT = ROOT / "research" / "output" / "runs" / "cedar-differential-preflight-v1"
+DIRECTION_EVIDENCE = ROOT / "research" / "output" / "runs" / "direction-readiness-v1"
 COI_EVIDENCE_ROOT_FILES = (
     "CHECKSUMS.sha256",
     "RERUN.txt",
@@ -60,7 +60,7 @@ COI_EVIDENCE_ROOT_FILES = (
 )
 TASK_REGISTRY = DOCS / "evidence" / "task-registry.json"
 EVIDENCE_SOURCES = DOCS / "evidence" / "evidence-sources.json"
-REPORTS = ROOT / "reports"
+REPORTS = ROOT / "research" / "reports"
 REPORT_ARCHIVE = REPORTS / "archive"
 REPORT_MANIFEST = REPORT_ARCHIVE / "MANIFEST.json"
 REPORT_CROSSWALK = REPORTS / "analysis" / "task-crosswalk.json"
@@ -83,12 +83,10 @@ ADDITIONAL_TASK_IDS = {
 }
 APPROVED_TOP_LEVEL_DIRECTORIES = {
     ".github",
+    ".vscode",
     "docs",
     "examples",
-    "experiments",
-    "output",
-    "publications",
-    "reports",
+    "research",
     "schemas",
     "scripts",
     "src",
@@ -178,7 +176,6 @@ def check_docs(errors: list[str]) -> None:
     current_markdown = (
         ROOT / "README.md",
         ROOT / "AGENTS.md",
-        ROOT / "WORKFLOW.md",
         ROOT / "SECURITY.md",
         *DOCS.rglob("*.md"),
         *MANUSCRIPT.glob("*.md"),
@@ -204,7 +201,6 @@ def check_docs(errors: list[str]) -> None:
 
     rationale_docs = {
         ROOT / "README.md",
-        ROOT / "WORKFLOW.md",
         ROOT / "SECURITY.md",
         DOCS / "OVERVIEW.md",
         DOCS / "DEVELOPMENT.md",
@@ -255,9 +251,9 @@ def check_reports(errors: list[str]) -> None:
     required = {
         ROOT / "schemas" / "attribution-record.schema.json",
         ROOT / "schemas" / "decision-certificate.schema.json",
-        ROOT / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "REPO_REVIEW",
-        ROOT / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "SLED_REVIEW",
-        ROOT / "reports" / "archive" / "MANIFEST.json",
+        ROOT / "research" / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "REPO_REVIEW",
+        ROOT / "research" / "reports" / "archive" / "2026-07-27-engineering-and-sled" / "SLED_REVIEW",
+        ROOT / "research" / "reports" / "archive" / "MANIFEST.json",
     }
     missing = sorted(path.relative_to(ROOT).as_posix() for path in required if not path.is_file())
     if missing:
@@ -382,7 +378,7 @@ def check_report_archive(errors: list[str]) -> None:
         hashes.setdefault(expected_hash, []).append(record)
         if package_id not in packages:
             errors.append(f"report artifact {archive_path} has unknown package {package_id}")
-        if not archive_path.startswith(f"reports/archive/{package_id}/"):
+        if not archive_path.startswith(f"research/reports/archive/{package_id}/"):
             errors.append(f"report artifact {archive_path} is outside its package")
         path = ROOT / archive_path
         if not path.is_file():
@@ -595,13 +591,16 @@ def check_task_registry(errors: list[str]) -> None:
                 registered.add(identifier)
 
     backlog = json.loads(
-        (ROOT / "reports" / "archive" / "2026-07-29-implementation-programme" / "Conflux_Codex_Implementation_Backlog.json").read_text(
+        (
+            ROOT / "research" / "reports" / "archive" / "2026-07-29-implementation-programme" / "Conflux_Codex_Implementation_Backlog.json"
+        ).read_text(
             encoding="utf-8",
         ),
     )
     dynamic = json.loads(
         (
             ROOT
+            / "research"
             / "reports"
             / "archive"
             / "2026-07-30-dynamic-planning-programme"
@@ -659,26 +658,26 @@ def check_archived_paper(errors: list[str]) -> None:
     for name, record in files.items():
         path = PAPER / str(name)
         if not path.is_file():
-            errors.append(f"archived paper file is missing: publications/paper/{name}")
+            errors.append(f"archived paper file is missing: research/publications/paper/{name}")
             continue
         if not isinstance(record, dict):
-            errors.append(f"paper archive record is invalid: publications/paper/{name}")
+            errors.append(f"paper archive record is invalid: research/publications/paper/{name}")
             continue
         mode = record.get("mode")
         expected = record.get("sha256")
         expected_blob = record.get("git_blob_oid")
         if not isinstance(mode, str) or not isinstance(expected, str) or not isinstance(expected_blob, str):
-            errors.append(f"paper archive record is incomplete: publications/paper/{name}")
+            errors.append(f"paper archive record is incomplete: research/publications/paper/{name}")
             continue
         try:
             actual = archive_digest(path, mode)
         except (UnicodeDecodeError, ValueError) as error:
-            errors.append(f"publications/paper/{name}: {error}")
+            errors.append(f"research/publications/paper/{name}: {error}")
             continue
         if actual != expected:
-            errors.append(f"archived paper file changed: publications/paper/{name}")
+            errors.append(f"archived paper file changed: research/publications/paper/{name}")
         if index_blob_oid(path) != expected_blob:
-            errors.append(f"archived paper Git object changed: publications/paper/{name}")
+            errors.append(f"archived paper Git object changed: research/publications/paper/{name}")
 
 
 def check_manuscript(errors: list[str]) -> None:
@@ -692,7 +691,7 @@ def check_manuscript(errors: list[str]) -> None:
     }
     for name in required:
         if not (MANUSCRIPT / name).is_file():
-            errors.append(f"current manuscript file is missing: publications/manuscript/{name}")
+            errors.append(f"current manuscript file is missing: research/publications/manuscript/{name}")
     if index_blob_oid(MANUSCRIPT / "conflux_fourth_year_2026.pdf") is not None:
         errors.append("generated current-manuscript PDF must not be tracked in git")
 
@@ -709,7 +708,7 @@ def check_workshop(errors: list[str]) -> None:
     }
     for name in required:
         if not (WORKSHOP / name).is_file():
-            errors.append(f"workshop paper file is missing: publications/workshop/{name}")
+            errors.append(f"workshop paper file is missing: research/publications/workshop/{name}")
     if index_blob_oid(WORKSHOP / "conflux_workshop.pdf") is not None:
         errors.append("generated workshop PDF must not be tracked in git")
 
@@ -736,7 +735,7 @@ def check_smoke_evidence(errors: list[str]) -> None:
             continue
         actual = hashlib.sha256(canonical_text_bytes(path)).hexdigest()
         if actual != expected:
-            errors.append(f"smoke evidence checksum changed: output/runs/smoke/{name}")
+            errors.append(f"smoke evidence checksum changed: research/output/runs/smoke/{name}")
 
 
 def check_native_sled_evidence(errors: list[str]) -> None:
@@ -961,7 +960,7 @@ def check_docstrings(errors: list[str]) -> None:
 def check_evidence_line_endings(errors: list[str]) -> None:
     """Verify that tracked evidence files use LF line endings.
 
-    Historical ``.log`` files under ``output/validation/`` are excluded because
+    Historical ``.log`` files under ``research/output/validation/`` are excluded because
     they are manually captured console transcripts, not script-generated
     evidence.  Their CRLF endings are a ``core.autocrlf`` artefact that does not
     affect reproducibility.
@@ -972,7 +971,7 @@ def check_evidence_line_endings(errors: list[str]) -> None:
         COI_EVIDENCE,
         CEDAR_PREFLIGHT,
         DIRECTION_EVIDENCE,
-        ROOT / "output" / "validation",
+        ROOT / "research" / "output" / "validation",
     ]
     for directory in evidence_dirs:
         if not directory.is_dir():

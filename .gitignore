@@ -30,6 +30,8 @@ htmlcov/
 .idea/
 .vscode/
 !.vscode/settings.json
+!.vscode/pyrightconfig.json
+!.vscode/ltexrc.json
 *.swp
 *.swo
 .DS_Store
@@ -42,32 +44,32 @@ package-lock.json
 # Local experiment output
 outputs/
 results/
-output/runs/*
-!output/runs/smoke/
-!output/runs/smoke/**
-!output/runs/native-sled-reproduction-v1/
-!output/runs/native-sled-reproduction-v1/**
-!output/runs/sled-coi-reduction-v1/
-!output/runs/sled-coi-reduction-v1/**
-!output/runs/cedar-differential-preflight-v1/
-!output/runs/cedar-differential-preflight-v1/**
-!output/runs/direction-readiness-v1/
-!output/runs/direction-readiness-v1/**
-!output/runs/agentdojo-1b5-nf4-v1/
-!output/runs/agentdojo-1b5-nf4-v1/**
-!output/runs/planning-pilot-1b5-v1/
-!output/runs/planning-pilot-1b5-v1/**
+research/output/runs/*
+!research/output/runs/smoke/
+!research/output/runs/smoke/**
+!research/output/runs/native-sled-reproduction-v1/
+!research/output/runs/native-sled-reproduction-v1/**
+!research/output/runs/sled-coi-reduction-v1/
+!research/output/runs/sled-coi-reduction-v1/**
+!research/output/runs/cedar-differential-preflight-v1/
+!research/output/runs/cedar-differential-preflight-v1/**
+!research/output/runs/direction-readiness-v1/
+!research/output/runs/direction-readiness-v1/**
+!research/output/runs/agentdojo-1b5-nf4-v1/
+!research/output/runs/agentdojo-1b5-nf4-v1/**
+!research/output/runs/planning-pilot-1b5-v1/
+!research/output/runs/planning-pilot-1b5-v1/**
 data/
 *.jsonl
-!output/runs/smoke/*.jsonl
-!output/runs/native-sled-reproduction-v1/*.jsonl
-!output/runs/sled-coi-reduction-v1/*.jsonl
-!output/runs/planning-pilot-1b5-v1/*.jsonl
+!research/output/runs/smoke/*.jsonl
+!research/output/runs/native-sled-reproduction-v1/*.jsonl
+!research/output/runs/sled-coi-reduction-v1/*.jsonl
+!research/output/runs/planning-pilot-1b5-v1/*.jsonl
 dist/
 build/
 
 # Experiment definitions are tracked; local run output is not.
-experiments/local-runs/
+research/experiments/local-runs/
 
 # LaTeX temporary/build files (the final PDF remains tracked)
 *.aux

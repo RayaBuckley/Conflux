@@ -31,15 +31,15 @@ flowchart LR
 |---|---|---|
 | Native SLED reproduction | `bounded_evidence` | One deterministic finite run over three paired fixtures and five negative controls |
 | Verification COI reduction | `bounded_evidence` | Two finite IR fixtures have matching reference verdicts, measurable reduction, and one lifted unsafe witness; optional formal binaries were unavailable |
-| AgentDojo comparison | `bounded_evidence` | Pinned translation, six-cell conservative/oracle runner, argument mediation, and fake-backed conformance tests; no model result; experiment plan in [RESULTS_AND_EXPERIMENT_PLAN.md](../../reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
-| Four-mode planning | `bounded_evidence` | Eight scenarios, 32-cell runner, inert modeled-program validation, and offline tests; no model result; experiment plan in [RESULTS_AND_EXPERIMENT_PLAN.md](../../reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
+| AgentDojo comparison | `bounded_evidence` | Pinned translation, six-cell conservative/oracle runner, argument mediation, and fake-backed conformance tests; no model result; experiment plan in [RESULTS_AND_EXPERIMENT_PLAN.md](../../research/reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
+| Four-mode planning | `bounded_evidence` | Eight scenarios, 32-cell runner, inert modeled-program validation, and offline tests; no model result; experiment plan in [RESULTS_AND_EXPERIMENT_PLAN.md](../../research/reports/analysis/RESULTS_AND_EXPERIMENT_PLAN.md) |
 | Dual-backend laptop planning smoke | `evaluation_ready` | Fixed two-scenario, four-mode, two-runtime 16-cell protocol and fake-backed runner; no model-generated bundle |
 | Scoped delegation model | `implemented` | Exact one-use grants, lifecycle evidence, atomic consumption, and seven killed mutants; operational ITES consumption remains denied |
 | Cedar differential | `evaluation_ready` | Strict corpus, PARC translation, oracle decisions, and binary preflight; Cedar remains unavailable and parity is not evidenced |
 | Direction security mutants | `bounded_evidence` | Canonical argument/disclosure/attribution and delegation models exhaust safely; all seeded defects have shortest native witnesses |
 
 The retained native bundle is
-[`output/runs/native-sled-reproduction-v1/`](../../output/runs/native-sled-reproduction-v1/).
+[`research/output/runs/native-sled-reproduction-v1/`](../../research/output/runs/native-sled-reproduction-v1/).
 It detects all five defective monitors with one-step witnesses and records 60
 transitions across the paired evaluation. The archived approximately 1.5
 million-trace statement is retained as historical input but marked
@@ -50,7 +50,7 @@ These numbers support only the recorded fixtures, properties, implementation
 commit, and bounds. They are not deployment-security estimates.
 
 The retained COI bundle is
-[`output/runs/sled-coi-reduction-v1/`](../../output/runs/sled-coi-reduction-v1/). It compares
+[`research/output/runs/sled-coi-reduction-v1/`](../../research/output/runs/sled-coi-reduction-v1/). It compares
 original and reduced models under the independent reference interpreter. An
 unavailable optional solver is recorded as unavailable and contributes no
 equivalence evidence.
@@ -92,7 +92,7 @@ never downloads weights or contacts a server.
 Without `--execute-local`, AgentDojo and planning commands validate the
 protocol and print or write the complete matrix, bounds, and adapter preflight.
 The retained readiness package is
-[`output/runs/direction-readiness-v1/`](../../output/runs/direction-readiness-v1/). Its
+[`research/output/runs/direction-readiness-v1/`](../../research/output/runs/direction-readiness-v1/). Its
 `unavailable` cells are readiness evidence, not empirical results.
 
 ## Track semantics
@@ -136,7 +136,7 @@ The Cedar preflight validates the pinned bundle and differential corpus,
 translates pointwise PARC requests, computes the deterministic in-memory
 oracle result, and checks a supplied binary's bytes against the configured
 identity. It never invokes Cedar. The retained
-[`output/runs/cedar-differential-preflight-v1`](../../output/runs/cedar-differential-preflight-v1/)
+[`research/output/runs/cedar-differential-preflight-v1`](../../research/output/runs/cedar-differential-preflight-v1/)
 bundle therefore establishes evaluation readiness only.
 
 AgentDojo fixes benign/attacked inputs across no defence, conservative ITES,

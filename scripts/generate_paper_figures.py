@@ -1,7 +1,7 @@
 """Generate TikZ/pgfplots figures and tables for the workshop paper from evidence JSON.
 
-Reads versioned result JSON from ``output/runs/`` and emits ``.tex`` files into
-``publications/workshop/generated/``.  No hand-entered numbers; each file carries
+Reads versioned result JSON from ``research/output/runs/`` and emits ``.tex`` files into
+``research/publications/workshop/generated/``.  No hand-entered numbers; each file carries
 a header comment with the source path and SHA-256 of the input data.
 
 Usage::
@@ -20,9 +20,9 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNS = ROOT / "output" / "runs"
-OUT_FIG = ROOT / "publications" / "workshop" / "generated" / "figures"
-OUT_TBL = ROOT / "publications" / "workshop" / "generated" / "tables"
+RUNS = ROOT / "research" / "output" / "runs"
+OUT_FIG = ROOT / "research" / "publications" / "workshop" / "generated" / "figures"
+OUT_TBL = ROOT / "research" / "publications" / "workshop" / "generated" / "tables"
 
 
 # ---------------------------------------------------------------------------

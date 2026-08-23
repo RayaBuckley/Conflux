@@ -25,10 +25,10 @@ pytestmark = pytest.mark.integration
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO = ROOT / "examples" / "basic.yaml"
 AGENTDOJO_FIXTURE = ROOT / "tests" / "fixtures" / "agentdojo" / "v0.1.35" / "workspace-user_task_17-injection_task_1.json"
-AGENTDOJO_MANIFEST = ROOT / "experiments" / "manifests" / "agentdojo-smoke.yaml"
-LAPTOP_SMOKE_PLAN = ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
-CEDAR_BUNDLE = ROOT / "experiments/manifests/cedar-policy-bundle-v1.json"
-CEDAR_CORPUS = ROOT / "experiments/suites/cedar-differential-v1.json"
+AGENTDOJO_MANIFEST = ROOT / "research" / "experiments" / "manifests" / "agentdojo-smoke.yaml"
+LAPTOP_SMOKE_PLAN = ROOT / "research/experiments/manifests/planning-laptop-smoke-v1.json"
+CEDAR_BUNDLE = ROOT / "research/experiments/manifests/cedar-policy-bundle-v1.json"
+CEDAR_CORPUS = ROOT / "research/experiments/suites/cedar-differential-v1.json"
 
 
 def _write_protocol(path: Path, track: str, *, model: bool) -> None:
@@ -145,7 +145,7 @@ def test_demo_retains_manifest_and_reports_an_all_blocked_scenario(
                 "--scenario",
                 str(blocked_scenario),
                 "--manifest",
-                str(ROOT / "experiments/manifests/m3-smoke.yaml"),
+                str(ROOT / "research/experiments/manifests/m3-smoke.yaml"),
                 "--output",
                 str(output),
             ],

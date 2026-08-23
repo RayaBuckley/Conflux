@@ -1,6 +1,6 @@
 # Report-derived Change Catalogue
 
-The immutable `reports/` directory is research input. This page records what
+The immutable `research/reports/` directory is research input. This page records what
 the repository has accepted, implemented, or deferred.
 
 ## Implemented in the canonical migration
@@ -17,7 +17,7 @@ the repository has accepted, implemented, or deferred.
 | ARCH-002 | Restricted direct-policy/kernel conformance | table-driven semantic corpus |
 | EXP-003 (semantic layer) | Executable defective monitors | six one-step SLED counterexamples |
 | BASE-001, BASE-002, PAPER-001 | Baseline, archive integrity, and current manuscript | retained logs, hashes, and manuscript CI |
-| EXP-001..EXP-004 | Manifests, separated suites, negative controls, and current-code smoke | strict manifest tests, six scenarios, five controls, `output/runs/smoke/` |
+| EXP-001..EXP-004 | Manifests, separated suites, negative controls, and current-code smoke | strict manifest tests, six scenarios, five controls, `research/output/runs/smoke/` |
 | SLEDMC-001..SLEDMC-003 | Canonical-state checking and trace/state comparison | checker and deterministic comparison tests |
 | SLEDV-001..SLEDV-003 | Serializable IR, bounded backend, and runtime conformance | verification schemas and differential tests |
 | PLAN-001..PLAN-003 | Typed plans, outcome validation, authority-minimising selection | planning and optimisation tests |
@@ -44,12 +44,12 @@ the repository has accepted, implemented, or deferred.
 
 ## Foundational literature integration (partial/deferred)
 
-Source: `reports/analysis/2026-08-13-foundational-security-literature.md`.
+Source: `research/reports/analysis/2026-08-13-foundational-security-literature.md`.
 
 | Item | Status | Notes |
 |---|---|---|
 | Classical IFC/integrity lineage integrated into documentation | Implemented | Glossary terms, ADR 012, RELATED_WORK, RESEARCH_OVERVIEW, SECURITY_MODEL, ARCHITECTURE, SLED property hierarchy, EVALUATION confidentiality hierarchy, CLAIMS novelty qualification, STATUS, PROJECT_ANALYSIS |
-| Priority A bibliography entries | Partial | Added to publications/manuscript/REFERENCES.md as "unverified"; primary-source checking deferred |
+| Priority A bibliography entries | Partial | Added to research/publications/manuscript/REFERENCES.md as "unverified"; primary-source checking deferred |
 | Literature matrix | Deferred | Classical integrity/IFC stream with structured comparison fields |
 | Novelty audit | Deferred | Search repository for claims made unsafe by classical precedent |
 | Manuscript migration | Deferred | Report §31 proposes manuscript structural changes; requires operator gate after primary-source reading |

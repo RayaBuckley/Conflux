@@ -1,5 +1,6 @@
-# Feature Specification 012: Evidence-first Evaluation
+# Specification 017: Evidence-first Evaluation
 
+Type: specification
 Status: accepted for implementation on `main`
 
 ## Goal and success criteria
@@ -14,7 +15,7 @@ unavailable outcome rather than an inferred result.
 ## Authority and affected boundaries
 
 This specification is the maintained successor to the immutable report in
-`reports/archive/2026-07-31-evidence-first-evaluation/`. It replaces that
+`research/reports/archive/2026-07-31-evidence-first-evaluation/`. It replaces that
 report's hosted, credentialed endpoint assumption with self-hosted models and
 replaces executable generated code with a serialisable modeled-program IR.
 

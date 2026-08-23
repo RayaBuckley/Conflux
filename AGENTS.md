@@ -26,9 +26,9 @@ current Principal Context and provenance, not static prompt trust labels.
 - `src/conflux/verification`: serialisable formal subset and optional backends.
 - `tests`: offline unit, security, integration, and reproducibility tests.
 - `docs`: architecture, contracts, decisions, status, and workflows.
-- `publications/manuscript`: current LaTeX paper and evidence-controlled generated inputs.
-- `reports/analysis`: current synthesis of immutable historical reports.
-- `reports/archive` and `publications/paper`: integrity-protected historical evidence.
+- `research/publications/manuscript`: current LaTeX paper and evidence-controlled generated inputs.
+- `research/reports/analysis`: current synthesis of immutable historical reports.
+- `research/reports/archive` and `research/publications/paper`: integrity-protected historical evidence.
 
 ## Non-negotiable invariants
 
@@ -41,11 +41,10 @@ current Principal Context and provenance, not static prompt trust labels.
 
 ## Workflow and conventions
 
-See [WORKFLOW.md](WORKFLOW.md) for the change workflow, review
-checklist, and commit message convention. See
-[docs/AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md) for the AI-agent
-collaboration contract, trust order, documentation routing, and stop
-conditions.
+See [docs/AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md) for the change
+workflow, review checklist, and commit message convention. For setup
+and testing instructions, see [Development](docs/DEVELOPMENT.md) and the
+[quick start](README.md#run-the-offline-system).
 
 ## Validation tooling
 
@@ -63,7 +62,7 @@ before committing.  The following checkers are included:
   warnings (not errors) for supplemental IDE feedback only.
 - **pytest** — full test suite with branch coverage (threshold: 89%).
 - **yamllint** — YAML validation (`.yamllint.yml`).
-- **vulture** — dead-code detection (`vulture-whitelist.py`).
+- **vulture** — dead-code detection (`scripts/vulture_whitelist.py`).
 - **pip-audit** — dependency vulnerability scanning (informational).
 - **markdownlint-cli2** and **cspell** — via `scripts/validate_extensions.py`.
 - **Schema validation** — 37 JSON schemas validated by
@@ -81,5 +80,5 @@ python -m ruff check --fix .              # auto-fix lint
 python -m mypy . --no-error-summary       # type check
 python -m pytest tests -x -q              # run tests
 python -m yamllint -c .yamllint.yml .     # YAML lint
-python -m vulture src/conflux vulture-whitelist.py --min-confidence 60  # dead code
+python -m vulture src/conflux scripts/vulture_whitelist.py --min-confidence 60  # dead code
 ```

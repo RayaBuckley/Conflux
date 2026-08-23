@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-08-16
-- Source: `reports/analysis/2026-08-13-foundational-security-literature.md`
+- Source: `research/reports/analysis/2026-08-13-foundational-security-literature.md`
 
 ## Decision
 
@@ -35,8 +35,8 @@ Conflux concepts, without changing implementation semantics.
   provenance-based restriction, or source-sensitive context must be
   qualified against the classical IFC and integrity literature before
   assertion. See the [foundational security literature
-  analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
-  and the [claim ledger](../evidence/CLAIMS.md).
+   analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md)
+   and the [claim ledger](../evidence/CLAIMS.md).
 
 - SLED-V properties should distinguish access safety from
   observational confidentiality and relational noninterference

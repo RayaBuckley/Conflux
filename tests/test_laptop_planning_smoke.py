@@ -24,7 +24,7 @@ from scripts.prepare_laptop_smoke import main as prepare_laptop_smoke
 pytestmark = pytest.mark.integration
 
 ROOT = Path(__file__).resolve().parents[1]
-PLAN_PATH = ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"
+PLAN_PATH = ROOT / "research/experiments/manifests/planning-laptop-smoke-v1.json"
 
 
 def _protocols() -> dict[str, ExperimentProtocol]:
@@ -83,7 +83,7 @@ def _protocols() -> dict[str, ExperimentProtocol]:
             repetitions=plan.repetitions,
             bounds=dict(plan.bounds),
             environment={"execution": "modeled"},
-            output_directory=f"output/runs/{backend}",
+            output_directory=f"research/output/runs/{backend}",
             rerun_command=("conflux", "plan", "compare", "--execute-local"),
         )
         for backend, spec in specifications.items()

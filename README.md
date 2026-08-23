@@ -19,11 +19,11 @@ CLI. It is pre-1.0 research software, not a production security product.
 | `docs/` | Architecture, specifications, evidence, and research documentation |
 | `scripts/` | Validation, evidence-generation, and setup scripts |
 | `schemas/` | Versioned JSON schemas for all structured output |
-| `experiments/` | Experiment manifests, suites, baselines, and pinned lock files |
+| `research/experiments/` | Experiment manifests, suites, baselines, and pinned lock files |
 | `examples/` | Minimal runnable examples |
-| `output/` | Generated run output and CI validation artifacts (curated fixtures tracked) |
-| `publications/` | Current manuscript (`manuscript/`) and archived previous paper (`paper/`) |
-| `reports/` | Historical report archive (`archive/`) and current analysis (`analysis/`) |
+| `research/output/` | Generated run output and CI validation artifacts (curated fixtures tracked) |
+| `research/publications/` | Current manuscript (`manuscript/`) and archived previous paper (`paper/`) |
+| `research/reports/` | Historical report archive (`archive/`) and current analysis (`analysis/`) |
 | `.github/` | CI workflows |
 
 See also [AGENTS.md](AGENTS.md) for the AI-agent repository guide and
@@ -63,14 +63,14 @@ Then run:
 
 ```sh
 conflux doctor
-conflux demo --scenario examples/basic.yaml --output output/runs/demo
-conflux plan demo --output output/runs/plan-demo
-conflux sled run --suite examples/basic.yaml --output output/runs/sled
-conflux report output/runs/demo/result.json
+conflux demo --scenario examples/basic.yaml --output research/output/runs/demo
+conflux plan demo --output research/output/runs/plan-demo
+conflux sled run --suite examples/basic.yaml --output research/output/runs/sled
+conflux report research/output/runs/demo/result.json
 ```
 
 The commands write schema-checked JSON and human-readable evidence beneath
-`output/runs/`, which is ignored except for curated fixtures. A securely blocked
+`research/output/runs/`, which is ignored except for curated fixtures. A securely blocked
 proposal is a successful security outcome. Optional unavailable backends fail
 explicitly instead of weakening the offline path.
 
@@ -81,12 +81,12 @@ also run `.\scripts\validate.ps1`.
 
 - [Plain-language overview](docs/OVERVIEW.md)
 - [Documentation by task](docs/README.md)
-- [Workflow](WORKFLOW.md)
+- [Workflow](docs/AI_AGENT_GUIDE.md)
 - [AI-agent collaboration contract](docs/AI_AGENT_GUIDE.md)
 - [Security model](docs/reference/SECURITY_MODEL.md)
 - [Current capabilities and limitations](docs/evidence/STATUS.md)
-- [Current fourth-year manuscript](publications/manuscript/README.md)
-- [Historical report sources and analysis](reports/README.md)
+- [Current fourth-year manuscript](research/publications/manuscript/README.md)
+- [Historical report sources and analysis](research/reports/README.md)
 
-The previous paper under `publications/paper/` and the original reports are integrity-
+The previous paper under `research/publications/paper/` and the original reports are integrity-
 protected historical evidence. They do not define current behavior.

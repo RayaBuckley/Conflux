@@ -20,8 +20,8 @@ from conflux.experiments import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLE = ROOT / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
-CORPUS = ROOT / "experiments" / "suites" / "cedar-differential-v1.json"
+BUNDLE = ROOT / "research" / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
+CORPUS = ROOT / "research" / "experiments" / "suites" / "cedar-differential-v1.json"
 
 pytestmark = pytest.mark.adapter
 

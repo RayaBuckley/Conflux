@@ -46,7 +46,7 @@ def _protocol() -> ExperimentProtocol:
         repetitions=1,
         bounds={"max_model_calls": 4, "max_steps": 4},
         environment={"kind": "modeled"},
-        output_directory="output/runs/planning-local-v1",
+        output_directory="research/output/runs/planning-local-v1",
         rerun_command=("conflux", "plan", "compare", "--execute-local"),
     )
 
@@ -89,7 +89,7 @@ def _actions_for(user_prompt: str) -> list[dict[str, object]]:
 
 
 def test_suite_has_exactly_eight_distinct_diagnostics() -> None:
-    scenarios = load_planning_diagnostic_suite(ROOT / "experiments" / "suites" / "planning-diagnostic-v1.yaml")
+    scenarios = load_planning_diagnostic_suite(ROOT / "research" / "experiments" / "suites" / "planning-diagnostic-v1.yaml")
     assert len(scenarios) == 8
     assert len({scenario.id for scenario in scenarios}) == 8
     assert all(scenario.distinguishes for scenario in scenarios)

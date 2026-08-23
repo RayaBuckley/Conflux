@@ -10,6 +10,6 @@
 *.yml text eol=lf
 *.sh text eol=lf
 *.txt text eol=lf
-reports/** -text
-output/runs/** text eol=lf
-output/validation/** text eol=lf
+research/reports/** -text
+research/output/runs/** text eol=lf
+research/output/validation/** text eol=lf

@@ -30,7 +30,7 @@ def _manifest(*, model: dict[str, object] | None = None) -> ExperimentManifest:
         policy={"adapter": "in-memory"},
         seed=41,
         machine={"execution": "offline"},
-        output_directory="output/runs/resume",
+        output_directory="research/output/runs/resume",
         rerun_command=("python", "scripts/cluster_jobs.py"),
     )
 

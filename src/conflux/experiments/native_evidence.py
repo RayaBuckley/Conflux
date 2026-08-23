@@ -115,10 +115,7 @@ def verify_native_sled_checksums(directory: Path) -> tuple[str, ...]:
 
 
 def _protocol(source_commit: str, root: Path) -> ExperimentProtocol:
-    inputs = {
-        path.relative_to(root).as_posix(): _file_sha256(path)
-        for path in _input_paths(root)
-    }
+    inputs = {path.relative_to(root).as_posix(): _file_sha256(path) for path in _input_paths(root)}
     rerun = (
         "python",
         "scripts/generate_native_sled_evidence.py",
@@ -154,13 +151,12 @@ def _protocol(source_commit: str, root: Path) -> ExperimentProtocol:
 
 def _input_paths(root: Path) -> tuple[Path, ...]:
     fixtures = tuple(
-        sorted((root / "experiments" / "suites" / suite).glob("*.yaml"))
-        for suite in ("legacy-reproduction", "canonical")
+        sorted((root / "research" / "experiments" / "suites" / suite).glob("*.yaml")) for suite in ("legacy-reproduction", "canonical")
     )
     return (
         *fixtures[0],
         *fixtures[1],
-        root / "experiments" / "baselines" / "sled-historical-v1.json",
+        root / "research" / "experiments" / "baselines" / "sled-historical-v1.json",
     )
 
 

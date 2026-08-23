@@ -85,8 +85,8 @@ def test_missing_unknown_and_unreviewed_selector_arguments_deny() -> None:
 
 
 def test_reviewed_annotations_match_checked_experiment_inputs() -> None:
-    schemas = json.loads((ROOT / "experiments/suites/agentdojo-tool-schemas-v1.json").read_text(encoding="utf-8"))
-    exceptions = json.loads((ROOT / "experiments/suites/agentdojo-annotation-exceptions-v1.json").read_text(encoding="utf-8"))
+    schemas = json.loads((ROOT / "research/experiments/suites/agentdojo-tool-schemas-v1.json").read_text(encoding="utf-8"))
+    exceptions = json.loads((ROOT / "research/experiments/suites/agentdojo-annotation-exceptions-v1.json").read_text(encoding="utf-8"))
     annotations = pilot_annotations(AnnotationProfile.CONSERVATIVE)
     assert schemas["operations"] == {
         name: {

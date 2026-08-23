@@ -88,7 +88,7 @@ omit = [
 [tool.ruff]
 line-length = 140
 target-version = "py312"
-extend-exclude = ["reports/archive", "build", ".local"]
+extend-exclude = ["research/reports/archive", "build", ".local"]
 
 [tool.ruff.lint]
 select = [
@@ -215,11 +215,11 @@ ignore = [
 "src/conflux/verification/nuxmv_backend.py" = ["S603", "S607", "S108"]
 "src/conflux/adapters/providers/code_sandbox.py" = ["S603", "S108"]
 "src/conflux/adapters/policy/cedar.py" = ["S603"]
-"vulture-whitelist.py" = ["B018", "F821"]
+"scripts/vulture_whitelist.py" = ["B018", "F821"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-exclude = ["build/", "vulture-whitelist\\.py", "reports/archive/"]
+exclude = ["build/", "scripts/vulture_whitelist\\.py", "research/reports/archive/"]
 [[tool.mypy.overrides]]
 module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*"]
 ignore_missing_imports = true
@@ -229,7 +229,7 @@ package-dir = { "" = "src" }
 where = ["src"]
 [tool.setuptools.data-files]
 "share/conflux/schemas" = ["schemas/*.json"]
-"share/conflux/experiments" = ["experiments/suites/planning-diagnostic-v1.yaml"]
-"share/conflux/experiments/baselines" = ["experiments/baselines/sled-historical-v1.json"]
-"share/conflux/experiments/suites/canonical" = ["experiments/suites/canonical/*.yaml"]
-"share/conflux/experiments/suites/legacy-reproduction" = ["experiments/suites/legacy-reproduction/*.yaml"]
+"share/conflux/experiments" = ["research/experiments/suites/planning-diagnostic-v1.yaml"]
+"share/conflux/experiments/baselines" = ["research/experiments/baselines/sled-historical-v1.json"]
+"share/conflux/experiments/suites/canonical" = ["research/experiments/suites/canonical/*.yaml"]
+"share/conflux/experiments/suites/legacy-reproduction" = ["research/experiments/suites/legacy-reproduction/*.yaml"]

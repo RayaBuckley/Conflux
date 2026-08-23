@@ -1,5 +1,6 @@
-# Feature Specification 011: CI and Knowledge-base Consolidation
+# Specification 016: CI and Knowledge-base Consolidation
 
+Type: specification
 Status: accepted for implementation on `main`
 
 ## Goal and success criteria
@@ -43,17 +44,17 @@ The paper manifest records, per file, a checksum mode, SHA-256 digest, and Git
 blob identity. UTF-8 text uses LF-canonical content so CRLF and LF checkouts are
 equivalent; binary content uses exact bytes. An index-object change, semantic
 text edit, binary edit, missing file, or unsupported mode fails validation.
-The files under `publications/paper/` remain unmodified.
+The files under `research/publications/paper/` remain unmodified.
 
 The 18 original report artefacts move into five dated packages under
-`reports/archive/`. Their repository blobs must not change. The report manifest
+`research/reports/archive/`. Their repository blobs must not change. The report manifest
 records the original and archive path, package, media type, repository-blob
 size and SHA-256, Git blob ID, role, duplicate relationship, limitations, and
 supersession links. Original and archive paths are unique; supersession links
 resolve without cycles; known duplicate files remain separately preserved and
 declared.
 
-Raw task IDs are source-local. `reports/analysis/task-crosswalk.json` assigns a
+Raw task IDs are source-local. `research/reports/analysis/task-crosswalk.json` assigns a
 source-qualified ID to every report task and points to the canonical registry
 or an explicit explanatory disposition. It does not become another status
 registry.
@@ -66,12 +67,12 @@ contract. The documentation hub routes readers by goal and records ownership.
 Core explanatory documents include a compact rationale section and link to
 ADRs for history instead of repeating it.
 
-`reports/analysis/PROJECT_ANALYSIS.md` is the sole cohesive interpretation of
+`research/reports/analysis/PROJECT_ANALYSIS.md` is the sole cohesive interpretation of
 the archived reports. `AI_CONTEXT.md` supplies only navigation, trust order,
 invariants, and refresh instructions. Normative behavior stays in code,
 schemas, specifications, and ADRs.
 
-The canonical current paper remains the LaTeX source under `publications/manuscript/`.
+The canonical current paper remains the LaTeX source under `research/publications/manuscript/`.
 Implementation statements must link to repository evidence; numerical results
 are filled only from retained result or validation artefacts. Live-model,
 AgentDojo, solver-binary, container, and cluster results remain explicitly

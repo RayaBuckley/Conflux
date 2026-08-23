@@ -8,9 +8,9 @@ download or invoke Cedar.
 
 ```text
 conflux policy cedar preflight \
-  --bundle experiments/manifests/cedar-policy-bundle-v1.json \
-  --corpus experiments/suites/cedar-differential-v1.json \
-  --output output/runs/cedar-preflight
+  --bundle research/experiments/manifests/cedar-policy-bundle-v1.json \
+  --corpus research/experiments/suites/cedar-differential-v1.json \
+  --output research/output/runs/cedar-preflight
 ```
 
 This validates the configured version, commit, checksum shape, supported

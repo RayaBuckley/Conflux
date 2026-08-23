@@ -34,8 +34,8 @@ paper draws content from both but is a new, independent document.
 ## Evidence rules
 
 Paper claims must match tested implementation behaviour. Use the
-[claim ledger](../../docs/evidence/CLAIMS.md) for claim strength and the
-[task registry](../../docs/evidence/task-registry.json) for current
+[claim ledger](../../../docs/evidence/CLAIMS.md) for claim strength and the
+[task registry](../../../docs/evidence/task-registry.json) for current
 programme status. Numerical tables and figures must be generated from
 versioned `output/runs/*/result.json` evidence. Do not infer current claims
 from archived sources.

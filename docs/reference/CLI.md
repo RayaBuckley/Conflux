@@ -5,19 +5,19 @@ not inspect credentials.
 
 ```text
 conflux doctor --json
-conflux demo --scenario examples/basic.yaml --output output/runs/demo
-conflux plan demo --output output/runs/plan-demo
-conflux plan laptop-smoke --plan experiments/manifests/planning-laptop-smoke-v1.json --transformers-config LOCAL_TRANSFORMERS.json --llama-config LOCAL_LLAMA.json
-conflux sled run --suite examples/basic.yaml --output output/runs/sled
-conflux sled delegation --output output/runs/delegation-check
-conflux report output/runs/demo/result.json
+conflux demo --scenario examples/basic.yaml --output research/output/runs/demo
+conflux plan demo --output research/output/runs/plan-demo
+conflux plan laptop-smoke --plan research/experiments/manifests/planning-laptop-smoke-v1.json --transformers-config LOCAL_TRANSFORMERS.json --llama-config LOCAL_LLAMA.json
+conflux sled run --suite examples/basic.yaml --output research/output/runs/sled
+conflux sled delegation --output research/output/runs/delegation-check
+conflux report research/output/runs/demo/result.json
 conflux chat --scenario examples/basic.yaml --endpoint URL --model MODEL
-conflux verify --model experiments/suites/sled-coi-v1/safe-noise.json --property safe --backend z3 --output output/runs/verify
-conflux verify --model MODEL --property PROPERTY --reduce cone_of_influence --output output/runs/verify-reduced
-conflux benchmark agentdojo translate --config experiments/manifests/agentdojo-smoke.yaml --upstream-log FIXTURE --output output/runs/agentdojo.json
-conflux benchmark agentdojo preflight --model-config experiments/local-runs/smollm2-cpu/transformers.json --output experiments/local-runs/agentdojo-pilot
-conflux benchmark agentdojo run --config PROTOCOL.json --output output/runs/agentdojo-pilot --execute-local
-conflux policy cedar preflight --bundle experiments/manifests/cedar-policy-bundle-v1.json --corpus experiments/suites/cedar-differential-v1.json --output output/runs/cedar-preflight
+conflux verify --model research/experiments/suites/sled-coi-v1/safe-noise.json --property safe --backend z3 --output research/output/runs/verify
+conflux verify --model MODEL --property PROPERTY --reduce cone_of_influence --output research/output/runs/verify-reduced
+conflux benchmark agentdojo translate --config research/experiments/manifests/agentdojo-smoke.yaml --upstream-log FIXTURE --output research/output/runs/agentdojo.json
+conflux benchmark agentdojo preflight --model-config research/experiments/local-runs/smollm2-cpu/transformers.json --output research/experiments/local-runs/agentdojo-pilot
+conflux benchmark agentdojo run --config PROTOCOL.json --output research/output/runs/agentdojo-pilot --execute-local
+conflux policy cedar preflight --bundle research/experiments/manifests/cedar-policy-bundle-v1.json --corpus research/experiments/suites/cedar-differential-v1.json --output research/output/runs/cedar-preflight
 ```
 
 `demo` validates a scenario, mediates its scripted proposals, executes one
@@ -37,7 +37,7 @@ backend failure, verdict disagreement, or unliftable witness exits with code
 3 rather than promoting a reduced claim. Every output directory also contains
 `summary.md`, which states the exact claim strength, bound, reduction counts,
 shortest known witness, or actionable reason why no conclusion was reached.
-The checked-in models under `experiments/suites/sled-coi-v1/` are the canonical
+The checked-in models under `research/experiments/suites/sled-coi-v1/` are the canonical
 review examples; evidence bundles copy them and retain their hashes.
 `benchmark agentdojo translate` strictly
 translates one pinned upstream record. Without the fixture it validates the

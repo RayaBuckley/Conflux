@@ -1,5 +1,6 @@
-# Feature Specification 008: Canonical Migration and P0 Repair
+# Specification 013: Canonical Migration and P0 Repair
 
+Type: specification
 Status: accepted for implementation
 
 ## Problem

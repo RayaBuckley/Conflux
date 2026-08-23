@@ -7,8 +7,8 @@ This directory separates immutable research input from maintained analysis:
 - [AI context](analysis/AI_CONTEXT.md) provides compact agent navigation;
 - `analysis/task-crosswalk.json` namespaces historical task IDs.
 
-Use [current project status](../docs/evidence/STATUS.md) and the
-[machine-readable task registry](../docs/evidence/task-registry.json) for implementation
+Use [current project status](../../docs/evidence/STATUS.md) and the
+[machine-readable task registry](../../docs/evidence/task-registry.json) for implementation
 state. Reports do not override code, tests, schemas, accepted specifications,
 ADRs, or retained evidence.
 

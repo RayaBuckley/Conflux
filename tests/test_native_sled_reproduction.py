@@ -26,7 +26,7 @@ def _protocol() -> ExperimentProtocol:
         repetitions=1,
         bounds={"max_depth": 4, "max_states": 1000, "max_transitions": 5000, "max_model_calls": 4},
         environment={"python": "3.12", "platform": "test"},
-        output_directory="output/runs/native-sled-reproduction-v1",
+        output_directory="research/output/runs/native-sled-reproduction-v1",
         rerun_command=("conflux", "sled", "reproduce", "--protocol", "protocol.json"),
     )
 

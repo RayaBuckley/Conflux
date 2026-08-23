@@ -3,13 +3,13 @@ name: manuscript
 on:
   push:
     paths:
-      - "publications/manuscript/**"
-      - "publications/workshop/**"
+      - "research/publications/manuscript/**"
+      - "research/publications/workshop/**"
       - ".github/workflows/manuscript.yml"
   pull_request:
     paths:
-      - "publications/manuscript/**"
-      - "publications/workshop/**"
+      - "research/publications/manuscript/**"
+      - "research/publications/workshop/**"
       - ".github/workflows/manuscript.yml"
 
 permissions:
@@ -29,22 +29,22 @@ jobs:
       - name: Generate workshop figures
         run: python scripts/generate_paper_figures.py
       - name: Compile manuscript
-        working-directory: publications/manuscript
+        working-directory: research/publications/manuscript
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error conflux_fourth_year_2026.tex
       - name: Retain compiled manuscript
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: conflux-fourth-year-manuscript
-          path: publications/manuscript/conflux_fourth_year_2026.pdf
+          path: research/publications/manuscript/conflux_fourth_year_2026.pdf
           retention-days: 14
 
       - name: Compile workshop paper
-        working-directory: publications/workshop
+        working-directory: research/publications/workshop
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error conflux_workshop.tex
 
       - name: Retain compiled workshop paper
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: conflux-workshop-paper
-          path: publications/workshop/conflux_workshop.pdf
+          path: research/publications/workshop/conflux_workshop.pdf
           retention-days: 14

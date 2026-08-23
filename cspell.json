@@ -729,18 +729,18 @@
     "ingenuine"
   ],
   "ignorePaths": [
-    "reports/archive/**",
-    "reports/analysis/**",
-    "publications/paper/**",
-    "publications/manuscript/**",
-    "publications/workshop/references.bib",
-    "publications/workshop/checklist.tex",
+    "research/reports/archive/**",
+    "research/reports/analysis/**",
+    "research/publications/paper/**",
+    "research/publications/manuscript/**",
+    "research/publications/workshop/references.bib",
+    "research/publications/workshop/checklist.tex",
     ".ae3code/**",
     "node_modules/**",
     ".local/**",
     "*.lock",
     "package-lock.json",
     "scripts/generate_paper_figures.py",
-    "publications/workshop/generated/**"
+    "research/publications/workshop/generated/**"
   ]
 }

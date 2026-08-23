@@ -100,7 +100,7 @@ increase it. Conflux enriches this classical pattern with authenticated
 principal provenance and authority derived from the organisation's existing
 authorisation relation. See [ADR 012](../decisions/012-foundational-security-lineage.md)
 and the [foundational security literature
-analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md).
+analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md).
 
 These rules prevent authority amplification; they do not prove that every
 authorised action matches subjective intent. Complete mediation and correct

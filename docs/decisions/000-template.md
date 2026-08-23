@@ -1,5 +1,6 @@
 # ADR-NNN: Decision title
 
+- Type: adr
 - Status: proposed
 - Date: YYYY-MM-DD
 - Owners: Conflux maintainers

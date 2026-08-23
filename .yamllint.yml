@@ -7,7 +7,7 @@ ignore: |
   build/
   dist/
   node_modules/
-  reports/archive/
+  research/reports/archive/
   .ae3code/
 
 rules:

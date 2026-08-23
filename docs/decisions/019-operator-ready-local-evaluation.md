@@ -1,5 +1,6 @@
-# Specification 014: Operator-Ready Local Evaluation
+# Specification 019: Operator-Ready Local Evaluation
 
+Type: specification
 Status: accepted for implementation
 Evidence date: 2026-08-03
 

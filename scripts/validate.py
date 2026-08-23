@@ -98,32 +98,32 @@ def main() -> int:
     _run("scripts/validate_schemas.py")
     _run(
         "scripts/generate_smoke_evidence.py",
-        "experiments/manifests/m3-smoke.yaml",
-        "output/runs/smoke",
+        "research/experiments/manifests/m3-smoke.yaml",
+        "research/output/runs/smoke",
         "--check",
     )
-    if (ROOT / "output" / "runs" / "native-sled-reproduction-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "native-sled-reproduction-v1").is_dir():
         _run(
             "scripts/generate_native_sled_evidence.py",
-            "output/runs/native-sled-reproduction-v1",
+            "research/output/runs/native-sled-reproduction-v1",
             "--check",
         )
-    if (ROOT / "output" / "runs" / "sled-coi-reduction-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "sled-coi-reduction-v1").is_dir():
         _run(
             "scripts/generate_coi_evidence.py",
-            "output/runs/sled-coi-reduction-v1",
+            "research/output/runs/sled-coi-reduction-v1",
             "--check",
         )
-    if (ROOT / "output" / "runs" / "cedar-differential-preflight-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "cedar-differential-preflight-v1").is_dir():
         _run(
             "scripts/generate_cedar_preflight.py",
-            "output/runs/cedar-differential-preflight-v1",
+            "research/output/runs/cedar-differential-preflight-v1",
             "--check",
         )
-    if (ROOT / "output" / "runs" / "direction-readiness-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "direction-readiness-v1").is_dir():
         _run(
             "scripts/generate_direction_evidence.py",
-            "output/runs/direction-readiness-v1",
+            "research/output/runs/direction-readiness-v1",
             "--check",
         )
     _run(
@@ -159,7 +159,7 @@ def main() -> int:
     _run("-m", "ruff", "check", ".")
     _run("-m", "mypy", ".", "--no-error-summary")
     _run("-m", "yamllint", "-c", ".yamllint.yml", ".")
-    _run("-m", "vulture", "src/conflux", "vulture-whitelist.py", "--min-confidence", "60")
+    _run("-m", "vulture", "src/conflux", "scripts/vulture_whitelist.py", "--min-confidence", "60")
     run_info("-m", "pip_audit", "--skip-editable", "-f", "json")
     _run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
     _run("scripts/validate_wheel.py")

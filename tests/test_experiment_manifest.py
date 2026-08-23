@@ -87,7 +87,7 @@ def test_demo_copies_manifest_and_links_hash(tmp_path: Path) -> None:
 
 
 def test_all_versioned_suite_scenarios_load_with_stable_distinct_ids() -> None:
-    suites = ROOT / "experiments" / "suites"
+    suites = ROOT / "research" / "experiments" / "suites"
     scenarios = tuple(load_scenario(path) for path in sorted(suites.glob("*/*.yaml")))
     identifiers = {scenario.id for scenario in scenarios}
     assert len(scenarios) == 6

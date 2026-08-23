@@ -6,7 +6,7 @@
   "sources": [
     {
       "namespace": "literature-v1",
-      "path": "reports/archive/2026-07-27-literature-review-v1/Conflux_Codex_Action_Manifest.json",
+      "path": "research/reports/archive/2026-07-27-literature-review-v1/Conflux_Codex_Action_Manifest.json",
       "lists": [
         "priority_tasks",
         "recommended_experiments"
@@ -14,28 +14,28 @@
     },
     {
       "namespace": "research-v2",
-      "path": "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json",
+      "path": "research/reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json",
       "lists": [
         "tasks"
       ]
     },
     {
       "namespace": "implementation-2026-07-29",
-      "path": "reports/archive/2026-07-29-implementation-programme/Conflux_Codex_Implementation_Backlog.json",
+      "path": "research/reports/archive/2026-07-29-implementation-programme/Conflux_Codex_Implementation_Backlog.json",
       "lists": [
         "tasks"
       ]
     },
     {
       "namespace": "dynamic-planning-2026-07-30",
-      "path": "reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
+      "path": "research/reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
       "lists": [
         "recommended_planning_tasks"
       ]
     },
     {
       "namespace": "direction-2026-08-02",
-      "path": "reports/archive/2026-08-02-fourth-year-direction/00_INDEX.md",
+      "path": "research/reports/archive/2026-08-02-fourth-year-direction/00_INDEX.md",
       "items": [
         "planning",
         "delegation",
@@ -71,7 +71,7 @@
       "relationship": "superseded_by_research_v2",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
+        "research/reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
       ],
       "superseded_by": "research-v2:RW-001",
       "raw_id_collision": true
@@ -83,7 +83,7 @@
       "relationship": "superseded_by_research_v2",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
+        "research/reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
       ],
       "superseded_by": "research-v2:FM-001",
       "raw_id_collision": true
@@ -95,7 +95,7 @@
       "relationship": "superseded_by_research_v2",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
+        "research/reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
       ],
       "superseded_by": "research-v2:FM-002",
       "raw_id_collision": true
@@ -107,7 +107,7 @@
       "relationship": "superseded_by_research_v2",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
+        "research/reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
       ],
       "superseded_by": "research-v2:FM-003",
       "raw_id_collision": true
@@ -119,7 +119,7 @@
       "relationship": "superseded_by_research_v2",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
+        "research/reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
       ],
       "superseded_by": "research-v2:FM-004",
       "raw_id_collision": true
@@ -131,7 +131,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -144,7 +144,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -157,7 +157,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -170,7 +170,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -183,7 +183,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -196,7 +196,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -209,7 +209,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -222,7 +222,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -235,7 +235,7 @@
       "relationship": "superseded_by_research_v2",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
+        "research/reports/archive/2026-07-27-research-landscape-v2/Conflux_Codex_Research_Backlog.json"
       ],
       "superseded_by": "research-v2:DOC-001",
       "raw_id_collision": true
@@ -247,7 +247,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -260,7 +260,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -273,7 +273,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -286,7 +286,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -299,7 +299,7 @@
       "relationship": "historical_recommendation",
       "canonical_task_id": null,
       "covered_by": [
-        "reports/analysis/PROJECT_ANALYSIS.md",
+        "research/reports/analysis/PROJECT_ANALYSIS.md",
         "docs/evidence/CHANGE_CATALOG.md"
       ],
       "superseded_by": null,
@@ -313,7 +313,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -326,7 +326,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -339,7 +339,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -352,7 +352,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -365,7 +365,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -378,7 +378,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -391,7 +391,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -404,7 +404,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -417,7 +417,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -430,7 +430,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -443,7 +443,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -456,7 +456,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -469,7 +469,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -482,7 +482,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -495,7 +495,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -508,7 +508,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -521,7 +521,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -534,7 +534,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -547,7 +547,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -560,7 +560,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -573,7 +573,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -586,7 +586,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -599,7 +599,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -612,7 +612,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -625,7 +625,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -638,7 +638,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -651,7 +651,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -664,7 +664,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -677,7 +677,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -690,7 +690,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -703,7 +703,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": false
@@ -716,7 +716,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -729,7 +729,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -742,7 +742,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -755,7 +755,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -768,7 +768,7 @@
       "canonical_task_id": null,
       "covered_by": [
         "docs/evidence/CHANGE_CATALOG.md",
-        "reports/analysis/PROJECT_ANALYSIS.md"
+        "research/reports/analysis/PROJECT_ANALYSIS.md"
       ],
       "superseded_by": null,
       "raw_id_collision": true
@@ -1548,7 +1548,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-PLAN-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1561,7 +1561,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-DELEG-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1574,7 +1574,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-ARGPOL-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1587,7 +1587,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-VIS-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1600,7 +1600,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-ATTR-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1613,7 +1613,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-SLED-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1626,7 +1626,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-BENCH-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1639,7 +1639,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-PDP-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1652,7 +1652,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-GOV-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,

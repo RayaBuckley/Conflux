@@ -38,7 +38,7 @@ def generate_coi_evidence_bundle(source_commit: str, output: Path, *, repo_root:
     """Generate original/reduced models and normalized comparison evidence."""
 
     root = repo_root or _ROOT
-    fixture_paths = tuple(sorted((root / "experiments/suites/sled-coi-v1").glob("*.json")))
+    fixture_paths = tuple(sorted((root / "research/experiments/suites/sled-coi-v1").glob("*.json")))
     protocol = _protocol(source_commit, fixture_paths, root)
     output.mkdir(parents=True, exist_ok=True)
     protocol.materialise(output)

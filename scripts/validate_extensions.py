@@ -20,8 +20,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 _IGNORE_DIRS = {
-    "reports/archive",
-    "publications/paper",
+    "research/reports/archive",
+    "research/publications/paper",
     "node_modules",
     ".local",
     ".git",

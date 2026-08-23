@@ -52,7 +52,7 @@ def _protocol(model: LocalModelSpec | None = None) -> ExperimentProtocol:
         repetitions=1,
         bounds={"max_states": 100, "max_transitions": 200},
         environment={"python": "3.12", "platform": "test"},
-        output_directory="output/runs/native",
+        output_directory="research/output/runs/native",
         rerun_command=("conflux", "sled", "reproduce", "--protocol", "protocol.json"),
     )
 
