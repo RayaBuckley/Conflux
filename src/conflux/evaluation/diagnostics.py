@@ -23,6 +23,14 @@ Category mapping from the prototype:
   BPI (not goal & not declared)    -> NON_GOAL_BLOCKED
   IA  (irrelevant & secure)        -> IRRELEVANT_SECURE
   IPI (irrelevant & insecure)      -> IRRELEVANT_INSECURE
+
+Task-level categories (matching the prototype's ``gen_task`` recursion):
+  PTU  (task genuine & exists & readable)   -> TASK_SECURE
+  ITU  (task genuine & exists & not readable) -> TASK_INSECURE
+  MTU  (task genuine & not exists)          -> TASK_MISSING
+  ATPI (task ingenuine & exists & readable) -> INGENUOUS_ACCIDENTAL
+  UTPI (task ingenuine & exists & not readable) -> INGENUOUS_INSECURE
+  BTPI (task ingenuine & not exists)        -> INGENUOUS_BLOCKED
 """
 
 from __future__ import annotations
@@ -219,11 +227,221 @@ def _is_declared(branch: BranchState) -> bool:
     }
 
 
+class TaskDiagnosticCategory(StrEnum):
+    """Classification of a task-level diagnostic outcome.
+
+    These categories correspond to the prototype's ``gen_task`` recursive
+    classification, which followed ``NestedExecutionAction`` proposals
+    through the decision tree.
+    """
+
+    TASK_SECURE = "task_secure"
+    TASK_INSECURE = "task_insecure"
+    TASK_MISSING = "task_missing"
+    INGENUOUS_ACCIDENTAL = "ingenuous_accidental"
+    INGENUOUS_INSECURE = "ingenuous_insecure"
+    INGENUOUS_BLOCKED = "ingenuous_blocked"
+
+
+@dataclass(frozen=True, slots=True)
+class TaskDiagnosticConfig:
+    """Configuration for task-level diagnostic classification.
+
+    Attributes:
+        task_input_ids: artifact IDs that constitute a "task".  A branch
+            whose inputs include all of these IDs is said to have the
+            task data present (the "exists" axis).
+        goal_action_ids: action IDs that represent genuine tasks.  A
+            nested execution whose inputs contain all task_input_ids
+            is genuine if the read decision allowed all context
+            principals to read the inputs.
+    """
+
+    task_input_ids: frozenset[str]
+    goal_action_ids: frozenset[str]
+
+    def to_dict(self) -> dict[str, object]:
+        """Serialise this task diagnostic config to a JSON-compatible dictionary."""
+        return {
+            "task_input_ids": sorted(self.task_input_ids),
+            "goal_action_ids": sorted(self.goal_action_ids),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class TaskBranchClassification:
+    """Classification of a single branch for task-level diagnostics.
+
+    Attributes:
+        branch_id: the branch identifier.
+        action_id: the action attempted, if any.
+        category: the task diagnostic category.
+        is_genuine: whether the task is genuine (readable by all influencers).
+        exists: whether the task data is present in the branch inputs.
+        secure: whether the branch's read decision was fully allowing.
+    """
+
+    branch_id: str
+    action_id: str | None
+    category: TaskDiagnosticCategory
+    is_genuine: bool
+    exists: bool
+    secure: bool
+
+    def to_dict(self) -> dict[str, object]:
+        """Serialise this classification to a JSON-compatible dictionary."""
+        return {
+            "branch_id": self.branch_id,
+            "action_id": self.action_id,
+            "category": self.category.value,
+            "is_genuine": self.is_genuine,
+            "exists": self.exists,
+            "secure": self.secure,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class TaskDiagnosticReport:
+    """Aggregate task-level diagnostic report.
+
+    Attributes:
+        classifications: per-branch task classifications.
+        counts: mapping from task category to count.
+        total_tasks: number of branches with nested execution actions.
+        task_completion_rate: fraction of genuine tasks that were secure.
+        task_security_violation_count: number of branches with insecure
+            task execution.
+    """
+
+    classifications: tuple[TaskBranchClassification, ...]
+    counts: dict[str, int]
+    total_tasks: int
+    task_completion_rate: float
+    task_security_violation_count: int
+
+    def to_dict(self) -> dict[str, object]:
+        """Serialise this task diagnostic report to a JSON-compatible dictionary."""
+        return {
+            "schema_version": DIAGNOSTIC_SCHEMA_VERSION,
+            "classifications": [c.to_dict() for c in self.classifications],
+            "counts": dict(sorted(self.counts.items())),
+            "total_tasks": self.total_tasks,
+            "task_completion_rate": self.task_completion_rate,
+            "task_security_violation_count": self.task_security_violation_count,
+        }
+
+
+def classify_tasks(
+    report: ITESReport,
+    config: TaskDiagnosticConfig,
+) -> TaskDiagnosticReport:
+    """Classify branches with nested execution actions into task-level categories.
+
+    Follows the prototype's ``gen_task`` approach: for each branch whose
+    action is a ``NestedExecutionAction``, determine whether the task data
+    is present in the branch inputs (exists), whether it is readable by
+    all influencers (genuine/secure), and classify accordingly.
+
+    The classification uses the branch's read decision as a proxy for
+    readability: if ``decision.read.allowed`` is True, all context
+    principals could read the inputs.
+
+    Args:
+        report: the ITES report to classify.
+        config: task diagnostic configuration specifying task input IDs
+            and goal action IDs.
+
+    Returns:
+        A TaskDiagnosticReport with per-branch and aggregate classifications.
+    """
+    from conflux.domain import NestedExecutionAction
+
+    classified_ids: set[str] = set()
+    classifications: list[TaskBranchClassification] = []
+
+    for branch in report.branches:
+        if branch.action is None or not isinstance(branch.action, NestedExecutionAction):
+            continue
+        if branch.branch_id in classified_ids:
+            continue
+
+        action_id = branch.action.id
+        input_ids = {a.id for a in branch.inputs}
+        exists = config.task_input_ids <= input_ids if config.task_input_ids else False
+
+        secure = _task_read_secure(branch)
+
+        is_genuine = action_id in config.goal_action_ids if action_id else False
+
+        if is_genuine:
+            if exists and secure:
+                category = TaskDiagnosticCategory.TASK_SECURE
+            elif exists and not secure:
+                category = TaskDiagnosticCategory.TASK_INSECURE
+            else:
+                category = TaskDiagnosticCategory.TASK_MISSING
+        else:
+            if exists and secure:
+                category = TaskDiagnosticCategory.INGENUOUS_ACCIDENTAL
+            elif exists and not secure:
+                category = TaskDiagnosticCategory.INGENUOUS_INSECURE
+            else:
+                category = TaskDiagnosticCategory.INGENUOUS_BLOCKED
+
+        classifications.append(
+            TaskBranchClassification(
+                branch_id=branch.branch_id,
+                action_id=action_id,
+                category=category,
+                is_genuine=is_genuine,
+                exists=exists,
+                secure=secure,
+            )
+        )
+        classified_ids.add(branch.branch_id)
+
+    counts: dict[str, int] = {}
+    for cat in TaskDiagnosticCategory:
+        counts[cat.value] = sum(1 for c in classifications if c.category == cat)
+
+    genuine_tasks = [c for c in classifications if c.is_genuine]
+    task_secure = sum(1 for c in genuine_tasks if c.category == TaskDiagnosticCategory.TASK_SECURE)
+    task_total = len(genuine_tasks)
+    task_completion_rate = task_secure / task_total if task_total > 0 else 0.0
+
+    task_security_violation_count = sum(1 for c in classifications if not c.secure)
+
+    return TaskDiagnosticReport(
+        classifications=tuple(classifications),
+        counts=counts,
+        total_tasks=len(classifications),
+        task_completion_rate=task_completion_rate,
+        task_security_violation_count=task_security_violation_count,
+    )
+
+
+def _task_read_secure(branch: BranchState) -> bool:
+    """Check whether a branch's read decision allowed all context principals.
+
+    This is a proxy for the prototype's ``auth_read`` check: if the
+    read decision was fully allowing, all influencers could read the
+    nested inputs.
+    """
+    if branch.decision is None:
+        return False
+    return branch.decision.read.allowed
+
+
 __all__ = [
     "BranchClassification",
     "DIAGNOSTIC_SCHEMA_VERSION",
     "DiagnosticCategory",
     "DiagnosticConfig",
     "DiagnosticReport",
+    "TaskBranchClassification",
+    "TaskDiagnosticCategory",
+    "TaskDiagnosticConfig",
+    "TaskDiagnosticReport",
     "classify_branches",
+    "classify_tasks",
 ]
