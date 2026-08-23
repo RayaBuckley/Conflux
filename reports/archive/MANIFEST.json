@@ -3,7 +3,7 @@
     "integrity_scope":  "exact repository blob bytes",
     "hash_algorithm":  "sha256",
     "git_object_format":  "sha1",
-    "artifact_count":  37,
+    "artifact_count":  38,
     "packages":  [
                      {
                          "id":  "2026-07-27-engineering-and-sled",
@@ -204,6 +204,25 @@
                            "limitations":  [
                                                "Ad-hoc diagnostic scripts; not tested, not part of the validation suite.",
                                                "Hardcoded paths and model identifiers; will not run without local GPU and weight cache."
+                                           ]
+                       },
+                       {
+                           "id":  "2026-06-01-original-prototype",
+                           "title":  "Original prototype Python source",
+                           "snapshot_date":  "2026-06-01",
+                           "source_commits":  [
+                                              ],
+                           "status":  "historical_input",
+                           "supersedes":  [
+                                              ],
+                           "superseded_by":  [
+                                                ],
+                           "canonical_successors":  [
+                                                    "src/conflux/"
+                                                ],
+                           "limitations":  [
+                                               "Original prototype predates the repository; not executable as-is; preserved for reference and comparison only.",
+                                               "Does not reflect the current architecture, security model, or verification IR."
                                            ]
                        }
                   ],
@@ -613,6 +632,17 @@
                            "sha256_bytes":  "5390f19cbf26f3fdfd28698e3041427cb3daa32d907fef417c99f322f8e1a1f5",
                            "git_blob_oid":  "266dca1d54a4ad327b28b55b1beeab7d706907c1",
                            "role":  "source_manifest",
+                           "duplicate_of":  null
+                       },
+                       {
+                           "package_id":  "2026-06-01-original-prototype",
+                           "original_path":  "main.py",
+                           "archive_path":  "reports/archive/2026-06-01-original-prototype/main.py",
+                           "media_type":  "text/x-python",
+                           "size_bytes":  26910,
+                           "sha256_bytes":  "7902761ca83b9d62b25d234d3a63dc600e7dcd38c9271c301054b1bba4814267",
+                           "git_blob_oid":  "3d1fbd8dc8c77d69901a77aba05c33861eb23494",
+                           "role":  "prototype_source",
                            "duplicate_of":  null
                        }
                    ]
