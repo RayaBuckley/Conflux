@@ -305,9 +305,307 @@ def ites_defective_requester_only_ir() -> VerificationIR:
     )
 
 
+def camel_ir() -> VerificationIR:
+    """CaMeL-style defence: capability flow with data/control separation.
+
+    CaMeL separates a trusted planner (control flow) from a quarantined
+    data processor.  Capabilities are granted to the planner but data
+    flow is restricted.  The key property Q is that data-controlled
+    actions cannot directly execute — they must go through the planner's
+    capability checks.
+
+    **PE vulnerability:** CaMeL's capability checks authorise based on
+    the planner's capabilities, not on the provenance of data consumed
+    by the planner.  If the planner consumes attacker-controlled data
+    and decides to execute, the action is performed even though the
+    attacker lacks authorisation.
+
+    Variables:
+        planner_consumed_attacker: planner read attacker data.
+        capability_granted: a tool capability is granted to the planner.
+        action_executed: an effect was executed.
+        pe_violation: PE violation occurred.
+        attacker_authorised: attacker has permission (False).
+    """
+    return VerificationIR(
+        "camel-baseline",
+        (
+            StateVariable("planner_consumed_attacker", Sort.BOOLEAN, False),
+            StateVariable("capability_granted", Sort.BOOLEAN, True),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("pe_violation", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "planner-consumes-attacker-data",
+                _const(True),
+                (Assignment("planner_consumed_attacker", _const(True)),),
+            ),
+            TransitionRule(
+                "capability-checked-execute",
+                _var("capability_granted"),
+                (
+                    Assignment("action_executed", _const(True)),
+                    Assignment(
+                        "pe_violation",
+                        _and(
+                            _var("action_executed"),
+                            _var("planner_consumed_attacker"),
+                            _not(_var("attacker_authorised")),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-pe-violation",
+                _not(_var("pe_violation")),
+                "PE: no action executed when an influencing principal lacks authorisation",
+            ),
+        ),
+        4,
+        (
+            "CaMeL: capability flow with data/control separation",
+            "capability_granted is True; attacker_authorised is False",
+            "planner checks capabilities but not per-principal provenance",
+        ),
+    )
+
+
+def camel_native_property_ir() -> VerificationIR:
+    """CaMeL's own property Q: data-flow cannot directly cause effects.
+
+    Only the planner (with capabilities) can execute; the quarantined
+    data processor cannot.  This property Q is satisfied.
+    """
+    return VerificationIR(
+        "camel-native-property",
+        (
+            StateVariable("processor_executed", Sort.BOOLEAN, False),
+            StateVariable("planner_executed", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "planner-acts",
+                _const(True),
+                (Assignment("planner_executed", _const(True)),),
+            ),
+            TransitionRule(
+                "processor-receives-data",
+                _const(True),
+                (),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "processor-never-executes",
+                _not(_var("processor_executed")),
+                "Q: the quarantined data processor never directly executes effects",
+            ),
+        ),
+        3,
+        (
+            "CaMeL native property: processor never executes",
+            "the planner can execute via capabilities; the processor only receives data",
+        ),
+    )
+
+
+def progent_ir() -> VerificationIR:
+    """Progent-like defence: parameter-sensitive tool policy.
+
+    Progent applies symbolic policies to tool calls, checking arguments
+    against policy rules.  The key property Q is that all tool calls
+    satisfy the policy.  However, the policy checks arguments, not the
+    provenance of the data that influenced the planner's decision to
+    call the tool.
+
+    **PE vulnerability:** If the planner consumed attacker-controlled
+    data and decides to call a tool with arguments that satisfy the
+    policy, the action executes even though the attacker influenced the
+    decision and lacks authorisation.
+
+    Variables:
+        planner_consumed_attacker: planner read attacker data.
+        policy_satisfied: tool arguments pass the policy check (True).
+        action_executed: an effect was executed.
+        pe_violation: PE violation occurred.
+        attacker_authorised: attacker has permission (False).
+    """
+    return VerificationIR(
+        "progent-baseline",
+        (
+            StateVariable("planner_consumed_attacker", Sort.BOOLEAN, False),
+            StateVariable("policy_satisfied", Sort.BOOLEAN, True),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("pe_violation", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "planner-consumes-attacker-data",
+                _const(True),
+                (Assignment("planner_consumed_attacker", _const(True)),),
+            ),
+            TransitionRule(
+                "policy-checked-execute",
+                _var("policy_satisfied"),
+                (
+                    Assignment("action_executed", _const(True)),
+                    Assignment(
+                        "pe_violation",
+                        _and(
+                            _var("planner_consumed_attacker"),
+                            _not(_var("attacker_authorised")),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-pe-violation",
+                _not(_var("pe_violation")),
+                "PE: no action executed when an influencing principal lacks authorisation",
+            ),
+        ),
+        4,
+        (
+            "Progent: parameter-sensitive tool policy",
+            "policy_satisfied is True; attacker_authorised is False",
+            "policy checks arguments but not planner provenance",
+        ),
+    )
+
+
+def progent_native_property_ir() -> VerificationIR:
+    """Progent's own property Q: all tool calls satisfy the policy."""
+    return VerificationIR(
+        "progent-native-property",
+        (StateVariable("policy_violation", Sort.BOOLEAN, False),),
+        (
+            TransitionRule(
+                "policy-checked-call",
+                _const(True),
+                (Assignment("policy_violation", _const(False)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-policy-violation",
+                _not(_var("policy_violation")),
+                "Q: all tool calls satisfy the parameter-sensitive policy",
+            ),
+        ),
+        2,
+        ("Progent native property: all calls satisfy policy",),
+    )
+
+
+def pact_ir() -> VerificationIR:
+    """PACT-like defence: argument-level provenance tracking.
+
+    PACT tracks provenance at the argument level, not just the execution
+    level.  The key property Q is that argument provenance is preserved
+    across steps.  However, PACT does not derive action authority from
+    the intersection of all influencing principals' permissions.
+
+    **PE vulnerability:** PACT may track that the attacker influenced a
+    specific argument, but it does not block the action based on the
+    attacker's lack of ACS permission.  The action executes because the
+    requester is authorised, even though the attacker also influenced it.
+
+    Variables:
+        requester_authorised: the requester has permission (True).
+        attacker_influenced_arg: attacker data reached a tool argument.
+        action_executed: an effect was executed.
+        pe_violation: PE violation occurred.
+        attacker_authorised: attacker has permission (False).
+    """
+    return VerificationIR(
+        "pact-baseline",
+        (
+            StateVariable("attacker_influenced_arg", Sort.BOOLEAN, False),
+            StateVariable("requester_authorised", Sort.BOOLEAN, True),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("pe_violation", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "attacker-data-reaches-argument",
+                _const(True),
+                (Assignment("attacker_influenced_arg", _const(True)),),
+            ),
+            TransitionRule(
+                "execute-with-arg-provenance",
+                _var("requester_authorised"),
+                (
+                    Assignment("action_executed", _const(True)),
+                    Assignment(
+                        "pe_violation",
+                        _and(
+                            _var("attacker_influenced_arg"),
+                            _not(_var("attacker_authorised")),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-pe-violation",
+                _not(_var("pe_violation")),
+                "PE: no action executed when an influencing principal lacks authorisation",
+            ),
+        ),
+        4,
+        (
+            "PACT: argument-level provenance without authority intersection",
+            "requester_authorised is True; attacker_authorised is False",
+            "tracks arg provenance but does not block based on influencer authority",
+        ),
+    )
+
+
+def pact_native_property_ir() -> VerificationIR:
+    """PACT's own property Q: argument provenance is preserved."""
+    return VerificationIR(
+        "pact-native-property",
+        (
+            StateVariable("arg_provenance_tracked", Sort.BOOLEAN, True),
+            StateVariable("provenance_lost", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "cross-step-provenance",
+                _const(True),
+                (Assignment("provenance_lost", _const(False)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "provenance-preserved",
+                _not(_var("provenance_lost")),
+                "Q: argument-level provenance is preserved across steps",
+            ),
+        ),
+        2,
+        ("PACT native property: argument provenance preserved",),
+    )
+
+
 __all__ = [
+    "camel_ir",
+    "camel_native_property_ir",
     "dual_llm_baseline_ir",
     "dual_llm_native_property_ir",
     "ites_defective_requester_only_ir",
     "ites_reference_ir",
+    "pact_ir",
+    "pact_native_property_ir",
+    "progent_ir",
+    "progent_native_property_ir",
 ]

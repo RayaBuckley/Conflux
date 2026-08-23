@@ -1,4 +1,4 @@
-"""Comparative defence verification: Dual-LLM baseline and ITES reference."""
+"""Comparative defence verification: Dual-LLM, CaMeL, Progent, PACT, and ITES reference."""
 
 from __future__ import annotations
 
@@ -6,10 +6,16 @@ import pytest
 
 from conflux.verification import (
     FormalVerdict,
+    camel_ir,
+    camel_native_property_ir,
     dual_llm_baseline_ir,
     dual_llm_native_property_ir,
     ites_defective_requester_only_ir,
     ites_reference_ir,
+    pact_ir,
+    pact_native_property_ir,
+    progent_ir,
+    progent_native_property_ir,
     reference_safety_check,
 )
 
@@ -100,6 +106,81 @@ class TestDefectiveRequesterOnly:
         assert final_state.get("pe_violation") is True
 
 
+class TestCaMeLBaselinePE:
+    """CaMeL satisfies its own property Q but violates Conflux PE."""
+
+    def test_pe_property_is_unsafe(self) -> None:
+        ir = camel_ir()
+        result = reference_safety_check(ir)
+        assert result.verdict == FormalVerdict.UNSAFE
+
+    def test_counterexample_shows_pe_violation(self) -> None:
+        ir = camel_ir()
+        result = reference_safety_check(ir)
+        final_state = result.counterexample[-1]["state"]
+        assert isinstance(final_state, dict)
+        assert final_state.get("pe_violation") is True
+
+
+class TestCaMeLNativeProperty:
+    """CaMeL satisfies its own property Q: processor never executes."""
+
+    def test_native_property_is_safe(self) -> None:
+        ir = camel_native_property_ir()
+        result = reference_safety_check(ir)
+        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
+
+
+class TestProgentBaselinePE:
+    """Progent satisfies its own property Q but violates Conflux PE."""
+
+    def test_pe_property_is_unsafe(self) -> None:
+        ir = progent_ir()
+        result = reference_safety_check(ir)
+        assert result.verdict == FormalVerdict.UNSAFE
+
+    def test_counterexample_shows_pe_violation(self) -> None:
+        ir = progent_ir()
+        result = reference_safety_check(ir)
+        final_state = result.counterexample[-1]["state"]
+        assert isinstance(final_state, dict)
+        assert final_state.get("pe_violation") is True
+
+
+class TestProgentNativeProperty:
+    """Progent satisfies its own property Q: all calls satisfy policy."""
+
+    def test_native_property_is_safe(self) -> None:
+        ir = progent_native_property_ir()
+        result = reference_safety_check(ir)
+        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
+
+
+class TestPACTBaselinePE:
+    """PACT satisfies its own property Q but violates Conflux PE."""
+
+    def test_pe_property_is_unsafe(self) -> None:
+        ir = pact_ir()
+        result = reference_safety_check(ir)
+        assert result.verdict == FormalVerdict.UNSAFE
+
+    def test_counterexample_shows_pe_violation(self) -> None:
+        ir = pact_ir()
+        result = reference_safety_check(ir)
+        final_state = result.counterexample[-1]["state"]
+        assert isinstance(final_state, dict)
+        assert final_state.get("pe_violation") is True
+
+
+class TestPACTNativeProperty:
+    """PACT satisfies its own property Q: argument provenance preserved."""
+
+    def test_native_property_is_safe(self) -> None:
+        ir = pact_native_property_ir()
+        result = reference_safety_check(ir)
+        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
+
+
 class TestDefenceModelStructure:
     """Structural validation of the defence IR models."""
 
@@ -130,6 +211,12 @@ class TestDefenceModelStructure:
             dual_llm_native_property_ir,
             ites_reference_ir,
             ites_defective_requester_only_ir,
+            camel_ir,
+            camel_native_property_ir,
+            progent_ir,
+            progent_native_property_ir,
+            pact_ir,
+            pact_native_property_ir,
         ):
             ir = factory()
             restored = type(ir).from_dict(ir.to_dict())

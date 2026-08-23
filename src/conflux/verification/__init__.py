@@ -1,10 +1,16 @@
 """Serializable formal-verification IR and optional backends."""
 
 from .defence_models import (
+    camel_ir,
+    camel_native_property_ir,
     dual_llm_baseline_ir,
     dual_llm_native_property_ir,
     ites_defective_requester_only_ir,
     ites_reference_ir,
+    pact_ir,
+    pact_native_property_ir,
+    progent_ir,
+    progent_native_property_ir,
 )
 from .endorsement import (
     ENDORSEMENT_SCHEMA_VERSION,
@@ -119,6 +125,8 @@ __all__ = [
     "VerificationReduction",
     "WitnessLiftingEvidence",
     "abstract_plan",
+    "camel_ir",
+    "camel_native_property_ir",
     "compare_cone_of_influence",
     "construct_product_ir",
     "default_instance",
@@ -137,6 +145,10 @@ __all__ = [
     "measure_authority_loss",
     "measure_exposure",
     "measure_overapproximation",
+    "pact_ir",
+    "pact_native_property_ir",
+    "progent_ir",
+    "progent_native_property_ir",
     "reduce_cone_of_influence",
     "reference_safety_check",
     "run_endorsement_experiment",
