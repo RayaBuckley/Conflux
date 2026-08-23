@@ -1,7 +1,7 @@
 # Specification 013: Fourth-Year Direction Programme
 
 Status: accepted, staged implementation
-Source snapshot: `reports/archive/2026-08-02-fourth-year-direction/`
+Source snapshot: `research/reports/archive/2026-08-02-fourth-year-direction/`
 
 ## Goal and success criteria
 
@@ -147,10 +147,10 @@ executes generated source code; `ModeledProgram` remains inert data.
 ## Expected file set and change budget
 
 Expected changes are confined to existing owners under `src/conflux/`,
-`tests/`, `schemas/`, `experiments/`, `output/runs/`, `docs/`, `reports/analysis/`,
-`reports/archive/`, `publications/manuscript/`, and existing validation scripts. New
+`tests/`, `schemas/`, `research/experiments/`, `research/output/runs/`, `docs/`, `research/reports/analysis/`,
+`research/reports/archive/`, `research/publications/manuscript/`, and existing validation scripts. New
 verification, policy-adapter, and test modules are allowed inside those
-owners. The retained COI bundle lives at `output/runs/sled-coi-reduction-v1/`.
+owners. The retained COI bundle lives at `research/output/runs/sled-coi-reduction-v1/`.
 
 No new top-level directory or competing status, roadmap, rationale, claim,
 architecture, or report-analysis document is approved by this specification.

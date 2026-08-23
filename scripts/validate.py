@@ -98,32 +98,32 @@ def main() -> int:
     _run("scripts/validate_schemas.py")
     _run(
         "scripts/generate_smoke_evidence.py",
-        "experiments/manifests/m3-smoke.yaml",
-        "output/runs/smoke",
+        "research/experiments/manifests/m3-smoke.yaml",
+        "research/output/runs/smoke",
         "--check",
     )
-    if (ROOT / "output" / "runs" / "native-sled-reproduction-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "native-sled-reproduction-v1").is_dir():
         _run(
             "scripts/generate_native_sled_evidence.py",
-            "output/runs/native-sled-reproduction-v1",
+            "research/output/runs/native-sled-reproduction-v1",
             "--check",
         )
-    if (ROOT / "output" / "runs" / "sled-coi-reduction-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "sled-coi-reduction-v1").is_dir():
         _run(
             "scripts/generate_coi_evidence.py",
-            "output/runs/sled-coi-reduction-v1",
+            "research/output/runs/sled-coi-reduction-v1",
             "--check",
         )
-    if (ROOT / "output" / "runs" / "cedar-differential-preflight-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "cedar-differential-preflight-v1").is_dir():
         _run(
             "scripts/generate_cedar_preflight.py",
-            "output/runs/cedar-differential-preflight-v1",
+            "research/output/runs/cedar-differential-preflight-v1",
             "--check",
         )
-    if (ROOT / "output" / "runs" / "direction-readiness-v1").is_dir():
+    if (ROOT / "research" / "output" / "runs" / "direction-readiness-v1").is_dir():
         _run(
             "scripts/generate_direction_evidence.py",
-            "output/runs/direction-readiness-v1",
+            "research/output/runs/direction-readiness-v1",
             "--check",
         )
     _run(

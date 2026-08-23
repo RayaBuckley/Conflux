@@ -5,14 +5,14 @@ Status: accepted for staged implementation
 ## Evidence source and reconciliation
 
 This specification translates the immutable
-`reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json`
+`research/reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json`
 task graph into canonical repository decisions. The report inspected public
 `main`, not this dependent milestone branch. Its legacy-package and known
 security-defect observations are superseded here by the validated M0--M4
 commits. Its dynamic-planning findings remain applicable.
 
 The raw report files and archived paper are never edited. Manuscript changes
-are made only in `publications/manuscript/`.
+are made only in `research/publications/manuscript/`.
 
 ## Objective
 

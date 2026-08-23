@@ -90,8 +90,8 @@ def run_native_reproduction(
     total_transitions = 0
     for index in range(1, 4):
         filename = f"env-0{index}-{_suffix(index)}"
-        legacy = load_scenario(selected_root / "experiments" / "suites" / "legacy-reproduction" / filename)
-        canonical = load_scenario(selected_root / "experiments" / "suites" / "canonical" / filename)
+        legacy = load_scenario(selected_root / "research" / "experiments" / "suites" / "legacy-reproduction" / filename)
+        canonical = load_scenario(selected_root / "research" / "experiments" / "suites" / "canonical" / filename)
         results = []
         for suite_name, scenario in (("legacy_reproduction", legacy), ("canonical", canonical)):
             for defence_name, factory in _defences():
@@ -107,7 +107,9 @@ def run_native_reproduction(
             },
         )
     controls = _negative_controls(bounds)
-    baseline = json.loads((selected_root / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8"))
+    baseline = json.loads(
+        (selected_root / "research" / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8"),
+    )
     result: dict[str, object] = {
         "schema_version": "2",
         "protocol_fingerprint": protocol.fingerprint,
@@ -137,7 +139,7 @@ def _default_reproduction_root() -> Path:
         Path(sysconfig.get_path("data")) / "share" / "conflux",
     )
     for candidate in candidates:
-        if (candidate / "experiments" / "baselines" / "sled-historical-v1.json").is_file():
+        if (candidate / "research" / "experiments" / "baselines" / "sled-historical-v1.json").is_file():
             return candidate
     raise ValueError("native_sled_reproduction_fixtures_unavailable")
 

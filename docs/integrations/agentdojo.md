@@ -2,7 +2,7 @@
 
 Conflux targets AgentDojo package `0.1.35`, Git tag `v0.1.35`, commit
 `a75aba7631d3ca5fb7ab938965c97ead2f9ff84b`, and benchmark `v1.2.2`.
-`experiments/agentdojo.lock` is authoritative. AgentDojo is MIT licensed and is
+`research/experiments/agentdojo.lock` is authoritative. AgentDojo is MIT licensed and is
 an optional, externally gated integration:
 
 ```text
@@ -45,22 +45,22 @@ conservative ITES, and oracle ITES. Build and inspect the protocol before any
 model invocation:
 
 ```text
-conflux benchmark agentdojo preflight --model-config experiments/local-runs/smollm2-cpu/transformers.json --output experiments/local-runs/agentdojo-pilot
+conflux benchmark agentdojo preflight --model-config research/experiments/local-runs/smollm2-cpu/transformers.json --output research/experiments/local-runs/agentdojo-pilot
 ```
 
 The conservative profile trusts authenticated human input while retaining an
 external or unknown Principal on tool, document, message, and injected
 content. The oracle profile uses benchmark ground truth and is a deliberately
 non-deployable upper bound. Trusted argument roles are frozen in
-`experiments/suites/agentdojo-tool-schemas-v1.json`; the small reviewed
+`research/experiments/suites/agentdojo-tool-schemas-v1.json`; the small reviewed
 selector allow-list is separate in
-`experiments/suites/agentdojo-annotation-exceptions-v1.json`. Unknown tools,
+`research/experiments/suites/agentdojo-annotation-exceptions-v1.json`. Unknown tools,
 roles, resources, and unreviewed selectors deny.
 
 The generated `protocol.json` is run only with an explicit gate:
 
 ```text
-conflux benchmark agentdojo run --config experiments/local-runs/agentdojo-pilot/protocol.json --output experiments/local-runs/agentdojo-pilot-run --execute-local
+conflux benchmark agentdojo run --config research/experiments/local-runs/agentdojo-pilot/protocol.json --output research/experiments/local-runs/agentdojo-pilot-run --execute-local
 ```
 
 The comparison must retain upstream JSON and report:

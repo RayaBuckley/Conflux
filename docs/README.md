@@ -55,8 +55,8 @@ owner; linked documents should reference that owner rather than restating it.
 - [Change catalogue](evidence/CHANGE_CATALOG.md): report-derived work grouped by theme.
 - [Status](evidence/STATUS.md): concise current capability summary.
 - [Task registry](evidence/task-registry.json): authoritative machine-readable status.
-- [Report sources and analysis](../reports/README.md): reconciled historical inputs.
-- [Current manuscript](../publications/manuscript/README.md): publication source and evidence policy.
+- [Report sources and analysis](../research/reports/README.md): reconciled historical inputs.
+- [Current manuscript](../research/publications/manuscript/README.md): publication source and evidence policy.
 
 ## Research context
 
@@ -72,8 +72,8 @@ owner; linked documents should reference that owner rather than restating it.
 | Why was a design selected? | accepted specification or ADR | Decision history should not be reconstructed from code |
 | What is implemented? | `evidence/STATUS.md` and `evidence/task-registry.json` | One human summary and one machine registry prevent drift |
 | What may be claimed? | `evidence/CLAIMS.md` and retained evidence | Implementation is not automatically empirical proof |
-| What did reports recommend? | `reports/analysis/` | Historical input needs current reconciliation |
-| What does the current paper claim? | `publications/manuscript/` | The archived paper is intentionally frozen |
+| What did reports recommend? | `research/reports/analysis/` | Historical input needs current reconciliation |
+| What does the current paper claim? | `research/publications/manuscript/` | The archived paper is intentionally frozen |
 
 When sources disagree, record and repair the discrepancy. Do not silently
 promote a report, manuscript statement, or passing test above the normative

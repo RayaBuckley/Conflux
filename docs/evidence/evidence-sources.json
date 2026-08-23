@@ -2,12 +2,12 @@
   "schema_version": "1",
   "sources": [
     {
-      "path": "reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
+      "path": "research/reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json",
       "canonical_text_sha256": "46c39220ceaca219ac05eb4cfded6c881725308dcc1383eb290cba9a3eb84250",
       "role": "immutable report-derived task source"
     },
     {
-      "path": "reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Progress_and_Dynamic_Planning_Review_2026-07-30.md",
+      "path": "research/reports/archive/2026-07-30-dynamic-planning-programme/Conflux_Progress_and_Dynamic_Planning_Review_2026-07-30.md",
       "canonical_text_sha256": "98044149bd54d7195b9c7398bf5fd53e42103937f24067f74d28e6fe8a36872d",
       "role": "immutable progress assessment"
     },
@@ -17,7 +17,7 @@
       "role": "raw upstream AgentDojo fixture"
     },
     {
-      "path": "reports/analysis/2026-08-13-foundational-security-literature.md",
+      "path": "research/reports/analysis/2026-08-13-foundational-security-literature.md",
       "canonical_text_sha256": "1b28e9cce9fc1c79b7802d5bd21b87f81a94f757836ae3e9040880db544b5da6",
       "role": "foundational security literature analysis"
     }

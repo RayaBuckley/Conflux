@@ -10,8 +10,8 @@ checklist, commit conventions, and documentation authority rules.
 2. Accepted specifications and ADRs describe intended behavior and rationale.
 3. Current architecture, security, operation, status, and claim documents
    explain the maintained system.
-4. `reports/analysis/` reconciles historical recommendations.
-5. `reports/archive/` and `publications/paper/` are immutable historical evidence.
+4. `research/reports/analysis/` reconciles historical recommendations.
+5. `research/reports/archive/` and `research/publications/paper/` are immutable historical evidence.
 
 If two levels disagree, treat that as a defect. Report the discrepancy and
 repair the appropriate owner; do not choose whichever source enables a task.
@@ -60,8 +60,8 @@ intent, implementation, executable evidence, and prose to converge.
 | Test or validation workflow | `DEVELOPMENT.md` and `evidence/AUDIT.md` |
 | Programme disposition | `task-registry.json`, summarized in `evidence/STATUS.md` |
 | Claim strength or limitation | `evidence/CLAIMS.md` |
-| Historical-report interpretation | `reports/analysis/` |
-| Publication claim | current `publications/manuscript/`, backed by retained evidence |
+| Historical-report interpretation | `research/reports/analysis/` |
+| Publication claim | current `research/publications/manuscript/`, backed by retained evidence |
 
 Do not create a parallel roadmap, status page, glossary, task list, or claim
 ledger. Link instead of copying details.

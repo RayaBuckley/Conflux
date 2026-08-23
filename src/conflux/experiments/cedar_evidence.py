@@ -31,8 +31,8 @@ CEDAR_EVIDENCE_FILES = frozenset(
 def generate_cedar_preflight_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> None:
     """Generate the offline Cedar preflight evidence bundle into *output*."""
     root = repo_root or _ROOT
-    bundle_source = root / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
-    corpus_source = root / "experiments" / "suites" / "cedar-differential-v1.json"
+    bundle_source = root / "research" / "experiments" / "manifests" / "cedar-policy-bundle-v1.json"
+    corpus_source = root / "research" / "experiments" / "suites" / "cedar-differential-v1.json"
     output.mkdir(parents=True, exist_ok=True)
     bundle = load_cedar_bundle(bundle_source)
     corpus = load_cedar_corpus(corpus_source)

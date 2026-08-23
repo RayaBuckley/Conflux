@@ -38,7 +38,7 @@ def load_default_planning_diagnostic_suite() -> tuple[DiagnosticScenario, ...]:
     """Load the packaged suite without assuming the current working directory."""
 
     candidates = (
-        _ROOT / "experiments" / "suites" / "planning-diagnostic-v1.yaml",
+        _ROOT / "research" / "experiments" / "suites" / "planning-diagnostic-v1.yaml",
         Path(sysconfig.get_path("data")) / "share" / "conflux" / "experiments" / "planning-diagnostic-v1.yaml",
     )
     for candidate in candidates:

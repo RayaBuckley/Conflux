@@ -14,7 +14,7 @@ unavailable outcome rather than an inferred result.
 ## Authority and affected boundaries
 
 This specification is the maintained successor to the immutable report in
-`reports/archive/2026-07-31-evidence-first-evaluation/`. It replaces that
+`research/reports/archive/2026-07-31-evidence-first-evaluation/`. It replaces that
 report's hosted, credentialed endpoint assumption with self-hosted models and
 replaces executable generated code with a serialisable modeled-program IR.
 

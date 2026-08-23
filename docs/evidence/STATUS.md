@@ -74,7 +74,7 @@ The 31 July 2026 repository baseline at commit `6fe6b584500e` passed 220 tests w
 90.25% branch coverage, all 13 schemas, deterministic regeneration, Ruff,
 strict mypy, wheel build, and installed `doctor`, `demo`, `plan demo`,
 `sled run`, and `report` smoke checks. The authoritative record is
-`output/validation/6fe6b584500e/`; [the baseline](BASELINE_2026-07.md)
+`research/output/validation/6fe6b584500e/`; [the baseline](BASELINE_2026-07.md)
 defines what that result does and does not support. The matching GitHub run
 passed all four supported operating-system/Python combinations.
 
@@ -83,9 +83,9 @@ via `newline="\n"` on all evidence-generating `write_text` calls and a
 `check_evidence_line_endings` audit check.
 
 Native evidence added after that baseline is independently retained under
-`output/runs/native-sled-reproduction-v1/`, linked to implementation commit
+`research/output/runs/native-sled-reproduction-v1/`, linked to implementation commit
 `d6d9857954ac7c7702fff64642d3ea9e7836948f`, and regenerates byte-for-byte.
-COI-reduction evidence is retained under `output/runs/sled-coi-reduction-v1/`, linked
+COI-reduction evidence is retained under `research/output/runs/sled-coi-reduction-v1/`, linked
 to generator commit `3c4e9884a93f84b62ddb5b1c7e52da84be073b97`. Its two
 reference-interpreter fixtures agree and reduce at least one measured model
 dimension. Z3 bounded verification with COI reduction confirmed equivalence
@@ -93,23 +93,23 @@ on both safe and unsafe fixtures; the reduced safe model drops one variable
 and one rule, and the reduced unsafe model lifts the counterexample.
 
 Laptop experimental evidence (Qwen2.5-1.5B-Instruct, RTX 4060) is retained
-under `output/runs/`:
+under `research/output/runs/`:
 
-- `output/runs/sled-canon-env01/`, `env02/`, `env03/`: canonical SLED verified safe
+- `research/output/runs/sled-canon-env01/`, `env02/`, `env03/`: canonical SLED verified safe
   at depth 12 (2 states, 1 transition each);
-- `output/runs/delegation-v2/`: delegation verification complete, classified
+- `research/output/runs/delegation-v2/`: delegation verification complete, classified
   `bounded_evidence`, all mutants killed;
-- `output/runs/verify-coi-safe/` and `verify-coi-unsafe/`: Z3 BMC with COI
+- `research/output/runs/verify-coi-safe/` and `verify-coi-unsafe/`: Z3 BMC with COI
   reduction on security-monitor IR; safe verdict bounded safe, unsafe
   verdict produces counterexample, original/reduced agree;
-- `output/runs/verify-coi-original-safe/` and `verify-coi-original-unsafe/`: Z3 BMC
+- `research/output/runs/verify-coi-original-safe/` and `verify-coi-original-unsafe/`: Z3 BMC
   with COI reduction on the larger safe-noise and unsafe-control IR fixtures
   from `sled-coi-reduction-v1`; reduction removes the noise variable and
   toggle/increment rules, both verdicts agree with originals;
-- `output/runs/planning-pilot-1b5-v1/`: eight-cell planning pilot completed with
+- `research/output/runs/planning-pilot-1b5-v1/`: eight-cell planning pilot completed with
   Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all cells `complete=True`; model is
   too small for high utility but the planning pipeline executes end-to-end;
-- `output/runs/agentdojo-1b5-nf4-v1/`: six-cell AgentDojo comparison completed
+- `research/output/runs/agentdojo-1b5-nf4-v1/`: six-cell AgentDojo comparison completed
   with Qwen2.5-1.5B-Instruct NF4; all six cells `complete=True` (benign:
   security=True, utility=False; attacked: security=False, utility=False);
   the 3B model produces malformed JSON; the 7B NF4 model timed out at 10 minutes.
@@ -119,10 +119,10 @@ contain a recognised model identifier (fixed: pipeline renamed from
 `conflux-self-hosted-*` to `conflux-local-*` to match the `local` model name
 in AgentDojo's attack registry).
 
-Offline direction evidence is retained under `output/runs/direction-readiness-v1/`.
+Offline direction evidence is retained under `research/output/runs/direction-readiness-v1/`.
 It supplies bounded native mutation evidence and readiness-only planning and
 AgentDojo matrices. Cedar readiness is separately retained under
-`output/runs/cedar-differential-preflight-v1/`; its incomplete manifest and
+`research/output/runs/cedar-differential-preflight-v1/`; its incomplete manifest and
 `unavailable` Cedar cells are deliberate claim boundaries.
 
 - observational confidentiality is verified via IR self-composition with
@@ -147,7 +147,7 @@ larger model or output-constraining post-processing).
 ## Foundational literature
 
 The [foundational security literature
-analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
+analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md)
 identifies the classical integrity and IFC lineage (Biba, LOMAC, Denning,
 declassification, endorsement, noninterference) underlying Principal Context
 and ITES. This lineage is now integrated into the research positioning (see

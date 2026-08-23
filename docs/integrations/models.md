@@ -35,7 +35,7 @@ gated by model-weight access and suitable compute and is not claimed here.
 ## Dual-backend laptop smoke
 
 The checked-in plan is
-`experiments/manifests/planning-laptop-smoke-v1.json`. It fixes two scenarios,
+`research/experiments/manifests/planning-laptop-smoke-v1.json`. It fixes two scenarios,
 four modes, seed zero, one repetition, the SmolLM2 source revision, and
 llama.cpp release `b9637` with Q8_0 conversion. Transformers and llama.cpp are
 distinct model identities; their outputs must not be pooled as though the
@@ -49,16 +49,16 @@ and obtaining the pinned
 local protocols with hashes of the actual artifacts:
 
 ```text
-python scripts/prepare_laptop_smoke.py --plan experiments/manifests/planning-laptop-smoke-v1.json --transformers-weight-manifest LOCAL_MANIFEST --transformers-runtime-version VERSION --llama-binary LLAMA_SERVER --gguf MODEL.gguf --conversion-command "RECORDED COMMAND" --output experiments/local-runs/laptop-smoke --licence-reviewed
+python scripts/prepare_laptop_smoke.py --plan research/experiments/manifests/planning-laptop-smoke-v1.json --transformers-weight-manifest LOCAL_MANIFEST --transformers-runtime-version VERSION --llama-binary LLAMA_SERVER --gguf MODEL.gguf --conversion-command "RECORDED COMMAND" --output research/experiments/local-runs/laptop-smoke --licence-reviewed
 ```
 
 Preflight both adapters and inspect all 16 cells before invocation:
 
 ```text
-conflux plan laptop-smoke --plan experiments/manifests/planning-laptop-smoke-v1.json --transformers-config experiments/local-runs/laptop-smoke/transformers.json --llama-config experiments/local-runs/laptop-smoke/llama_cpp_q8_0.json
+conflux plan laptop-smoke --plan research/experiments/manifests/planning-laptop-smoke-v1.json --transformers-config research/experiments/local-runs/laptop-smoke/transformers.json --llama-config research/experiments/local-runs/laptop-smoke/llama_cpp_q8_0.json
 ```
 
-Add `--execute-local --output output/runs/laptop-planning-smoke-v1` only as a
+Add `--execute-local --output research/output/runs/laptop-planning-smoke-v1` only as a
 deliberate operator action. The endpoint must remain loopback. The resulting
 bundle records raw failures rather than repairing malformed tiny-model output,
 then requires human review before any larger suite or GPU run.

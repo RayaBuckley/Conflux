@@ -23,9 +23,9 @@ bounded-model statements, not live integration findings. Planning, AgentDojo,
 Cedar-parity, and delegation-activation claims remain pending until their
 gated protocols produce completed retained result JSON with verified checksums.
 
-Use the [claim ledger](../../docs/evidence/CLAIMS.md) for claim strength, the
-[task registry](../../docs/evidence/task-registry.json) for current programme status, and
-the [report analysis](../../reports/analysis/PROJECT_ANALYSIS.md) for historical
+Use the [claim ledger](../../../docs/evidence/CLAIMS.md) for claim strength, the
+[task registry](../../../docs/evidence/task-registry.json) for current programme status, and
+the [report analysis](../../../research/reports/analysis/PROJECT_ANALYSIS.md) for historical
 reconciliation. Do not infer current claims from archived manuscript sources.
 
 ## Build

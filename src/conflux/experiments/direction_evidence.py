@@ -54,10 +54,10 @@ DISCLOSURE_PROPERTIES = (
 def generate_direction_evidence_bundle(source_commit: str, output: Path, *, repo_root: Path | None = None) -> None:
     """Generate the offline direction-readiness and security-mutation evidence bundle."""
     root = repo_root or _ROOT
-    laptop_plan = root / "experiments/manifests/planning-laptop-smoke-v1.json"
-    planning_suite = root / "experiments/suites/planning-diagnostic-v1.yaml"
+    laptop_plan = root / "research/experiments/manifests/planning-laptop-smoke-v1.json"
+    planning_suite = root / "research/experiments/suites/planning-diagnostic-v1.yaml"
     planning_source = root / "src/conflux/experiments/planning_runner.py"
-    agentdojo_manifest = root / "experiments/manifests/agentdojo-smoke.yaml"
+    agentdojo_manifest = root / "research/experiments/manifests/agentdojo-smoke.yaml"
     output.mkdir(parents=True, exist_ok=True)
     laptop = _laptop_preflight(laptop_plan, planning_source)
     planning = _planning_preflight(planning_source)

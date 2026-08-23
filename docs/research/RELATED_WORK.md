@@ -11,13 +11,13 @@ control mechanism. Whole-action ITES is presently a conservative special case;
 trusted selector roles and pointwise argument authorisation are implemented;
 richer operation-specific argument-effect semantics remain proposed work.
 
-The [current report analysis](../../reports/analysis/PROJECT_ANALYSIS.md) explains
+The [current report analysis](../../research/reports/analysis/PROJECT_ANALYSIS.md) explains
 how the detailed archived taxonomy and literature matrix relate to the current
 repository. The [comparative defence verification
-analysis](../../reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md) proposes a
+analysis](../../research/reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md) proposes a
 research design for verifying contemporary agent defences against the Conflux
 PE property. The [foundational security literature
-analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
+analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md)
 identifies the classical integrity and IFC lineage underlying Principal
 Context and ITES. Very recent preprints, titles, author lists, and reported
 numbers must be checked against primary sources before publication. This

@@ -10,7 +10,7 @@
     ".ae3code/**",
     ".local/**",
     "node_modules/**",
-    "reports/analysis/**",
-    "reports/archive/**"
+    "research/reports/analysis/**",
+    "research/reports/archive/**"
   ]
 }

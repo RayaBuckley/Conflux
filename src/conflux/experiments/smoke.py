@@ -48,7 +48,7 @@ def generate_smoke_bundle(
     output.mkdir(parents=True, exist_ok=True)
     manifest.materialise(output)
     authorised = _run(root / "examples" / "basic.yaml", execute=True)
-    blocked_path = root / "experiments" / "suites" / "canonical" / "env-01-confidential-handoff.yaml"
+    blocked_path = root / "research" / "experiments" / "suites" / "canonical" / "env-01-confidential-handoff.yaml"
     blocked = _run(blocked_path, execute=False)
     negative = _negative_control(blocked_path)
 

@@ -89,7 +89,7 @@ Each defective controller violates the PE invariant:
 ### Evidence
 
 Results are retained as schema-checked JSON under
-`output/runs/controller-synthesis-v1/` with:
+`research/output/runs/controller-synthesis-v1/` with:
 
 - the finite instance (principals, actions, ACS);
 - the synthesised controller decisions;

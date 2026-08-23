@@ -7,28 +7,28 @@
 | Provenance is not a read ACL | Implemented | separate read port and reader/author inversion tests |
 | Branches are isolated alternatives | Implemented | one transition kernel and branch-parent tests |
 | Native SLED returns minimal counterexamples | Implemented within finite model | breadth-first checker tests |
-| The current native reproduction detects the seeded monitor defects | Bounded evidence | `output/runs/native-sled-reproduction-v1/`: five of five defective monitors, each with a one-step witness; three fixture pairs and fixed finite bounds only |
+| The current native reproduction detects the seeded monitor defects | Bounded evidence | `research/output/runs/native-sled-reproduction-v1/`: five of five defective monitors, each with a one-step witness; three fixture pairs and fixed finite bounds only |
 | Dynamic effects are re-authorised at execution time | Implemented | planning runtime, revocation, certificate, and provider tests |
 | Authority-bearing action arguments cannot borrow authority from content or consent | Implemented | trusted argument roles, pointwise Principal checks, fail-closed missing policy, and selector mutation tests |
 | Redacted event views do not copy hidden payload fields | Implemented | deterministic audience projection and unsafe-redaction/hidden-error mutants; assumes callers use the canonical projector |
 | Attribution is evidence-derived rather than model-asserted | Implemented | structured provenance/context/policy records and tests rejecting trusted model explanations |
 | Scoped one-use delegation is modeled without activating authority transfer | Implemented model, runtime disabled | exact issuer/beneficiary/operation/resource/argument bindings, expiry, revocation, atomic idempotent consumption, lifecycle projection, and seven one-step mutant witnesses; ITES still denies delegation |
-| The argument, disclosure, attribution, and delegation monitors reject their seeded defects | Bounded evidence | `output/runs/direction-readiness-v1/security-mutations.json`; the canonical finite models exhaust safely and every retained mutant has a one-transition witness under the recorded bounds |
-| The installed offline vertical slice is runnable without credentials | Implemented | `output/validation/6fe6b584500e/`: clean-wheel doctor, demo, planning, SLED, and report smoke validation |
+| The argument, disclosure, attribution, and delegation monitors reject their seeded defects | Bounded evidence | `research/output/runs/direction-readiness-v1/security-mutations.json`; the canonical finite models exhaust safely and every retained mutant has a one-transition witness under the recorded bounds |
+| The installed offline vertical slice is runnable without credentials | Implemented | `research/output/validation/6fe6b584500e/`: clean-wheel doctor, demo, planning, SLED, and report smoke validation |
 | The planning comparison executes no generated code | Implemented | `ModeledProgram` is inert validated data; architecture tests exclude evaluation, compilation, shell, import, and executor paths |
 | The optional operational code adapter cannot exceed its declared envelope | Implemented at adapter boundary | container arguments, mount/path checks, and fail-closed sandbox tests; host/container implementation remains in the TCB and is not used by the planning comparison |
 | Solver results match the supported runtime subset | Bounded evidence | serialisable IR, interpreter differential tests, optional Z3 backend |
-| COI reduction preserves the selected fixture verdicts | Bounded evidence | `output/runs/sled-coi-reduction-v1/`: two finite IR fixtures agree under the independent reference interpreter; both reduce variables, rules, or reachable states, and the unsafe witness lifts; Z3 BMC with COI reduction confirms equivalence on both fixtures (safe: bounded safe, unsafe: counterexample found and lifted) |
-| Z3 bounded model checking agrees with the reference interpreter | Bounded evidence | `output/runs/verify-coi-safe/`, `output/runs/verify-coi-unsafe/`, `output/runs/verify-coi-original-safe/`, `output/runs/verify-coi-original-unsafe/`: four IR fixtures verified with Z3 BMC and COI reduction; safe models bounded safe, unsafe models produce counterexamples; original and reduced verdicts agree in all cases |
-| The Cedar adapter is ready for a pinned differential run | Evaluation ready | `output/runs/cedar-differential-preflight-v1/` validates the bundle and corpus, translates PARC requests, and records oracle decisions; Cedar cells are explicitly unavailable and establish no parity |
+| COI reduction preserves the selected fixture verdicts | Bounded evidence | `research/output/runs/sled-coi-reduction-v1/`: two finite IR fixtures agree under the independent reference interpreter; both reduce variables, rules, or reachable states, and the unsafe witness lifts; Z3 BMC with COI reduction confirms equivalence on both fixtures (safe: bounded safe, unsafe: counterexample found and lifted) |
+| Z3 bounded model checking agrees with the reference interpreter | Bounded evidence | `research/output/runs/verify-coi-safe/`, `research/output/runs/verify-coi-unsafe/`, `research/output/runs/verify-coi-original-safe/`, `research/output/runs/verify-coi-original-unsafe/`: four IR fixtures verified with Z3 BMC and COI reduction; safe models bounded safe, unsafe models produce counterexamples; original and reduced verdicts agree in all cases |
+| The Cedar adapter is ready for a pinned differential run | Evaluation ready | `research/output/runs/cedar-differential-preflight-v1/` validates the bundle and corpus, translates PARC requests, and records oracle decisions; Cedar cells are explicitly unavailable and establish no parity |
 | Cedar decisions match the in-memory oracle | Not yet evidenced | the exact 4.12.0 binary has not completed the retained differential matrix |
 | Conflux is secure for unbounded deployments | Not claimed | finite bounds and abstractions do not prove unbounded deployments |
 | AgentDojo integration preserves upstream semantics | Implemented for translation | pinned 0.1.35 structures and raw fixture; Conflux annotations are additional assumptions |
-| AgentDojo establishes Conflux utility or efficacy | Bounded evidence | `output/runs/agentdojo-1b5-nf4-v1/`: six-cell protocol executed with Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all six cells completed (benign: security=True, utility=False; attacked: security=False, utility=False); 1.5B model is too small to complete tasks but the pipeline runs end-to-end including attack injection and ITES mediation; the 3B model produces malformed JSON output; the 7B NF4 model timed out at 10 minutes on this GPU |
-| Open-ended planning improves utility | Bounded evidence | `output/runs/planning-pilot-1b5-v1/`: eight-cell pilot completed with Qwen2.5-1.5B-Instruct NF4; all cells `complete=True`; model is too small for high utility but the planning pipeline executes end-to-end |
+| AgentDojo establishes Conflux utility or efficacy | Bounded evidence | `research/output/runs/agentdojo-1b5-nf4-v1/`: six-cell protocol executed with Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all six cells completed (benign: security=True, utility=False; attacked: security=False, utility=False); 1.5B model is too small to complete tasks but the pipeline runs end-to-end including attack injection and ITES mediation; the 3B model produces malformed JSON output; the 7B NF4 model timed out at 10 minutes on this GPU |
+| Open-ended planning improves utility | Bounded evidence | `research/output/runs/planning-pilot-1b5-v1/`: eight-cell pilot completed with Qwen2.5-1.5B-Instruct NF4; all cells `complete=True`; model is too small for high utility but the planning pipeline executes end-to-end |
 | Self-hosted model output is reproducible across hardware or runtimes | Not claimed | identity and sampling are recorded, but no model-generated bundle or cross-hardware comparison is retained |
 | Cloud policy behaviour matches a provider | Not claimed | current AWS adapter is an explicit fail-closed subset |
-| The current evidence pipeline handles allow, block, and vulnerable-control cases | Bounded evidence | `output/runs/smoke/`, two scripted cases, one one-step negative-control witness |
+| The current evidence pipeline handles allow, block, and vulnerable-control cases | Bounded evidence | `research/output/runs/smoke/`, two scripted cases, one one-step negative-control witness |
 | Observational confidentiality holds on finite IR fixtures | Bounded evidence | IR self-composition with Z3 BMC; safe fixture bounded safe, unsafe fixture produces counterexample showing observation divergence; bounded to finite product state spaces; not a noninterference proof |
 | Dual-LLM satisfies its own property Q but violates Conflux PE | Bounded evidence | `tests/test_defence_models.py`; Dual-LLM native property (processor never executes) is SAFE; Dual-LLM PE property is UNSAFE with counterexample; ITES reference PE property is SAFE; finite IR models only |
 | ITES defective requester-only controller violates PE | Bounded evidence | `tests/test_defence_models.py`; REQUESTER_ONLY negative control is UNSAFE with PE counterexample; ITES reference is SAFE |
@@ -44,12 +44,12 @@ reads do not establish noninterference; and source-set taint and
 provenance-aware policy enforcement have extensive prior literature. See
 [ADR 012](../decisions/012-foundational-security-lineage.md) and the
 [foundational security literature
-analysis](../../reports/analysis/2026-08-13-foundational-security-literature.md)
+analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md)
 for the detailed comparison and candidate distinctions that may survive
 prior-art search.
 
 The archived paper and report packages are historical evidence, not status
-sources of truth. `reports/analysis/` reconciles them without promoting their
+sources of truth. `research/reports/analysis/` reconciles them without promoting their
 snapshot claims.
 The M3 smoke result is pipeline-readiness evidence only; it is not promoted to
 a deployment-security or external-utility claim.

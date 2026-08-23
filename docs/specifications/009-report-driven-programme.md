@@ -5,7 +5,7 @@ Status: accepted for staged implementation
 ## Source and evidence policy
 
 The immutable source package is archived under
-`reports/archive/2026-07-29-implementation-programme/` from upstream commit
+`research/reports/archive/2026-07-29-implementation-programme/` from upstream commit
 `19cb684`.
 This specification reconciles that report with the canonical migration at
 `26213bf`. Raw reports are never edited, and archived-paper results are never
@@ -59,14 +59,14 @@ Every task ends in one of four dispositions:
 
 | Task | Current disposition | Evidence |
 |---|---|---|
-| BASE-001, BASE-002 | implemented | `publications/paper/ARCHIVE_MANIFEST.json`, `docs/BASELINE_2026-07.md` |
+| BASE-001, BASE-002 | implemented | `research/publications/paper/ARCHIVE_MANIFEST.json`, `docs/BASELINE_2026-07.md` |
 | SEC-005 | implemented | `ProposalBatch`, ordered-plan kernel and execution tests |
 | ARCH-002 | implemented | shared semantic corpus under `tests/semantics/` |
 | TRACE-002 | implemented | `schemas/`, deterministic records, schema tests |
 | RUNTIME-001..RUNTIME-004 | implemented | deterministic and confined adapter tests |
 | CLI-001, CLI-002 | implemented | installed CLI and mediated chat tests |
 | EXP-001, EXP-002 | implemented | strict manifests and separate versioned suites |
-| EXP-003, EXP-004 | implemented | minimal control witnesses and `output/runs/smoke/` |
+| EXP-003, EXP-004 | implemented | minimal control witnesses and `research/output/runs/smoke/` |
 | MODEL-001, MODEL-002 | partial / externally gated | offline adapters pass; live endpoint and weights unavailable |
 
 ## Completion update (31 July 2026)
@@ -87,7 +87,7 @@ The report's remaining executable surfaces are now present:
 Live model, AgentDojo, solver-binary, sandbox, and cluster results remain
 externally gated where the corresponding dependency is unavailable. The
 authoritative item-by-item disposition is `docs/evidence/task-registry.json`; raw report
-packages under `reports/archive/` remain immutable evidence.
+packages under `research/reports/archive/` remain immutable evidence.
 
 ## Milestone acceptance
 

@@ -140,7 +140,9 @@ def _protocol(
         },
         source_commit=source_commit,
         inputs={
-            "experiments/manifests/planning-laptop-smoke-v1.json": _sha256(ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"),
+            "research/experiments/manifests/planning-laptop-smoke-v1.json": _sha256(
+                ROOT / "research/experiments/manifests/planning-laptop-smoke-v1.json",
+            ),
         },
         model=model,
         prompts={"planner": plan.prompt_template_version},
@@ -148,7 +150,7 @@ def _protocol(
         repetitions=plan.repetitions,
         bounds=dict(plan.bounds),
         environment={"execution": "modeled_actions_only", **environment},
-        output_directory=f"output/runs/laptop-planning-smoke-v1/{backend}",
+        output_directory=f"research/output/runs/laptop-planning-smoke-v1/{backend}",
         rerun_command=(
             "conflux",
             "plan",

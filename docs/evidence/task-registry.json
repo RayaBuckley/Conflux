@@ -23,7 +23,7 @@
     {
       "ids": ["EXP-001", "EXP-002", "EXP-003", "EXP-004"],
       "status": "implemented",
-      "evidence": ["experiments/", "output/runs/smoke/", "tests/test_experiment_manifest.py", "tests/test_smoke_evidence.py", "tests/integration/test_negative_controls.py"]
+      "evidence": ["research/experiments/", "research/output/runs/smoke/", "tests/test_experiment_manifest.py", "tests/test_smoke_evidence.py", "tests/integration/test_negative_controls.py"]
     },
     {
       "ids": ["SLEDMC-001", "SLEDMC-002", "SLEDMC-003"],
@@ -33,7 +33,7 @@
     {
       "ids": ["SLEDMC-004"],
       "status": "bounded_evidence",
-      "evidence": ["src/conflux/experiments/native_evidence.py", "tests/test_native_sled_evidence.py", "output/runs/native-sled-reproduction-v1/manifest.json", "output/runs/native-sled-reproduction-v1/result.json"]
+      "evidence": ["src/conflux/experiments/native_evidence.py", "tests/test_native_sled_evidence.py", "research/output/runs/native-sled-reproduction-v1/manifest.json", "research/output/runs/native-sled-reproduction-v1/result.json"]
     },
     {
       "ids": ["MODEL-001"],
@@ -44,18 +44,18 @@
     {
       "ids": ["MODEL-002"],
       "status": "bounded_evidence",
-      "evidence": ["src/conflux/ports/model.py", "src/conflux/adapters/models/local_transformers.py", "src/conflux/cli.py", "tests/test_local_models.py", "output/runs/agentdojo-1b5-nf4-v1/transformers.json", "output/runs/planning-pilot-1b5-v1/result.json"],
+      "evidence": ["src/conflux/ports/model.py", "src/conflux/adapters/models/local_transformers.py", "src/conflux/cli.py", "tests/test_local_models.py", "research/output/runs/agentdojo-1b5-nf4-v1/transformers.json", "research/output/runs/planning-pilot-1b5-v1/result.json"],
       "gap": "Weights remain operator-managed; 1.5B NF4 model retained with verified SHA-256 manifest"
     },
     {
       "ids": ["AGENTDOJO-001", "AGENTDOJO-002"],
       "status": "implemented",
-      "evidence": ["experiments/agentdojo.lock", "docs/integrations/agentdojo.md", "src/conflux/adapters/benchmarks/agentdojo_v1.py", "tests/fixtures/agentdojo/v0.1.35/", "tests/test_agentdojo_adapter.py"]
+      "evidence": ["research/experiments/agentdojo.lock", "docs/integrations/agentdojo.md", "src/conflux/adapters/benchmarks/agentdojo_v1.py", "tests/fixtures/agentdojo/v0.1.35/", "tests/test_agentdojo_adapter.py"]
     },
     {
       "ids": ["AGENTDOJO-003"],
       "status": "bounded_evidence",
-      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "experiments/suites/agentdojo-tool-schemas-v1.json", "experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py", "output/runs/agentdojo-1b5-nf4-v1/result.json"],
+      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "research/experiments/suites/agentdojo-tool-schemas-v1.json", "research/experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py", "research/output/runs/agentdojo-1b5-nf4-v1/result.json"],
       "gap": "1.5B model is too small for task utility; 3B produces malformed JSON; 7B NF4 timed out on this GPU"
     },
     {
@@ -83,12 +83,12 @@
     {
       "ids": ["CI-001", "CI-002", "PAPER-001"],
       "status": "implemented",
-      "evidence": ["scripts/validate.py", "scripts/validate.ps1", ".github/workflows/validate.yml", "output/validation/6fe6b584500e/", "publications/paper/ARCHIVE_MANIFEST.json", "publications/manuscript/"]
+      "evidence": ["scripts/validate.py", "scripts/validate.ps1", ".github/workflows/validate.yml", "research/output/validation/6fe6b584500e/", "research/publications/paper/ARCHIVE_MANIFEST.json", "research/publications/manuscript/"]
     },
     {
       "ids": ["PAPER-002"],
       "status": "partial",
-      "evidence": ["publications/manuscript/conflux_fourth_year_2026.tex", "output/runs/smoke/"],
+      "evidence": ["research/publications/manuscript/conflux_fourth_year_2026.tex", "research/output/runs/smoke/"],
       "gap": "Real-model and external-benchmark numerical placeholders await matching retained evidence."
     },
     {
@@ -105,40 +105,40 @@
     {
       "ids": ["PLAN-DYN-016"],
       "status": "bounded_evidence",
-      "evidence": ["experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "output/runs/direction-readiness-v1/planning-preflight.json", "output/runs/planning-pilot-1b5-v1/result.json"],
+      "evidence": ["research/experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "research/output/runs/direction-readiness-v1/planning-preflight.json", "research/output/runs/planning-pilot-1b5-v1/result.json"],
       "gap": "1.5B model is too small for high utility; 7B NF4 timed out on this GPU"
     },
     {
       "ids": ["DIR-PLAN-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "experiments/manifests/planning-laptop-smoke-v1.json", "src/conflux/experiments/laptop_smoke.py", "scripts/prepare_laptop_smoke.py", "tests/test_laptop_planning_smoke.py", "output/runs/direction-readiness-v1/laptop-planning-preflight.json"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "research/experiments/manifests/planning-laptop-smoke-v1.json", "src/conflux/experiments/laptop_smoke.py", "scripts/prepare_laptop_smoke.py", "tests/test_laptop_planning_smoke.py", "research/output/runs/direction-readiness-v1/laptop-planning-preflight.json"],
       "gap": "The fixed 16-cell dual-backend laptop smoke has not been deliberately run and retained."
     },
     {
       "ids": ["DIR-DELEG-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/delegation.py", "src/conflux/evaluation/delegation_records.py", "src/conflux/evaluation/delegation_verification.py", "tests/test_delegation_foundation.py", "output/runs/direction-readiness-v1/security-mutations.json"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/delegation.py", "src/conflux/evaluation/delegation_records.py", "src/conflux/evaluation/delegation_verification.py", "tests/test_delegation_foundation.py", "research/output/runs/direction-readiness-v1/security-mutations.json"],
       "gap": "The scoped one-use model is implemented and runtime consumption remains deliberately disabled pending live Cedar parity and activation-gate evidence."
     },
     {
       "ids": ["DIR-ARGPOL-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/policy/argument_policy.py", "src/conflux/application/policy.py", "tests/test_argument_visibility_attribution.py", "output/runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/policy/argument_policy.py", "src/conflux/application/policy.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-VIS-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py", "tests/test_argument_visibility_attribution.py", "output/runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-ATTR-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ites/state.py", "src/conflux/evaluation/disclosure_verification.py", "tests/test_argument_visibility_attribution.py", "output/runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ites/state.py", "src/conflux/evaluation/disclosure_verification.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-SLED-001"],
       "status": "bounded_evidence",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/verification/reduction.py", "tests/test_verification_reduction.py", "output/runs/sled-coi-reduction-v1/manifest.json", "output/runs/sled-coi-reduction-v1/result.json"]
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/verification/reduction.py", "tests/test_verification_reduction.py", "research/output/runs/sled-coi-reduction-v1/manifest.json", "research/output/runs/sled-coi-reduction-v1/result.json"]
     },
     {
       "ids": ["DIR-BENCH-001"],
@@ -149,7 +149,7 @@
     {
       "ids": ["DIR-PDP-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "experiments/suites/cedar-differential-v1.json", "output/runs/cedar-differential-preflight-v1/manifest.json", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
+      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "research/experiments/suites/cedar-differential-v1.json", "research/output/runs/cedar-differential-preflight-v1/manifest.json", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
       "gap": "Cedar was not invoked. Bounded parity requires the pinned binary to complete every differential cell with agreement."
     },
     {
@@ -177,7 +177,7 @@
     "symbolic arbitrary-program verification",
     "production PDP/framework integrations",
     "live paper-result generation without matching retained evidence",
-    "foundational bibliography audit (primary-source verification of Priority A papers in manuscript/REFERENCES.md)",
+    "foundational bibliography audit (primary-source verification of Priority A papers in research/publications/manuscript/REFERENCES.md)",
     "literature matrix (classical integrity/IFC stream with structured fields: work, year, stream, security objective, label/provenance model, authority model, downgrading model, formal guarantee, implementation, relation to Conflux)",
     "novelty audit (search repository for claims made unsafe by classical IFC/integrity precedent)",
     "noninterference/observational confidentiality verification (relational property requiring execution-pair comparison)"
