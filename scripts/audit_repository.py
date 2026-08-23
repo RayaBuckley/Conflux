@@ -83,6 +83,7 @@ ADDITIONAL_TASK_IDS = {
 }
 APPROVED_TOP_LEVEL_DIRECTORIES = {
     ".github",
+    ".vscode",
     "docs",
     "examples",
     "experiments",

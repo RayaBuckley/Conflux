@@ -30,6 +30,8 @@ htmlcov/
 .idea/
 .vscode/
 !.vscode/settings.json
+!.vscode/pyrightconfig.json
+!.vscode/ltexrc.json
 *.swp
 *.swo
 .DS_Store
