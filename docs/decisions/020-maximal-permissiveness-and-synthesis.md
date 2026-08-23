@@ -1,5 +1,6 @@
-# Feature Specification 015: Maximal permissiveness and controller synthesis
+# Specification 020: Maximal permissiveness and controller synthesis
 
+Type: specification
 Status: accepted for implementation
 
 ## Objective

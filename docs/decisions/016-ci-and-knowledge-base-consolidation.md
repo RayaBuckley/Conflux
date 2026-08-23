@@ -1,5 +1,6 @@
-# Feature Specification 011: CI and Knowledge-base Consolidation
+# Specification 016: CI and Knowledge-base Consolidation
 
+Type: specification
 Status: accepted for implementation on `main`
 
 ## Goal and success criteria

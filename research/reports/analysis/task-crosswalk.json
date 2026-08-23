@@ -1548,7 +1548,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-PLAN-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1561,7 +1561,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-DELEG-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1574,7 +1574,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-ARGPOL-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1587,7 +1587,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-VIS-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1600,7 +1600,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-ATTR-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1613,7 +1613,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-SLED-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1626,7 +1626,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-BENCH-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1639,7 +1639,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-PDP-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,
@@ -1652,7 +1652,7 @@
       "relationship": "canonical_task",
       "canonical_task_id": "DIR-GOV-001",
       "covered_by": [
-        "docs/specifications/013-fourth-year-direction-programme.md",
+        "docs/decisions/018-fourth-year-direction-programme.md",
         "docs/evidence/task-registry.json"
       ],
       "superseded_by": null,

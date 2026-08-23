@@ -1,5 +1,6 @@
-# Specification 013: Fourth-Year Direction Programme
+# Specification 018: Fourth-Year Direction Programme
 
+Type: specification
 Status: accepted, staged implementation
 Source snapshot: `research/reports/archive/2026-08-02-fourth-year-direction/`
 

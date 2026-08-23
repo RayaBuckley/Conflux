@@ -34,8 +34,7 @@ owner; linked documents should reference that owner rather than restating it.
 - [Public API reference](reference/REFERENCE.md): supported Python and CLI surfaces.
 - [Runtime](reference/RUNTIME.md): scenario and provider contracts.
 - [Glossary](reference/GLOSSARY.md): canonical terminology.
-- [Architecture decisions](decisions/README.md) and
-  [feature specifications](specifications/): decision history and accepted work.
+- [Decision records](decisions/README.md): ADRs and feature specifications.
 
 ## Verification and evidence
 

@@ -1,7 +1,7 @@
 # Claim-to-Evidence Ledger
 
 | Claim | Status | Evidence and limits |
-|---|---|---|
+| --- | --- | --- |
 | Empty/unknown context cannot authorise an effect | Implemented | policy and ITES tests; assumes mediation cannot be bypassed |
 | Influence is never silently removed by nested execution | Implemented | immutable provenance and monotonic-context tests |
 | Provenance is not a read ACL | Implemented | separate read port and reader/author inversion tests |

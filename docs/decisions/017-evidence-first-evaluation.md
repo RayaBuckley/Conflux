@@ -1,5 +1,6 @@
-# Feature Specification 012: Evidence-first Evaluation
+# Specification 017: Evidence-first Evaluation
 
+Type: specification
 Status: accepted for implementation on `main`
 
 ## Goal and success criteria

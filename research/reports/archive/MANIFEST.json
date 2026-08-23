@@ -18,7 +18,7 @@
                 "2026-07-29-implementation-programme"
             ],
             "canonical_successors": [
-                "docs/specifications/008-canonical-migration-and-p0-repair.md",
+                "docs/decisions/013-canonical-migration-and-p0-repair.md",
                 "docs/reference/SLED.md"
             ],
             "limitations": [
@@ -78,7 +78,7 @@
             ],
             "superseded_by": [],
             "canonical_successors": [
-                "docs/specifications/009-report-driven-programme.md",
+                "docs/decisions/014-report-driven-programme.md",
                 "docs/evidence/task-registry.json",
                 "research/publications/manuscript/conflux_fourth_year_2026.tex"
             ],
@@ -97,7 +97,7 @@
             "supersedes": [],
             "superseded_by": [],
             "canonical_successors": [
-                "docs/specifications/010-open-ended-dynamic-planning.md",
+                "docs/decisions/015-open-ended-dynamic-planning.md",
                 "docs/evidence/task-registry.json"
             ],
             "limitations": [
@@ -115,12 +115,12 @@
             "supersedes": [],
             "superseded_by": [],
             "canonical_successors": [
-                "docs/specifications/012-evidence-first-evaluation.md",
+                "docs/decisions/017-evidence-first-evaluation.md",
                 "docs/evidence/EVALUATION.md",
                 "docs/evidence/task-registry.json"
             ],
             "limitations": [
-                "Its hosted credentialed-run and executable generated-code assumptions are superseded by specification 012; live model evidence remains deliberately deferred."
+                "Its hosted credentialed-run and executable generated-code assumptions are superseded by specification 017; live model evidence remains deliberately deferred."
             ]
         },
         {
@@ -136,12 +136,12 @@
                 "2026-08-14-reviewer-support"
             ],
             "canonical_successors": [
-                "docs/specifications/013-fourth-year-direction-programme.md",
+                "docs/decisions/018-fourth-year-direction-programme.md",
                 "docs/evidence/task-registry.json",
                 "research/reports/analysis/PROJECT_ANALYSIS.md"
             ],
             "limitations": [
-                "The package contains unresolved filecite markers and open design questions; specification 013 records the accepted choices.",
+                "The package contains unresolved filecite markers and open design questions; specification 018 records the accepted choices.",
                 "Some recommendations overlap implementation that predates the snapshot; docs/evidence/task-registry.json owns current status."
             ]
         },

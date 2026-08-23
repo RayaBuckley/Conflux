@@ -32,7 +32,7 @@ easier.
 
 ## Routing
 
-- Normative behavior: `docs/specifications/`, ADRs, and security documentation.
+- Normative behavior: `docs/decisions/`, ADRs, and security documentation.
 - Current task state: `docs/evidence/task-registry.json`.
 - Claim strength: `docs/evidence/CLAIMS.md`.
 - Historical task lineage: `task-crosswalk.json`.
@@ -54,7 +54,7 @@ claim ledger as applicable; then run audit, full validation, and diff review.
 
 ## Current research sequence
 
-Specification 013 deliberately orders work as COI reduction, a small
+Specification 018 deliberately orders work as COI reduction, a small
 operator-gated local-model smoke, argument/disclosure/attribution foundations,
 pinned Cedar parity, then modeled delegation. Do not reorder these stages or
 promote a later capability merely because its type or adapter is easy to add.

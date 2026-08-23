@@ -94,7 +94,7 @@
     {
       "ids": ["PLAN-DYN-000", "PLAN-DYN-001", "PLAN-DYN-002", "PLAN-DYN-003", "PLAN-DYN-004", "PLAN-DYN-005", "PLAN-DYN-006", "PLAN-DYN-007", "PLAN-DYN-008", "PLAN-DYN-009", "PLAN-DYN-010", "PLAN-DYN-011", "PLAN-DYN-013", "PLAN-DYN-014", "PLAN-DYN-015", "PLAN-DYN-017"],
       "status": "implemented",
-      "evidence": ["docs/specifications/010-open-ended-dynamic-planning.md", "src/conflux/planning/", "src/conflux/evaluation/planning.py", "src/conflux/verification/plan_ir.py", "tests/planning/"]
+      "evidence": ["docs/decisions/015-open-ended-dynamic-planning.md", "src/conflux/planning/", "src/conflux/evaluation/planning.py", "src/conflux/verification/plan_ir.py", "tests/planning/"]
     },
     {
       "ids": ["PLAN-DYN-012"],
@@ -111,51 +111,51 @@
     {
       "ids": ["DIR-PLAN-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "research/experiments/manifests/planning-laptop-smoke-v1.json", "src/conflux/experiments/laptop_smoke.py", "scripts/prepare_laptop_smoke.py", "tests/test_laptop_planning_smoke.py", "research/output/runs/direction-readiness-v1/laptop-planning-preflight.json"],
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "research/experiments/manifests/planning-laptop-smoke-v1.json", "src/conflux/experiments/laptop_smoke.py", "scripts/prepare_laptop_smoke.py", "tests/test_laptop_planning_smoke.py", "research/output/runs/direction-readiness-v1/laptop-planning-preflight.json"],
       "gap": "The fixed 16-cell dual-backend laptop smoke has not been deliberately run and retained."
     },
     {
       "ids": ["DIR-DELEG-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/delegation.py", "src/conflux/evaluation/delegation_records.py", "src/conflux/evaluation/delegation_verification.py", "tests/test_delegation_foundation.py", "research/output/runs/direction-readiness-v1/security-mutations.json"],
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/domain/delegation.py", "src/conflux/evaluation/delegation_records.py", "src/conflux/evaluation/delegation_verification.py", "tests/test_delegation_foundation.py", "research/output/runs/direction-readiness-v1/security-mutations.json"],
       "gap": "The scoped one-use model is implemented and runtime consumption remains deliberately disabled pending live Cedar parity and activation-gate evidence."
     },
     {
       "ids": ["DIR-ARGPOL-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/policy/argument_policy.py", "src/conflux/application/policy.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/domain/actions.py", "src/conflux/policy/argument_policy.py", "src/conflux/application/policy.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-VIS-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ports/policy.py", "src/conflux/policy/adapters.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-ATTR-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ites/state.py", "src/conflux/evaluation/disclosure_verification.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/domain/disclosure.py", "src/conflux/ites/state.py", "src/conflux/evaluation/disclosure_verification.py", "tests/test_argument_visibility_attribution.py", "research/output/runs/direction-readiness-v1/security-mutations.json"]
     },
     {
       "ids": ["DIR-SLED-001"],
       "status": "bounded_evidence",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/verification/reduction.py", "tests/test_verification_reduction.py", "research/output/runs/sled-coi-reduction-v1/manifest.json", "research/output/runs/sled-coi-reduction-v1/result.json"]
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/verification/reduction.py", "tests/test_verification_reduction.py", "research/output/runs/sled-coi-reduction-v1/manifest.json", "research/output/runs/sled-coi-reduction-v1/result.json"]
     },
     {
       "ids": ["DIR-BENCH-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py"],
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py"],
       "gap": "No deliberate self-hosted-model AgentDojo comparison is retained."
     },
     {
       "ids": ["DIR-PDP-001"],
       "status": "evaluation_ready",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "research/experiments/suites/cedar-differential-v1.json", "research/output/runs/cedar-differential-preflight-v1/manifest.json", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "research/experiments/suites/cedar-differential-v1.json", "research/output/runs/cedar-differential-preflight-v1/manifest.json", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
       "gap": "Cedar was not invoked. Bounded parity requires the pinned binary to complete every differential cell with agreement."
     },
     {
       "ids": ["DIR-GOV-001"],
       "status": "implemented",
-      "evidence": ["docs/specifications/013-fourth-year-direction-programme.md", "docs/templates/FEATURE_SPEC.md", "docs/AI_AGENT_GUIDE.md", "scripts/audit_repository.py"]
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "docs/templates/FEATURE_SPEC.md", "docs/AI_AGENT_GUIDE.md", "scripts/audit_repository.py"]
     },
     {
       "ids": ["SLEDV-005"],

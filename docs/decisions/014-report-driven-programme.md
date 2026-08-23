@@ -1,5 +1,6 @@
-# Feature Specification 009: Report-driven research programme
+# Specification 014: Report-driven research programme
 
+Type: specification
 Status: accepted for staged implementation
 
 ## Source and evidence policy

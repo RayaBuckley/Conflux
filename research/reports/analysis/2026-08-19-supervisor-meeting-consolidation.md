@@ -58,7 +58,7 @@ evidence, evaluation ready, and deferred.
 - Deterministic scenarios, traces, schemas, manifests, negative
   controls, resumable jobs
 
-**Evidence:** [Spec 010](../../../docs/specifications/010-open-ended-dynamic-planning.md),
+**Evidence:** [Spec 015](../../../docs/decisions/015-open-ended-dynamic-planning.md),
 [tests/planning/](../../../tests/planning/),
 [output/runs/smoke/](../../../research/output/runs/smoke/)
 

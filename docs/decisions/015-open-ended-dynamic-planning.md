@@ -1,5 +1,6 @@
-# Feature Specification 010: Open-ended dynamic planning
+# Specification 015: Open-ended dynamic planning
 
+Type: specification
 Status: accepted for staged implementation
 
 ## Evidence source and reconciliation

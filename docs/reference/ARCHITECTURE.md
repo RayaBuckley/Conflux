@@ -89,4 +89,4 @@ or blocks based on the current Principal Context and provenance.
 | Benchmark adapters stay external | Benchmark conventions must not define the core | Translation assumptions remain explicit |
 
 See the [security model](SECURITY_MODEL.md), [public reference](REFERENCE.md),
-[SLED](SLED.md), and [dynamic-planning specification](../specifications/010-open-ended-dynamic-planning.md).
+[SLED](SLED.md), and [dynamic-planning specification](../decisions/015-open-ended-dynamic-planning.md).
