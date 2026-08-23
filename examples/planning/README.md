@@ -45,4 +45,3 @@ A typical multi-step plan proceeds as follows:
 Every grounded effect is re-mediated at action time. The planner cannot
 manufacture authority; it can only propose actions that ITES then authorises
 or blocks.
-

@@ -120,4 +120,3 @@ Changes are committed atomically on `main`; upstream history is not rewritten.
 The CI repair is pushed and observed before documentation migration. Generated
 validation evidence is committed separately from the implementation it
 measures. The final status and manuscript cite only that retained evidence.
-

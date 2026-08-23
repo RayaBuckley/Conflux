@@ -76,4 +76,3 @@ as a proof of arbitrary generated program semantics.
 - Earlier `PLAN-001` is narrowed to base plan types, `PLAN-002` to abstract
   verification, and `PLAN-003` to later optimisation. `PLAN-DYN-000..017`
   provide the active delivery graph.
-

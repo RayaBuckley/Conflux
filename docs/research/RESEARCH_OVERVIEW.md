@@ -31,6 +31,7 @@ Additional influence can therefore preserve or reduce authority but cannot incre
 ### Trusted computing base
 
 The guarantee assumes:
+
 - correct provenance/influence tracking;
 - a correct ACS or policy decision source;
 - complete mediation of relevant effects;
@@ -49,6 +50,7 @@ If an alternative rule permits any additional action, then by definition at leas
 This motivates the claim that Principal Intersection is **maximally permissive with respect to PE prevention**, under the stated threat model and ACS semantics.
 
 Part C should distinguish:
+
 1. the general mathematical maximality theorem;
 2. formal verification of the executable transition semantics;
 3. implementation-conformance evidence.
@@ -56,6 +58,7 @@ Part C should distinguish:
 ## 4. Part B foundation
 
 The previous project introduced:
+
 - Influence Tracking with Extrapolated Security (ITES);
 - Principal/influence accumulation;
 - the permission-intersection rule;
@@ -73,14 +76,18 @@ The strongest current direction is to turn SLED into a property-parametric verif
 Candidate capabilities:
 
 ### Verification
+
 Given defence `D` and property `P`:
+
 - `SAFE`: all executions in the formal model satisfy `P`;
 - `UNSAFE`: return a concrete/minimal counterexample;
 - `BOUNDED_SAFE`: no violation within an explicit bound;
 - `UNKNOWN`: unsupported semantics, timeout, abstraction uncertainty, etc.
 
 ### Synthesis
+
 Given:
+
 - the ACS;
 - provenance/Principal Context;
 - arbitrary schema-valid LLM proposals;
@@ -91,6 +98,7 @@ synthesise the maximally permissive safe controller.
 A particularly strong result would be that this controller is equivalent to the ITES Principal-Intersection rule.
 
 ### Comparative verification
+
 Represent other system-level defences in the same verification semantics and ask which properties they satisfy.
 
 The goal is not to claim that another defence is incorrect relative to its own threat model. A useful result can instead be:
@@ -105,6 +113,7 @@ SLED-V can then provide a concrete counterexample witnessing the distinction.
 Several extensions should remain subordinate to the core invariant.
 
 ### Delegation
+
 Delegation should be an explicit authorised authority-changing transition, e.g.:
 
     ACS_t -- authorised delegation --> ACS_(t+1)
@@ -114,11 +123,13 @@ The subsequent action is checked normally under the updated authority state.
 Delegation itself requires authority; permission to perform `a` should not automatically imply permission to delegate `a`.
 
 ### Consent
+
 Consent should be separated from information provenance. Merely influencing a computation should not automatically grant a principal a veto over another principal's independently authorised action.
 
 The derivation of the principal(s) whose agency is being exercised needs a dedicated specification.
 
 ### Visibility/confidentiality
+
 A more permissive confidentiality rule can consider who observes an effect rather than forbidding all computation involving information not readable by every influencer.
 
 A candidate condition is:
@@ -129,6 +140,7 @@ A candidate condition is:
 This requires precise observation semantics and may eventually require relational/noninterference properties.
 
 ### Argument-level provenance
+
 Whole-execution Principal Context is conservative. Tool arguments can have distinct causal/provenance histories.
 
 This motivates an ablation:
@@ -152,38 +164,36 @@ provides the detailed comparison.
 
 ### Conceptual lineage
 
-```text
-Reference monitors / complete mediation / least privilege
-                    |
-                    v
-      Mandatory information-flow models
-        /                            \
-       v                              v
-Denning / confidentiality          Biba integrity
-       |                              |
-       v                              v
-noninterference                low-water-mark policies
-       |                              |
-       v                              v
-language-based IFC                  LOMAC
-       |                              |
-       +-------------+----------------+
-                     v
-          decentralized IFC
-       declassification / endorsement
-                     |
-                     v
-       robust attacker-influence models
-                     |
-                     v
- provenance / taint / whole-system IFC
-                     |
-                     v
- contemporary system-level LLM-agent security
-                     |
-                     v
-        Principal Context / Conflux
-```
+    Reference monitors / complete mediation / least privilege
+                        |
+                        v
+          Mandatory information-flow models
+            /                            \
+           v                              v
+    Denning / confidentiality          Biba integrity
+           |                              |
+           v                              v
+    noninterference                low-water-mark policies
+           |                              |
+           v                              v
+    language-based IFC                  LOMAC
+           |                              |
+           +-------------+----------------+
+                         v
+              decentralized IFC
+           declassification / endorsement
+                         |
+                         v
+           robust attacker-influence models
+                         |
+                         v
+     provenance / taint / whole-system IFC
+                         |
+                         v
+     contemporary system-level LLM-agent security
+                         |
+                         v
+            Principal Context / Conflux
 
 This is not a single direct inheritance chain. These literatures solve
 different problems. The point is to prevent the dissertation from discussing
@@ -198,6 +208,7 @@ contamination pattern: adding an influencing principal to Principal Context
 can preserve or reduce effective authority but cannot increase it.
 
 Conflux enriches this pattern by:
+
 1. retaining authenticated principal identities rather than only a generic
    trust label;
 2. deriving effective authority from the organisation's existing ACS rather
@@ -235,6 +246,7 @@ foundational stream.
 Conflux can borrow mechanisms without adopting another system's security objective.
 
 Useful ideas include:
+
 - CaMeL: plan/execution separation, mediation and capability concepts;
 - PACT-like work: argument-level and cross-step provenance granularity;
 - policy systems such as Progent: parameter-sensitive policy representation;
@@ -261,6 +273,7 @@ The project should produce evidence at several levels:
 ## 10. What is not yet established
 
 Do not infer from this overview that:
+
 - every richer Conflux extension has a completed proof;
 - every external defence has been faithfully formalised;
 - a current symbolic backend already proves all ITES behaviour unboundedly;
@@ -272,6 +285,7 @@ Those are research/evidence tasks.
 ## 11. Suggested reviewer path
 
 For a research discussion:
+
 1. Read this overview.
 2. Read the canonical security model.
 3. Read the current SLED/SLED-V documentation.

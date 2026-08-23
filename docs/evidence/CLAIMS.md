@@ -33,7 +33,7 @@
 | Dual-LLM satisfies its own property Q but violates Conflux PE | Bounded evidence | `tests/test_defence_models.py`; Dual-LLM native property (processor never executes) is SAFE; Dual-LLM PE property is UNSAFE with counterexample; ITES reference PE property is SAFE; finite IR models only |
 | ITES defective requester-only controller violates PE | Bounded evidence | `tests/test_defence_models.py`; REQUESTER_ONLY negative control is UNSAFE with PE counterexample; ITES reference is SAFE |
 
-### Novelty qualification
+## Novelty qualification
 
 Claims involving the novelty of monotonic authority reduction, provenance-based
 restriction, or source-sensitive context must be qualified against the

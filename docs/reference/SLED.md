@@ -67,7 +67,9 @@ targets for future verification work.
 
 ### Authority safety (supported)
 
-    AG(Execute(a) -> forall p in PrincipalContext: Authorised(p, a))
+```text
+AG(Execute(a) -> forall p in PrincipalContext: Authorised(p, a))
+```
 
 No executed action violates Principal-Context authority.
 
@@ -75,7 +77,9 @@ No executed action violates Principal-Context authority.
 
 Absent an explicit trusted transformation:
 
-    PC(parent) subseteq PC(child)
+```text
+PC(parent) subseteq PC(child)
+```
 
 Influence is never silently discarded.
 

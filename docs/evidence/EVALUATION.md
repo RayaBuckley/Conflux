@@ -122,6 +122,7 @@ These levels are cumulative. Level 1 is implemented; Levels 2 and 3 are
 reference targets for future visibility and disclosure verification.
 
 ### Native SLED evaluates legacy and corrected fixtures separately from identical
+
 parent states. A canonical safety oracle judges every monitor, so a defective
 monitor cannot define its own success. Effects are applied only to an abstract
 evaluation state; the production executor is never invoked.

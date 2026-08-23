@@ -12,7 +12,7 @@ the tests that verify it.
 `PrincipalContext` with `merge` forms a join semilattice over the set of
 Principals, extended with an absorbing `unknown` flag.
 
-```
+```text
 Commutativity:   a.merge(b) == b.merge(a)
 Associativity:   a.merge(b).merge(c) == a.merge(b.merge(c))
 Idempotence:     a.merge(a) == a
@@ -31,7 +31,7 @@ Unknown absorbs: if a.unknown or b.unknown then a.merge(b).unknown
 A `PrincipalContext` is authority-bearing if and only if it contains at least
 one Principal and is not unknown:
 
-```
+```text
 ctx.is_authority_bearing  ==  (ctx.principals ≠ ∅) ∧ ¬ctx.unknown
 ```
 
@@ -48,7 +48,7 @@ contexts deny all effectful actions.
 `Provenance` with `merge` forms a commutative monoid. The identity element is
 `Provenance.unknown()`, and merge is:
 
-```
+```text
 Commutativity:          a.merge(b) == b.merge(a)
 Associativity:          a.merge(b).merge(c) == a.merge(b.merge(c))
 Identity:               a.merge(Provenance.unknown()) has is_unknown == a.is_unknown or True
@@ -66,7 +66,7 @@ Attestation conjunction: a.merge(b).attested == a.attested ∧ b.attested
 Provenance describes influence origin; it does not determine read access.
 Read policy is a separate, independent decision.
 
-```
+```text
 ∀ principal, artifact:
   principal ∈ artifact.provenance.principals  ⟏  read_policy.allow(principal, artifact)
 ```
@@ -86,7 +86,7 @@ The mutant `ProvenanceAsReadPolicy` violates this and is killed by SLED.
 An `ActionDecision` is allowed if and only if every independent decision
 dimension allows:
 
-```
+```text
 ActionDecision.allowed == auth.allow ∧ arg_auth.allow? ∧ read.allow ∧ vis.allow ∧ consent.allow
 ```
 
@@ -102,7 +102,7 @@ dimension can override a denial in another.
 
 Consent is a restricting decision only:
 
-```
+```text
 consent.allow ∧ ¬auth.allow  →  ¬ActionDecision.allowed
 ```
 
@@ -119,7 +119,7 @@ denied one. The mutant `EmptyContextAllow` violates this and is killed by SLED.
 
 Every Principal in the context must independently receive a policy allow:
 
-```
+```text
 ActionDecision.allowed  →  ∀ p ∈ PrincipalContext.principals: policy.allow(p, action)
 ```
 
@@ -138,7 +138,7 @@ violates this and is killed by SLED.
 
 Every action crosses the ITES kernel before any effect is observable:
 
-```
+```text
 execute(action)  →  ∃ certificate: TransitionKernel._transition(parent, action, ...) ∧ certificate ≠ None
 ```
 
@@ -155,7 +155,7 @@ Consuming information from an additional Principal can preserve or reduce
 effective authority but cannot increase it. The context is merged with
 action provenance before the decision:
 
-```
+```text
 decision_context = parent.context.merge(action_provenance(action).context)
 ```
 
@@ -172,7 +172,7 @@ decrease (more Principals must each independently allow).
 In `ALTERNATIVES` mode, each proposal branches independently of the same
 parent. Sibling branches never observe each other's context:
 
-```
+```text
 ∀ i, j: i ≠ j  →  child_i.context does not depend on proposal_j
 ```
 
@@ -189,7 +189,7 @@ The mutant `SiblingLeakKernel` violates this and is killed by SLED.
 In `ORDERED_PLAN` mode, proposals propagate state sequentially. The plan
 stops at the first denial or provider failure:
 
-```
+```text
 stop at first: status == BLOCKED  →  no further proposals processed
 ```
 
@@ -204,7 +204,7 @@ A decision certificate binds to the exact action fingerprint, context
 fingerprint, branch identity, and policy versions at decision time. Execution
 requires a match:
 
-```
+```text
 certificate.action_fingerprint == action_fingerprint(effect_action)
 certificate.context_fingerprint == context.fingerprint
 certificate.branch_id == executing_branch_id
@@ -222,7 +222,7 @@ A certificate from one branch cannot authorise an effect on another.
 The context at execution time must match the context at decision time. If
 policy has changed (revocation), the certificate is invalid:
 
-```
+```text
 context_at_execution.fingerprint ≠ certificate.context_fingerprint  →  blocked
 ```
 
@@ -240,7 +240,7 @@ The mutant `StaleContextKernel` violates this and is killed by SLED.
 A blocked proposal is a successful defence outcome, not an executed security
 violation. Safety properties must not fire on rejected proposals:
 
-```
+```text
 BranchStatus.BLOCKED  →  not an execution, not a violation
 ```
 
@@ -259,7 +259,7 @@ The mutant test `ExecutedInvariantOnly` enforces this distinction.
 Authorisation, read, visibility, and consent are separate policy decisions.
 No dimension can override another:
 
-```
+```text
 ¬(auth.allow ∧ read.deny) → allowed  (read denial blocks regardless of auth)
 ¬(consent.allow ∧ vis.deny) → allowed  (visibility denial blocks regardless of consent)
 ```
@@ -274,7 +274,7 @@ No dimension can override another:
 Missing consent, unknown schemas, policy errors, and unavailable boundaries
 deny:
 
-```
+```text
 missing_consent  →  denied
 unknown_schema   →  denied
 policy_error    →  denied

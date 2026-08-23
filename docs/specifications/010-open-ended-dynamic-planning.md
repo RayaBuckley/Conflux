@@ -231,4 +231,3 @@ capability, and every exhausted bound are distinct fail-closed outcomes.
 | Real model | PLAN-DYN-012, 016 | offline replay plus gated live experiment |
 | Verification | PLAN-DYN-014..015 | bounded model and serialisable IR |
 | Optimisation | PLAN-DYN-017 | deterministic hard-security selection |
-

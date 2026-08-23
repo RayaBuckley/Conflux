@@ -141,9 +141,7 @@ def main() -> int:
     _run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
     _run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
     _run("scripts/validate_wheel.py")
-    ext_rc = run("scripts/validate_extensions.py")
-    if ext_rc:
-        print("[validate] extension checks reported issues (advisory, not blocking)")
+    _run("scripts/validate_extensions.py")
     if failures:
         print(f"[validate] {len(failures)} check(s) failed:")
         for name in failures:

@@ -35,6 +35,10 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Node.js
+node_modules/
+package-lock.json
+
 # Local experiment output
 outputs/
 results/
@@ -80,3 +84,6 @@ experiments/local-runs/
 *.synctex.gz
 *.toc
 *.vrb
+*.bbl
+*.log
+*.pdf

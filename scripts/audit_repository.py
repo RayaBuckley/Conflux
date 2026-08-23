@@ -43,6 +43,7 @@ LEGACY = {"core", "auth", "research", "compatibility"}
 FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
 PAPER = ROOT / "publications" / "paper"
 MANUSCRIPT = ROOT / "publications" / "manuscript"
+WORKSHOP = ROOT / "publications" / "workshop"
 SMOKE = ROOT / "output" / "runs" / "smoke"
 NATIVE_SLED = ROOT / "output" / "runs" / "native-sled-reproduction-v1"
 COI_EVIDENCE = ROOT / "output" / "runs" / "sled-coi-reduction-v1"
@@ -181,6 +182,7 @@ def check_docs(errors: list[str]) -> None:
         ROOT / "SECURITY.md",
         *DOCS.rglob("*.md"),
         *MANUSCRIPT.glob("*.md"),
+        *WORKSHOP.glob("*.md"),
         REPORTS / "README.md",
         REPORT_ARCHIVE / "README.md",
         *(REPORTS / "analysis").rglob("*.md"),
@@ -216,6 +218,7 @@ def check_docs(errors: list[str]) -> None:
         DOCS / "integrations" / "agentdojo.md",
         REPORTS / "README.md",
         REPORT_ARCHIVE / "README.md",
+        WORKSHOP / "README.md",
     }
     for path in rationale_docs:
         text = path.read_text(encoding="utf-8")
@@ -694,6 +697,23 @@ def check_manuscript(errors: list[str]) -> None:
         errors.append("generated current-manuscript PDF must be a CI artefact")
 
 
+def check_workshop(errors: list[str]) -> None:
+    required = {
+        "README.md",
+        "conflux_workshop.tex",
+        "neurips_2026.sty",
+        "references.bib",
+        "checklist.tex",
+        "generated/figures/README.md",
+        "generated/tables/README.md",
+    }
+    for name in required:
+        if not (WORKSHOP / name).is_file():
+            errors.append(f"workshop paper file is missing: publications/workshop/{name}")
+    if (WORKSHOP / "conflux_workshop.pdf").exists():
+        errors.append("generated workshop PDF must be a CI artefact")
+
+
 def check_smoke_evidence(errors: list[str]) -> None:
     required = {
         "RERUN.txt",
@@ -974,6 +994,7 @@ def main() -> int:
     check_reports(errors)
     check_archived_paper(errors)
     check_manuscript(errors)
+    check_workshop(errors)
     check_smoke_evidence(errors)
     check_native_sled_evidence(errors)
     check_coi_evidence(errors)
