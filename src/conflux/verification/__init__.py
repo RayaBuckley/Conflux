@@ -60,6 +60,14 @@ from .reduction import (
     reduce_cone_of_influence,
     reference_safety_check,
 )
+from .refinement import (
+    REFINEMENT_SCHEMA_VERSION,
+    RefinementResult,
+    SoundAbstractionResult,
+    check_refinement,
+    check_sound_abstraction,
+    run_refinement_experiment,
+)
 from .results import FormalVerdict, FormalVerificationResult
 from .robust_disclosure import (
     ROBUST_DISCLOSURE_SCHEMA_VERSION,
@@ -108,9 +116,11 @@ __all__ = [
     "PlanAbstraction",
     "ProvenanceOverapproximation",
     "REDUCTION_SCHEMA_VERSION",
+    "REFINEMENT_SCHEMA_VERSION",
     "ROBUST_DISCLOSURE_SCHEMA_VERSION",
     "ReductionComparison",
     "ReferenceSafetyResult",
+    "RefinementResult",
     "RobustDisclosureResult",
     "RuntimeTransitionRecord",
     "SELF_COMPOSITION_SCHEMA_VERSION",
@@ -118,6 +128,7 @@ __all__ = [
     "SafetyInvariant",
     "SecretPartition",
     "Sort",
+    "SoundAbstractionResult",
     "StateVariable",
     "SynthesisResult",
     "TransitionRule",
@@ -127,6 +138,8 @@ __all__ = [
     "abstract_plan",
     "camel_ir",
     "camel_native_property_ir",
+    "check_refinement",
+    "check_sound_abstraction",
     "compare_cone_of_influence",
     "construct_product_ir",
     "default_instance",
@@ -152,6 +165,7 @@ __all__ = [
     "reduce_cone_of_influence",
     "reference_safety_check",
     "run_endorsement_experiment",
+    "run_refinement_experiment",
     "run_synthesis_experiment",
     "run_robust_disclosure_experiment",
     "robust_disclosure_ir",
