@@ -6,6 +6,7 @@ import pytest
 
 from conflux.verification import (
     ControllerStrategy,
+    FiniteInstance,
     FormalVerdict,
     default_instance,
     evaluate_strategy,
@@ -105,14 +106,107 @@ class TestNegativeControls:
 
     def test_counterexample_shows_pe_violation(self) -> None:
         """Each negative control's counterexample must show pe_violation=True."""
+        safe_strategies = {ControllerStrategy.ITES_INTERSECTION, ControllerStrategy.READ_CHECK_ENABLED}
         for strategy in ControllerStrategy:
-            if strategy == ControllerStrategy.ITES_INTERSECTION:
+            if strategy in safe_strategies:
                 continue
             result = evaluate_strategy(default_instance(), strategy)
             assert result.verdict == FormalVerdict.UNSAFE
             final_state = result.counterexample[-1]["state"]
             assert isinstance(final_state, dict)
             assert final_state.get("pe_violation") is True
+
+
+class TestReadCheckAblation:
+    """The read-check ablation is PE-safe but stricter than ITES."""
+
+    def test_read_check_is_pe_safe(self) -> None:
+        result = evaluate_strategy(default_instance(), ControllerStrategy.READ_CHECK_ENABLED)
+        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
+
+    def test_read_check_no_counterexample(self) -> None:
+        result = evaluate_strategy(default_instance(), ControllerStrategy.READ_CHECK_ENABLED)
+        assert len(result.counterexample) == 0
+
+
+class TestEnvironmentDerivedInstance:
+    """FiniteInstance can be derived from an EnvironmentSnapshot."""
+
+    def test_from_environment_extracts_principals(self) -> None:
+        from conflux.domain import DataItem, EnvironmentSnapshot, Principal
+
+        alice = Principal("alice", "Alice")
+        mallory = Principal("mallory", "Mallory")
+        env = EnvironmentSnapshot(
+            id="test-env",
+            data=(
+                DataItem(id="d1", value="hello", authors={alice}, readers={alice, mallory}),
+                DataItem(id="d2", value="world", authors={mallory}, readers={alice}),
+            ),
+        )
+        instance = FiniteInstance.from_environment(
+            environment=env,
+            requester="alice",
+            attacker="mallory",
+            authorised_action="write",
+        )
+        assert "alice" in instance.principals
+        assert "mallory" in instance.principals
+        assert len(instance.principals) == 2
+
+    def test_from_environment_rejects_unknown_requester(self) -> None:
+        from conflux.domain import DataItem, EnvironmentSnapshot, Principal
+
+        alice = Principal("alice", "Alice")
+        env = EnvironmentSnapshot(
+            id="test-env",
+            data=(DataItem(id="d1", value="hello", authors={alice}, readers={alice}),),
+        )
+        with pytest.raises(ValueError, match="requester"):
+            FiniteInstance.from_environment(
+                environment=env,
+                requester="bob",
+                attacker="alice",
+                authorised_action="write",
+            )
+
+    def test_from_environment_with_explicit_acs(self) -> None:
+        from conflux.domain import DataItem, EnvironmentSnapshot, Principal
+
+        alice = Principal("alice", "Alice")
+        mallory = Principal("mallory", "Mallory")
+        env = EnvironmentSnapshot(
+            id="test-env",
+            data=(DataItem(id="d1", value="hello", authors={alice}, readers={alice, mallory}),),
+        )
+        instance = FiniteInstance.from_environment(
+            environment=env,
+            requester="alice",
+            attacker="mallory",
+            authorised_action="write",
+            acs=frozenset({("alice", "write")}),
+        )
+        assert instance.is_authorised("alice", "write")
+        assert not instance.is_authorised("mallory", "write")
+
+    def test_from_environment_synthesis_works(self) -> None:
+        from conflux.domain import DataItem, EnvironmentSnapshot, Principal
+
+        alice = Principal("alice", "Alice")
+        mallory = Principal("mallory", "Mallory")
+        env = EnvironmentSnapshot(
+            id="test-env",
+            data=(DataItem(id="d1", value="hello", authors={alice}, readers={alice, mallory}),),
+        )
+        instance = FiniteInstance.from_environment(
+            environment=env,
+            requester="alice",
+            attacker="mallory",
+            authorised_action="write",
+            acs=frozenset({("alice", "write")}),
+        )
+        result = evaluate_strategy(instance, ControllerStrategy.ITES_INTERSECTION)
+        assert result.pe_safe
 
 
 class TestExperimentResult:

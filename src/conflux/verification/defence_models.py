@@ -597,6 +597,103 @@ def pact_native_property_ir() -> VerificationIR:
     )
 
 
+def ites_with_read_check_ir() -> VerificationIR:
+    """ITES with an additional read-check on nested execution inputs.
+
+    This is an ablation model inspired by the original prototype's
+    ``auth_read`` function, which checked that all influencers could
+    read the inputs to a nested LLM call before allowing it.
+
+    The model uses set-typed variables to represent the principal context
+    (``pc``) and the set of principals who can read the nested execution
+    inputs (``input_readers``).  The nested-execution transition is
+    guarded by ``SUBSET(pc, input_readers)`` — all influencers must be
+    able to read the inputs.
+
+    This model is PE-safe (the read check is stricter than ITES alone)
+    but may deny actions that ITES would allow, reducing utility.
+
+    Variables:
+        pc: principal context (set of principal IDs).
+        input_readers: principals who can read the nested inputs.
+        action_executed: whether the action was executed.
+        pe_violation: whether a PE violation occurred.
+        attacker_authorised: whether the attacker has permission (False).
+    """
+    return VerificationIR(
+        "ites-with-read-check",
+        (
+            StateVariable("pc", Sort.SET, frozenset()),
+            StateVariable("input_readers", Sort.SET, frozenset({"alice"})),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("pe_violation", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "consume-attacker-data",
+                _const(True),
+                (
+                    Assignment(
+                        "pc",
+                        Expression.operator(
+                            ExpressionKind.UNION,
+                            _var("pc"),
+                            Expression.constant("mallory"),
+                        ),
+                    ),
+                ),
+            ),
+            TransitionRule(
+                "ites-read-check-blocks",
+                _and(
+                    Expression.operator(
+                        ExpressionKind.IN,
+                        Expression.constant("mallory"),
+                        _var("pc"),
+                    ),
+                    _not(_var("attacker_authorised")),
+                ),
+                (
+                    Assignment("action_executed", _const(False)),
+                    Assignment("pe_violation", _const(False)),
+                ),
+            ),
+            TransitionRule(
+                "ites-read-check-allows",
+                _and(
+                    _not(
+                        Expression.operator(
+                            ExpressionKind.IN,
+                            Expression.constant("mallory"),
+                            _var("pc"),
+                        ),
+                    ),
+                    Expression.operator(
+                        ExpressionKind.SUBSET,
+                        _var("pc"),
+                        _var("input_readers"),
+                    ),
+                ),
+                (Assignment("action_executed", _const(True)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-pe-violation",
+                _not(_var("pe_violation")),
+                "PE: no action executed when an influencing principal lacks authorisation",
+            ),
+        ),
+        5,
+        (
+            "ITES with read-check ablation: auth_read on nested inputs",
+            "pc starts empty; input_readers = {alice}; attacker_authorised = False",
+            "nested execution requires SUBSET(pc, input_readers)",
+        ),
+    )
+
+
 __all__ = [
     "camel_ir",
     "camel_native_property_ir",
@@ -604,6 +701,7 @@ __all__ = [
     "dual_llm_native_property_ir",
     "ites_defective_requester_only_ir",
     "ites_reference_ir",
+    "ites_with_read_check_ir",
     "pact_ir",
     "pact_native_property_ir",
     "progent_ir",

@@ -12,6 +12,7 @@ from conflux.verification import (
     dual_llm_native_property_ir,
     ites_defective_requester_only_ir,
     ites_reference_ir,
+    ites_with_read_check_ir,
     pact_ir,
     pact_native_property_ir,
     progent_ir,
@@ -181,6 +182,33 @@ class TestPACTNativeProperty:
         assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
 
 
+class TestITESWithReadCheck:
+    """ITES with read-check ablation: PE-safe but stricter than plain ITES."""
+
+    def test_read_check_model_is_safe(self) -> None:
+        ir = ites_with_read_check_ir()
+        result = reference_safety_check(ir)
+        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
+
+    def test_read_check_model_round_trips(self) -> None:
+        ir = ites_with_read_check_ir()
+        restored = type(ir).from_dict(ir.to_dict())
+        assert restored.fingerprint == ir.fingerprint
+
+    def test_read_check_model_uses_set_sorts(self) -> None:
+        ir = ites_with_read_check_ir()
+        from conflux.verification import Sort
+
+        set_vars = [v for v in ir.variables if v.sort == Sort.SET]
+        assert len(set_vars) >= 2
+
+    def test_all_models_round_trip_includes_read_check(self) -> None:
+        """The read-check model is included in the round-trip test."""
+        ir = ites_with_read_check_ir()
+        restored = type(ir).from_dict(ir.to_dict())
+        assert restored.fingerprint == ir.fingerprint
+
+
 class TestDefenceModelStructure:
     """Structural validation of the defence IR models."""
 
@@ -211,6 +239,7 @@ class TestDefenceModelStructure:
             dual_llm_native_property_ir,
             ites_reference_ir,
             ites_defective_requester_only_ir,
+            ites_with_read_check_ir,
             camel_ir,
             camel_native_property_ir,
             progent_ir,

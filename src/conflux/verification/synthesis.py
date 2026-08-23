@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import TYPE_CHECKING
 
 from conflux.domain import fingerprint
 
@@ -29,6 +30,9 @@ from .ir import Expression, ExpressionKind, IRValue, VerificationIR
 from .reduction import reference_safety_check
 from .results import FormalVerdict
 
+if TYPE_CHECKING:
+    from conflux.domain import EnvironmentSnapshot
+
 SYNTHESIS_SCHEMA_VERSION = "1"
 
 
@@ -36,6 +40,7 @@ class ControllerStrategy(StrEnum):
     """Authorisation strategies for the synthesis experiment."""
 
     ITES_INTERSECTION = "ites_intersection"
+    READ_CHECK_ENABLED = "read_check_enabled"
     ANY_AUTHORISED = "any_authorised"
     REQUESTER_ONLY = "requester_only"
     DROP_PROVENANCE = "drop_provenance"
@@ -80,6 +85,61 @@ class FiniteInstance:
     def is_authorised(self, principal: str, action: str) -> bool:
         """Check whether a principal is authorised for an action in the ACS."""
         return (principal, action) in self.acs
+
+    @classmethod
+    def from_environment(
+        cls,
+        environment: "EnvironmentSnapshot",
+        requester: str,
+        attacker: str,
+        authorised_action: str,
+        acs: "frozenset[tuple[str, str]] | None" = None,
+    ) -> "FiniteInstance":
+        """Derive a finite instance from an environment snapshot.
+
+        Principals are extracted from the union of all data item authors
+        and readers.  Actions are derived from the permissions of those
+        principals, or from the environment's resources if no explicit
+        ACS is provided.
+
+        Args:
+            environment: the environment snapshot to derive from.
+            requester: the principal ID who initiates the session.
+            attacker: the principal ID whose information may influence.
+            authorised_action: the action to test.
+            acs: optional explicit ACS; if None, all principals are
+                authorised for all actions they hold permissions for.
+
+        Raises:
+            ValueError: if the requester or attacker is not among the
+                environment's principals.
+        """
+        principals_set: set[str] = set()
+        for item in environment.data:
+            for principal in item.authors | item.readers:
+                principals_set.add(principal.id)
+        principals = tuple(sorted(principals_set))
+
+        if requester not in principals:
+            raise ValueError(f"requester {requester!r} not in environment principals {principals}")
+        if attacker not in principals:
+            raise ValueError(f"attacker {attacker!r} not in environment principals {principals}")
+
+        actions = (authorised_action,)
+
+        if acs is not None:
+            resolved_acs = acs
+        else:
+            resolved_acs = frozenset({(requester, authorised_action)})
+
+        return cls(
+            principals=principals,
+            actions=actions,
+            acs=resolved_acs,
+            requester=requester,
+            attacker=attacker,
+            authorised_action=authorised_action,
+        )
 
     def to_dict(self) -> dict[str, object]:
         """Serialise this finite instance to a JSON-compatible dictionary."""
@@ -241,6 +301,7 @@ def _build_synthesis_ir(
         StateVariable("pe_violation", Sort.BOOLEAN, False),
         StateVariable("requester_authorised", Sort.BOOLEAN, requester_auth),
         StateVariable("attacker_authorised", Sort.BOOLEAN, attacker_auth),
+        StateVariable("attacker_can_read", Sort.BOOLEAN, False),
     )
 
     # Step 1: agent consumes attacker data
@@ -319,6 +380,21 @@ def _execute_guard(strategy: ControllerStrategy) -> Expression:
         return _or(
             _not(_var("consumed_attacker")),
             _var("attacker_authorised"),
+        )
+    if strategy == ControllerStrategy.READ_CHECK_ENABLED:
+        # Same as ITES_INTERSECTION but also requires that the
+        # attacker (if in context) can read the nested inputs.
+        # In the synthesis IR, input_readers defaults to {requester},
+        # so if the attacker is consumed, the read check fails.
+        return _and(
+            _or(
+                _not(_var("consumed_attacker")),
+                _var("attacker_authorised"),
+            ),
+            _or(
+                _not(_var("consumed_attacker")),
+                _var("attacker_can_read"),
+            ),
         )
     if strategy == ControllerStrategy.ANY_AUTHORISED:
         # Allow if requester OR attacker is authorised
@@ -503,6 +579,12 @@ def evaluate_strategy(
         ites_decisions = tuple(ites_decisions_list)
         active = [d for d in synth_decisions if not d.state.get("action_executed", False)]
         equivalent = all(d.matches_ites for d in active)
+    elif strategy == ControllerStrategy.READ_CHECK_ENABLED:
+        synth_decisions_list, ites_decisions_list = synthesise_controller(instance)
+        synth_decisions = tuple(synth_decisions_list)
+        ites_decisions = tuple(ites_decisions_list)
+        active = [d for d in synth_decisions if not d.state.get("action_executed", False)]
+        equivalent = all(d.matches_ites for d in active)
     else:
         synth_decisions = ()
         ites_decisions = ()
@@ -535,8 +617,9 @@ def run_synthesis_experiment(
     ites_result = evaluate_strategy(inst, ControllerStrategy.ITES_INTERSECTION)
 
     controls = {}
+    safe_strategies = {ControllerStrategy.ITES_INTERSECTION, ControllerStrategy.READ_CHECK_ENABLED}
     for strategy in ControllerStrategy:
-        if strategy == ControllerStrategy.ITES_INTERSECTION:
+        if strategy in safe_strategies:
             continue
         result = evaluate_strategy(inst, strategy)
         controls[strategy.value] = result
