@@ -1,0 +1,49 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: tests/test_defence_models.py (IR model definitions)
+% SHA-256: test-code
+% Run: python scripts/generate_paper_figures.py
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=1.5cm and 2cm,
+  state/.style={draw, circle, minimum size=1cm, font=\footnotesize},
+  bad/.style={fill=unsafebg!60, draw=unsafebd},
+  good/.style={fill=safebg!60, draw=safebd},
+  model/.style={draw, rounded corners, minimum width=3.5cm, minimum height=0.8cm,
+               font=\small, align=center},
+  arrow/.style={-Stealth, thick},
+]
+% Colors defined globally in preamble
+
+% --- Dual-LLM ---
+\node[model] (dllm) at (0, 2) {Dual-LLM baseline};
+\node[model, good] (dllm_q) at (-2, 0.5) {Property Q:\\processor never executes\\{\bf SAFE}};
+\node[model, bad] (dllm_pe) at (2, 0.5) {PE property:\\attacker influences action\\{\bf UNSAFE}};
+
+% --- Requester-only ---
+\node[model] (req) at (7, 2) {Requester-only\\(defective)};
+\node[model, bad] (req_pe) at (7, 0.5) {PE property:\\ignores attacker\\{\bf UNSAFE}};
+
+% --- ITES reference ---
+\node[model] (ites) at (12, 2) {ITES reference};
+\node[model, good] (ites_pe) at (12, 0.5) {PE property:\\all principals checked\\{\bf SAFE}};
+
+% Arrows
+\draw[arrow] (dllm) -- (dllm_q);
+\draw[arrow] (dllm) -- (dllm_pe);
+\draw[arrow] (req) -- (req_pe);
+\draw[arrow] (ites) -- (ites_pe);
+
+% Annotation
+\node[font=\footnotesize, align=center] at (0, -1) {Satisfying Q does not\\imply PE safety};
+\node[font=\footnotesize, align=center] at (12, -1) {Intersection rule\\preserves PE};
+\end{tikzpicture}
+\caption{Comparative defence verification on finite IR models.  The
+Dual-LLM baseline satisfies its own property Q (processor never
+executes) but violates the privilege-escalation property.  The
+requester-only negative control also violates PE.  The ITES reference
+preserves PE.  All results are finite IR models, not
+implementation-conformance evidence.}
+\label{fig:defence-comparison}
+\end{figure}

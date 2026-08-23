@@ -1,0 +1,51 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: docs/evidence/CLAIMS.md + docs/evidence/EVALUATION.md (manual summary)
+% SHA-256: manual
+% Run: python scripts/generate_paper_figures.py
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=0.6cm and 1.2cm,
+  tier/.style={draw, rounded corners, minimum width=4cm, minimum height=0.7cm,
+              font=\small, align=center},
+  safe/.style={fill=safebg!60, draw=safebd},
+  unsafe/.style={fill=unsafebg!60, draw=unsafebd},
+  pending/.style={fill=pendingbg!60, draw=pendingbd},
+  label/.style={font=\small\bfseries, align=center},
+]
+\begin{scope}[]
+% Colors are defined globally in the preamble
+
+% Tier labels
+\node[label] (al) at (0, 3.5) {Archived};
+\node[label] (bl) at (5.2, 3.5) {Bounded Current};
+\node[label] (cl) at (10.4, 3.5) {Pending};
+
+% Archived column
+\node[tier, safe, below=of al] (a1) {SLED 1.5M traces\\0 PE, max utility};
+\node[tier, safe, below=of a1] (a2) {Prior prototype\\(not canonical kernel)};
+
+% Bounded current column
+\node[tier, safe, below=of bl] (b1) {Native SLED\\5/5 monitors killed};
+\node[tier, safe, below=of b1] (b2) {Direction mutants\\11/11 killed};
+\node[tier, safe, below=of b2] (b3) {COI reduction\\2/2 fixtures agree};
+\node[tier, safe, below=of b3] (b4) {Z3 BMC\\4/4 fixtures agree};
+\node[tier, safe, below=of b4] (b5) {Defence models\\ITES: SAFE, Dual-LLM: UNSAFE};
+
+% Pending column
+\node[tier, pending, below=of cl] (c1) {AgentDojo comparison\\pipeline ready, no utility};
+\node[tier, pending, below=of c1] (c2) {Cedar parity\\preflight only};
+\node[tier, pending, below=of c2] (c3) {Real-model comparison\\no retained JSON};
+
+% Arrows between tiers
+\draw[-Stealth, thick] (a2.east) -- (b1.west);
+\draw[-Stealth, thick] (b5.east) -- (c1.west);
+\end{scope}
+\end{tikzpicture}
+\caption{Evidence tiers: archived prototype results, bounded current
+verification on finite models, and pending tracks gated on retained
+result artefacts.  Green indicates SAFE or killed; grey indicates
+evaluation-ready but no result.}
+\label{fig:evidence-tiers}
+\end{figure}

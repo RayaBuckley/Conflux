@@ -1,0 +1,26 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: output\runs\native-sled-reproduction-v1\result.json; output\runs\direction-readiness-v1\security-mutations.json; output\runs\sled-coi-reduction-v1\result.json; output\runs\agentdojo-1b5-nf4-v1\result.json
+% SHA-256: 0aa8c0a41bc8b6da960ecb52ed0dca2f21c99853aa768a4fca9dd8e00ca87e1a
+% Run: python scripts/generate_paper_figures.py
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{3.5cm}p{2.5cm}p{3.5cm}p{3cm}}
+\toprule
+Evidence & Tier & Result & Limitation \\
+\midrule
+Archived SLED (1.5M traces) & Archived & 0 PE, maximal utility & Prior prototype, not canonical kernel \\
+Repository validation & Current & 220 tests, 90.25\% branch coverage & Assumes complete mediation \\
+Native SLED reproduction & Bounded & 5/5 monitors detected, 1-step witnesses & Finite fixtures only \\
+Direction readiness & Bounded & 11 mutants killed, 1-step witnesses & Finite disclosure/delegation models \\
+COI reduction & Bounded & 2 fixtures agree, Z3 confirms equivalence & Finite IR models \\
+AgentDojo translation & Current & 6-cell pipeline runs end-to-end & 1.5B model too small for utility \\
+Cedar differential & Pending & Preflight validates corpus; Cedar unavailable & No parity result \\
+Real-model comparison & Pending & Pipeline ready & No retained result JSON \\\\
+\bottomrule
+\end{tabular}
+\caption{Evidence status across archived, current, and pending results.
+All numerical values are generated from versioned result JSON.}
+\label{tab:evidence}
+\end{table}

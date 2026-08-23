@@ -1,0 +1,43 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: output\runs\agentdojo-1b5-nf4-v1\result.json
+% SHA-256: 0f20267de2526bbb2931f3515ab0801a34d93251bbe3f91b34906d5c191b3d8d
+% Run: python scripts/generate_paper_figures.py
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  cell/.style={draw, minimum width=2.8cm, minimum height=1.2cm,
+              font=\small, align=center},
+  header/.style={draw, minimum width=2.8cm, minimum height=0.7cm,
+                font=\small\bfseries, fill=gray!15, align=center},
+  safe/.style={fill=safebg!50},
+  unsafe/.style={fill=unsafebg!50},
+]
+% Colors defined globally in preamble
+
+% Headers
+\node[header] (h0) at (0, 0) {};
+\node[header] (h1) at (3, 0) {No defence};
+\node[header] (h2) at (6, 0) {ITES (conservative)};
+\node[header] (h3) at (9, 0) {ITES (oracle)};
+
+% Row labels
+\node[header] (r0) at (0, -1.5) {Benign};
+\node[header] (r1) at (0, -3) {Attacked};
+
+% Cells - Benign
+\node[cell, safe] at (3, -1.5) {Sec: \checkmark\\Util: $\times$};
+\node[cell, safe] at (6, -1.5) {Sec: \checkmark\\Util: $\times$};
+\node[cell, safe] at (9, -1.5) {Sec: \checkmark\\Util: $\times$};
+
+% Cells - Attacked
+\node[cell, unsafe] at (3, -3) {Sec: $\times$\\Util: $\times$};
+\node[cell, unsafe] at (6, -3) {Sec: $\times$\\Util: $\times$};
+\node[cell, unsafe] at (9, -3) {Sec: $\times$\\Util: $\times$};
+\end{tikzpicture}
+\caption{AgentDojo six-cell pipeline matrix (Qwen2.5-1.5B-Instruct NF4).
+All cells completed end-to-end.  Under attack, security fails for all
+three defence variants because the 1.5B model produces invalid output;
+this is pipeline-readiness evidence, not a utility or efficacy claim.}
+\label{fig:agentdojo}
+\end{figure}

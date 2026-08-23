@@ -1,0 +1,276 @@
+% Merged bibliography for the Conflux workshop paper.
+% Sources: manuscript/references.bib, paper/iclr2026_conference.bib,
+% and classical security entries verified against REFERENCES.md (29 July 2026).
+% Deduplicated using manuscript short keys (camel, struq, spotlighting, etc.).
+
+% ---------------------------------------------------------------------------
+% Recent agent-security and prompt-injection literature
+% ---------------------------------------------------------------------------
+
+@misc{camel,
+  title = {Defeating Prompt Injections by Design},
+  author = {Debenedetti, Edoardo and Shumailov, Ilia and Fan, Tianqi and Hayes, Jamie and Carlini, Nicholas and Fabian, Daniel and Kern, Christoph and Shi, Chongyang and Terzis, Andreas and Tram{\`e}r, Florian},
+  year = {2025},
+  eprint = {2503.18813},
+  archivePrefix = {arXiv},
+  note = {Version 2}
+}
+
+@misc{designpatterns,
+  title = {Design Patterns for Securing LLM Agents against Prompt Injections},
+  author = {Beurer-Kellner, Luca and Buesser, Beat and Cre{\c{t}}u, Ana-Maria and Debenedetti, Edoardo and Dobos, Daniel and Fabian, Daniel and Fischer, Marc and Froelicher, David and Grosse, Kathrin and Naeff, Daniel and Ozoani, Ezinwanne and Paverd, Andrew and Tram{\`e}r, Florian and Volhejn, V{\'a}clav},
+  year = {2025},
+  eprint = {2506.08837},
+  archivePrefix = {arXiv},
+  note = {Version 3}
+}
+
+@misc{agentdojo,
+  title = {AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents},
+  author = {Debenedetti, Edoardo and Zhang, Jie and Balunovi{\'c}, Mislav and Beurer-Kellner, Luca and Fischer, Marc and Tram{\`e}r, Florian},
+  year = {2024},
+  eprint = {2406.13352},
+  archivePrefix = {arXiv},
+  note = {Version 3}
+}
+
+@misc{progent,
+  title = {Progent: Securing AI Agents with Privilege Control},
+  author = {Shi, Tianneng and He, Jingxuan and Wang, Zhun and Li, Hongwei and Wu, Linyu and Guo, Wenbo and Song, Dawn},
+  year = {2025},
+  eprint = {2504.11703},
+  archivePrefix = {arXiv},
+  note = {Version 3}
+}
+
+@misc{pact,
+  title = {The Granularity Mismatch in Agent Security: Argument-Level Provenance Solves Enforcement and Isolates the LLM Reasoning Bottleneck},
+  author = {Fan, Linfeng and Li, Ziwei and Tian, Yuan and Wang, Yichen and Li, Rongsheng and Wang, Xiong},
+  year = {2026},
+  eprint = {2605.11039},
+  archivePrefix = {arXiv},
+  note = {Version 1; recent work}
+}
+
+@misc{forge,
+  title = {Formal Policy Enforcement for Real-World Agentic Systems},
+  author = {Palumbo, Nils and Choudhary, Sarthak and Choi, Jihye and Amir, Guy and Chalasani, Prasad and Jha, Somesh},
+  year = {2026},
+  eprint = {2602.16708},
+  archivePrefix = {arXiv},
+  note = {Version 3; recent work}
+}
+
+@misc{struq,
+  title = {StruQ: Defending Against Prompt Injection with Structured Queries},
+  author = {Chen, Sizhe and Piet, Julien and Sitawarin, Chawin and Wagner, David},
+  year = {2024},
+  eprint = {2402.06363},
+  archivePrefix = {arXiv},
+  note = {Version 2}
+}
+
+@misc{spotlighting,
+  title = {Defending Against Indirect Prompt Injection Attacks With Spotlighting},
+  author = {Hines, Keegan and Lopez, Gary and Hall, Matthew and Zarfati, Federico and Zunger, Yonatan and Kiciman, Emre},
+  year = {2024},
+  eprint = {2403.14720},
+  archivePrefix = {arXiv},
+  note = {Version 1}
+}
+
+@inproceedings{secalign,
+  title = {SecAlign: Defending Against Prompt Injection with Preference Optimization},
+  author = {Chen, Sizhe and Zharmagambetov, Arman and Mahloujifar, Saeed and Chaudhuri, Kamalika and Wagner, David and Guo, Chuan},
+  booktitle = {Proceedings of the 2025 ACM SIGSAC Conference on Computer and Communications Security},
+  series = {CCS '25},
+  year = {2025},
+  pages = {2833--2847},
+  publisher = {ACM},
+  doi = {10.1145/3719027.3744836}
+}
+
+@misc{datasentinel,
+  title = {DataSentinel: A Game-Theoretic Detection of Prompt Injection Attacks},
+  author = {Liu, Yupei and Jia, Yuqi and Jia, Jinyuan and Song, Dawn and Gong, Neil Zhenqiang},
+  year = {2025},
+  eprint = {2504.11358},
+  archivePrefix = {arXiv}
+}
+
+@misc{neuralexec,
+  title = {Neural Exec: Learning (and Learning from) Execution Triggers for Prompt Injection Attacks},
+  author = {Pasquini, Dario and Strohmeier, Martin and Troncoso, Carmela},
+  year = {2024},
+  eprint = {2403.03792},
+  archivePrefix = {arXiv}
+}
+
+@misc{criticaleval,
+  title = {A Critical Evaluation of Defenses against Prompt Injection Attacks},
+  author = {Jia, Yuqi and Shao, Zedian and Liu, Yupei and Jia, Jinyuan and Song, Dawn and Gong, Neil Zhenqiang},
+  year = {2025},
+  eprint = {2505.18333},
+  archivePrefix = {arXiv}
+}
+
+@misc{detectprompt,
+  title = {How Not to Detect Prompt Injections with an LLM},
+  author = {Choudhary, Sarthak and Anshumaan, Divyam and Palumbo, Nils and Jha, Somesh},
+  year = {2025},
+  eprint = {2507.05630},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{poisoningalignment,
+  title = {Enhancing Prompt Injection Attacks to LLMs via Poisoning Alignment},
+  author = {Shao, Zedian and Liu, Hongbin and Mu, Jaden and Gong, Neil},
+  booktitle = {Proceedings of the 18th ACM Workshop on Artificial Intelligence and Security},
+  series = {AISec '25},
+  year = {2025},
+  pages = {13--27},
+  publisher = {ACM},
+  doi = {10.1145/3733799.3762963}
+}
+
+@misc{checkpointgcg,
+  title = {Checkpoint-GCG: Auditing and Attacking Fine-Tuning-Based Prompt Injection Defenses},
+  author = {Yang, Xiaoxue and Stevanoski, Bozhidar and Meeus, Matthieu and de Montjoye, Yves-Alexandre},
+  year = {2025},
+  eprint = {2505.15738},
+  archivePrefix = {arXiv}
+}
+
+@misc{earlycategorization,
+  title = {An Early Categorization of Prompt Injection Attacks on Large Language Models},
+  author = {Rossi, Sippo and Michel, Alisia Marianne and Mukkamala, Raghava Rao and Thatcher, Jason Bennett},
+  year = {2024},
+  eprint = {2402.00898},
+  archivePrefix = {arXiv}
+}
+
+@misc{ifcdefense,
+  title = {System-Level Defense against Indirect Prompt Injection Attacks: An Information Flow Control Perspective},
+  author = {Wu, Fangzhou and Cecchetti, Ethan and Xiao, Chaowei},
+  year = {2024},
+  eprint = {2409.19091},
+  archivePrefix = {arXiv}
+}
+
+% ---------------------------------------------------------------------------
+% Access-control foundations
+% ---------------------------------------------------------------------------
+
+@article{abac,
+  author = {Servos, Daniel and Osborn, Sylvia L.},
+  title = {Current Research and Open Problems in Attribute-Based Access Control},
+  year = {2017},
+  volume = {49},
+  number = {4},
+  journal = {ACM Computing Surveys},
+  publisher = {Association for Computing Machinery},
+  doi = {10.1145/3007204},
+  articleno = {65},
+  numpages = {45}
+}
+
+@inproceedings{provos2003,
+  title = {Preventing privilege escalation},
+  author = {Provos, Niels and Friedl, Markus and Honeyman, Peter},
+  booktitle = {12th USENIX Security Symposium (USENIX Security 03)},
+  year = {2003}
+}
+
+@inproceedings{davi2010,
+  title = {Privilege escalation attacks on android},
+  author = {Davi, Lucas and Dmitrienko, Alexandra and Sadeghi, Ahmad-Reza and Winandy, Marcel},
+  booktitle = {International Conference on Information Security},
+  pages = {346--360},
+  year = {2010},
+  organization = {Springer}
+}
+
+% ---------------------------------------------------------------------------
+% Classical security literature (verified against arXiv/Scholar, see REFERENCES.md)
+% ---------------------------------------------------------------------------
+
+@techreport{biba1977,
+  title = {Integrity Considerations for Secure Computer Systems},
+  author = {Biba, K. J.},
+  year = {1977},
+  institution = {MITRE Corporation},
+  number = {MTR-3153},
+  note = {Also distributed as ESD-TR-76-372}
+}
+
+@inproceedings{lomac,
+  title = {LOMAC: Low-Water-Mark Integrity Protection for COTS Environments},
+  author = {Fraser, Timothy},
+  booktitle = {Proceedings of the 2000 IEEE Symposium on Security and Privacy},
+  pages = {230--245},
+  year = {2000}
+}
+
+@article{denning1976,
+  title = {A Lattice Model of Secure Information Flow},
+  author = {Denning, Dorothy E.},
+  journal = {Communications of the ACM},
+  volume = {19},
+  number = {5},
+  pages = {236--243},
+  year = {1976}
+}
+
+@article{sabelfeld2003,
+  title = {Language-Based Information-Flow Security},
+  author = {Sabelfeld, Andrei and Myers, Andrew C.},
+  journal = {IEEE Journal on Selected Areas in Communications},
+  volume = {21},
+  number = {1},
+  pages = {5--19},
+  year = {2003}
+}
+
+@article{myersliskov,
+  title = {Protecting Privacy Using the Decentralized Label Model},
+  author = {Myers, Andrew C. and Liskov, Barbara},
+  journal = {ACM Transactions on Software Engineering and Methodology},
+  volume = {9},
+  number = {4},
+  pages = {410--442},
+  year = {2000}
+}
+
+@article{declassification-survey,
+  title = {Dimensions and Principles of Declassification},
+  author = {Sabelfeld, Andrei and Sands, David},
+  journal = {Journal of Computer Security},
+  volume = {17},
+  number = {5},
+  pages = {609--655},
+  year = {2009}
+}
+
+@inproceedings{robust-declassification,
+  title = {Robust Declassification},
+  author = {Zdancewic, Steve and Myers, Andrew C.},
+  booktitle = {Proceedings of the 14th IEEE Computer Security Foundations Workshop},
+  pages = {15--23},
+  year = {2001}
+}
+
+@inproceedings{attacker-control,
+  title = {Attacker Control and Impact for Confidentiality and Integrity},
+  author = {Askarov, Aslan and Myers, Andrew C.},
+  booktitle = {Proceedings of the 20th IEEE Computer Security Foundations Symposium},
+  pages = {279--292},
+  year = {2007}
+}
+
+@inproceedings{nonmalleable-ifc,
+  title = {Nonmalleable Information Flow Control},
+  author = {Cecchetti, Ethan and Myers, Andrew C. and Arden, Owen},
+  booktitle = {Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages (POPL)},
+  pages = {257--270},
+  year = {2017}
+}

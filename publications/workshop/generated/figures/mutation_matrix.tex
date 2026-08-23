@@ -1,0 +1,31 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: output\runs\direction-readiness-v1\security-mutations.json
+% SHA-256: dbb42f6c9d0ac2d5e13482a365e58fecf874b8d6a2f5b45e70064271703c0fed
+% Run: python scripts/generate_paper_figures.py
+
+\begin{figure}[t]
+\centering
+\small
+\begin{tabular}{lllcc}
+\toprule
+Category & Mutation & Property violated & Witness & Killed \\
+\midrule
+delegation & widened\_scope & delegation\_attenuated & 1 & \textcolor{red!70}{$\times$} \\
+delegation & wrong\_beneficiary & delegation\_beneficiary\_bound & 1 & \textcolor{red!70}{$\times$} \\
+delegation & reuse & delegation\_single\_use & 1 & \textcolor{red!70}{$\times$} \\
+delegation & expiry\_bypass & delegation\_expiry\_enforced & 1 & \textcolor{red!70}{$\times$} \\
+delegation & revocation\_bypass & delegation\_revocation\_enforced & 1 & \textcolor{red!70}{$\times$} \\
+delegation & redelegation & delegation\_not\_redelegated & 1 & \textcolor{red!70}{$\times$} \\
+delegation & post\_influence\_issuance & delegation\_precedes\_influence & 1 & \textcolor{red!70}{$\times$} \\
+disclosure & unauthorised\_selector & no\_unauthorised\_selector & 1 & \textcolor{red!70}{$\times$} \\
+disclosure & hidden\_error\_leak & no\_hidden\_decision\_leakage & 1 & \textcolor{red!70}{$\times$} \\
+disclosure & incomplete\_attribution & complete\_attribution & 1 & \textcolor{red!70}{$\times$} \\
+disclosure & unsafe\_redaction & no\_hidden\_decision\_leakage & 1 & \textcolor{red!70}{$\times$} \\
+\bottomrule
+\end{tabular}
+\caption{Direction-readiness mutation testing: all 11 seeded defects
+(7 delegation, 4 disclosure) are killed with one-step witnesses.
+``$\times$'' denotes UNSAFE (counterexample found); all canonical
+models exhaust SAFE.}
+\label{fig:mutation-matrix}
+\end{figure}

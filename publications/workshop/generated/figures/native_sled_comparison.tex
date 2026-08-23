@@ -1,0 +1,49 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: output\runs\native-sled-reproduction-v1\result.json
+% SHA-256: f760a47ec6ae2418d60dd0d19425d07a0101547b1e63f94c53bea12c288739ba
+% Run: python scripts/generate_paper_figures.py
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.95\columnwidth,
+    height=5cm,
+    ybar,
+    bar width=0.25cm,
+    enlarge x limits=0.15,
+    ylabel={Verdict (1 = UNSAFE)},
+    ylabel style={font=\small},
+    xlabel={Defence variant},
+    xlabel style={font=\small},
+    symbolic x coords={ITES,No defence,Union perm.,Initiator only,Latest input,No read check},
+    xtick=data,
+    x tick label style={font=\footnotesize, rotate=30, anchor=east},
+    ytick={0,1},
+    yticklabels={SAFE, UNSAFE},
+    yticklabel style={font=\footnotesize},
+    nodes near coords,
+    nodes near coords style={font=\tiny, color=gray},
+    legend style={at={(0.5,-0.35)}, anchor=north, legend columns=3, font=\footnotesize},
+    legend image code/.code={
+      \draw[#1] (0cm,-0.1cm) rectangle (0.2cm,0.25cm);
+    },
+]
+\addplot[fill=safebg!80, draw=safebd] coordinates {
+    (ITES,0) (No defence,1) (Union perm.,0) (Initiator only,0) (Latest input,0) (No read check,0)
+};
+\addplot[fill=unsafebg!80, draw=unsafebd] coordinates {
+    (ITES,0) (No defence,0) (Union perm.,0) (Initiator only,0) (Latest input,0) (No read check,0)
+};
+\legend{SAFE, UNSAFE}
+\end{axis}
+\end{tikzpicture}
+\caption{Native SLED verdicts on the canonical confidential-handoff
+fixture.  Only \emph{no defence} produces an UNSAFE verdict with a
+one-step counterexample; ITES and all corrected variants are SAFE.
+Five of five defective monitors are detected across three fixture
+pairs (60 transitions total).}
+\label{fig:native-sled}
+\end{figure}
+% Canonical data: 3 pairs, 6 defences
+% Negative controls killed: 5/5

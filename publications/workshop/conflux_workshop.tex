@@ -1,0 +1,492 @@
+\documentclass{article}
+
+% NeurIPS 2026 workshop style (double-blind)
+\usepackage[dblblindworkshop]{neurips_2026}
+\workshoptitle{Foundations of Language Model Security}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\definecolor{safebg}{rgb}{0.85,0.93,0.85}
+\definecolor{safebd}{rgb}{0.3,0.6,0.3}
+\definecolor{unsafebg}{rgb}{0.95,0.85,0.85}
+\definecolor{unsafebd}{rgb}{0.7,0.3,0.3}
+\definecolor{pendingbg}{rgb}{0.92,0.92,0.95}
+\definecolor{pendingbd}{rgb}{0.5,0.5,0.7}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, calc, matrix}
+\pgfplotsset{compat=1.18}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\title{Preventing Privilege Escalation in LLM Agents:\\
+Provenance-Based Authority from Theory to Canonical Implementation}
+
+\author{%
+  Anonymous Author(s) \\
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Large-language-model agents process information from multiple principals
+while performing externally visible actions. We argue that privilege
+escalation---not prompt injection per se---is the appropriate system-level
+security objective. We present Influence Tracking with Extrapolated Security
+(ITES), a provenance-based defence that derives effective authority from the
+intersection of permissions held by all influencing principals, and the
+System-Level Evaluator for Defences (SLED), which exhaustively explores
+execution state spaces under worst-case model behaviour. Prior work
+established the core ITES theorems and evaluated the original prototype with
+SLED across approximately 1.5 million traces, observing zero privilege
+escalation while preserving maximal utility. We then describe Conflux, a
+canonical reimplementation with independent policy ports for read,
+authorisation, visibility, and consent; argument-aware authorisation;
+audience-specific disclosure; structured attribution; authenticated dynamic
+planning; a serialisable formal verification subset with cone-of-influence
+reduction; pinned benchmark translation; and a scoped delegation model. We
+report bounded current evidence from native SLED mutation testing, formal
+verification, and direction-readiness mutants, and we position the work
+within the classical integrity and information-flow-control lineage.
+\end{abstract}
+
+
+\section{Introduction}
+
+Large language model (LLM) agents read documents, invoke tools, and perform
+externally visible actions on behalf of users. Unlike traditional software,
+these agents process natural-language inputs from multiple principals,
+including users, documents, databases, APIs, and other systems. Arbitrary
+information may influence decisions with real-world consequences
+\citep{earlycategorization}.
+
+Prompt injection has emerged as a fundamental challenge
+\citep{struq,spotlighting,neuralexec}. Model-level defences improve
+instruction following but remain probabilistic: adaptive attacks may
+invalidate empirical robustness
+\citep{criticaleval,detectprompt,poisoningalignment,checkpointgcg}. We
+instead treat \emph{privilege escalation} as the system-level security
+objective: if every principal influencing an action is authorised for it,
+then arbitrary model behaviour cannot increase authority
+\citep{provos2003,davi2010}.
+
+In prior work, we introduced Influence Tracking with Extrapolated Security
+(ITES), a provenance-based defence that derives the effective authority of
+each execution from information provenance and an existing access-control
+system, and the System-Level Evaluator for Defences (SLED), which evaluates
+system-level defences under worst-case model behaviour by exhaustively
+exploring the reachable execution space \citep{earlycategorization}. Across
+approximately 1.5 million explored traces, SLED observed no successful
+privilege escalation while preserving maximal utility for all tasks
+consistent with the access-control system.
+
+This paper unifies the foundational ITES/SLED theory with the Conflux
+canonical reimplementation, which extends the original prototype with
+independent policy ports, argument-aware authorisation, controlled
+disclosure, structured attribution, authenticated dynamic planning,
+serialisable formal verification, and benchmark translation. The
+contributions are:
+
+\begin{enumerate}
+  \item We argue that privilege escalation, rather than prompt injection
+    itself, is the appropriate system-level security objective for LLM
+    agents operating within existing access-control systems.
+  \item We present ITES, whose authority-intersection rule is a
+    principal-sensitive analogue of low-water-mark integrity
+    \citep{biba1977,lomac}, and prove that authority is monotonically
+    non-increasing as influence accumulates.
+  \item We introduce SLED, which evaluates defences independently of
+    language-model behaviour by exhaustively exploring the execution state
+    space under worst-case assumptions.
+  \item We describe the Conflux canonical architecture, which separates
+    read, authorisation, visibility, and consent decisions; extends to
+    argument-aware policy, audience disclosure, structured attribution,
+    authenticated dynamic planning, and serialisable formal verification;
+    and maintains a disabled scoped-delegation model.
+  \item We report bounded current evidence from native SLED mutation
+    testing, COI-reduced formal verification, and direction-readiness
+    mutants, clearly distinguishing archived, bounded, and pending results.
+\end{enumerate}
+
+
+\section{Related Work}
+
+\subsection{Model-Level Defences}
+
+Model-level defences seek to make language models resist prompt injection
+through improved prompting, alignment, or fine-tuning
+\citep{struq,spotlighting,secalign,datasentinel}. While often effective
+empirically, their security remains probabilistic and may be bypassed by
+adaptive attacks \citep{criticaleval,checkpointgcg,poisoningalignment}. ITES
+assumes worst-case model behaviour and derives security entirely from
+system-level enforcement.
+
+\subsection{System-Level Defences}
+
+Several works address prompt injection through system-level enforcement.
+The Dual LLM pattern separates privileged planning from untrusted parsing.
+CaMeL extends this with capability tracking and developer-defined policies
+enforced by a custom interpreter \citep{camel,designpatterns}. Progent
+mediates tool calls with symbolic privilege control \citep{progent}. PACT
+tracks argument-level provenance \citep{pact}, and FORGE enforces
+history-sensitive Datalog policies \citep{forge}. ITES differs by deriving
+authority directly from the organisation's existing access-control system
+rather than introducing a trusted planning model, binary trust labels, or
+a new policy language.
+
+\subsection{Classical Security Lineage}
+
+The ITES authority-intersection rule is structurally analogous to Biba's
+low-water-mark contamination: consuming information from an additional
+principal can preserve or reduce effective authority but cannot increase it
+\citep{biba1977}. LOMAC operationalised low-water-mark integrity in
+commodity systems and confronted the same utility--security tension
+\citep{lomac}. Denning's lattice model provides the formal foundation: the
+intersection of permission sets is a meet in the powerset lattice
+\citep{denning1976}. Sabelfeld and Myers provide the vocabulary for
+explicit and implicit flows \citep{sabelfeld2003}, while Myers and Liskov's
+decentralized IFC moves toward multi-principal policies
+\citep{myersliskov}. Declassification and endorsement mechanisms
+\citep{declassification-survey,robust-declassification,attacker-control,nonmalleable-ifc}
+inform Conflux's visibility and disclosure design. Conflux enriches this
+lineage with authenticated principal identities and authority derived from
+the organisation's current access-control state.
+
+\subsection{Evaluation}
+
+AgentDojo supplies realistic prompt-injection tasks and metrics
+\citep{agentdojo}. Existing benchmarks evaluate robustness against known
+attacks, while SLED evaluates whether a defence satisfies its intended
+security objective under arbitrary model behaviour.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{2.8cm}p{2.2cm}p{2.2cm}p{2.2cm}p{2.5cm}}
+\toprule
+& Model-level & Dual LLM & CaMeL & ITES \\
+\midrule
+Primary mechanism & Model robustness & Model isolation & Dual LLM + policies & Provenance + ACS \\
+Security depends on model & Yes & Planning model & Planning model & No \\
+Requires new policy language & No & No & Yes & No \\
+Tracks & N/A & N/A & Capabilities & Principals \\
+Security objective & Prevent PI & Prevent PI & Prevent PI + policies & Prevent PE \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of representative approaches. PI denotes prompt injection; PE denotes privilege escalation; ACS denotes access-control system.}
+\label{tab:comparison}
+\end{table}
+
+\input{generated/figures/defence_comparison.tex}
+
+
+\section{Threat Model and Security Objective}
+
+We consider an LLM-based agent that performs externally visible actions on
+behalf of users. The agent receives information from multiple principals,
+both directly through prompts and indirectly through documents, APIs, and
+tool outputs. Any principal may provide arbitrary inputs; we make no
+assumptions about the model's ability to distinguish instructions from data
+or resist prompt injection. The enforcement mechanism and access-control
+system (ACS) are assumed correct and uncompromised.
+
+\subsection{Access-Control System}
+
+We model the ACS as the tuple $(A, U, D, P, W, R)$, where $A$ is the set of
+parameterised actions, $U$ is the set of principals, $D$ is the set of data
+objects, $P \subseteq U \times A$ is the permission relation, $W
+\subseteq D \times U$ specifies authorship, and $R \subseteq D \times U$
+specifies read access \citep{abac}. For principal $u$ and action $a$,
+$P(u, a)$ holds iff $u$ is authorised to perform $a$.
+
+\subsection{Security Objective}
+
+\begin{definition}[Influencing Principal]
+A principal $u$ influences an action if information originating from $u$
+contributes, directly or indirectly, to the execution that produces the
+action.
+\end{definition}
+
+\begin{definition}[Privilege Escalation]
+Privilege escalation occurs iff the agent performs an action $a \in A$ for
+which there exists an influencing principal $u \in U$ such that $\neg
+P(u, a)$.
+\end{definition}
+
+Under this formulation, security depends only on provenance and the current
+access-control state, not on the source or mechanism of influence. Prompt
+injection is one possible source of influence; ITES treats it uniformly with
+any other.
+
+
+\section{ITES: Provenance-Based Authority}
+
+The central principle of ITES is that every execution inherits the
+effective authority implied by the provenance of its inputs. For an
+execution $e$ whose direct inputs are data objects $ds \subseteq D$, the
+\emph{Principal Context} (influence set in prior work) is:
+\[
+\mathrm{PC}(e) = \bigcup_{d \in ds} \{u \in U \mid W(d, u)\}.
+\]
+Objects produced by an execution inherit its complete Principal Context.
+Influence accumulates monotonically: once a principal influences a
+computation, that influence persists unless a trusted provenance mechanism
+removes it. Under the conservative model, influence is never removed.
+
+\subsection{Authorisation Rule}
+
+Given an execution $e$ with Principal Context $\mathrm{PC}(e)$, ITES permits
+an action $a \in A$ iff:
+\[
+\forall u \in \mathrm{PC}(e),\; P(u, a).
+\]
+Equivalently, the effective authority is the intersection of the permission
+sets of all influencing principals. The Conflux extension adds a
+non-empty-context condition: an action is blocked if $\mathrm{PC}(e) =
+\varnothing$, preventing vacuous authority.
+
+\subsection{Maximal Secure Authorisation}
+
+\begin{theorem}[Maximal Secure Authorisation]
+ITES authorises the maximal set of actions that can be permitted without
+allowing privilege escalation.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+ITES authorises exactly $\bigcap_{u \in \mathrm{PC}(e)} \{a \mid P(u, a)\}$.
+Any strict superset must include an action $a$ for which some influencing
+principal $u$ lacks permission, satisfying Definition~2.
+\end{proof}
+
+\subsection{Authority Monotonicity}
+
+\begin{theorem}[Authority Monotonicity]
+If $\mathrm{PC}(e_1) \subseteq \mathrm{PC}(e_2)$, then
+$\mathrm{Permitted}(\mathrm{PC}(e_2)) \subseteq
+\mathrm{Permitted}(\mathrm{PC}(e_1))$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Adding influencing principals introduces additional constraints; the
+intersection can only shrink or remain unchanged.
+\end{proof}
+
+\begin{corollary}[Security Guarantee]
+Under the threat model of Section~3, and assuming correct enforcement of
+influence tracking, provenance, and access-control checks, ITES prevents
+privilege escalation.
+\end{corollary}
+
+The guarantee is independent of the source of influence. Prompt injection,
+retrieved documents, compromised tools, and arbitrary model behaviour are
+treated uniformly: once information contributes to an execution, the
+authority of that execution is constrained by the permissions of the
+corresponding principals.
+
+
+\section{SLED: Worst-Case Evaluation}
+
+Existing prompt-injection benchmarks measure robustness against a finite
+collection of attacks. SLED instead evaluates whether a system-level
+defence correctly enforces its security properties under arbitrary model
+behaviour.
+
+\subsection{State-Space Exploration}
+
+SLED treats each execution as a nondeterministic black box that may produce
+any behaviour consistent with the system interface. A system state contains
+the environment, the ACS, available data, accumulated influence, pending
+executions, and possible actions. Beginning from an initial state, SLED
+enumerates every action that may result from each pending execution,
+updates the environment, propagates influence, and schedules further
+executions. Exploration continues until every reachable state is visited
+or a bound is reached.
+
+\input{generated/figures/sled_state_space.tex}
+
+\subsection{Archived Prototype Results}
+
+In prior work, SLED evaluated the original ITES prototype across three
+representative environments, exploring approximately 1.5 million execution
+traces. No successful privilege escalation or information exfiltration was
+observed, while maximal utility was preserved for all tasks authorised by
+the ACS. These results apply to the prior prototype and not to the
+refactored canonical kernel; current evidence is reported in Section~8.
+
+\subsection{Native SLED in Conflux}
+
+The Conflux reimplementation provides native SLED with breadth-first
+exploration, canonical state keys, deduplication, retained bounds, and
+shortest counterexamples. Verdicts are \texttt{SAFE} (exhausted finite
+model), \texttt{BOUNDED\_SAFE} (truncated), \texttt{UNSAFE}
+(counterexample found), or \texttt{UNKNOWN} (modelling failure).
+
+\input{generated/figures/native_sled_comparison.tex}
+
+
+\section{Conflux: Canonical Architecture and Extensions}
+
+Conflux refactors the original prototype into a canonical security kernel
+with one dependency direction and one mediation boundary. Immutable domain
+values represent principals, Principal Contexts, permissions, resources,
+artefacts, provenance, sessions, and actions. The ITES kernel is pure:
+model proposals cannot assert or narrow their Principal Context,
+alternative branches share an immutable parent, and effect execution
+requires an exact decision certificate.
+
+\subsection{Independent Policy Ports}
+
+Authorisation, read access, visibility, and consent are separate decisions.
+Consent cannot override authority; visibility cannot override read policy.
+This separation prevents a single policy dimension from manufacturing
+authority for another.
+
+\subsection{Argument-Aware Authorisation}
+
+Trusted action-argument roles carry provenance independently of the
+proposing execution. Pointwise selector policy checks each principal for
+each argument component, preventing authority borrowing through content or
+consent.
+
+\subsection{Audience-Specific Disclosure and Attribution}
+
+Deterministic redaction produces audience-specific event views that do not
+copy hidden payload fields. Structured attribution records are
+evidence-derived rather than model-asserted: trusted model explanations are
+rejected in favour of provenance, context, and policy records.
+
+\subsection{Authenticated Dynamic Planning}
+
+Open-ended plans use authenticated operation catalogues, typed bindings,
+immutable graph patches, explicit bounded loops, and continuations. Every
+grounded effect is re-mediated by ITES at action time; the planner cannot
+manufacture authority. Generated code is inert data submitted to a mediated
+sandbox capability, not trusted control flow. Security is a hard selection
+constraint; eligible plans are then ordered by utility, authority
+footprint, sensitive observations, and cost.
+
+\subsection{Scoped Delegation}
+
+The delegation model supports exact issuer, beneficiary, operation,
+resource, and argument bindings with expiry, revocation, and atomic
+one-use consumption. Delegation remains \emph{runtime-disabled}: ITES still
+denies delegation operations. The model exists for bounded verification
+only.
+
+\subsection{Serialisable Formal Verification}
+
+A serialisable verification IR supports a reference interpreter, runtime
+differential tests, optional Z3 bounded model checking, and a nuXmv
+Boolean subset. Property-scoped cone-of-influence (COI) reduction closes
+transitively over guards and dependencies. Reduction claims require matching
+reference verdicts and a liftable unsafe witness.
+
+\input{generated/figures/coi_reduction_metrics.tex}
+
+\input{generated/figures/z3_verification.tex}
+
+
+\section{Evaluation and Evidence Status}
+
+We distinguish three evidence tiers: \emph{archived} (prior prototype),
+\emph{bounded current} (canonical kernel, finite models), and \emph{pending}
+(gated on retained result artefacts). No numerical claim is entered
+manually; tables and figures are generated from versioned result JSON.
+
+\input{generated/figures/evidence_tiers.tex}
+
+\input{generated/tables/evidence_table.tex}
+
+\subsection{Native SLED Reproduction}
+
+The retained native reproduction detects all five seeded monitor defects,
+each with a one-step witness, across three fixture pairs with fixed finite
+bounds. This is bounded evidence: it exercises finite monitor models, not
+all deployment observers.
+
+\subsection{Direction Readiness}
+
+The retained direction-readiness bundle reports safe exhaustion for the
+canonical finite disclosure and delegation models and minimal witnesses for
+every seeded selector, disclosure, attribution, and delegation defect.
+Delegation remains disabled at runtime.
+
+\input{generated/figures/mutation_matrix.tex}
+
+\subsection{AgentDojo Translation Boundary}
+
+AgentDojo is pinned to package 0.1.35 and benchmark v1.2.2. The retained
+fixture proves translation only; a live no-defence-versus-ITES comparison
+is pending. A pilot run with Qwen2.5-1.5B-Instruct NF4 completed all six
+protocol cells end-to-end, but the model is too small to complete tasks;
+this is pipeline-readiness evidence, not a utility claim.
+
+\input{generated/figures/agentdojo_matrix.tex}
+
+
+\section{Discussion and Limitations}
+
+Conflux assumes sound authentication, provenance, policy state, and complete
+mediation. It does not prevent actions authorised for every influencing
+principal and does not guarantee subjective intent alignment. Conservative
+contexts can over-approximate influence, reducing utility. The
+authority-intersection rule is structurally analogous to Biba's
+low-water-mark contamination \citep{biba1977} and is a standard meet in
+the powerset lattice \citep{denning1976}; novelty claims must be qualified
+against the classical IFC literature
+\citep{sabelfeld2003,myersliskov,declassification-survey,robust-declassification,attacker-control,nonmalleable-ifc}.
+
+Authorised-read safety is not noninterference: a system can obey local ACL
+checks and still leak information through outputs or control flow. Formal
+results are scoped to their finite model, backend, and conformance
+evidence. Delegation has a bounded model and lifecycle representation but
+remains unsupported by operational ITES. Provider adapters are research
+prototypes, not production isolation boundaries. Real-model, AgentDojo, and
+planning comparisons remain pending until gated runs produce retained
+evidence.
+
+
+\section{Conclusion}
+
+We have presented a unified view of ITES and SLED---from the original
+theoretical guarantees and prototype evaluation through the Conflux
+canonical reimplementation with independent policy ports, argument-aware
+authorisation, controlled disclosure, structured attribution, authenticated
+dynamic planning, serialisable formal verification, and a disabled
+scoped-delegation foundation. The core security guarantee---that authority
+can only decrease as influence accumulates---follows from the
+provenance-based authorisation rule and is independent of language-model
+behaviour. The remaining research contribution is stronger evidence and
+carefully gated activation: real-model, external-benchmark, and formal
+artefacts whose claims remain tied to explicit assumptions, models, and
+bounds.
+
+
+\begin{ack}
+Removed for double-blind review.
+\end{ack}
+
+
+\bibliography{references}
+\bibliographystyle{plainnat}
+
+
+\appendix
+\input{checklist}
+
+
+\end{document}

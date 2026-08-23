@@ -1,0 +1,38 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: output\runs\sled-canon-env01\verification.json; output\runs\smoke\result.json
+% SHA-256: 0fdaa54c2c7d0a532383372efaab93ef885d4e589d5f46b60415f6330709f18e;9490ec77231e64c8ae30164244dd3b1def207fc55027b4eff7f1d9cc1713ae44
+% Run: python scripts/generate_paper_figures.py
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=2.5cm,
+  state/.style={draw, circle, minimum size=1.5cm, font=\footnotesize, align=center},
+  good/.style={fill=safebg!60, draw=safebd},
+  bad/.style={fill=unsafebg!60, draw=unsafebd},
+  arrow/.style={-Stealth, thick},
+  label/.style={font=\footnotesize, align=center, midway, above},
+]
+% Colors defined globally in preamble
+
+% ITES path (safe)
+\node[state, good] (s0) at (0, 0) {$s_0$\\PC$=\{A\}$};
+\node[state, good] (s1) at (3, 0) {$s_1$\\block};
+\draw[arrow] (s0) -- node[label] {propose} (s1);
+
+% No-defence path (unsafe, counterexample)
+\node[state, bad] (t0) at (0, -2.5) {$t_0$\\PC$=\{A,B\}$};
+\node[state, bad] (t1) at (3, -2.5) {$t_1$\\executed};
+\draw[arrow] (t0) -- node[label] {execute} (t1);
+
+% Annotation
+\node[font=\footnotesize, align=center] at (6.5, 0) {ITES blocks\\unauthorised action};
+\node[font=\footnotesize, align=center] at (6.5, -2.5) {No defence:\\1-step witness};
+\end{tikzpicture}
+\caption{SLED state-space exploration on the canonical
+confidential-handoff environment (2 states, 1 transition, safe at
+depth~12).  Top: ITES blocks the unauthorised
+action (SAFE).  Bottom: without defence, a one-step counterexample
+reaches execution (UNSAFE).  Smoke result: 2 proposed, 1 authorised, 1 blocked.}
+\label{fig:sled-state-space}
+\end{figure}
