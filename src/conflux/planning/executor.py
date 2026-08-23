@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, replace
-from typing import Any, Callable
+from typing import Any
 
 from conflux.application import MediationService
 from conflux.domain import (
@@ -664,7 +665,7 @@ class DynamicPlanExecutor:
                             node.control_provenance,
                             provenance,
                         ).with_activity(f"control:{node_id}"),
-                    )
+                    ),
                 )
             else:
                 updated.append(node)

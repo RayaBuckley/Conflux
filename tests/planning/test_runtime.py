@@ -195,8 +195,8 @@ def test_model_value_binds_later_mediated_action(alice: Principal) -> None:
                     "scripted-output",
                     "generated repair",
                     provenance,
-                )
-            }
+                ),
+            },
         ),
         provider=provider,
         grants=frozenset({PolicyGrant("alice", "write", "safe.txt")}),

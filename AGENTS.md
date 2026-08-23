@@ -46,3 +46,40 @@ checklist, and commit message convention. See
 [docs/AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md) for the AI-agent
 collaboration contract, trust order, documentation routing, and stop
 conditions.
+
+## Validation tooling
+
+The repository has a multi-layer validation pipeline orchestrated by
+`scripts/validate.py`.  AI agents should run `python scripts/validate.py`
+before committing.  The following checkers are included:
+
+- **ruff** — linting with a broad rule set (`E`, `F`, `I`, `UP`, `RUF`,
+  `SIM`, `PERF`, `B`, `PIE`, `FURB`, `COM`, `C4`, `PTH`, `N`, `DTZ`,
+  `S`, `PL`, `TRY`, `EM`, `FBT`, `LOG`, `G`, `RET`, `ERA`, `PT`, `ARG`,
+  `ANN`, `SLF`, `INP`, `TC`, `D`).  Per-file ignores are configured in
+  `pyproject.toml` for tests, scripts, and specific modules.
+- **mypy** — strict type checking (`src`, `tests`, `scripts`).  mypy is
+  the sole type-checking authority; Pyright/Pylance is configured with
+  warnings (not errors) for supplemental IDE feedback only.
+- **pytest** — full test suite with branch coverage (threshold: 89%).
+- **yamllint** — YAML validation (`.yamllint.yml`).
+- **vulture** — dead-code detection (`vulture-whitelist.py`).
+- **pip-audit** — dependency vulnerability scanning (informational).
+- **markdownlint-cli2** and **cspell** — via `scripts/validate_extensions.py`.
+- **Schema validation** — 37 JSON schemas validated by
+  `scripts/validate_schemas.py`.
+- **Repository audit** — structural and governance checks via
+  `scripts/audit_repository.py`.
+- **Wheel build + smoke** — `python -m build` followed by
+  `scripts/validate_wheel.py`.
+
+### Quick commands for AI agents
+
+```
+python -m ruff check .                    # lint
+python -m ruff check --fix .              # auto-fix lint
+python -m mypy . --no-error-summary       # type check
+python -m pytest tests -x -q              # run tests
+python -m yamllint -c .yamllint.yml .     # YAML lint
+python -m vulture src/conflux vulture-whitelist.py --min-confidence 60  # dead code
+```

@@ -94,7 +94,7 @@ class DelegationTraceRecord:
                 "grant_id": self.grant.id,
                 "sequence": self.sequence,
                 "reason": self.reason,
-            }
+            },
         )
         return {
             "schema_version": self.schema_version,

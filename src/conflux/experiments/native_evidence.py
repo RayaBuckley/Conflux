@@ -55,7 +55,7 @@ def generate_native_sled_bundle(source_commit: str, output: Path, *, repo_root: 
             {
                 "protocol": protocol.fingerprint,
                 "result": checksums["result.json"],
-            }
+            },
         ),
         track="native_sled",
         protocol_fingerprint=protocol.fingerprint,
@@ -182,7 +182,7 @@ def _raw_events(result: dict[str, object]) -> str:
                     "pair_id": pair["pair_id"],
                     "sequence": sequence,
                     **row,
-                }
+                },
             )
             sequence += 1
     controls = result["negative_controls"]
@@ -196,7 +196,7 @@ def _raw_events(result: dict[str, object]) -> str:
                 "event_type": "negative_control_result",
                 "sequence": sequence,
                 **control,
-            }
+            },
         )
         sequence += 1
     return "".join(canonical_json(record) + "\n" for record in records)
@@ -222,7 +222,7 @@ def _table(result: dict[str, object]) -> str:
             "",
             "All values are generated from `result.json`. The historical trace claim is retained but not comparable.",
             "",
-        )
+        ),
     )
 
 

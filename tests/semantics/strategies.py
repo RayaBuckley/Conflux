@@ -34,7 +34,7 @@ _NAMES = st.sampled_from(
         "trent",
         "victor",
         "walter",
-    ]
+    ],
 )
 
 _IDS = st.sampled_from(
@@ -53,7 +53,7 @@ _IDS = st.sampled_from(
         "output",
         "nested",
         "source",
-    ]
+    ],
 )
 
 

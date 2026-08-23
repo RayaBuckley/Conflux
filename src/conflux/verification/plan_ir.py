@@ -82,7 +82,7 @@ def abstract_plan(
                         step,
                         Expression.constant(1),
                     ),
-                )
+                ),
             ]
             if isinstance(node, ActionTemplateNode):
                 try:
@@ -106,17 +106,17 @@ def abstract_plan(
                         Assignment(
                             "capability_violated",
                             Expression.constant(
-                                summary.executed and operation.operation == "execute_code" and not summary.within_capability_envelope
+                                summary.executed and operation.operation == "execute_code" and not summary.within_capability_envelope,
                             ),
                         ),
-                    )
+                    ),
                 )
             elif isinstance(node, ContinuePlanningNode):
                 assignments.append(
                     Assignment(
                         "continuation_seen",
                         Expression.constant(True),
-                    )
+                    ),
                 )
             transitions.append(TransitionRule(rule_id, step_guard, tuple(assignments)))
     assumptions = (
@@ -191,7 +191,7 @@ def verify_plan(
                     "plan": plan.fingerprint,
                     "bound": bound,
                     "unsupported": abstraction.unsupported,
-                }
+                },
             ),
             fingerprint({"backend": backend, "version": "not-invoked"}),
             None,

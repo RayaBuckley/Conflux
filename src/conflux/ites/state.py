@@ -69,7 +69,7 @@ class TraceEvent:
                 "sequence": self.sequence,
                 "outcome": self.outcome.value,
                 "action_id": self.action.id if self.action else None,
-            }
+            },
         )
 
     def to_dict(self) -> dict[str, object]:
@@ -112,7 +112,7 @@ class DecisionCertificate:
         context: PrincipalContext,
         branch_id: str,
         decision: ActionDecision,
-    ) -> "DecisionCertificate":
+    ) -> DecisionCertificate:
         """Issue a certificate binding the decision to the action and context."""
         policy_versions = tuple(f"{item.policy_id}@{item.policy_version}" for item in decision.decisions)
         action_hash = action_fingerprint(action)
@@ -173,7 +173,7 @@ class BranchState:
     authorised_steps: tuple[AuthorisedStep, ...] = ()
 
     @classmethod
-    def initial(cls, inputs: tuple[Artifact[Any], ...]) -> "BranchState":
+    def initial(cls, inputs: tuple[Artifact[Any], ...]) -> BranchState:
         """Create the root branch from initial inputs."""
         if inputs:
             provenance = provenance_union(*(artifact.provenance for artifact in inputs))
@@ -192,10 +192,10 @@ class BranchState:
                 "depth": self.depth,
                 "status": self.status.value,
                 "model_calls": self.model_calls,
-            }
+            },
         )
 
-    def append(self, event: TraceEvent) -> "BranchState":
+    def append(self, event: TraceEvent) -> BranchState:
         """Return a new branch with *event* appended to the trace."""
         return replace(self, trace=self.trace + (event,))
 
@@ -266,7 +266,7 @@ class ITESReport:
                         branch.decision,
                         branch.certificate,
                         branch.branch_id,
-                    )
+                    ),
                 )
         return tuple(result)
 
@@ -315,7 +315,7 @@ class ITESReport:
         branch_id: str,
         success: bool,
         reason: str = "",
-    ) -> "ITESReport":
+    ) -> ITESReport:
         """Return a report containing one certificate-bound provider outcome."""
         branch = next((item for item in self.branches if item.branch_id == branch_id), None)
         if branch is None or branch.action is None or branch.decision is None:
@@ -338,7 +338,7 @@ class ITESReport:
         outcome: ActionOutcome,
         reason: str,
         terminal: bool,
-    ) -> "ITESReport":
+    ) -> ITESReport:
         """Append one action-time decision and effect outcome to a plan branch."""
         if outcome not in {
             ActionOutcome.BLOCKED,
@@ -436,16 +436,16 @@ def _execution_assessment(branches: tuple[BranchState, ...]) -> SafetyAssessment
 
 
 __all__ = [
+    "CERTIFICATE_SCHEMA_VERSION",
+    "TRACE_SCHEMA_VERSION",
     "ActionOutcome",
     "AuthorisedBranch",
     "AuthorisedPlan",
     "AuthorisedStep",
     "BranchState",
     "BranchStatus",
-    "CERTIFICATE_SCHEMA_VERSION",
     "DecisionCertificate",
     "ITESReport",
     "SafetyAssessment",
-    "TRACE_SCHEMA_VERSION",
     "TraceEvent",
 ]

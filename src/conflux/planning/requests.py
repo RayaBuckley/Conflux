@@ -121,7 +121,7 @@ class ContinuationRequest:
         remaining_budgets: PlanBudgets,
         trigger: str,
         control_provenance: Provenance,
-    ) -> "ContinuationRequest":
+    ) -> ContinuationRequest:
         """Construct a ContinuationRequest with derived provenance."""
         sources = [plan.invocation_provenance, control_provenance]
         sources.extend(observation.provenance for observation in observations)

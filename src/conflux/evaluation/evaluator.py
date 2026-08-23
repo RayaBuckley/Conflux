@@ -55,7 +55,7 @@ class Evaluator:
                 initial_inputs=initial_inputs,
                 model=model,
                 max_model_calls=max_model_calls,
-            )
+            ),
         )
 
 

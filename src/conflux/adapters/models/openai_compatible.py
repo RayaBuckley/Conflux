@@ -132,8 +132,8 @@ class OpenAICompatibleModel:
                                     "provenance": item.provenance.to_dict(),
                                 }
                                 for item in inputs
-                            ]
-                        }
+                            ],
+                        },
                     ),
                 },
             ],
@@ -187,7 +187,7 @@ class OpenAICompatibleModel:
                 response.status_code,
                 hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
                 body,
-            )
+            ),
         )
 
     def _parse(

@@ -81,7 +81,7 @@ class SecretPartition:
         }
 
     @classmethod
-    def from_dict(cls, value: object) -> "SecretPartition":
+    def from_dict(cls, value: object) -> SecretPartition:
         """Deserialize a secret partition from a JSON-compatible dictionary."""
         if not isinstance(value, dict):
             raise ValueError("secret partition must be an object")
@@ -171,7 +171,7 @@ def construct_product_ir(
                 primed_initial,
                 variable.minimum,
                 variable.maximum,
-            )
+            ),
         )
 
     combined_rules: list[TransitionRule] = []
@@ -189,14 +189,14 @@ def construct_product_ir(
                 Assignment(
                     _primed(assignment.variable),
                     _prime_expression(assignment.expression),
-                )
+                ),
             )
         combined_rules.append(
             TransitionRule(
                 id=rule.id,
                 guard=combined_guard,
                 assignments=tuple(combined_assignments),
-            )
+            ),
         )
 
     confidentiality_invariants: list[SafetyInvariant] = []
@@ -225,7 +225,7 @@ def construct_product_ir(
                 id=f"confidentiality__{observable_id}",
                 expression=invariant_expr,
                 description=f"Observational confidentiality: {observable_id} must not leak to unauthorised observers",
-            )
+            ),
         )
 
     declassification_tracking_vars: list[StateVariable] = []
@@ -252,7 +252,7 @@ def construct_product_ir(
                     id=rule.id,
                     guard=rule.guard,
                     assignments=rule.assignments + tuple(extra_assignments),
-                )
+                ),
             )
         else:
             final_rules.append(rule)
@@ -264,7 +264,7 @@ def construct_product_ir(
             f"observer: {partition.observer_description}" if partition.observer_description else "observer: unauthorised principal",
             f"secret variables: {sorted(partition.secret_variable_ids)}",
             f"observable variables: {sorted(partition.observable_variable_ids)}",
-        )
+        ),
     )
     if partition.declassification_boundaries:
         assumptions.append(f"declassification boundaries: {list(partition.declassification_boundaries)}")
@@ -297,7 +297,8 @@ def _primed(name: str) -> str:
 def _prime_expression(expression: Expression) -> Expression:
     """Return a copy of *expression* with every variable reference primed."""
     if expression.kind == ExpressionKind.VARIABLE:
-        assert isinstance(expression.value, str)
+        if not isinstance(expression.value, str):
+            raise TypeError(f"expected str variable name, got {type(expression.value).__name__}")
         return Expression.variable(_primed(expression.value))
     return Expression(
         expression.kind,

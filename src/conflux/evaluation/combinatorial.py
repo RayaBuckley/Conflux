@@ -120,7 +120,7 @@ class CombinatorialVerificationSystem:
         max_model_calls: int = 3,
         final_primitive_only: bool = False,
         final_max_batch_size: int | None = None,
-    ) -> "CombinatorialVerificationSystem":
+    ) -> CombinatorialVerificationSystem:
         """Create a combinatorial system with auto-generated nested execution actions.
 
         Generates ``NestedExecutionAction`` candidates from non-empty subsets
@@ -151,7 +151,7 @@ class CombinatorialVerificationSystem:
                     NestedExecutionAction(
                         id=f"nested-{r}-{'-'.join(a.id for a in combo)}",
                         inputs=combo,
-                    )
+                    ),
                 )
         all_actions: tuple[Action, ...] = (*primitive_actions, *nested_actions)
         inputs = initial_inputs if initial_inputs is not None else artifacts

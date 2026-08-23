@@ -34,9 +34,9 @@ def normalise_permission(value: Permission | str) -> Permission:
 __all__ = [
     "DELEGATE",
     "DELETE",
-    "Permission",
     "READ",
     "SHARE",
     "WRITE",
+    "Permission",
     "normalise_permission",
 ]

@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Mapping
+from typing import Any
 
 SUPPORTED_KEYS = frozenset({"Effect", "Action", "Resource"})
 
@@ -40,4 +41,4 @@ def evaluate_statement(
     return AWSSubsetDecision(allowed, "explicit_allow" if allowed else "no_matching_allow")
 
 
-__all__ = ["AWSSubsetDecision", "SUPPORTED_KEYS", "evaluate_statement"]
+__all__ = ["SUPPORTED_KEYS", "AWSSubsetDecision", "evaluate_statement"]

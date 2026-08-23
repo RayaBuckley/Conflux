@@ -223,7 +223,7 @@ def fig_coi_reduction() -> list[tuple[Path, str]]:
             f"& {m['original_rules']} $\\to$ {m['reduced_rules']} "
             f"& {m['original_states']} $\\to$ {m['reduced_states']} "
             f"& {f['reference']['original']['verdict']} / {f['reference']['reduced']['verdict']} "
-            f"& {f['reference']['equivalent']} \\\\"
+            f"& {f['reference']['equivalent']} \\\\",
         )
 
     table_rows = "\n".join(rows)
@@ -658,7 +658,7 @@ def table_evidence() -> list[tuple[Path, str]]:
     sources.append(str(dr_path.relative_to(ROOT)))
     total_mutants = sum(len(items) for items in dr.get("mutants", {}).values())
     rows.append(
-        f"Direction readiness & Bounded & {total_mutants} mutants killed, 1-step witnesses & Finite disclosure/delegation models \\\\"
+        f"Direction readiness & Bounded & {total_mutants} mutants killed, 1-step witnesses & Finite disclosure/delegation models \\\\",
     )
 
     # COI reduction

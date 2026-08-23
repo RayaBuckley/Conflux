@@ -24,7 +24,7 @@ CEDAR_EVIDENCE_FILES = frozenset(
         "protocol.json",
         "result.json",
         "table.md",
-    }
+    },
 )
 
 

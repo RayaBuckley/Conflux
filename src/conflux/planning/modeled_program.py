@@ -109,7 +109,7 @@ def parse_modeled_program(value: object) -> ModeledProgram:
                 tuple(cast(list[str], item["dependencies"])),
                 tuple(cast(list[str], item["declared_reads"])),
                 tuple(cast(list[str], item["declared_writes"])),
-            )
+            ),
         )
     return ModeledProgram(
         payload["id"],

@@ -41,7 +41,7 @@ DIRECTION_EVIDENCE_FILES = frozenset(
         "planning-preflight.json",
         "security-mutations.json",
         "table.md",
-    }
+    },
 )
 DISCLOSURE_PROPERTIES = (
     NoUnauthorisedSelector(),
@@ -322,7 +322,7 @@ def _table(
             "",
             "Unavailable cells were not executed and are not empirical efficacy results.",
             "",
-        )
+        ),
     )
 
 

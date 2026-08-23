@@ -119,7 +119,7 @@ def select_plan(
             )
             for candidate in candidates
             if not candidate.security.eligible
-        )
+        ),
     )
     ranked = tuple(sorted(eligible, key=lambda item: item.objective_vector()))
     vectors = tuple((candidate.plan.id, candidate.objective_vector()) for candidate in ranked)

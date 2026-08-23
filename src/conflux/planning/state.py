@@ -112,7 +112,7 @@ class PlanTraceEvent:
                 "branch_id": self.branch_id,
                 "causal_parent_ids": self.causal_parent_ids,
                 "payload": self.payload,
-            }
+            },
         )
 
     def to_dict(self) -> dict[str, object]:
@@ -155,7 +155,7 @@ class PlanExecutionState:
         cls,
         plan: Plan,
         artifacts: tuple[Artifact[Any], ...] = (),
-    ) -> "PlanExecutionState":
+    ) -> PlanExecutionState:
         """Create the initial execution state for a plan and input artifacts."""
         artifacts = tuple(artifacts)
         gated = _gated_nodes(plan)
@@ -164,7 +164,7 @@ class PlanExecutionState:
             {
                 "plan": plan.fingerprint,
                 "artifacts": [item.fingerprint for item in artifacts],
-            }
+            },
         )
         state = cls(
             run_id,
@@ -209,7 +209,7 @@ class PlanExecutionState:
         *,
         reason: str = "",
         increment_attempts: bool = False,
-    ) -> "PlanExecutionState":
+    ) -> PlanExecutionState:
         """Return a new state with the given node's status updated."""
         updated: list[NodeState] = []
         found = False
@@ -224,18 +224,18 @@ class PlanExecutionState:
                     status=status,
                     reason=reason,
                     attempts=item.attempts + int(increment_attempts),
-                )
+                ),
             )
         if not found:
             raise ValueError(f"unknown execution node: {node_id}")
         return replace(self, nodes=tuple(updated))
 
-    def with_output(self, output: NodeOutput) -> "PlanExecutionState":
+    def with_output(self, output: NodeOutput) -> PlanExecutionState:
         """Return a new state with the given output added or replaced."""
         retained = tuple(item for item in self.outputs if item.key != output.key)
         return replace(self, outputs=retained + (output,))
 
-    def activate(self, *node_ids: str) -> "PlanExecutionState":
+    def activate(self, *node_ids: str) -> PlanExecutionState:
         """Return a new state with the given nodes activated."""
         unknown = set(node_ids) - self.plan.node_ids
         if unknown:
@@ -245,14 +245,14 @@ class PlanExecutionState:
             activated_node_ids=self.activated_node_ids | frozenset(node_ids),
         )
 
-    def deactivate(self, *node_ids: str) -> "PlanExecutionState":
+    def deactivate(self, *node_ids: str) -> PlanExecutionState:
         """Return a new state with the given nodes deactivated."""
         return replace(
             self,
             activated_node_ids=self.activated_node_ids - frozenset(node_ids),
         )
 
-    def skip(self, *node_ids: str, reason: str) -> "PlanExecutionState":
+    def skip(self, *node_ids: str, reason: str) -> PlanExecutionState:
         """Return a new state with pending nodes marked as skipped."""
         state = self
         for node_id in node_ids:
@@ -261,7 +261,7 @@ class PlanExecutionState:
                 state = state.with_node(node_id, NodeStatus.SKIPPED, reason=reason)
         return state
 
-    def increment_loop(self, node_id: str) -> "PlanExecutionState":
+    def increment_loop(self, node_id: str) -> PlanExecutionState:
         """Return a new state with the loop iteration count incremented."""
         counts = dict(self.loop_iterations)
         counts[node_id] = counts.get(node_id, 0) + 1
@@ -275,7 +275,7 @@ class PlanExecutionState:
         branch_id: str = "root",
         payload: dict[str, object] | None = None,
         causal_parent_ids: tuple[str, ...] | None = None,
-    ) -> "PlanExecutionState":
+    ) -> PlanExecutionState:
         """Return a new state with a trace event appended."""
         parents = causal_parent_ids
         if parents is None:
@@ -292,7 +292,7 @@ class PlanExecutionState:
         )
         return replace(self, events=self.events + (event,))
 
-    def replace_plan(self, plan: Plan, *, removed_node_ids: tuple[str, ...]) -> "PlanExecutionState":
+    def replace_plan(self, plan: Plan, *, removed_node_ids: tuple[str, ...]) -> PlanExecutionState:
         """Return a new state with the plan replaced and stale nodes removed."""
         removed = set(removed_node_ids)
         existing = {item.node_id: item for item in self.nodes if item.node_id not in removed}
@@ -321,7 +321,7 @@ class PlanExecutionState:
                 "planner_calls": self.planner_calls,
                 "continuation_depth": self.continuation_depth,
                 "effects": self.effects,
-            }
+            },
         )
 
     def to_dict(self) -> dict[str, object]:

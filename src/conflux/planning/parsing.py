@@ -76,7 +76,7 @@ def parse_template(value: object, *, trusted_provenance: Provenance) -> ActionTe
                     argument.get("binding"),
                     trusted_provenance=trusted_provenance,
                 ),
-            )
+            ),
         )
     try:
         visibility = ActionVisibility(_string(payload.get("visibility"), "template.visibility"))
@@ -305,7 +305,7 @@ def parse_plan_patch(value: object, *, trusted_provenance: Provenance) -> PlanPa
                 ),
                 outcome,
                 _string(operation.get("terminal_reason"), "terminal_reason", allow_empty=True),
-            )
+            ),
         )
     return PlanPatch(
         _string(payload.get("id"), "patch.id"),

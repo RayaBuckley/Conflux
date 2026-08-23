@@ -57,7 +57,7 @@ def test_z3_unavailable_returns_unknown_under_one_second(
                         "initial": True,
                         "minimum": None,
                         "maximum": None,
-                    }
+                    },
                 ],
                 "transitions": [],
                 "invariants": [
@@ -69,9 +69,9 @@ def test_z3_unavailable_returns_unknown_under_one_second(
                             "arguments": [],
                         },
                         "description": "",
-                    }
+                    },
                 ],
-            }
+            },
         ),
         encoding="utf-8",
     )
@@ -89,7 +89,7 @@ def test_z3_unavailable_returns_unknown_under_one_second(
                 "z3",
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == 3
     )

@@ -6,10 +6,11 @@ import hashlib
 import json
 import re
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Any, Callable, Protocol, cast
+from typing import Any, Protocol, cast
 
 from jsonschema import Draft202012Validator, ValidationError
 
@@ -89,8 +90,10 @@ class TransformersLocalModel:
         reason = None
         if dependency and artifact and self.generator is None:
             try:
-                assert self.snapshot_path is not None
-                assert self.artifact_manifest is not None
+                if self.snapshot_path is None:
+                    raise ValueError("snapshot_path must be resolved before preflight")
+                if self.artifact_manifest is None:
+                    raise ValueError("artifact_manifest must be resolved before preflight")
                 warnings = verify_transformers_snapshot(
                     self.snapshot_path,
                     self.artifact_manifest,
@@ -147,7 +150,7 @@ class TransformersLocalModel:
                     "raw_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
                     "prompt_tokens": generation.prompt_tokens,
                     "output_tokens": generation.output_tokens,
-                }
+                },
             )
             try:
                 decoded = _extract_first_json(content)

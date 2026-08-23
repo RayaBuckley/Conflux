@@ -147,7 +147,7 @@ def run_dynamic_planning_demo() -> DynamicPlanResult:
     )
     pipeline = DecisionPipeline(
         InMemoryAuthorisationPolicy(
-            frozenset({PolicyGrant(principal.id, "write", "safe.txt")})
+            frozenset({PolicyGrant(principal.id, "write", "safe.txt")}),
         ),
         AllowInternalReadPolicy(),
         SessionVisibilityPolicy(),

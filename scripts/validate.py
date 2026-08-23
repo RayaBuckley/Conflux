@@ -28,7 +28,7 @@ def _validation_environment() -> dict[str, str]:
             "HF_HOME": str(hugging_face),
             "HF_HUB_OFFLINE": "1",
             "TRANSFORMERS_OFFLINE": "1",
-        }
+        },
     )
     return environment
 
@@ -66,6 +66,25 @@ def run(*arguments: str) -> int:
             flush=True,
         )
     return return_code
+
+
+def run_info(*arguments: str) -> int:
+    """Run a check but never add it to the failure list (informational only)."""
+    print(f"[validate] {' '.join(arguments)}", flush=True)
+    process = subprocess.Popen(
+        (sys.executable, *arguments),
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=VALIDATION_ENV,
+    )
+    assert process.stdout is not None
+    for line in process.stdout:
+        print(line, end="", flush=True)
+    return process.wait()
 
 
 def main() -> int:
@@ -137,8 +156,11 @@ def main() -> int:
         "-q",
         f"--basetemp={SESSION_ROOT / 'omitted'}",
     )
-    _run("-m", "ruff", "check", "src", "tests", "scripts")
-    _run("-m", "mypy", "src", "tests", "scripts", "--no-error-summary")
+    _run("-m", "ruff", "check", ".")
+    _run("-m", "mypy", ".", "--no-error-summary")
+    _run("-m", "yamllint", "-c", ".yamllint.yml", ".")
+    _run("-m", "vulture", "src/conflux", "vulture-whitelist.py", "--min-confidence", "60")
+    run_info("-m", "pip_audit", "--skip-editable", "-f", "json")
     _run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
     _run("scripts/validate_wheel.py")
     _run("scripts/validate_extensions.py")

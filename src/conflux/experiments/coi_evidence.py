@@ -5,8 +5,9 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import shutil
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, cast
+from typing import cast
 
 from conflux.domain import canonical_json, fingerprint
 from conflux.verification import (
@@ -87,7 +88,7 @@ def generate_coi_evidence_bundle(source_commit: str, output: Path, *, repo_root:
                     ("original_rules", "reduced_rules"),
                     ("original_states", "reduced_states"),
                 )
-            )
+            ),
         )
         for name, value in backend_results.items():
             if cast(dict[str, object], value).get("available") is True:
@@ -115,7 +116,7 @@ def generate_coi_evidence_bundle(source_commit: str, output: Path, *, repo_root:
                     "sequence": index,
                     "event_type": "coi_reduction_comparison",
                     **row,
-                }
+                },
             )
             + "\n"
             for index, row in enumerate(rows)
@@ -125,7 +126,7 @@ def generate_coi_evidence_bundle(source_commit: str, output: Path, *, repo_root:
     )
     (output / "table.md").write_text(_table(rows), encoding="utf-8", newline="\n")
     content_paths = tuple(
-        sorted(path for path in output.rglob("*") if path.is_file() and path.name not in {"CHECKSUMS.sha256", "manifest.json"})
+        sorted(path for path in output.rglob("*") if path.is_file() and path.name not in {"CHECKSUMS.sha256", "manifest.json"}),
     )
     checksums = {path.relative_to(output).as_posix(): _file_sha256(path) for path in content_paths}
     manifest = ResolvedRunManifest(
@@ -258,7 +259,7 @@ def _table(rows: list[dict[str, object]]) -> str:
             f"{metrics['original_variables']} -> {metrics['reduced_variables']} | "
             f"{metrics['original_rules']} -> {metrics['reduced_rules']} | "
             f"{metrics['original_states']} -> {metrics['reduced_states']} | "
-            f"{witness_lifting['validated']} |"
+            f"{witness_lifting['validated']} |",
         )
     return "\n".join((*lines, "", "Values derive only from `result.json`.", ""))
 

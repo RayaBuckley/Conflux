@@ -8,13 +8,13 @@ from __future__ import annotations
 
 import importlib.metadata
 import json
+from collections.abc import Mapping, Sequence
 from collections.abc import Mapping as MappingABC
-from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 from types import MappingProxyType
-from typing import Any, Mapping, Protocol, cast
+from typing import Any, Protocol, cast
 
 from conflux.domain import canonical_json, fingerprint
 
@@ -371,13 +371,13 @@ def _messages(value: object) -> tuple[Mapping[str, object], ...]:
 
 
 __all__ = [
+    "BENCHMARK_VERSION",
+    "INTEGRATION_SCHEMA",
+    "PACKAGE_VERSION",
     "AgentDojoFailure",
     "AgentDojoResult",
     "AgentDojoSuite",
     "AgentDojoTool",
-    "BENCHMARK_VERSION",
-    "INTEGRATION_SCHEMA",
-    "PACKAGE_VERSION",
     "classify_conflux_outcome",
     "load_pinned_suite",
     "parse_upstream_log",

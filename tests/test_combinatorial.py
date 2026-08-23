@@ -32,7 +32,7 @@ pytestmark = pytest.mark.security
 def _make_kernel() -> TransitionKernel:
     class AllowAll:
         def decide(
-            self, *, session: Session, action: Action, context: PrincipalContext, environment: EnvironmentSnapshot
+            self, *, session: Session, action: Action, context: PrincipalContext, environment: EnvironmentSnapshot,
         ) -> ActionDecision:
             auth = Decision(
                 category=DecisionCategory.AUTHORISATION,

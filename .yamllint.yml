@@ -1,0 +1,31 @@
+yaml-version: 1
+
+extends: default
+
+ignore: |
+  .local/
+  build/
+  dist/
+  node_modules/
+  reports/archive/
+  .ae3code/
+
+rules:
+  line-length:
+    max: 160
+    level: warning
+  document-start:
+    level: warning
+  comments:
+    require-starting-space: false
+  comments-indentation:
+    level: warning
+  truthy:
+    level: warning
+  indentation:
+    indent-sequences: consistent
+  empty-lines:
+    max: 2
+    level: warning
+  trailing-spaces:
+    level: warning

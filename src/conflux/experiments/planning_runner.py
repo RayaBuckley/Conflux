@@ -104,7 +104,7 @@ class ModeledWorld:
     applied_effects: tuple[str, ...] = ()
     goal_reached: bool = False
 
-    def apply(self, action: DiagnosticAction) -> "ModeledWorld":
+    def apply(self, action: DiagnosticAction) -> ModeledWorld:
         """Return a new world with the action applied and goal potentially reached."""
         return ModeledWorld(self.applied_effects + (action.id,), self.goal_reached or action.goal)
 
@@ -335,7 +335,7 @@ def _planning_request(cell: PlanningCell, call: int, attempted: set[str]) -> Loc
                     }
                     for action in cell.scenario.actions
                 ],
-            }
+            },
         ),
         "modeled_program_v1" if code else "planning_actions_v1",
         load_schema("modeled-program.schema.json") if code else _action_list_schema(),

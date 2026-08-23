@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Any, Mapping
+from typing import Any
 
 from conflux.domain import Artifact, Permission, Provenance, fingerprint, provenance_union
 
@@ -73,7 +74,7 @@ class CapabilityEnvelope:
         return fingerprint(self.to_dict())
 
     @classmethod
-    def from_dict(cls, value: object) -> "CapabilityEnvelope":
+    def from_dict(cls, value: object) -> CapabilityEnvelope:
         """Parse a dictionary into a validated CapabilityEnvelope."""
         if not isinstance(value, Mapping):
             raise ValueError("capability envelope must be an object")

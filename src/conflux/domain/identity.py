@@ -43,7 +43,7 @@ class PrincipalContext:
         object.__setattr__(self, "principals", frozenset(self.principals))
 
     @classmethod
-    def from_principals(cls, principals: frozenset[Principal]) -> "PrincipalContext":
+    def from_principals(cls, principals: frozenset[Principal]) -> PrincipalContext:
         """Return a context that is unknown when the principal set is empty."""
         return cls(principals=principals, unknown=not principals)
 
@@ -52,14 +52,14 @@ class PrincipalContext:
         """Return True when the context is non-empty and not unknown."""
         return bool(self.principals) and not self.unknown
 
-    def extend(self, *principals: Principal, unknown: bool = False) -> "PrincipalContext":
+    def extend(self, *principals: Principal, unknown: bool = False) -> PrincipalContext:
         """Return a context extended with additional principals."""
         return PrincipalContext(
             principals=self.principals | frozenset(principals),
             unknown=self.unknown or unknown,
         )
 
-    def merge(self, other: "PrincipalContext") -> "PrincipalContext":
+    def merge(self, other: PrincipalContext) -> PrincipalContext:
         """Return the join-semilattice merge of two contexts."""
         return PrincipalContext(
             principals=self.principals | other.principals,

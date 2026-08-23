@@ -117,7 +117,7 @@ def test_trusted_argument_schema_binds_roles_without_retaining_raw_values(
                 "body": ("text", provenance),
                 "destination": ("vault", provenance),
                 "invented_role": ("x", provenance),
-            }
+            },
         )
 
 

@@ -6,9 +6,10 @@ import hashlib
 import ipaddress
 import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from importlib.util import find_spec
-from typing import Any, Callable, cast
+from typing import Any, cast
 from urllib.parse import urlparse
 
 from jsonschema import Draft202012Validator, ValidationError

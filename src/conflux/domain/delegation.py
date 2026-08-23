@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from threading import Lock
 
 from .actions_base import ArgumentRole
@@ -226,7 +226,7 @@ class DelegationStoreSnapshot:
                 "used_at": used_at,
                 "context": context.to_dict(),
                 "decision_certificate_id": decision_certificate_id,
-            }
+            },
         )
         for existing in self.uses:
             if existing.idempotency_key == idempotency_key:
@@ -276,7 +276,7 @@ class DelegationStoreSnapshot:
                 "one_use_nonce": grant.one_use_nonce,
                 "decision_certificate_id": decision_certificate_id,
                 "request_fingerprint": request_fingerprint,
-            }
+            },
         )
         record = DelegationUseRecord(
             grant.id,
@@ -461,7 +461,7 @@ def _parse_time(value: str) -> datetime:
         raise ValueError("delegation timestamp must be ISO-8601") from error
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise ValueError("delegation timestamp must include a timezone")
-    return parsed.astimezone(timezone.utc)
+    return parsed.astimezone(UTC)
 
 
 def _require_sha256(value: str, label: str) -> None:

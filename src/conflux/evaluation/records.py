@@ -71,7 +71,7 @@ class RunResult:
         utility: UtilityOutcome = UtilityOutcome(False, "not_evaluated"),
         trace_path: str = "trace.jsonl",
         trace_sha256: str = "",
-    ) -> "RunResult":
+    ) -> RunResult:
         """Build a run result from an ITES report and optional provenance metadata."""
         assessments: dict[str, object] = {
             item.name: {
@@ -174,7 +174,7 @@ def _record(
             "branch_id": branch_id,
             "causal_parent_ids": causal_parent_ids,
             "payload": payload,
-        }
+        },
     )
     return {
         "schema_version": schema_version,
@@ -397,17 +397,17 @@ def write_plan_result(result: SerializableRecord, path: Path) -> None:
 
 
 __all__ = [
-    "DeterministicClock",
     "RESULT_SCHEMA_VERSION",
+    "DeterministicClock",
     "RunResult",
     "RunStatus",
     "UtilityOutcome",
     "action_event_type",
-    "trace_records",
     "plan_trace_records",
     "replay_plan_trace",
-    "write_plan_trace",
+    "trace_records",
     "write_plan_result",
+    "write_plan_trace",
     "write_result",
     "write_trace",
 ]

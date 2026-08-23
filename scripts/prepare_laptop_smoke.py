@@ -5,8 +5,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import subprocess
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from conflux.domain import canonical_json
 from conflux.experiments import (
@@ -140,7 +140,7 @@ def _protocol(
         },
         source_commit=source_commit,
         inputs={
-            "experiments/manifests/planning-laptop-smoke-v1.json": _sha256(ROOT / "experiments/manifests/planning-laptop-smoke-v1.json")
+            "experiments/manifests/planning-laptop-smoke-v1.json": _sha256(ROOT / "experiments/manifests/planning-laptop-smoke-v1.json"),
         },
         model=model,
         prompts={"planner": plan.prompt_template_version},

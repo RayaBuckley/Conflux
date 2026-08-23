@@ -40,18 +40,21 @@ local-model = [
     "torch>=2.4",
     "transformers>=4.45",
 ]
-dev = [
-    "setuptools>=69",
-    "wheel",
-    "pytest>=8.0",
-    "pytest-cov>=5.0",
-    "ruff>=0.5",
-    "mypy>=1.10",
-    "build>=1.2",
-    "types-jsonschema>=4.23",
-    "types-PyYAML>=6.0.12",
-    "hypothesis>=6.100",
-]
+ dev = [
+     "setuptools>=69",
+     "wheel",
+     "pytest>=8.0",
+     "pytest-cov>=5.0",
+     "ruff>=0.5",
+     "mypy>=1.10",
+     "build>=1.2",
+     "types-jsonschema>=4.23",
+     "types-PyYAML>=6.0.12",
+     "hypothesis>=6.100",
+     "yamllint>=1.35",
+     "pip-audit>=2.7",
+     "vulture>=2.11",
+ ]
 docs = [
     "pdoc>=15",
 ]
@@ -85,16 +88,138 @@ omit = [
 [tool.ruff]
 line-length = 140
 target-version = "py312"
-extend-exclude = ["reports/archive", "build"]
+extend-exclude = ["reports/archive", "build", ".local"]
+
 [tool.ruff.lint]
 select = [
     "E",
     "F",
     "I",
+    "UP",
+    "RUF",
+    "SIM",
+    "PERF",
+    "B",
+    "PIE",
+    "FURB",
+    "COM",
+    "C4",
+    "PTH",
+    "N",
+    "DTZ",
+    "S",
+    "PL",
+    "TRY",
+    "EM",
+    "FBT",
+    "LOG",
+    "G",
+    "RET",
+    "ERA",
+    "PT",
+    "ARG",
+    "ANN",
+    "SLF",
+    "INP",
+    "TC",
+    "D",
 ]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D105",
+    "D107",
+    "D401",
+    "E501",
+    "ANN401",
+    "ARG001",
+    "ARG002",
+    "ARG005",
+    "PLR2004",
+    "PLR0911",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    "PLR0917",
+    "PLC0415",
+    "TRY003",
+    "EM101",
+    "EM102",
+    "FBT001",
+    "FBT002",
+    "FBT003",
+    "G004",
+    "LOG015",
+    "PT011",
+    "PT012",
+    "PT018",
+    "S101",
+    "S105",
+    "S108",
+    "S603",
+    "S607",
+    "T201",
+    "TC001",
+    "TC003",
+    "TC006",
+    "INP001",
+    "SIM108",
+    "PLW1510",
+    "PLR5501",
+    "TRY301",
+    "TRY300",
+    "RUF012",
+    "RUF003",
+    "D205",
+    "D413",
+    "PLR1704",
+    "PT017",
+    "PT007",
+    "TRY004",
+    "D203",
+    "D213",
+    "D202",
+    "FURB171",
+    "FURB192",
+    "N802",
+    "N818",
+    "PTH105",
+    "PTH118",
+    "PTH201",
+    "PTH202",
+    "PTH211",
+    "RUF034",
+    "RUF009",
+    "SIM102",
+    "SIM114",
+    "SIM300",
+    "B007",
+    "B008",
+    "B009",
+    "C420",
+    "UP046",
+    "UP047",
+    "UP040",
+    "RUF059",
+    "PERF401",
+    "RUF005",
+    "FURB162",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "PLR2004", "ANN", "D", "ARG", "SLF001", "PT", "INP001", "FBT003"]
+"scripts/**/*.py" = ["S101", "S603", "S607", "T201", "PLR2004", "ANN", "D", "BLE001"]
+"src/conflux/cli.py" = ["T201", "PLR2004", "PLC0415", "S603", "S607"]
+"src/conflux/verification/nuxmv_backend.py" = ["S603", "S607", "S108"]
+"src/conflux/adapters/providers/code_sandbox.py" = ["S603", "S108"]
+"src/conflux/adapters/policy/cedar.py" = ["S603"]
+"vulture-whitelist.py" = ["B018", "F821"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
+exclude = ["build/", "vulture-whitelist\\.py", "reports/archive/"]
 [[tool.mypy.overrides]]
 module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*"]
 ignore_missing_imports = true

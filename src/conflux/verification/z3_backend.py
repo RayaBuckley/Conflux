@@ -63,7 +63,7 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
                 z3.And(
                     _expression(rule.guard, step, variables, z3),
                     *updates,
-                )
+                ),
             )
         stutter = z3.And(*(variables[(variable.name, step + 1)] == variables[(variable.name, step)] for variable in ir.variables))
         solver.add(z3.Or(*alternatives, stutter))
@@ -73,13 +73,13 @@ def _verify(ir: VerificationIR, z3: Any) -> FormalVerificationResult:
             "encoding_version": "2",
             "ir": ir.to_dict(),
             "checked_steps": list(range(ir.bound + 1)),
-        }
+        },
     )
     solver_hash = fingerprint(
         {
             "backend": "z3",
             "version": str(z3.get_version_string()),
-        }
+        },
     )
     model = None
     failure_step = None
@@ -156,7 +156,8 @@ def _expression(
     if expression.kind == ExpressionKind.CONSTANT:
         return z3.BoolVal(expression.value) if isinstance(expression.value, bool) else z3.IntVal(expression.value)
     if expression.kind == ExpressionKind.VARIABLE:
-        assert isinstance(expression.value, str)
+        if not isinstance(expression.value, str):
+            raise TypeError(f"expected str variable name, got {type(expression.value).__name__}")
         return variables[(expression.value, step)]
     values = tuple(_expression(argument, step, variables, z3) for argument in expression.arguments)
     if expression.kind == ExpressionKind.NOT:
@@ -192,7 +193,7 @@ def _unknown(
             {
                 "backend": "z3",
                 "version": (str(z3.get_version_string()) if z3 is not None else "unavailable"),
-            }
+            },
         ),
         None,
         ir.bound,

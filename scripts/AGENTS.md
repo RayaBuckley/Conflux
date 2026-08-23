@@ -2,7 +2,8 @@
 
 Scripts are the validation and evidence-generation layer. `validate.py` is the
 portable entry point that chains audit, schema checks, deterministic
-regeneration, pytest, Ruff, mypy, wheel build, and CLI smoke.
+regeneration, pytest, ruff, mypy, yamllint, vulture, pip-audit, wheel build,
+and CLI smoke.
 `audit_repository.py` enforces structural and documentation invariants.
 
 When adding or modifying scripts:

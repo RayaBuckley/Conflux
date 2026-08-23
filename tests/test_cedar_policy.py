@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import json
 import subprocess
+from collections.abc import Iterator
 from dataclasses import replace
 from hashlib import sha256
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 from jsonschema import Draft202012Validator
@@ -250,7 +250,7 @@ def test_cli_runner_uses_no_shell_and_exact_binary_identity(
             subprocess.CompletedProcess([], 0, "cedar 4.12.0\n", ""),
             subprocess.CompletedProcess([], 0, "validation passed\n", ""),
             subprocess.CompletedProcess([], 0, "ALLOW\n", ""),
-        )
+        ),
     )
 
     def fake_run(command: tuple[str, ...], **kwargs: object) -> subprocess.CompletedProcess[str]:

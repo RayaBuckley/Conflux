@@ -143,8 +143,8 @@ class ArgumentSelectorsAuthorised:
 
 
 __all__ = [
-    "ITESVerificationSystem",
     "ArgumentSelectorsAuthorised",
+    "ITESVerificationSystem",
     "NoForbiddenObservation",
     "NoUnauthorisedAuthorisation",
     "PrincipalContextMonotonicity",

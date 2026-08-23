@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Mapping, TypeAlias
+from typing import TypeAlias
 
 from conflux.domain import fingerprint
 
@@ -47,7 +48,7 @@ class Expression:
 
     kind: ExpressionKind
     value: Scalar | str | None = None
-    arguments: tuple["Expression", ...] = ()
+    arguments: tuple[Expression, ...] = ()
 
     def __post_init__(self) -> None:
         """Validate arity and value constraints for this expression node."""
@@ -82,12 +83,12 @@ class Expression:
             raise ValueError("operator expressions cannot contain a direct value")
 
     @classmethod
-    def constant(cls, value: Scalar | str) -> "Expression":
+    def constant(cls, value: Scalar | str) -> Expression:
         """Create a constant expression from a Boolean, integer, or string value."""
         return cls(ExpressionKind.CONSTANT, value)
 
     @classmethod
-    def variable(cls, name: str) -> "Expression":
+    def variable(cls, name: str) -> Expression:
         """Create a variable reference expression from a name."""
         return cls(ExpressionKind.VARIABLE, name)
 
@@ -95,8 +96,8 @@ class Expression:
     def operator(
         cls,
         kind: ExpressionKind,
-        *arguments: "Expression",
-    ) -> "Expression":
+        *arguments: Expression,
+    ) -> Expression:
         """Create an operator expression with the given kind and arguments."""
         return cls(kind, arguments=arguments)
 
@@ -109,7 +110,7 @@ class Expression:
         }
 
     @classmethod
-    def from_dict(cls, value: object) -> "Expression":
+    def from_dict(cls, value: object) -> Expression:
         """Deserialize an expression from a JSON-compatible dictionary."""
         if not isinstance(value, Mapping) or set(value) != {"kind", "value", "arguments"}:
             raise ValueError("malformed IR expression")
@@ -309,7 +310,7 @@ class VerificationIR:
         return fingerprint(self.to_dict())
 
     @classmethod
-    def from_dict(cls, value: object) -> "VerificationIR":
+    def from_dict(cls, value: object) -> VerificationIR:
         """Deserialize a verification IR from a JSON-compatible dictionary."""
         if not isinstance(value, Mapping):
             raise ValueError("verification IR must be an object")
@@ -432,10 +433,10 @@ def _parse_invariant(value: object) -> SafetyInvariant:
 
 
 __all__ = [
+    "IR_SCHEMA_VERSION",
     "Assignment",
     "Expression",
     "ExpressionKind",
-    "IR_SCHEMA_VERSION",
     "IRValue",
     "SafetyInvariant",
     "Scalar",

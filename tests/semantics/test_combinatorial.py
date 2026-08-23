@@ -149,7 +149,7 @@ def _expected(
 @pytest.mark.parametrize("visible", _BOOLS)
 @pytest.mark.parametrize("read_allowed", _BOOLS)
 def test_combinatorial_matrix(
-    kind: ActionKind, pset: str, auth_granted: bool, consent_given: bool, visible: bool, read_allowed: bool
+    kind: ActionKind, pset: str, auth_granted: bool, consent_given: bool, visible: bool, read_allowed: bool,
 ) -> None:
     env = _env(read_allowed)
     context = _ctx(pset)

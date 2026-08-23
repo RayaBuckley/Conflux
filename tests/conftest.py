@@ -82,8 +82,8 @@ def pipeline() -> DecisionPipeline:
                 {
                     PolicyGrant("alice", "write", "out"),
                     PolicyGrant("bob", "write", "out"),
-                }
-            )
+                },
+            ),
         ),
         SnapshotReadPolicy(),
         SessionVisibilityPolicy(),

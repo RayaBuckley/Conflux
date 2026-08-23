@@ -214,7 +214,7 @@ class Plan:
     goal: str
     nodes: tuple[PlanNode, ...]
     invocation_provenance: Provenance
-    subplans: tuple["Plan", ...] = ()
+    subplans: tuple[Plan, ...] = ()
     schema_version: str = PLAN_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -373,6 +373,7 @@ def node_fingerprint(node: PlanNode) -> str:
 
 
 __all__ = [
+    "PLAN_SCHEMA_VERSION",
     "ActionTemplateNode",
     "ApprovalNode",
     "BranchNode",
@@ -381,7 +382,6 @@ __all__ = [
     "LoopNode",
     "ModelCallNode",
     "NodeKind",
-    "PLAN_SCHEMA_VERSION",
     "Plan",
     "PlanNode",
     "SubplanNode",

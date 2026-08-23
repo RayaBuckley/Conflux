@@ -11,9 +11,9 @@ policy is a separate, independent decision.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Iterable
 
 from .identity import Principal, PrincipalContext
 
@@ -42,7 +42,7 @@ class Provenance:
         object.__setattr__(self, "activities", tuple(self.activities))
 
     @classmethod
-    def unknown(cls, *, source: str = "unknown") -> "Provenance":
+    def unknown(cls, *, source: str = "unknown") -> Provenance:
         """Return an unattested, unknown-precision provenance."""
         return cls(
             sources=frozenset({source}),
@@ -51,7 +51,7 @@ class Provenance:
         )
 
     @classmethod
-    def from_principal(cls, principal: Principal, *, source: str | None = None) -> "Provenance":
+    def from_principal(cls, principal: Principal, *, source: str | None = None) -> Provenance:
         """Return exact provenance rooted at a single principal."""
         return cls(
             principals=frozenset({principal}),
@@ -59,7 +59,7 @@ class Provenance:
         )
 
     @classmethod
-    def from_principals(cls, principals: Iterable[Principal]) -> "Provenance":
+    def from_principals(cls, principals: Iterable[Principal]) -> Provenance:
         """Return exact provenance rooted at a set of principals."""
         principal_set = frozenset(principals)
         return cls(
@@ -78,7 +78,7 @@ class Provenance:
         """Return the conservative PrincipalContext implied by this provenance."""
         return PrincipalContext(self.principals, unknown=self.is_unknown)
 
-    def merge(self, other: "Provenance") -> "Provenance":
+    def merge(self, other: Provenance) -> Provenance:
         """Return the commutative-monoid merge of two provenance values."""
         precision = max(self.precision, other.precision, key=_precision_rank)
         return Provenance(
@@ -89,7 +89,7 @@ class Provenance:
             attested=self.attested and other.attested,
         )
 
-    def with_activity(self, activity: str) -> "Provenance":
+    def with_activity(self, activity: str) -> Provenance:
         """Return a copy of this provenance with an additional activity."""
         if not activity:
             raise ValueError("activity must be non-empty")

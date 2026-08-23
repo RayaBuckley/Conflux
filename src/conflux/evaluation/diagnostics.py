@@ -180,7 +180,7 @@ def classify_branches(
                 category=category,
                 secure=secure,
                 is_goal=is_goal,
-            )
+            ),
         )
 
     counts: dict[str, int] = {}
@@ -396,7 +396,7 @@ def classify_tasks(
                 is_genuine=is_genuine,
                 exists=exists,
                 secure=secure,
-            )
+            ),
         )
         classified_ids.add(branch.branch_id)
 
@@ -433,8 +433,8 @@ def _task_read_secure(branch: BranchState) -> bool:
 
 
 __all__ = [
-    "BranchClassification",
     "DIAGNOSTIC_SCHEMA_VERSION",
+    "BranchClassification",
     "DiagnosticCategory",
     "DiagnosticConfig",
     "DiagnosticReport",

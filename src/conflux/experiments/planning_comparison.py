@@ -42,7 +42,7 @@ class PlanningObservation:
     max_context_size: int
 
     @classmethod
-    def from_dict(cls, value: dict[str, object]) -> "PlanningObservation":
+    def from_dict(cls, value: dict[str, object]) -> PlanningObservation:
         """Deserialize a planning observation from a JSON-compatible dictionary."""
         Draft202012Validator(load_schema("planning-observation.schema.json")).validate(value)
         return cls(

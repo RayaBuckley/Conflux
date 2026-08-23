@@ -166,7 +166,7 @@ class AllowInternalReadPolicy:
 __all__ = [
     "AllowInternalReadPolicy",
     "ExplicitConsentPolicy",
-    "SessionVisibilityPolicy",
     "SessionAudienceVisibilityPolicy",
+    "SessionVisibilityPolicy",
     "SnapshotReadPolicy",
 ]

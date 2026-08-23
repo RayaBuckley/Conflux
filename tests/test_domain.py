@@ -129,7 +129,7 @@ def test_proposal_batch_is_immutable_and_serialisable() -> None:
             "visibility": "internal",
             "input_ids": [],
             "label": "no-op",
-        }
+        },
     ]
     assert batch.fingerprint == ProposalBatch.ordered_plan(action).fingerprint
     assert batch.schema_version == "2"

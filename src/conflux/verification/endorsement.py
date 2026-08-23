@@ -163,7 +163,7 @@ def sound_endorsement_ir() -> VerificationIR:
                     _and(
                         _var("endorsed"),
                         _not(_var("endorser_authorised")),
-                    )
+                    ),
                 ),
                 "Endorsement requires an authorised endorser",
             ),
@@ -256,7 +256,7 @@ def defective_endorsement_ir() -> VerificationIR:
                     _and(
                         _var("endorsed"),
                         _not(_var("endorser_authorised")),
-                    )
+                    ),
                 ),
                 "Endorsement requires an authorised endorser",
             ),
@@ -301,7 +301,7 @@ def run_endorsement_experiment() -> dict[str, object]:
             {
                 "safe_verdict": safe_result.verdict.value,
                 "defective_verdict": defective_result.verdict.value,
-            }
+            },
         ),
     }
 

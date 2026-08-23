@@ -77,7 +77,7 @@ def test_demo_copies_manifest_and_links_hash(tmp_path: Path) -> None:
                 str(ROOT / "examples" / "basic.yaml"),
                 "--manifest",
                 str(manifest_path),
-            ]
+            ],
         )
         == EXIT_OK
     )

@@ -6,8 +6,9 @@ import hashlib
 import json
 import os
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, TypeVar, cast
+from typing import Any, TypeVar, cast
 from urllib.parse import urlparse
 
 from conflux.adapters.scenarios import load_schema
@@ -144,7 +145,7 @@ class OpenAICompatiblePlanner:
                     {
                         "request": request,
                         "authenticated_operation_catalogue": self.catalogue.to_dict(),
-                    }
+                    },
                 ),
             },
         ]
@@ -197,7 +198,7 @@ class OpenAICompatiblePlanner:
                                     f"The response was rejected. Return a complete replacement JSON object only. Error: {last_error}"
                                 ),
                             },
-                        )
+                        ),
                     )
                     continue
                 record = self._record(
@@ -264,7 +265,7 @@ class OpenAICompatiblePlanner:
                 response.status_code,
                 hashlib.sha256(encoded.encode("utf-8")).hexdigest(),
                 body,
-            )
+            ),
         )
 
     def _record(

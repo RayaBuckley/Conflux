@@ -16,9 +16,9 @@ from .cedar import (
 )
 
 __all__ = [
-    "AWSSubsetDecision",
     "CEDAR_COMMIT",
     "CEDAR_VERSION",
+    "AWSSubsetDecision",
     "CedarArgumentAuthorisationPolicy",
     "CedarAuthorisationPolicy",
     "CedarBinaryIdentity",

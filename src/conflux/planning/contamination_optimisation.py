@@ -233,7 +233,7 @@ def run_contamination_experiment() -> dict[str, object]:
             {
                 "reachable": reachability.reachable,
                 "min_cost": reachability.min_cost,
-            }
+            },
         ),
     }
 

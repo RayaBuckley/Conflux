@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
 from types import MappingProxyType
-from typing import Any, Mapping, TypeAlias
+from typing import Any, TypeAlias
 
 from .actions_base import ArgumentRole
 from .artifacts import Artifact
@@ -48,7 +49,7 @@ AUTHORITY_BEARING_ARGUMENT_ROLES = frozenset(
         ArgumentRole.RECIPIENT,
         ArgumentRole.DESTINATION,
         ArgumentRole.CREDENTIAL_REFERENCE,
-    }
+    },
 )
 
 
@@ -78,7 +79,7 @@ class ActionArgument:
         value: object,
         provenance: Provenance,
         redacted_value: object | None = None,
-    ) -> "ActionArgument":
+    ) -> ActionArgument:
         """Create an argument, fingerprinting the value and canonicalising redactions."""
         return cls(
             name,
@@ -269,12 +270,12 @@ class ProposalBatch:
             raise ValueError("an ordered plan must contain at least one action")
 
     @classmethod
-    def alternatives(cls, *proposals: Action) -> "ProposalBatch":
+    def alternatives(cls, *proposals: Action) -> ProposalBatch:
         """Construct a batch of alternative proposals."""
         return cls(ProposalMode.ALTERNATIVES, proposals)
 
     @classmethod
-    def ordered_plan(cls, *proposals: Action) -> "ProposalBatch":
+    def ordered_plan(cls, *proposals: Action) -> ProposalBatch:
         """Construct a batch representing an ordered plan of proposals."""
         return cls(ProposalMode.ORDERED_PLAN, proposals)
 
@@ -343,12 +344,12 @@ def action_sort_key(action: Action) -> tuple[str, str, str]:
 
 
 __all__ = [
+    "AUTHORITY_BEARING_ARGUMENT_ROLES",
     "Action",
-    "ActionKind",
     "ActionArgument",
+    "ActionKind",
     "ActionVisibility",
     "ArgumentRole",
-    "AUTHORITY_BEARING_ARGUMENT_ROLES",
     "DelegationAction",
     "MessageAction",
     "NestedExecutionAction",

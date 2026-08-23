@@ -158,9 +158,9 @@ class AudienceVisibilityPolicyPort(Protocol):
 
 
 __all__ = [
-    "AuthorisationPort",
     "ArgumentAuthorisationPort",
     "AudienceVisibilityPolicyPort",
+    "AuthorisationPort",
     "ConsentPolicyPort",
     "ReadPolicyPort",
     "VisibilityPolicyPort",

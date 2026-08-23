@@ -596,8 +596,8 @@ def check_task_registry(errors: list[str]) -> None:
 
     backlog = json.loads(
         (ROOT / "reports" / "archive" / "2026-07-29-implementation-programme" / "Conflux_Codex_Implementation_Backlog.json").read_text(
-            encoding="utf-8"
-        )
+            encoding="utf-8",
+        ),
     )
     dynamic = json.loads(
         (
@@ -606,7 +606,7 @@ def check_task_registry(errors: list[str]) -> None:
             / "archive"
             / "2026-07-30-dynamic-planning-programme"
             / "Conflux_Codex_Progress_and_Dynamic_Planning_Plan_2026-07-30.json"
-        ).read_text(encoding="utf-8")
+        ).read_text(encoding="utf-8"),
     )
     expected = {task["id"] for task in backlog["tasks"]}
     expected.update(task["id"] for task in dynamic["recommended_planning_tasks"])

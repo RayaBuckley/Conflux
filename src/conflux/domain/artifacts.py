@@ -25,7 +25,7 @@ class Artifact(Generic[T]):
         if not self.id:
             raise ValueError("Artifact.id must be non-empty")
 
-    def derive(self, *, artifact_id: str, value: T, activity: str) -> "Artifact[T]":
+    def derive(self, *, artifact_id: str, value: T, activity: str) -> Artifact[T]:
         """Return a new artifact derived from this one with an added provenance activity."""
         return Artifact(
             id=artifact_id,
@@ -38,16 +38,16 @@ class Artifact(Generic[T]):
     @classmethod
     def combine(
         cls,
-        *artifacts: "Artifact[Any]",
+        *artifacts: Artifact[Any],
         artifact_id: str,
         value: T,
         activity: str,
-    ) -> "Artifact[T]":
+    ) -> Artifact[T]:
         """Create a new artifact whose provenance is the union of the inputs."""
         provenance = provenance_union(*(artifact.provenance for artifact in artifacts)).with_activity(activity)
         return cls(id=artifact_id, value=value, provenance=provenance)
 
-    def with_label(self, label: str | None) -> "Artifact[T]":
+    def with_label(self, label: str | None) -> Artifact[T]:
         """Return a copy of this artifact with a different label."""
         return replace(self, label=label)
 

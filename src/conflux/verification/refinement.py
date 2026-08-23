@@ -194,7 +194,7 @@ def run_refinement_experiment(
                 "ir_id": ir.id,
                 "conforms": refinement.conforms,
                 "sound": abstraction.sound,
-            }
+            },
         ),
     }
 

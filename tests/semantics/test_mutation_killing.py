@@ -178,7 +178,7 @@ def test_sibling_leak_mutant() -> None:
             {
                 PolicyGrant("alice", "write", "out"),
                 PolicyGrant("bob", "write", "out"),
-            }
+            },
         ),
         consent=frozenset({"nested", "write"}),
     )
@@ -264,7 +264,7 @@ def test_certificate_replay_mutant() -> None:
             {
                 PolicyGrant("alice", "write", "out"),
                 PolicyGrant("bob", "write", "out"),
-            }
+            },
         ),
         consent=frozenset({"write-a", "write-b"}),
     )

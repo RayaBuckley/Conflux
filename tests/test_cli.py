@@ -148,7 +148,7 @@ def test_demo_retains_manifest_and_reports_an_all_blocked_scenario(
                 str(ROOT / "experiments/manifests/m3-smoke.yaml"),
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -170,7 +170,7 @@ def test_native_sled_command_writes_verification_result(tmp_path: Path) -> None:
                 str(SCENARIO),
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -225,7 +225,7 @@ def test_unavailable_backends_and_invalid_evidence_fail_closed(
                 "missing.json",
                 "--output",
                 str(tmp_path / "missing"),
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -252,7 +252,7 @@ def test_agentdojo_command_translates_retained_upstream_log(
                 str(AGENTDOJO_FIXTURE),
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -281,7 +281,7 @@ def test_text_modes_selection_and_optional_failures_are_explicit(
                 str(tmp_path / "invalid"),
                 "--select-branch",
                 "missing",
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -297,7 +297,7 @@ def test_text_modes_selection_and_optional_failures_are_explicit(
                 "unavailable",
                 "--principal",
                 "missing",
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -323,7 +323,7 @@ def test_verify_cli_retains_unknown_optional_backend_result(
                         "initial": True,
                         "minimum": None,
                         "maximum": None,
-                    }
+                    },
                 ],
                 "transitions": [],
                 "invariants": [
@@ -335,9 +335,9 @@ def test_verify_cli_retains_unknown_optional_backend_result(
                             "arguments": [],
                         },
                         "description": "",
-                    }
+                    },
                 ],
-            }
+            },
         ),
         encoding="utf-8",
     )
@@ -354,7 +354,7 @@ def test_verify_cli_retains_unknown_optional_backend_result(
                 "z3",
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == 3
     )
@@ -407,12 +407,12 @@ def test_verify_cli_emits_cone_reduction_comparison(
                                             "kind": "variable",
                                             "value": "noise",
                                             "arguments": [],
-                                        }
+                                        },
                                     ],
                                 },
-                            }
+                            },
                         ],
-                    }
+                    },
                 ],
                 "invariants": [
                     {
@@ -423,9 +423,9 @@ def test_verify_cli_emits_cone_reduction_comparison(
                             "arguments": [],
                         },
                         "description": "",
-                    }
+                    },
                 ],
-            }
+            },
         ),
         encoding="utf-8",
     )
@@ -442,7 +442,7 @@ def test_verify_cli_emits_cone_reduction_comparison(
                 "cone_of_influence",
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == 3
     )
@@ -479,7 +479,7 @@ def test_verify_cli_explains_unavailable_nuxmv(
                         "initial": True,
                         "minimum": None,
                         "maximum": None,
-                    }
+                    },
                 ],
                 "transitions": [],
                 "invariants": [
@@ -491,9 +491,9 @@ def test_verify_cli_explains_unavailable_nuxmv(
                             "arguments": [],
                         },
                         "description": "",
-                    }
+                    },
                 ],
-            }
+            },
         ),
         encoding="utf-8",
     )
@@ -510,7 +510,7 @@ def test_verify_cli_explains_unavailable_nuxmv(
                 "nuxmv",
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == 3
     )
@@ -543,7 +543,7 @@ def test_live_agentdojo_gate_reports_missing_optional_package(
                 str(protocol),
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -568,7 +568,7 @@ def test_model_dependent_commands_preflight_without_model_invocation(
                 str(planning),
                 "--output",
                 str(planning_output),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -594,7 +594,7 @@ def test_model_dependent_commands_preflight_without_model_invocation(
                 str(llama),
                 "--output",
                 str(tmp_path / "laptop-output"),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -617,7 +617,7 @@ def test_model_dependent_commands_preflight_without_model_invocation(
                 str(agentdojo),
                 "--output",
                 str(benchmark_output),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -657,7 +657,7 @@ def test_direction_security_preflight_commands_are_offline(
                 str(CEDAR_CORPUS),
                 "--output",
                 str(cedar_output),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -675,7 +675,7 @@ def test_direction_security_preflight_commands_are_offline(
                 "--cedar-bundle",
                 str(CEDAR_BUNDLE),
                 "--json",
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -743,7 +743,7 @@ def test_laptop_cli_retains_a_complete_fake_backed_live_bundle(
                 "--output",
                 str(output),
                 "--execute-local",
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -788,7 +788,7 @@ def test_laptop_cli_live_gate_reports_unavailable_runtimes(
                 "--llama-config",
                 str(llama),
                 "--execute-local",
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -827,7 +827,7 @@ def test_chat_cli_routes_a_turn_and_handles_end_of_input(
                 "http://127.0.0.1:8000/v1",
                 "--model",
                 "local-fixture",
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -846,7 +846,7 @@ def test_chat_cli_routes_a_turn_and_handles_end_of_input(
                 "http://127.0.0.1:8000/v1",
                 "--model",
                 "local-fixture",
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -877,7 +877,7 @@ def test_chat_cli_fails_closed_when_local_endpoint_adapter_is_unavailable(
                 "http://127.0.0.1:8000/v1",
                 "--model",
                 "unavailable-fixture",
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -913,7 +913,7 @@ def test_model_comparison_live_paths_retain_normalized_results(
                 "--output",
                 str(planning_output),
                 "--execute-local",
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -945,7 +945,7 @@ def test_model_comparison_live_paths_retain_normalized_results(
                 "--output",
                 str(agentdojo_output),
                 "--execute-local",
-            ]
+            ],
         )
         == 3
     )
@@ -966,7 +966,7 @@ def test_cedar_binary_preflight_distinguishes_missing_and_mismatched_bytes(
                 "--cedar-binary",
                 str(missing),
                 "--json",
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -983,7 +983,7 @@ def test_cedar_binary_preflight_distinguishes_missing_and_mismatched_bytes(
                 "--cedar-binary",
                 str(binary),
                 "--json",
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -1007,7 +1007,7 @@ def test_human_doctor_renders_local_model_and_cedar_boundaries(
                 str(planning),
                 "--cedar-bundle",
                 str(CEDAR_BUNDLE),
-            ]
+            ],
         )
         == EXIT_OK
     )
@@ -1037,7 +1037,7 @@ def test_legacy_agentdojo_preflight_stops_after_pinned_suite_validation(
                 str(AGENTDOJO_MANIFEST),
                 "--output",
                 "ignored",
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -1057,7 +1057,7 @@ def test_legacy_agentdojo_execute_gate_and_model_less_protocol_fail_closed(
                 "--output",
                 str(tmp_path / "legacy"),
                 "--execute-local",
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -1096,7 +1096,7 @@ def test_native_reproduction_cli_and_version_two_report(
                 str(protocol),
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == EXIT_OK
     )

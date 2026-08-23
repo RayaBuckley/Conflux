@@ -287,7 +287,7 @@ def run_robust_disclosure_experiment() -> dict[str, object]:
             {
                 "robust_verdict": robust_result.verdict.value,
                 "defective_verdict": defective_result.verdict.value,
-            }
+            },
         ),
     }
 

@@ -70,7 +70,7 @@ def test_unsafe_and_unknown_candidates_never_satisfy_hard_constraint() -> None:
                 utility=100.0,
             ),
             candidate("safe", utility=0.1),
-        )
+        ),
     )
     assert selection.selected is not None
     assert selection.selected.plan.id == "safe"

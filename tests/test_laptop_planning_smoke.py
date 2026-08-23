@@ -208,7 +208,7 @@ def test_operator_preparation_hashes_local_artifacts_without_invoking_them(
                 "--output",
                 str(output),
                 "--licence-reviewed",
-            ]
+            ],
         )
         == 0
     )

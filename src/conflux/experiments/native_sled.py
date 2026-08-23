@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 import sysconfig
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, cast
+from typing import cast
 
 from jsonschema import Draft202012Validator
 
@@ -103,7 +104,7 @@ def run_native_reproduction(
                 "legacy_fixture": legacy.id,
                 "canonical_fixture": canonical.id,
                 "results": results,
-            }
+            },
         )
     controls = _negative_controls(bounds)
     baseline = json.loads((selected_root / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8"))
@@ -230,7 +231,7 @@ def _negative_controls(bounds: VerificationBounds) -> list[dict[str, object]]:
                 "killed": mutant.verdict.value == "unsafe",
                 "canonical_safe": canonical.verdict.value == "safe",
                 "counterexample_length": None if mutant.counterexample is None else mutant.counterexample.length,
-            }
+            },
         )
     return rows
 

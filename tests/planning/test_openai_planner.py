@@ -157,7 +157,7 @@ def test_continuation_repairs_once_and_never_returns_unparsed_text(
         [
             response({"unparsed": "not a patch"}),
             response(patch.to_dict()),
-        ]
+        ],
     )
     planner = OpenAICompatiblePlanner(
         "http://127.0.0.1:8000/v1/chat/completions",

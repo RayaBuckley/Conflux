@@ -169,7 +169,8 @@ def apply_patch(
                 subplans.append(inherited_plan)
                 added_subplans.append(inherited_plan.id)
         else:
-            assert operation.terminal_outcome is not None
+            if operation.terminal_outcome is None:
+                raise ValueError(f"patch operation {operation.id} has no terminal_outcome")
             terminal_node_id = f"patch:{patch.id}:{operation.id}:terminal"
             terminal = TerminalNode(
                 terminal_node_id,
@@ -222,8 +223,8 @@ def _inherit_control(node: PlanNode, provenance: Provenance) -> PlanNode:
 
 
 __all__ = [
-    "HistoricalNodeStatus",
     "PATCH_SCHEMA_VERSION",
+    "HistoricalNodeStatus",
     "PatchApplication",
     "PatchKind",
     "PatchOperation",

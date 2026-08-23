@@ -73,7 +73,7 @@ def generate_smoke_bundle(
                 "authorised": authorised.run_id,
                 "blocked": blocked.run_id,
                 "negative": negative.to_dict(),
-            }
+            },
         ),
         status=RunStatus.COMPLETED,
         source={
@@ -186,7 +186,7 @@ def _table(result: RunResult) -> str:
             "",
             "Generated from `result.json`; no values are hand-entered.",
             "",
-        )
+        ),
     )
 
 

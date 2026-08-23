@@ -6,10 +6,11 @@ import hashlib
 import shutil
 import subprocess
 import time
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Callable, Mapping, Protocol
+from typing import Protocol
 
 from conflux.domain import Action, Artifact, PrimitiveAction, Provenance, canonical_json, fingerprint
 from conflux.domain import action_fingerprint as fingerprint_action
@@ -70,7 +71,7 @@ class SubprocessCommandRunner:
         started = time.monotonic()
         try:
             with stdout_path.open("wb") as stdout, stderr_path.open("wb") as stderr:
-                process = subprocess.Popen(  # noqa: S603 - authenticated argv, never a shell
+                process = subprocess.Popen(
                     command,
                     cwd=workspace,
                     stdin=subprocess.DEVNULL,

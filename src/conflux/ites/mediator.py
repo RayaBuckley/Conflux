@@ -85,7 +85,7 @@ class MediatingITES:
                     }
                     for branch in branches
                 ],
-            }
+            },
         )
         assessments = _assess(branches, calls, max_model_calls)
         return ITESReport(

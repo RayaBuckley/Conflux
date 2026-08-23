@@ -149,7 +149,7 @@ def test_pinned_container_command_has_no_shell_or_host_workspace_mount(
             0,
             stdout=b"ok\n",
             outputs={"result.txt": b"ok"},
-        )
+        ),
     )
     runtime = Principal("runtime", "Pinned Python Runtime", "service")
     executor = DockerCodeSandboxExecutor(

@@ -49,8 +49,8 @@ _PERMIT_ALL = InMemoryAuthorisationPolicy(
                 Principal("victor", "Victor"),
                 Principal("walter", "Walter"),
             ]
-        }
-    )
+        },
+    ),
 )
 
 
@@ -168,7 +168,7 @@ class TestKernelInvariants:
         for child in children:
             if child.status.value == "authorised" and action.inputs:
                 assert child.context.principals.issubset(
-                    parent.context.principals | {p for a in action.inputs for p in a.provenance.principals}
+                    parent.context.principals | {p for a in action.inputs for p in a.provenance.principals},
                 )
 
     @given(art=artifacts(), action=primitive_actions())

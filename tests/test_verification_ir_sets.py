@@ -160,7 +160,7 @@ class TestSetIRModel:
                                 ExpressionKind.IN,
                                 Expression.constant("mallory"),
                                 _var("pc"),
-                            )
+                            ),
                         ),
                     ),
                     (

@@ -5,10 +5,11 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Callable, Protocol
+from typing import Protocol
 
 from conflux.domain import fingerprint
 
@@ -53,7 +54,7 @@ class SubprocessNuXmvRunner:
     ) -> NuXmvOutcome:
         """Execute the nuXmv binary on the model file with the given commands."""
         try:
-            version = subprocess.run(  # noqa: S603
+            version = subprocess.run(
                 (binary, "-h"),
                 check=False,
                 capture_output=True,
@@ -61,7 +62,7 @@ class SubprocessNuXmvRunner:
                 timeout=10,
                 shell=False,
             )
-            process = subprocess.run(  # noqa: S603
+            process = subprocess.run(
                 (binary, "-int", str(model_path)),
                 input=commands,
                 check=False,
@@ -92,7 +93,7 @@ _WSL_TMP = Path(f"//wsl.localhost/{_WSL_DISTRIBUTION}/tmp")
 
 def _wsl_available() -> bool:
     try:
-        result = subprocess.run(  # noqa: S603
+        result = subprocess.run(
             ("wsl", "-d", _WSL_DISTRIBUTION, "--", "which", "nuXmv"),
             check=False,
             capture_output=True,
@@ -126,7 +127,7 @@ class WslNuXmvRunner:
             linux_model = f"/tmp/{wsl_dir.name}/model.smv"
             wsl_prefix: tuple[str, ...] = ("wsl", "-d", _WSL_DISTRIBUTION, "--")
             try:
-                version = subprocess.run(  # noqa: S603
+                version = subprocess.run(
                     (*wsl_prefix, binary, "-h"),
                     check=False,
                     capture_output=True,
@@ -134,7 +135,7 @@ class WslNuXmvRunner:
                     timeout=10,
                     shell=False,
                 )
-                process = subprocess.run(  # noqa: S603
+                process = subprocess.run(
                     (*wsl_prefix, binary, "-int", linux_model),
                     input=commands,
                     check=False,
@@ -295,7 +296,8 @@ def _render(expression: Expression) -> str:
             raise ValueError("nuXmv subset supports Boolean constants only")
         return "TRUE" if expression.value else "FALSE"
     if expression.kind == ExpressionKind.VARIABLE:
-        assert isinstance(expression.value, str)
+        if not isinstance(expression.value, str):
+            raise TypeError(f"expected str variable name, got {type(expression.value).__name__}")
         return expression.value
     values = tuple(_render(argument) for argument in expression.arguments)
     if expression.kind == ExpressionKind.NOT:

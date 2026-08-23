@@ -49,7 +49,7 @@ def _proposal(*, resource: bool = False) -> str:
             "schema_version": "1",
             "mode": "alternatives",
             "proposals": [action],
-        }
+        },
     )
 
 
@@ -125,7 +125,7 @@ def test_openai_compatible_retries_transient_status_and_rejects_malformed(
         [
             Response(429, {"error": "busy"}),
             Response(200, _body(_proposal())),
-        ]
+        ],
     )
     model = OpenAICompatibleModel(
         "http://127.0.0.1:8000/v1/chat/completions",

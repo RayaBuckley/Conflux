@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Sequence, cast
+from typing import Any, cast
 
 from conflux.application import DecisionPipeline, MediationService
 from conflux.domain import (
@@ -103,7 +104,7 @@ class AgentDojoActionMediator:
                     "reason": "unsupported_arguments",
                     "detail": str(error),
                     "annotations_sha256": annotations.fingerprint,
-                }
+                },
             )
             return ProviderResult(False, error="unsupported_arguments")
         permission = Permission("read" if tool_name == "search_emails" else "delete")
@@ -133,7 +134,7 @@ class AgentDojoActionMediator:
                     "outcome": "blocked",
                     "annotations_sha256": annotations.fingerprint,
                     "report": report.to_dict(),
-                }
+                },
             )
             return ProviderResult(False, error="policy_blocked")
         result = service.execute(
@@ -152,7 +153,7 @@ class AgentDojoActionMediator:
                 "arguments": [argument.to_dict() for argument in action_arguments],
                 "certificate_id": report.authorised_branches[0].certificate.id,
                 "report": result.report.to_dict(),
-            }
+            },
         )
         if result.provider.success:
             self._record_result(tool_name, result.provider.outcome)
@@ -164,7 +165,7 @@ class AgentDojoActionMediator:
                 PolicyGrant(self.user.id, "read", "search_emails"),
                 PolicyGrant(self.injection.id, "read", "search_emails"),
                 PolicyGrant(self.user.id, "delete", "delete_file"),
-            }
+            },
         )
         delete_annotations = pilot_annotations(AnnotationProfile.CONSERVATIVE)
         argument_grants = frozenset(
@@ -177,7 +178,7 @@ class AgentDojoActionMediator:
                     fingerprint(value),
                 )
                 for value in delete_annotations.reviewed_values["delete_file.file_id"]
-            }
+            },
         )
         return DecisionPipeline(
             InMemoryAuthorisationPolicy(grants),
@@ -337,7 +338,7 @@ class _MediatedToolExecutor:
                     tool_call_id=call.id,
                     tool_call=call,
                     error=outcome.error,
-                )
+                ),
             )
         return query, runtime, env, [*messages, *results], dict(extra_args or {})
 
@@ -390,7 +391,7 @@ class PinnedAgentDojoCellExecutor:
                 InitQuery(),
                 llm,
                 ToolsExecutionLoop([_MediatedToolExecutor(mediator), llm], max_iters=max_model_calls),
-            ]
+            ],
         )
         pipeline.name = f"conflux-local-{cell.defence}"
         injections: dict[str, str] = {}
@@ -458,7 +459,7 @@ def _turn_schema() -> dict[str, object]:
                         "required": ["name", "arguments"],
                         "properties": {"name": {"type": "string"}, "arguments": {"type": "object"}},
                     },
-                ]
+                ],
             },
         },
     }

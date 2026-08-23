@@ -155,7 +155,7 @@ def test_model_resolve_cli_writes_reviewable_configuration(tmp_path: Path) -> No
                 "transformers-test",
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == 0
     )
@@ -198,7 +198,7 @@ def test_agentdojo_preflight_builds_six_cell_protocol_from_resolved_model(
                 "a" * 40,
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == 0
     )
@@ -279,7 +279,7 @@ def test_cpu_pilot_preflights_eight_cells_and_retains_fake_bundle(
                         "bound_reached": False,
                         "parse_failures": 0,
                         "modeled_program_failures": 0,
-                    }
+                    },
                 )
         return {
             "schema_version": "2",

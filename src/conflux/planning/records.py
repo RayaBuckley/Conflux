@@ -43,7 +43,7 @@ class PlannerRecord:
         parsed: object | None,
         raw_response: str,
         error: str | None = None,
-    ) -> "PlannerRecord":
+    ) -> PlannerRecord:
         """Construct a PlannerRecord by fingerprinting configuration, request, and response."""
         return cls(
             planner_id,

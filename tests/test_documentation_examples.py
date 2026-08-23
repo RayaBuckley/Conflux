@@ -41,7 +41,7 @@ def test_sled_run_writes_safe_verdict(tmp_path: Path) -> None:
                 str(SCENARIO),
                 "--output",
                 str(output),
-            ]
+            ],
         )
         == EXIT_OK
     )

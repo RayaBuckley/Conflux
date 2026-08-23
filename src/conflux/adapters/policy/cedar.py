@@ -8,13 +8,14 @@ from __future__ import annotations
 
 import json
 import subprocess
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
 from hashlib import sha256
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from types import MappingProxyType
-from typing import Mapping, Protocol
+from typing import Protocol
 
 from conflux.domain import (
     Action,
@@ -37,7 +38,7 @@ SUPPORTED_FEATURES = frozenset(
         "entities_json",
         "request_context",
         "explicit_forbid",
-    }
+    },
 )
 
 
@@ -217,7 +218,7 @@ class CedarCliRunner:
                         str(schema_path),
                         "--policies",
                         str(policy_path),
-                    )
+                    ),
                 )
                 if validation.returncode != 0:
                     return _failure(
@@ -240,7 +241,7 @@ class CedarCliRunner:
                         request.resource,
                         "--context",
                         request.context_json,
-                    )
+                    ),
                 )
         except subprocess.TimeoutExpired:
             return _failure("timeout", "TimeoutExpired")
@@ -262,7 +263,7 @@ class CedarCliRunner:
         )
 
     def _invoke(self, command: tuple[str, ...]) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(  # noqa: S603 - executable identity is hash-pinned above
+        return subprocess.run(
             command,
             shell=False,
             check=False,
@@ -351,7 +352,7 @@ class CedarAuthorisationPolicy:
                     "name": item.name,
                     "value_fingerprint": item.value_fingerprint,
                     "provenance": item.provenance.to_dict(),
-                }
+                },
             )
         context = {
             "operation_version": version,

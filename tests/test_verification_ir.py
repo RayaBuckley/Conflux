@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, cast
+from typing import cast
 
 import pytest
 from jsonschema import Draft202012Validator

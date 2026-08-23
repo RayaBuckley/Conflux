@@ -113,7 +113,7 @@ def test_nested_plan_and_every_patch_operation_parse() -> None:
                 **_common("child-done", "terminal"),
                 "outcome": "succeeded",
                 "reason": "done",
-            }
+            },
         ],
         "subplans": [],
     }
@@ -126,7 +126,7 @@ def test_nested_plan_and_every_patch_operation_parse() -> None:
             {
                 **_common("spawn", "subplan"),
                 "child_plan_id": "child",
-            }
+            },
         ],
         "subplans": [child],
     }
@@ -251,7 +251,7 @@ def test_patch_parser_rejects_unknown_version_and_operation() -> None:
             "subplans": [],
             "terminal_outcome": None,
             "terminal_reason": "",
-        }
+        },
     ]
     with pytest.raises(ValueError, match="unsupported patch operation"):
         parse_plan_patch(base, trusted_provenance=_provenance())

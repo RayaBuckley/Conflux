@@ -18,10 +18,12 @@ from .ir import (
 def evaluate(expression: Expression, state: dict[str, IRValue]) -> IRValue:
     """Evaluate an IR expression against a state mapping and return the result."""
     if expression.kind == ExpressionKind.CONSTANT:
-        assert isinstance(expression.value, (bool, int, str))
+        if not isinstance(expression.value, (bool, int, str)):
+            raise TypeError(f"expected bool/int/str constant, got {type(expression.value).__name__}")
         return expression.value
     if expression.kind == ExpressionKind.VARIABLE:
-        assert isinstance(expression.value, str)
+        if not isinstance(expression.value, str):
+            raise TypeError(f"expected str variable name, got {type(expression.value).__name__}")
         return state[expression.value]
     values = tuple(evaluate(argument, state) for argument in expression.arguments)
     if expression.kind == ExpressionKind.NOT:

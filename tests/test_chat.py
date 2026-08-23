@@ -80,7 +80,7 @@ def test_chat_cli_fails_closed_without_optional_backend(
                 "test",
                 "--api-key-env",
                 "MISSING_MODEL_KEY",
-            ]
+            ],
         )
         == EXIT_USAGE
     )
@@ -108,7 +108,7 @@ def test_chat_cli_ctrl_c_is_safe(
                 "test",
                 "--api-key-env",
                 "TEST_MODEL_KEY",
-            ]
+            ],
         )
         == EXIT_OK
     )

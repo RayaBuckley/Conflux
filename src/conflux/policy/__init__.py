@@ -18,11 +18,11 @@ __all__ = [
     "AllowInternalReadPolicy",
     "ArgumentPolicyGrant",
     "ExplicitConsentPolicy",
-    "InMemoryAuthorisationPolicy",
     "InMemoryArgumentAuthorisationPolicy",
+    "InMemoryAuthorisationPolicy",
     "OwnerAuthorisationPolicy",
     "PolicyGrant",
-    "SessionVisibilityPolicy",
     "SessionAudienceVisibilityPolicy",
+    "SessionVisibilityPolicy",
     "SnapshotReadPolicy",
 ]

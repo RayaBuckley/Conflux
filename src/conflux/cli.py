@@ -319,8 +319,8 @@ def _model_artifacts(arguments: argparse.Namespace) -> int:
                 "revision": revision,
                 "total_size": manifest.total_size,
                 "warnings": list(warnings),
-            }
-        )
+            },
+        ),
     )
     return EXIT_OK
 
@@ -563,7 +563,7 @@ def _verification_summary(
                 f"- First failing invariant: `{failed}`",
                 f"- Minimal witness transitions: `{max(0, len(counterexample) - 1)}`",
                 "- The complete machine-readable witness is in `formal-verification.json`.",
-            )
+            ),
         )
     error = cast(str | None, result.get("error"))
     if error is not None:
@@ -574,7 +574,7 @@ def _verification_summary(
                 (
                     "- Meaning: optional binary unavailable; no conclusion.",
                     f"- Rerun after installing nuXmv: `{command}`",
-                )
+                ),
             )
     if reduced:
         comparison = cast(dict[str, object], report["comparison"])
@@ -595,7 +595,7 @@ def _verification_summary(
                 "- Retained/removed rules: "
                 f"`{len(cast(list[object], reduction['retained_rules']))} / "
                 f"{len(cast(list[object], reduction['removed_rules']))}`",
-            )
+            ),
         )
     return "\n".join((*lines, ""))
 
@@ -624,7 +624,7 @@ def _render_result(payload: dict[str, Any]) -> str:
             f"- Executed: {diagnostics.get('executed', 0)}",
             f"- Provider failed: {diagnostics.get('provider_failed', 0)}",
             f"- Incomplete: {diagnostics.get('incomplete', 0)}",
-        ]
+        ],
     )
     if bounds:
         lines.append(f"- Model calls: {bounds.get('model_calls', 0)}/{bounds.get('max_model_calls', '?')}")
@@ -679,7 +679,7 @@ def _doctor(arguments: argparse.Namespace) -> int:
         if local is not None:
             print(
                 f"Local model: {local.model_id} ({local.backend}, {local.network_scope}) - "
-                f"{'available' if local.available else local.reason}"
+                f"{'available' if local.available else local.reason}",
             )
         if "cedar" in payload:
             cedar = cast(dict[str, object], payload["cedar"])
@@ -727,8 +727,8 @@ def _chat(arguments: argparse.Namespace) -> int:
                         "executed": turn.executed,
                         "reason": turn.reason,
                         "blocked": turn.report.blocked_count,
-                    }
-                )
+                    },
+                ),
             )
     except (EOFError, KeyboardInterrupt):
         print("\nchat_aborted_safely")
@@ -854,8 +854,8 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
                 "complete": result["complete"],
                 "human_review_required": True,
                 "output": str(output / "result.json"),
-            }
-        )
+            },
+        ),
     )
     return EXIT_OK if result["complete"] else EXIT_RUNTIME
 
@@ -925,7 +925,7 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
                 "source_commits": sorted({protocol.source_commit for protocol in protocols.values()}),
                 "complete": result["complete"],
                 "stop_for_human_review": True,
-            }
+            },
         )
         + "\n",
         encoding="utf-8",
@@ -944,8 +944,8 @@ def _laptop_smoke(arguments: argparse.Namespace) -> int:
                 "cells": len(matrix),
                 "stop_for_human_review": True,
                 "output": str(output / "result.json"),
-            }
-        )
+            },
+        ),
     )
     return EXIT_OK if result["complete"] else EXIT_RUNTIME
 
@@ -970,8 +970,8 @@ def _benchmark(arguments: argparse.Namespace) -> int:
                     "native_security": translation.native_security,
                     "native_utility": translation.native_utility,
                     "output": str(output),
-                }
-            )
+                },
+            ),
         )
         return EXIT_OK
     config = cast(Path | None, getattr(arguments, "config", None))
@@ -1141,7 +1141,7 @@ def _sled_delegation(output: Path) -> int:
                 "mutation": mutation.value,
                 "killed": result.verdict.value == "unsafe" and result.counterexample is not None and result.counterexample.length == 1,
                 "verification": result.to_dict(),
-            }
+            },
         )
     payload = {
         "schema_version": "1",
@@ -1486,7 +1486,7 @@ def _print_demo_summary(payload: dict[str, Any], output: Path) -> None:
         f"  Proposed: {diagnostics.get('proposed', 0)}, "
         f"Authorised: {diagnostics.get('authorised', 0)}, "
         f"Blocked: {diagnostics.get('blocked', 0)}, "
-        f"Executed: {diagnostics.get('executed', 0)}"
+        f"Executed: {diagnostics.get('executed', 0)}",
     )
     print(f"  Model calls: {bounds.get('model_calls', 0)}/{bounds.get('max_model_calls', '?')}")
     utility_completed = utility.get("completed", False)
@@ -1511,7 +1511,7 @@ def _print_sled_summary(verification_dict: dict[str, object]) -> None:
     print(
         f"  States: {statistics.get('unique_states', '?')}, "
         f"Transitions: {statistics.get('transitions', '?')}, "
-        f"Duplicates: {statistics.get('duplicate_states', 0)}"
+        f"Duplicates: {statistics.get('duplicate_states', 0)}",
     )
     truncated = statistics.get("truncated")
     if truncated:
@@ -1520,13 +1520,13 @@ def _print_sled_summary(verification_dict: dict[str, object]) -> None:
         f"  Bounds: depth={bounds.get('max_depth', '?')}, "
         f"states={bounds.get('max_states', '?')}, "
         f"transitions={bounds.get('max_transitions', '?')}, "
-        f"model_calls={bounds.get('max_model_calls', '?')}"
+        f"model_calls={bounds.get('max_model_calls', '?')}",
     )
     if counterexample:
         print(
             f"  Counterexample: property={counterexample.get('property', '?')}, "
             f"reason={counterexample.get('reason', '?')}, "
-            f"length={counterexample.get('length', '?')}"
+            f"length={counterexample.get('length', '?')}",
         )
         labels = cast(list[object], counterexample.get("labels", []))
         if labels:

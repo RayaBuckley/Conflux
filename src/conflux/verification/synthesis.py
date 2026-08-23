@@ -89,12 +89,12 @@ class FiniteInstance:
     @classmethod
     def from_environment(
         cls,
-        environment: "EnvironmentSnapshot",
+        environment: EnvironmentSnapshot,
         requester: str,
         attacker: str,
         authorised_action: str,
-        acs: "frozenset[tuple[str, str]] | None" = None,
-    ) -> "FiniteInstance":
+        acs: frozenset[tuple[str, str]] | None = None,
+    ) -> FiniteInstance:
         """Derive a finite instance from an environment snapshot.
 
         Principals are extracted from the union of all data item authors
@@ -434,7 +434,7 @@ def _ites_allows(
             instance.authorised_action,
         )
     return instance.is_authorised(instance.requester, instance.authorised_action) and instance.is_authorised(
-        instance.attacker, instance.authorised_action
+        instance.attacker, instance.authorised_action,
     )
 
 
@@ -503,7 +503,7 @@ def synthesise_controller(
                 allow=synth_allow,
                 ites_allow=ites_allow,
                 matches_ites=synth_allow == ites_allow,
-            )
+            ),
         )
         ites_decisions.append(
             ControllerDecision(
@@ -512,7 +512,7 @@ def synthesise_controller(
                 allow=ites_allow,
                 ites_allow=ites_allow,
                 matches_ites=True,
-            )
+            ),
         )
 
     return synth_decisions, ites_decisions
@@ -643,16 +643,16 @@ def run_synthesis_experiment(
                 "instance": inst.to_dict(),
                 "ites_verdict": ites_result.verdict.value,
                 "ites_equivalent": ites_result.equivalent,
-            }
+            },
         ),
     }
 
 
 __all__ = [
+    "SYNTHESIS_SCHEMA_VERSION",
     "ControllerDecision",
     "ControllerStrategy",
     "FiniteInstance",
-    "SYNTHESIS_SCHEMA_VERSION",
     "SynthesisResult",
     "default_instance",
     "evaluate_strategy",

@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
-from typing import Mapping, cast
+from typing import cast
 from urllib.parse import urlparse
 
 from jsonschema import Draft202012Validator, ValidationError

@@ -23,7 +23,7 @@ class CapabilityReport:
     optional_backends: dict[str, bool]
 
     @classmethod
-    def discover(cls) -> "CapabilityReport":
+    def discover(cls) -> CapabilityReport:
         """Probe the host environment and return a populated capability report."""
         container = next(
             (name for name in ("docker", "podman") if shutil.which(name)),
