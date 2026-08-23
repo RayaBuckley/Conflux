@@ -215,11 +215,11 @@ ignore = [
 "src/conflux/verification/nuxmv_backend.py" = ["S603", "S607", "S108"]
 "src/conflux/adapters/providers/code_sandbox.py" = ["S603", "S108"]
 "src/conflux/adapters/policy/cedar.py" = ["S603"]
-"vulture-whitelist.py" = ["B018", "F821"]
+"scripts/vulture_whitelist.py" = ["B018", "F821"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-exclude = ["build/", "vulture-whitelist\\.py", "reports/archive/"]
+exclude = ["build/", "scripts/vulture_whitelist\\.py", "reports/archive/"]
 [[tool.mypy.overrides]]
 module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*"]
 ignore_missing_imports = true

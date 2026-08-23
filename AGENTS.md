@@ -62,7 +62,7 @@ before committing.  The following checkers are included:
   warnings (not errors) for supplemental IDE feedback only.
 - **pytest** — full test suite with branch coverage (threshold: 89%).
 - **yamllint** — YAML validation (`.yamllint.yml`).
-- **vulture** — dead-code detection (`vulture-whitelist.py`).
+- **vulture** — dead-code detection (`scripts/vulture_whitelist.py`).
 - **pip-audit** — dependency vulnerability scanning (informational).
 - **markdownlint-cli2** and **cspell** — via `scripts/validate_extensions.py`.
 - **Schema validation** — 37 JSON schemas validated by
@@ -80,5 +80,5 @@ python -m ruff check --fix .              # auto-fix lint
 python -m mypy . --no-error-summary       # type check
 python -m pytest tests -x -q              # run tests
 python -m yamllint -c .yamllint.yml .     # YAML lint
-python -m vulture src/conflux vulture-whitelist.py --min-confidence 60  # dead code
+python -m vulture src/conflux scripts/vulture_whitelist.py --min-confidence 60  # dead code
 ```

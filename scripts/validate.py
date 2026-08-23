@@ -159,7 +159,7 @@ def main() -> int:
     _run("-m", "ruff", "check", ".")
     _run("-m", "mypy", ".", "--no-error-summary")
     _run("-m", "yamllint", "-c", ".yamllint.yml", ".")
-    _run("-m", "vulture", "src/conflux", "vulture-whitelist.py", "--min-confidence", "60")
+    _run("-m", "vulture", "src/conflux", "scripts/vulture_whitelist.py", "--min-confidence", "60")
     run_info("-m", "pip_audit", "--skip-editable", "-f", "json")
     _run("-m", "build", "--wheel", "--no-isolation", "--outdir", "dist")
     _run("scripts/validate_wheel.py")
