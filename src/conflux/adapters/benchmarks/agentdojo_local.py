@@ -238,7 +238,7 @@ class _RuntimeExecutor:
 class _LocalPipelineModel:
     model: LocalModelPort
     responses: list[object]
-    name: str = "conflux-self-hosted"
+    name: str = "conflux-local"
 
     def query(
         self,
@@ -392,7 +392,7 @@ class PinnedAgentDojoCellExecutor:
                 ToolsExecutionLoop([_MediatedToolExecutor(mediator), llm], max_iters=max_model_calls),
             ]
         )
-        pipeline.name = f"conflux-self-hosted-{cell.defence}"
+        pipeline.name = f"conflux-local-{cell.defence}"
         injections: dict[str, str] = {}
         attack_name = "none"
         if injection_task is not None:
