@@ -41,11 +41,10 @@ current Principal Context and provenance, not static prompt trust labels.
 
 ## Workflow and conventions
 
-See [WORKFLOW.md](WORKFLOW.md) for the change workflow, review
-checklist, and commit message convention. See
-[docs/AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md) for the AI-agent
-collaboration contract, trust order, documentation routing, and stop
-conditions.
+See [docs/AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md) for the change
+workflow, review checklist, and commit message convention. For setup
+and testing instructions, see [Development](docs/DEVELOPMENT.md) and the
+[quick start](README.md#run-the-offline-system).
 
 ## Validation tooling
 

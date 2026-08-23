@@ -22,7 +22,7 @@ owner; linked documents should reference that owner rather than restating it.
 - [Root quick start](../README.md): install and run the offline vertical slice.
 - [CLI](reference/CLI.md): commands, outputs, failures, and exit codes.
 - [Development](DEVELOPMENT.md): setup, testing ladder, and validation.
-- [Workflow](../WORKFLOW.md): change procedure, review checklist, and commit conventions.
+- [Workflow](AI_AGENT_GUIDE.md): change procedure, review checklist, and commit conventions.
 - [Changelog](../CHANGELOG.md): review-level repository history.
 - [AI agent guide](AI_AGENT_GUIDE.md): trust order and drift controls.
 - [Security policy](../SECURITY.md): trust boundary and private reporting.

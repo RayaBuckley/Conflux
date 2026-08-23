@@ -81,7 +81,7 @@ also run `.\scripts\validate.ps1`.
 
 - [Plain-language overview](docs/OVERVIEW.md)
 - [Documentation by task](docs/README.md)
-- [Workflow](WORKFLOW.md)
+- [Workflow](docs/AI_AGENT_GUIDE.md)
 - [AI-agent collaboration contract](docs/AI_AGENT_GUIDE.md)
 - [Security model](docs/reference/SECURITY_MODEL.md)
 - [Current capabilities and limitations](docs/evidence/STATUS.md)
