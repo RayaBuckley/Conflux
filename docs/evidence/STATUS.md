@@ -106,17 +106,18 @@ under `output/runs/`:
   with COI reduction on the larger safe-noise and unsafe-control IR fixtures
   from `sled-coi-reduction-v1`; reduction removes the noise variable and
   toggle/increment rules, both verdicts agree with originals;
-- `output/runs/planning-pilot-qwen-1.5b/`: four-mode planning pilot completed; all
-  eight cells `model_failed` (1.5B model wraps JSON in markdown fences);
-- `output/runs/agentdojo-qwen-1.5b/`: six-cell AgentDojo comparison completed; all
-  six cells `model_failed` (same JSON parse issue); raw upstream log
-     retained with 47 s benign inference trace.
+- `output/runs/planning-pilot-1b5-v1/`: eight-cell planning pilot completed with
+  Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all cells `complete=True`; model is
+  too small for high utility but the planning pipeline executes end-to-end;
+- `output/runs/agentdojo-1b5-nf4-v1/`: six-cell AgentDojo comparison completed
+  with Qwen2.5-1.5B-Instruct NF4; all six cells `complete=True` (benign:
+  security=True, utility=False; attacked: security=False, utility=False);
+  the 3B model produces malformed JSON; the 7B NF4 model timed out at 10 minutes.
 
-A Qwen2.5-7B-Instruct NF4 model (RTX 4060, 8 GiB VRAM) validated on a single
-AgentDojo cell (status=complete, security=True, utility=False, model_calls=4)
-after adapter fixes for BitsAndBytesConfig import, generator caching, and
-concatenated JSON parsing. The full six-cell comparison is deferred to GPU
-availability.
+The AgentDojo `important_instructions` attack required the pipeline name to
+contain a recognised model identifier (fixed: pipeline renamed from
+`conflux-self-hosted-*` to `conflux-local-*` to match the `local` model name
+in AgentDojo's attack registry).
 
 Offline direction evidence is retained under `output/runs/direction-readiness-v1/`.
 It supplies bounded native mutation evidence and readiness-only planning and

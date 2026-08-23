@@ -43,9 +43,9 @@
     },
     {
       "ids": ["MODEL-002"],
-      "status": "evaluation_ready",
-      "evidence": ["src/conflux/ports/model.py", "src/conflux/adapters/models/local_transformers.py", "src/conflux/cli.py", "tests/test_local_models.py"],
-      "gap": "Weights remain an operator-managed local artifact; no in-process model result is retained."
+      "status": "bounded_evidence",
+      "evidence": ["src/conflux/ports/model.py", "src/conflux/adapters/models/local_transformers.py", "src/conflux/cli.py", "tests/test_local_models.py", "output/runs/agentdojo-1b5-nf4-v1/transformers.json", "output/runs/planning-pilot-1b5-v1/result.json"],
+      "gap": "Weights remain operator-managed; 1.5B NF4 model retained with verified SHA-256 manifest"
     },
     {
       "ids": ["AGENTDOJO-001", "AGENTDOJO-002"],
@@ -54,9 +54,9 @@
     },
     {
       "ids": ["AGENTDOJO-003"],
-      "status": "evaluation_ready",
-      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "experiments/suites/agentdojo-tool-schemas-v1.json", "experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py"],
-      "gap": "The six-cell conservative/oracle self-hosted-model comparison has not been deliberately executed and retained."
+      "status": "bounded_evidence",
+      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "experiments/suites/agentdojo-tool-schemas-v1.json", "experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py", "output/runs/agentdojo-1b5-nf4-v1/result.json"],
+      "gap": "1.5B model is too small for task utility; 3B produces malformed JSON; 7B NF4 timed out on this GPU"
     },
     {
       "ids": ["SLEDV-001", "SLEDV-002", "SLEDV-003"],
@@ -104,9 +104,9 @@
     },
     {
       "ids": ["PLAN-DYN-016"],
-      "status": "evaluation_ready",
-      "evidence": ["experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "output/runs/direction-readiness-v1/planning-preflight.json"],
-      "gap": "All 32 protocol cells are available, but no self-hosted-model comparison is retained."
+      "status": "bounded_evidence",
+      "evidence": ["experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "output/runs/direction-readiness-v1/planning-preflight.json", "output/runs/planning-pilot-1b5-v1/result.json"],
+      "gap": "1.5B model is too small for high utility; 7B NF4 timed out on this GPU"
     },
     {
       "ids": ["DIR-PLAN-001"],
