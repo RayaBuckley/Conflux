@@ -78,5 +78,14 @@ class EnvironmentSnapshot:
         """Convert all data items in the snapshot into artifacts."""
         return tuple(item.to_artifact() for item in self.data)
 
+    @property
+    def all_principals(self) -> frozenset[Principal]:
+        """Return the union of all authors and readers across all data items."""
+        result: set[Principal] = set()
+        for item in self.data:
+            result |= item.authors
+            result |= item.readers
+        return frozenset(result)
+
 
 __all__ = ["DataItem", "EnvironmentSnapshot"]
