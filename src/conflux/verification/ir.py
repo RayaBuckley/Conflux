@@ -16,6 +16,7 @@ class Sort(StrEnum):
 
     BOOLEAN = "boolean"
     INTEGER = "integer"
+    SET = "set"
 
 
 class ExpressionKind(StrEnum):
@@ -29,9 +30,15 @@ class ExpressionKind(StrEnum):
     EQUAL = "equal"
     LESS_EQUAL = "less_equal"
     ADD = "add"
+    IN = "in"
+    SUBSET = "subset"
+    UNION = "union"
+    INTERSECT = "intersect"
 
 
 Scalar: TypeAlias = bool | int
+SetValue: TypeAlias = frozenset[str]
+IRValue: TypeAlias = Scalar | SetValue | str
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,21 +61,29 @@ class Expression:
             ExpressionKind.EQUAL: 2,
             ExpressionKind.LESS_EQUAL: 2,
             ExpressionKind.ADD: 2,
+            ExpressionKind.IN: 2,
+            ExpressionKind.SUBSET: 2,
+            ExpressionKind.UNION: -1,
+            ExpressionKind.INTERSECT: -1,
         }[self.kind]
         if arity >= 0 and len(self.arguments) != arity:
             raise ValueError(f"{self.kind.value} expression requires {arity} arguments")
         if self.kind in {ExpressionKind.AND, ExpressionKind.OR} and not self.arguments:
             raise ValueError(f"{self.kind.value} expression requires arguments")
-        if self.kind == ExpressionKind.CONSTANT and not isinstance(self.value, (bool, int)):
-            raise ValueError("constant expression requires a Boolean or integer")
+        if self.kind in {ExpressionKind.UNION, ExpressionKind.INTERSECT} and len(self.arguments) < 2:
+            raise ValueError(f"{self.kind.value} expression requires at least 2 arguments")
+        if self.kind == ExpressionKind.CONSTANT and not isinstance(self.value, (bool, int, str)):
+            raise ValueError("constant expression requires a Boolean, integer, or string")
+        if self.kind == ExpressionKind.CONSTANT and isinstance(self.value, str) and not self.value:
+            raise ValueError("constant string expression requires a non-empty value")
         if self.kind == ExpressionKind.VARIABLE and (not isinstance(self.value, str) or not self.value):
             raise ValueError("variable expression requires a name")
         if self.kind not in {ExpressionKind.CONSTANT, ExpressionKind.VARIABLE} and self.value is not None:
             raise ValueError("operator expressions cannot contain a direct value")
 
     @classmethod
-    def constant(cls, value: Scalar) -> "Expression":
-        """Create a constant expression from a Boolean or integer value."""
+    def constant(cls, value: Scalar | str) -> "Expression":
+        """Create a constant expression from a Boolean, integer, or string value."""
         return cls(ExpressionKind.CONSTANT, value)
 
     @classmethod
@@ -121,7 +136,7 @@ class StateVariable:
 
     name: str
     sort: Sort
-    initial: Scalar
+    initial: IRValue
     minimum: int | None = None
     maximum: int | None = None
 
@@ -133,21 +148,42 @@ class StateVariable:
             raise ValueError("Boolean state variable requires a Boolean initial value")
         if self.sort == Sort.INTEGER and (not isinstance(self.initial, int) or isinstance(self.initial, bool)):
             raise ValueError("integer state variable requires an integer initial value")
+        if self.sort == Sort.SET:
+            if not isinstance(self.initial, (set, frozenset)):
+                raise ValueError("set state variable requires a set or frozenset initial value")
+            object.__setattr__(self, "initial", frozenset(self.initial))
         if self.sort == Sort.BOOLEAN and (self.minimum is not None or self.maximum is not None):
             raise ValueError("Boolean state variables cannot have numeric bounds")
+        if self.sort == Sort.SET and (self.minimum is not None or self.maximum is not None):
+            raise ValueError("set state variables cannot have numeric bounds")
         if self.minimum is not None and self.maximum is not None and self.minimum > self.maximum:
             raise ValueError("state variable minimum exceeds maximum")
         if self.sort == Sort.INTEGER and (
-            (self.minimum is not None and self.initial < self.minimum) or (self.maximum is not None and self.initial > self.maximum)
+            (
+                self.minimum is not None
+                and isinstance(self.initial, int)
+                and not isinstance(self.initial, bool)
+                and self.initial < self.minimum
+            )
+            or (
+                self.maximum is not None
+                and isinstance(self.initial, int)
+                and not isinstance(self.initial, bool)
+                and self.initial > self.maximum
+            )
         ):
             raise ValueError("integer initial value is outside its domain")
 
     def to_dict(self) -> dict[str, object]:
         """Serialize this state variable to a JSON-compatible dictionary."""
+        if self.sort == Sort.SET and isinstance(self.initial, frozenset):
+            initial_value: object = sorted(self.initial)
+        else:
+            initial_value = self.initial
         return {
             "name": self.name,
             "sort": self.sort.value,
-            "initial": self.initial,
+            "initial": initial_value,
             "minimum": self.minimum,
             "maximum": self.maximum,
         }
@@ -339,10 +375,19 @@ def _parse_variable(value: object) -> StateVariable:
         "maximum",
     }:
         raise ValueError("malformed state variable")
+    sort = Sort(value["sort"])
+    initial: Scalar | SetValue
+    if sort == Sort.SET:
+        initial_list = value["initial"]
+        if not isinstance(initial_list, list):
+            raise ValueError("set state variable initial must be an array")
+        initial = frozenset(str(item) for item in initial_list)
+    else:
+        initial = value["initial"]
     return StateVariable(
         str(value["name"]),
-        Sort(value["sort"]),
-        value["initial"],
+        sort,
+        initial,
         value["minimum"] if isinstance(value["minimum"], int) else None,
         value["maximum"] if isinstance(value["maximum"], int) else None,
     )
@@ -391,8 +436,10 @@ __all__ = [
     "Expression",
     "ExpressionKind",
     "IR_SCHEMA_VERSION",
+    "IRValue",
     "SafetyInvariant",
     "Scalar",
+    "SetValue",
     "Sort",
     "StateVariable",
     "TransitionRule",

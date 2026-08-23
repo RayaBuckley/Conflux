@@ -161,7 +161,7 @@ def construct_product_ir(
         all_variables.append(variable)
         primed_name = _primed(variable.name)
         if variable.name in partition.secret_variable_ids:
-            primed_initial = _different_initial(variable)
+            primed_initial: bool | int | frozenset[str] | str = _different_initial(variable)
         else:
             primed_initial = variable.initial
         all_variables.append(

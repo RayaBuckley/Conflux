@@ -8,7 +8,7 @@ from dataclasses import dataclass, replace
 from conflux.domain import fingerprint
 
 from .interpreter import evaluate, initial_state, successors
-from .ir import Expression, ExpressionKind, Scalar, VerificationIR
+from .ir import Expression, ExpressionKind, IRValue, VerificationIR
 from .results import FormalVerdict
 
 REDUCTION_SCHEMA_VERSION = "1"
@@ -262,11 +262,11 @@ def reference_safety_check(ir: VerificationIR) -> ReferenceSafetyResult:
 
     start = initial_state(ir)
     start_key = _state_key(start)
-    queue: deque[tuple[dict[str, Scalar], int]] = deque(((start, 0),))
+    queue: deque[tuple[dict[str, IRValue], int]] = deque(((start, 0),))
     visited = {start_key}
     predecessor: dict[
-        tuple[tuple[str, Scalar], ...],
-        tuple[tuple[tuple[str, Scalar], ...], str] | None,
+        tuple[tuple[str, IRValue], ...],
+        tuple[tuple[tuple[str, IRValue], ...], str] | None,
     ] = {start_key: None}
     states = {start_key: start}
     transition_count = 0
@@ -335,20 +335,20 @@ def _unchanged(
     )
 
 
-def _state_key(state: dict[str, Scalar]) -> tuple[tuple[str, Scalar], ...]:
+def _state_key(state: dict[str, IRValue]) -> tuple[tuple[str, IRValue], ...]:
     return tuple(sorted(state.items()))
 
 
 def _counterexample(
-    target: tuple[tuple[str, Scalar], ...],
-    states: dict[tuple[tuple[str, Scalar], ...], dict[str, Scalar]],
+    target: tuple[tuple[str, IRValue], ...],
+    states: dict[tuple[tuple[str, IRValue], ...], dict[str, IRValue]],
     predecessor: dict[
-        tuple[tuple[str, Scalar], ...],
-        tuple[tuple[tuple[str, Scalar], ...], str] | None,
+        tuple[tuple[str, IRValue], ...],
+        tuple[tuple[tuple[str, IRValue], ...], str] | None,
     ],
     failed: tuple[str, ...],
 ) -> tuple[dict[str, object], ...]:
-    path: list[tuple[tuple[tuple[str, Scalar], ...], str | None]] = []
+    path: list[tuple[tuple[tuple[str, IRValue], ...], str | None]] = []
     cursor = target
     while True:
         previous = predecessor[cursor]

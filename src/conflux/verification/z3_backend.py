@@ -12,6 +12,8 @@ from .results import FormalVerdict, FormalVerificationResult
 
 def verify_with_z3(ir: VerificationIR) -> FormalVerificationResult:
     """Verify bounded safety of the IR using the optional Z3 bounded-model-checking backend."""
+    if any(v.sort == Sort.SET for v in ir.variables):
+        return _unknown(ir, "set_sort_not_supported_by_z3_backend")
     try:
         import z3
     except ImportError:

@@ -9,16 +9,16 @@ from conflux.domain import fingerprint
 from .ir import (
     Expression,
     ExpressionKind,
-    Scalar,
+    IRValue,
     StateVariable,
     VerificationIR,
 )
 
 
-def evaluate(expression: Expression, state: dict[str, Scalar]) -> Scalar:
+def evaluate(expression: Expression, state: dict[str, IRValue]) -> IRValue:
     """Evaluate an IR expression against a state mapping and return the result."""
     if expression.kind == ExpressionKind.CONSTANT:
-        assert isinstance(expression.value, (bool, int))
+        assert isinstance(expression.value, (bool, int, str))
         return expression.value
     if expression.kind == ExpressionKind.VARIABLE:
         assert isinstance(expression.value, str)
@@ -34,20 +34,36 @@ def evaluate(expression: Expression, state: dict[str, Scalar]) -> Scalar:
         return values[0] == values[1]
     if expression.kind == ExpressionKind.LESS_EQUAL:
         return _int(values[0]) <= _int(values[1])
-    return _int(values[0]) + _int(values[1])
+    if expression.kind == ExpressionKind.ADD:
+        return _int(values[0]) + _int(values[1])
+    if expression.kind == ExpressionKind.IN:
+        return _str(values[0]) in _set(values[1])
+    if expression.kind == ExpressionKind.SUBSET:
+        return _set(values[0]).issubset(_set(values[1]))
+    if expression.kind == ExpressionKind.UNION:
+        result: frozenset[str] = frozenset()
+        for value in values:
+            result = result | _to_set(value)
+        return result
+    if expression.kind == ExpressionKind.INTERSECT:
+        result_inter = _to_set(values[0])
+        for value in values[1:]:
+            result_inter = result_inter & _to_set(value)
+        return result_inter
+    raise ValueError(f"unsupported expression kind: {expression.kind}")
 
 
-def initial_state(ir: VerificationIR) -> dict[str, Scalar]:
+def initial_state(ir: VerificationIR) -> dict[str, IRValue]:
     """Return the initial state mapping for a verification IR."""
     return {variable.name: variable.initial for variable in ir.variables}
 
 
 def successors(
     ir: VerificationIR,
-    state: dict[str, Scalar],
-) -> tuple[tuple[str, dict[str, Scalar]], ...]:
+    state: dict[str, IRValue],
+) -> tuple[tuple[str, dict[str, IRValue]], ...]:
     """Return all domain-valid successor states of a state under the IR transitions."""
-    result: list[tuple[str, dict[str, Scalar]]] = []
+    result: list[tuple[str, dict[str, IRValue]]] = []
     variables = {variable.name: variable for variable in ir.variables}
     for rule in sorted(ir.transitions, key=lambda item: item.id):
         if not _bool(evaluate(rule.guard, state)):
@@ -64,16 +80,16 @@ def successors(
 class RuntimeTransitionRecord:
     """A single observed runtime transition with source, rule id, and target."""
 
-    source: dict[str, Scalar]
+    source: dict[str, IRValue]
     rule_id: str
-    target: dict[str, Scalar]
+    target: dict[str, IRValue]
 
     def to_dict(self) -> dict[str, object]:
         """Serialize this runtime transition record to a JSON-compatible dictionary."""
         return {
-            "source": self.source,
+            "source": _serialise_state(self.source),
             "rule_id": self.rule_id,
-            "target": self.target,
+            "target": _serialise_state(self.target),
         }
 
 
@@ -103,8 +119,8 @@ def differential_conformance(
     """Check that every runtime transition record is a valid IR transition."""
     mismatches: list[str] = []
     for index, record in enumerate(records):
-        expected = {(rule_id, fingerprint(target)) for rule_id, target in successors(ir, record.source)}
-        observed = (record.rule_id, fingerprint(record.target))
+        expected = {(rule_id, fingerprint(_serialise_state(target))) for rule_id, target in successors(ir, record.source)}
+        observed = (record.rule_id, fingerprint(_serialise_state(record.target)))
         if observed not in expected:
             mismatches.append(f"record[{index}] is not an IR transition")
     return DifferentialConformanceResult(
@@ -115,12 +131,25 @@ def differential_conformance(
     )
 
 
+def _serialise_state(state: dict[str, IRValue]) -> dict[str, object]:
+    """Convert a state mapping to a JSON-compatible dictionary."""
+    result: dict[str, object] = {}
+    for key, value in state.items():
+        if isinstance(value, frozenset):
+            result[key] = sorted(value)
+        else:
+            result[key] = value
+    return result
+
+
 def _within_domains(
-    state: dict[str, Scalar],
+    state: dict[str, IRValue],
     variables: dict[str, StateVariable],
 ) -> bool:
     for name, value in state.items():
         variable = variables[name]
+        if variable.sort.value == "set":
+            continue
         if variable.minimum is not None and _int(value) < variable.minimum:
             return False
         if variable.maximum is not None and _int(value) > variable.maximum:
@@ -128,16 +157,36 @@ def _within_domains(
     return True
 
 
-def _bool(value: Scalar) -> bool:
+def _bool(value: IRValue) -> bool:
     if not isinstance(value, bool):
         raise TypeError("IR expression expected a Boolean")
     return value
 
 
-def _int(value: Scalar) -> int:
+def _int(value: IRValue) -> int:
     if not isinstance(value, int) or isinstance(value, bool):
         raise TypeError("IR expression expected an integer")
     return value
+
+
+def _str(value: IRValue) -> str:
+    if not isinstance(value, str):
+        raise TypeError("IR expression expected a string")
+    return value
+
+
+def _set(value: IRValue) -> frozenset[str]:
+    if not isinstance(value, frozenset):
+        raise TypeError("IR expression expected a set")
+    return value
+
+
+def _to_set(value: IRValue) -> frozenset[str]:
+    if isinstance(value, frozenset):
+        return value
+    if isinstance(value, str):
+        return frozenset({value})
+    raise TypeError("IR set operation expected a set or string")
 
 
 __all__ = [
