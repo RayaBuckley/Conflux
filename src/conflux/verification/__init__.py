@@ -26,6 +26,15 @@ from .ir import (
 )
 from .nuxmv_backend import NuXmvBackend, NuXmvOutcome, NuXmvRunner
 from .plan_ir import EffectSummary, PlanAbstraction, abstract_plan, verify_plan
+from .provenance_distinction import (
+    AuthorityLoss,
+    ExposureMeasure,
+    ProvenanceOverapproximation,
+    enforcement_is_sound,
+    measure_authority_loss,
+    measure_exposure,
+    measure_overapproximation,
+)
 from .reduction import (
     REDUCTION_SCHEMA_VERSION,
     ReductionComparison,
@@ -66,10 +75,12 @@ from .z3_backend import verify_with_z3
 
 __all__ = [
     "Assignment",
+    "AuthorityLoss",
     "ControllerDecision",
     "ControllerStrategy",
     "DifferentialConformanceResult",
     "Expression",
+    "ExposureMeasure",
     "ExpressionKind",
     "EffectSummary",
     "FiniteInstance",
@@ -79,6 +90,7 @@ __all__ = [
     "NuXmvOutcome",
     "NuXmvRunner",
     "PlanAbstraction",
+    "ProvenanceOverapproximation",
     "REDUCTION_SCHEMA_VERSION",
     "ROBUST_DISCLOSURE_SCHEMA_VERSION",
     "ReductionComparison",
@@ -104,12 +116,16 @@ __all__ = [
     "differential_conformance",
     "dual_llm_baseline_ir",
     "dual_llm_native_property_ir",
+    "enforcement_is_sound",
     "evaluate",
     "evaluate_strategy",
     "expression_variables",
     "initial_state",
     "ites_defective_requester_only_ir",
     "ites_reference_ir",
+    "measure_authority_loss",
+    "measure_exposure",
+    "measure_overapproximation",
     "reduce_cone_of_influence",
     "reference_safety_check",
     "run_synthesis_experiment",
