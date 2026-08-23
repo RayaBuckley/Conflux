@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from conflux.verification import (
@@ -36,17 +38,12 @@ class TestFiniteInstance:
     def test_instance_round_trips(self) -> None:
         inst = default_instance()
         restored = type(inst)(
-            **{
-                k: (frozenset(v) if k == "acs" else v)
-                for k, v in {
-                    "principals": inst.principals,
-                    "actions": inst.actions,
-                    "acs": [tuple(pair) for pair in inst.acs],
-                    "requester": inst.requester,
-                    "attacker": inst.attacker,
-                    "authorised_action": inst.authorised_action,
-                }.items()
-            }
+            principals=inst.principals,
+            actions=inst.actions,
+            acs=frozenset(inst.acs),
+            requester=inst.requester,
+            attacker=inst.attacker,
+            authorised_action=inst.authorised_action,
         )
         assert restored.acs == inst.acs
 
@@ -140,8 +137,8 @@ class TestEnvironmentDerivedInstance:
         env = EnvironmentSnapshot(
             id="test-env",
             data=(
-                DataItem(id="d1", value="hello", authors={alice}, readers={alice, mallory}),
-                DataItem(id="d2", value="world", authors={mallory}, readers={alice}),
+                DataItem(id="d1", value="hello", authors=frozenset({alice}), readers=frozenset({alice, mallory})),
+                DataItem(id="d2", value="world", authors=frozenset({mallory}), readers=frozenset({alice})),
             ),
         )
         instance = FiniteInstance.from_environment(
@@ -160,7 +157,7 @@ class TestEnvironmentDerivedInstance:
         alice = Principal("alice", "Alice")
         env = EnvironmentSnapshot(
             id="test-env",
-            data=(DataItem(id="d1", value="hello", authors={alice}, readers={alice}),),
+            data=(DataItem(id="d1", value="hello", authors=frozenset({alice}), readers=frozenset({alice})),),
         )
         with pytest.raises(ValueError, match="requester"):
             FiniteInstance.from_environment(
@@ -177,7 +174,7 @@ class TestEnvironmentDerivedInstance:
         mallory = Principal("mallory", "Mallory")
         env = EnvironmentSnapshot(
             id="test-env",
-            data=(DataItem(id="d1", value="hello", authors={alice}, readers={alice, mallory}),),
+            data=(DataItem(id="d1", value="hello", authors=frozenset({alice}), readers=frozenset({alice, mallory})),),
         )
         instance = FiniteInstance.from_environment(
             environment=env,
@@ -196,7 +193,7 @@ class TestEnvironmentDerivedInstance:
         mallory = Principal("mallory", "Mallory")
         env = EnvironmentSnapshot(
             id="test-env",
-            data=(DataItem(id="d1", value="hello", authors={alice}, readers={alice, mallory}),),
+            data=(DataItem(id="d1", value="hello", authors=frozenset({alice}), readers=frozenset({alice, mallory})),),
         )
         instance = FiniteInstance.from_environment(
             environment=env,
@@ -220,22 +217,22 @@ class TestExperimentResult:
         assert "summary" in result
 
     def test_ites_is_pe_safe_in_experiment(self) -> None:
-        result = run_synthesis_experiment()
+        result: dict[str, Any] = run_synthesis_experiment()
         assert result["summary"]["ites_pe_safe"] is True
 
     def test_ites_matches_synthesis_in_experiment(self) -> None:
-        result = run_synthesis_experiment()
+        result: dict[str, Any] = run_synthesis_experiment()
         assert result["summary"]["ites_matches_synthesis"] is True
 
     def test_all_controls_unsafe(self) -> None:
-        result = run_synthesis_experiment()
+        result: dict[str, Any] = run_synthesis_experiment()
         assert result["summary"]["all_controls_unsafe"] is True
 
     def test_control_count(self) -> None:
-        result = run_synthesis_experiment()
+        result: dict[str, Any] = run_synthesis_experiment()
         assert result["summary"]["control_count"] == 5
 
     def test_experiment_has_fingerprint(self) -> None:
-        result = run_synthesis_experiment()
+        result: dict[str, Any] = run_synthesis_experiment()
         assert "fingerprint" in result
         assert len(result["fingerprint"]) == 64

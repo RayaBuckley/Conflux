@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from conflux.domain import Principal, Provenance
@@ -75,7 +77,7 @@ class TestMeasureOverapproximation:
     def test_result_round_trips(self) -> None:
         sec_prov = Provenance.from_principals({alice, bob})
         result = measure_overapproximation(sec_prov, frozenset({alice}))
-        d = result.to_dict()
+        d: dict[str, Any] = result.to_dict()
         assert d["overapproximates"] is True
         assert d["is_exact"] is False
         assert "bob" in d["excess_principal_ids"]

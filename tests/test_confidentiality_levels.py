@@ -5,9 +5,11 @@ from __future__ import annotations
 import pytest
 
 from conflux.verification import (
+    Assignment,
     Expression,
     ExpressionKind,
     FormalVerdict,
+    SafetyInvariant,
     SecretPartition,
     Sort,
     StateVariable,
@@ -40,15 +42,11 @@ def _equal(a: Expression, b: Expression) -> Expression:
     return Expression.operator(ExpressionKind.EQUAL, a, b)
 
 
-def _assignment(var: str, expr: Expression):
-    from conflux.verification import Assignment
-
+def _assignment(var: str, expr: Expression) -> Assignment:
     return Assignment(var, expr)
 
 
-def _safety(id_: str, expr: Expression):
-    from conflux.verification import SafetyInvariant
-
+def _safety(id_: str, expr: Expression) -> SafetyInvariant:
     return SafetyInvariant(id_, expr)
 
 

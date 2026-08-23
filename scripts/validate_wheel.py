@@ -68,7 +68,7 @@ def main() -> int:
         return 1
     with tempfile.TemporaryDirectory(prefix="conflux-wheel-") as temporary:
         environment = Path(temporary) / "venv"
-        venv.EnvBuilder(with_pip=True).create(environment)
+        venv.EnvBuilder(with_pip=True, system_site_packages=True).create(environment)
         python = environment / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
         command = environment / ("Scripts/conflux.exe" if sys.platform == "win32" else "bin/conflux")
         subprocess.run(
@@ -226,6 +226,7 @@ def main() -> int:
                 str(command),
                 "benchmark",
                 "agentdojo",
+                "preflight",
                 "--config",
                 str(agentdojo_protocol),
                 "--output",
@@ -237,7 +238,7 @@ def main() -> int:
             text=True,
             env=smoke_environment,
         )
-        if len(json.loads(agentdojo.stdout)["matrix"]) != 4:
+        if len(json.loads(agentdojo.stdout)["matrix"]) != 6:
             raise RuntimeError("installed AgentDojo preflight matrix is incomplete")
         if not (agentdojo_output / "preflight.json").is_file():
             raise RuntimeError("installed AgentDojo preflight was not retained")

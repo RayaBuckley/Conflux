@@ -5,9 +5,11 @@ from __future__ import annotations
 import pytest
 
 from conflux.verification import (
+    Assignment,
     Expression,
     ExpressionKind,
     FormalVerdict,
+    SafetyInvariant,
     Sort,
     StateVariable,
     TransitionRule,
@@ -16,6 +18,7 @@ from conflux.verification import (
     reference_safety_check,
     verify_with_z3,
 )
+from conflux.verification.ir import IRValue
 
 pytestmark = pytest.mark.security
 
@@ -61,7 +64,7 @@ class TestSetExpressions:
             Expression.constant("alice"),
             Expression.variable("pc"),
         )
-        state = {"pc": frozenset({"alice", "bob"})}
+        state: dict[str, IRValue] = {"pc": frozenset({"alice", "bob"})}
         assert evaluate(expr, state) is True
 
     def test_in_expression_false(self) -> None:
@@ -70,7 +73,7 @@ class TestSetExpressions:
             Expression.constant("mallory"),
             Expression.variable("pc"),
         )
-        state = {"pc": frozenset({"alice", "bob"})}
+        state: dict[str, IRValue] = {"pc": frozenset({"alice", "bob"})}
         assert evaluate(expr, state) is False
 
     def test_subset_expression(self) -> None:
@@ -79,7 +82,7 @@ class TestSetExpressions:
             Expression.variable("pc"),
             Expression.variable("authorised"),
         )
-        state = {
+        state: dict[str, IRValue] = {
             "pc": frozenset({"alice"}),
             "authorised": frozenset({"alice", "bob"}),
         }
@@ -91,7 +94,7 @@ class TestSetExpressions:
             Expression.variable("pc"),
             Expression.variable("authorised"),
         )
-        state = {
+        state: dict[str, IRValue] = {
             "pc": frozenset({"alice", "mallory"}),
             "authorised": frozenset({"alice", "bob"}),
         }
@@ -103,7 +106,7 @@ class TestSetExpressions:
             Expression.variable("pc"),
             Expression.variable("new_principals"),
         )
-        state = {
+        state: dict[str, IRValue] = {
             "pc": frozenset({"alice"}),
             "new_principals": frozenset({"bob"}),
         }
@@ -116,7 +119,7 @@ class TestSetExpressions:
             Expression.variable("pc"),
             Expression.variable("authorised"),
         )
-        state = {
+        state: dict[str, IRValue] = {
             "pc": frozenset({"alice", "mallory"}),
             "authorised": frozenset({"alice", "bob"}),
         }
@@ -228,13 +231,9 @@ def _union(*exprs: Expression) -> Expression:
     return Expression.operator(ExpressionKind.UNION, *exprs)
 
 
-def _assignment(var: str, expr: Expression):
-    from conflux.verification import Assignment
-
+def _assignment(var: str, expr: Expression) -> Assignment:
     return Assignment(var, expr)
 
 
-def _safety(id_: str, expr: Expression):
-    from conflux.verification import SafetyInvariant
-
+def _safety(id_: str, expr: Expression) -> SafetyInvariant:
     return SafetyInvariant(id_, expr)

@@ -231,7 +231,7 @@ def test_wsl_nuxmv_runner_writes_to_wsl_tmp(monkeypatch: pytest.MonkeyPatch, tmp
     [
         (lambda: Expression(ExpressionKind.NOT), "requires 1 arguments"),
         (lambda: Expression(ExpressionKind.AND), "requires arguments"),
-        (lambda: Expression(ExpressionKind.CONSTANT, [1, 2]), "requires a Boolean, integer, or string"),
+        (lambda: Expression(ExpressionKind.CONSTANT, [1, 2]), "requires a Boolean, integer, or string"),  # type: ignore[arg-type]
         (lambda: Expression(ExpressionKind.VARIABLE, ""), "requires a name"),
         (
             lambda: Expression(

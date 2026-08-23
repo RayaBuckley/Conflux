@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from conflux.verification import (
@@ -106,7 +108,7 @@ class TestExperiment:
 
     def test_experiment_ir_is_sound(self) -> None:
         ir = ites_reference_ir()
-        result = run_refinement_experiment(ir, ())
+        result: dict[str, Any] = run_refinement_experiment(ir, ())
         assert result["summary"]["ir_is_sound_abstraction"] is True
 
     def test_experiment_kernel_refines_ir(self) -> None:
@@ -115,11 +117,11 @@ class TestExperiment:
 
         start = initial_state(ir)
         records = tuple(RuntimeTransitionRecord(start, rule_id, target) for rule_id, target in successors(ir, start))
-        result = run_refinement_experiment(ir, records)
+        result: dict[str, Any] = run_refinement_experiment(ir, records)
         assert result["summary"]["kernel_refines_ir"] is True
 
     def test_experiment_has_fingerprint(self) -> None:
         ir = ites_reference_ir()
-        result = run_refinement_experiment(ir, ())
+        result: dict[str, Any] = run_refinement_experiment(ir, ())
         assert "fingerprint" in result
         assert len(result["fingerprint"]) == 64

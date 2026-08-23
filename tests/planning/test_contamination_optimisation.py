@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from conflux.planning.contamination_optimisation import (
@@ -128,17 +130,17 @@ class TestExperiment:
         assert "reachability" in result
 
     def test_goal_reachable_safely(self) -> None:
-        result = run_contamination_experiment()
+        result: dict[str, Any] = run_contamination_experiment()
         assert result["summary"]["goal_reachable_safely"] is True
 
     def test_low_cost_lower_than_high(self) -> None:
-        result = run_contamination_experiment()
+        result: dict[str, Any] = run_contamination_experiment()
         assert result["summary"]["low_cost"] < result["summary"]["high_cost"]
 
     def test_contamination_saved_positive(self) -> None:
-        result = run_contamination_experiment()
+        result: dict[str, Any] = run_contamination_experiment()
         assert result["summary"]["contamination_saved"] > 0
 
     def test_has_fingerprint(self) -> None:
-        result = run_contamination_experiment()
+        result: dict[str, Any] = run_contamination_experiment()
         assert len(result["fingerprint"]) == 64

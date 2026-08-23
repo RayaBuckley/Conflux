@@ -722,7 +722,11 @@
     "favor",
     "labor",
     "rigor",
-    "Anshumaan"
+    "Anshumaan",
+    "ATPI",
+    "UTPI",
+    "BTPI",
+    "ingenuine"
   ],
   "ignorePaths": [
     "reports/archive/**",
@@ -735,6 +739,8 @@
     "node_modules/**",
     ".local/**",
     "*.lock",
-    "package-lock.json"
+    "package-lock.json",
+    "scripts/generate_paper_figures.py",
+    "publications/workshop/generated/**"
   ]
 }

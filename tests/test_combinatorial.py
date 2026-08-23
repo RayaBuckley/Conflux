@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from conflux.domain import (
+    Action,
     ActionDecision,
     DataItem,
     Decision,
@@ -30,7 +31,9 @@ pytestmark = pytest.mark.security
 
 def _make_kernel() -> TransitionKernel:
     class AllowAll:
-        def decide(self, *, session, action, context, environment):
+        def decide(
+            self, *, session: Session, action: Action, context: PrincipalContext, environment: EnvironmentSnapshot
+        ) -> ActionDecision:
             auth = Decision(
                 category=DecisionCategory.AUTHORISATION,
                 allowed=True,
@@ -115,17 +118,6 @@ class TestCombinatorialSystem:
             session=Session(id="test", participants=frozenset({Principal("alice", "Alice")})),
             environment=EnvironmentSnapshot(id="env", version="1"),
         )
-        blocked = BranchState(
-            branch_id="blocked",
-            parent_branch_id="root",
-            depth=0,
-            inputs=(),
-            context=PrincipalContext(unknown=True),
-            status=BranchState.status if hasattr(BranchState, "status") else "blocked",
-        )
-        # Use proper blocked status
-        from conflux.ites import BranchStatus
-
         blocked = BranchState(
             branch_id="blocked",
             parent_branch_id="root",

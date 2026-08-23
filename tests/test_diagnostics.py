@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from conflux.domain import (
@@ -10,6 +12,7 @@ from conflux.domain import (
     Decision,
     DecisionCategory,
     NestedExecutionAction,
+    Permission,
     PrimitiveAction,
     Principal,
     PrincipalContext,
@@ -35,7 +38,7 @@ def _make_action(action_id: str = "write") -> PrimitiveAction:
     return PrimitiveAction(
         id=action_id,
         operation="write",
-        permission="write",
+        permission=Permission("write"),
     )
 
 
@@ -204,7 +207,7 @@ class TestDiagnosticReport:
         report = _make_report(branches)
         config = DiagnosticConfig(goal_action_ids=frozenset({"write"}))
         result = classify_branches(report, config)
-        d = result.to_dict()
+        d: dict[str, Any] = result.to_dict()
         assert d["schema_version"] == "1"
         assert d["total_branches"] == 1
         assert d["counts"]["goal_secure"] == 1
@@ -370,7 +373,7 @@ class TestTaskDiagnosticReport:
         report = _make_report((branch,))
         config = _make_task_config()
         result = classify_tasks(report, config)
-        d = result.to_dict()
+        d: dict[str, Any] = result.to_dict()
         assert d["schema_version"] == "1"
         assert d["total_tasks"] == 1
         assert d["counts"]["task_secure"] == 1

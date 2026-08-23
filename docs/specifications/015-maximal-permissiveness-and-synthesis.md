@@ -24,6 +24,7 @@ maximality theorem.
 ### Definitions
 
 Let:
+
 - `U` be a finite set of principals.
 - `A` be a finite set of effectful actions.
 - `ACS(p, a)` mean principal `p` is authorised by the current ACS to
@@ -89,6 +90,7 @@ Each defective controller violates the PE invariant:
 
 Results are retained as schema-checked JSON under
 `output/runs/controller-synthesis-v1/` with:
+
 - the finite instance (principals, actions, ACS);
 - the synthesised controller decisions;
 - the ITES intersection rule decisions;
@@ -99,6 +101,7 @@ Results are retained as schema-checked JSON under
 
 This specification covers the theorem, the synthesis experiment, and
 negative controls. It does not claim:
+
 - unbounded verification (the synthesis is finite);
 - maximal permissiveness under delegation or consent;
 - implementation conformance (that is RQ9);

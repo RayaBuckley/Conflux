@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from conflux.verification import (
@@ -79,18 +81,18 @@ class TestExperimentResult:
         assert "summary" in result
 
     def test_robust_is_safe(self) -> None:
-        result = run_robust_disclosure_experiment()
+        result: dict[str, Any] = run_robust_disclosure_experiment()
         assert result["summary"]["robust_is_safe"] is True
 
     def test_defective_is_unsafe(self) -> None:
-        result = run_robust_disclosure_experiment()
+        result: dict[str, Any] = run_robust_disclosure_experiment()
         assert result["summary"]["defective_is_unsafe"] is True
 
     def test_defective_has_counterexample(self) -> None:
-        result = run_robust_disclosure_experiment()
+        result: dict[str, Any] = run_robust_disclosure_experiment()
         assert result["summary"]["defective_has_counterexample"] is True
 
     def test_experiment_has_fingerprint(self) -> None:
-        result = run_robust_disclosure_experiment()
+        result: dict[str, Any] = run_robust_disclosure_experiment()
         assert "fingerprint" in result
         assert len(result["fingerprint"]) == 64

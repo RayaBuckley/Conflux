@@ -693,8 +693,8 @@ def check_manuscript(errors: list[str]) -> None:
     for name in required:
         if not (MANUSCRIPT / name).is_file():
             errors.append(f"current manuscript file is missing: publications/manuscript/{name}")
-    if (MANUSCRIPT / "conflux_fourth_year_2026.pdf").exists():
-        errors.append("generated current-manuscript PDF must be a CI artefact")
+    if index_blob_oid(MANUSCRIPT / "conflux_fourth_year_2026.pdf") is not None:
+        errors.append("generated current-manuscript PDF must not be tracked in git")
 
 
 def check_workshop(errors: list[str]) -> None:
@@ -710,8 +710,8 @@ def check_workshop(errors: list[str]) -> None:
     for name in required:
         if not (WORKSHOP / name).is_file():
             errors.append(f"workshop paper file is missing: publications/workshop/{name}")
-    if (WORKSHOP / "conflux_workshop.pdf").exists():
-        errors.append("generated workshop PDF must be a CI artefact")
+    if index_blob_oid(WORKSHOP / "conflux_workshop.pdf") is not None:
+        errors.append("generated workshop PDF must not be tracked in git")
 
 
 def check_smoke_evidence(errors: list[str]) -> None:
