@@ -200,19 +200,62 @@ def construct_product_ir(
         )
 
     confidentiality_invariants: list[SafetyInvariant] = []
+    declassification_rule_ids = set(partition.declassification_boundaries)
     for observable_id in sorted(partition.observable_variable_ids):
         primed_name = _primed(observable_id)
+        equality_expr = Expression.operator(
+            ExpressionKind.EQUAL,
+            Expression.variable(observable_id),
+            Expression.variable(primed_name),
+        )
+        if declassification_rule_ids:
+            declassification_fired = Expression.operator(
+                ExpressionKind.OR,
+                *(Expression.variable(f"__declassified__{rule_id}") for rule_id in sorted(declassification_rule_ids)),
+            )
+            invariant_expr = Expression.operator(
+                ExpressionKind.OR,
+                declassification_fired,
+                equality_expr,
+            )
+        else:
+            invariant_expr = equality_expr
         confidentiality_invariants.append(
             SafetyInvariant(
                 id=f"confidentiality__{observable_id}",
-                expression=Expression.operator(
-                    ExpressionKind.EQUAL,
-                    Expression.variable(observable_id),
-                    Expression.variable(primed_name),
-                ),
+                expression=invariant_expr,
                 description=f"Observational confidentiality: {observable_id} must not leak to unauthorised observers",
             )
         )
+
+    declassification_tracking_vars: list[StateVariable] = []
+    declassification_tracking_assignments: dict[str, Assignment] = {}
+    for rule_id in sorted(declassification_rule_ids):
+        var_name = f"__declassified__{rule_id}"
+        declassification_tracking_vars.append(StateVariable(var_name, Sort.BOOLEAN, False))
+        declassification_tracking_assignments[rule_id] = Assignment(
+            var_name,
+            Expression.constant(True),
+        )
+
+    if declassification_tracking_vars:
+        all_variables.extend(declassification_tracking_vars)
+
+    final_rules: list[TransitionRule] = []
+    for rule in combined_rules:
+        extra_assignments = []
+        if rule.id in declassification_tracking_assignments:
+            extra_assignments.append(declassification_tracking_assignments[rule.id])
+        if extra_assignments:
+            final_rules.append(
+                TransitionRule(
+                    id=rule.id,
+                    guard=rule.guard,
+                    assignments=rule.assignments + tuple(extra_assignments),
+                )
+            )
+        else:
+            final_rules.append(rule)
 
     assumptions = list(ir.assumptions)
     assumptions.extend(
@@ -229,7 +272,7 @@ def construct_product_ir(
     return VerificationIR(
         id=f"{ir.id}--product",
         variables=tuple(all_variables),
-        transitions=tuple(combined_rules),
+        transitions=tuple(final_rules),
         invariants=tuple(confidentiality_invariants),
         bound=ir.bound,
         assumptions=tuple(assumptions),
