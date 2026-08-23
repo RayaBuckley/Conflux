@@ -38,6 +38,14 @@ from .reduction import (
     reference_safety_check,
 )
 from .results import FormalVerdict, FormalVerificationResult
+from .robust_disclosure import (
+    ROBUST_DISCLOSURE_SCHEMA_VERSION,
+    RobustDisclosureResult,
+    defective_disclosure_ir,
+    robust_disclosure_ir,
+    run_robust_disclosure_experiment,
+    verify_robust_disclosure,
+)
 from .self_composition import (
     SELF_COMPOSITION_SCHEMA_VERSION,
     SecretPartition,
@@ -72,8 +80,10 @@ __all__ = [
     "NuXmvRunner",
     "PlanAbstraction",
     "REDUCTION_SCHEMA_VERSION",
+    "ROBUST_DISCLOSURE_SCHEMA_VERSION",
     "ReductionComparison",
     "ReferenceSafetyResult",
+    "RobustDisclosureResult",
     "RuntimeTransitionRecord",
     "SELF_COMPOSITION_SCHEMA_VERSION",
     "SYNTHESIS_SCHEMA_VERSION",
@@ -90,6 +100,7 @@ __all__ = [
     "compare_cone_of_influence",
     "construct_product_ir",
     "default_instance",
+    "defective_disclosure_ir",
     "differential_conformance",
     "dual_llm_baseline_ir",
     "dual_llm_native_property_ir",
@@ -102,8 +113,11 @@ __all__ = [
     "reduce_cone_of_influence",
     "reference_safety_check",
     "run_synthesis_experiment",
+    "run_robust_disclosure_experiment",
+    "robust_disclosure_ir",
     "successors",
     "synthesise_controller",
+    "verify_robust_disclosure",
     "verify_with_z3",
     "verify_plan",
 ]
