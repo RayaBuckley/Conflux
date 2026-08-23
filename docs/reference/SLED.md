@@ -42,6 +42,22 @@ policy composition against the kernel. Executable defective variants cover
 empty-context allowance, permission union, provenance-as-ACL, stale context,
 sibling leakage, and rejected-proposal misclassification.
 
+The combinatorial adapter supports auto-enumeration of nested execution
+candidates from environment data via `CombinatorialVerificationSystem.from_environment`,
+matching the original prototype's powerset-of-data exploration. Depth-dependent
+option sets restrict proposals at the final model-call depth via
+`final_primitive_only` and `final_max_batch_size`, matching the prototype's
+distinction between intermediate and final LLM call option sets.
+
+`EnvironmentSnapshot.all_principals` exposes the union of all authors and
+readers across environment data, matching the prototype's `total_users`
+computation.
+
+Task-level diagnostics extend the 8-category branch classification with 6
+additional categories (`TaskDiagnosticCategory`) that classify nested execution
+branches by whether task data is present, readable, and genuine — matching the
+prototype's `gen_task` recursive taxonomy.
+
 `conflux.verification` is a separate callback-free IR with a reference
 interpreter, runtime differential tests, optional Z3 bounded checking, and a
 nuXmv Boolean-subset adapter. Its property-scoped cone-of-influence reducer

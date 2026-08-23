@@ -95,6 +95,24 @@ def test_environment_rejects_duplicate_data_ids() -> None:
         EnvironmentSnapshot("duplicate", (first, second))
 
 
+def test_environment_all_principals_unions_authors_and_readers(alice: Principal, bob: Principal) -> None:
+    """EnvironmentSnapshot.all_principals returns the union of all authors and readers."""
+    env = EnvironmentSnapshot(
+        "test-principals",
+        (
+            DataItem("d1", "a", frozenset({alice}), frozenset({alice, bob})),
+            DataItem("d2", "b", frozenset({bob}), frozenset({alice})),
+        ),
+    )
+    assert env.all_principals == frozenset({alice, bob})
+
+
+def test_environment_all_principals_empty_when_no_data() -> None:
+    """EnvironmentSnapshot.all_principals returns empty set when there is no data."""
+    env = EnvironmentSnapshot("empty")
+    assert env.all_principals == frozenset()
+
+
 def test_canonical_json_orders_mappings() -> None:
     assert canonical_json({"b": 2, "a": 1}) == '{"a":1,"b":2}'
 

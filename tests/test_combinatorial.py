@@ -6,9 +6,11 @@ import pytest
 
 from conflux.domain import (
     ActionDecision,
+    DataItem,
     Decision,
     DecisionCategory,
     EnvironmentSnapshot,
+    NestedExecutionAction,
     Permission,
     PrimitiveAction,
     Principal,
@@ -21,7 +23,7 @@ from conflux.evaluation.model_checking import (
     VerificationBounds,
     VerificationVerdict,
 )
-from conflux.ites import BranchState, TransitionKernel
+from conflux.ites import BranchState, BranchStatus, TransitionKernel
 
 pytestmark = pytest.mark.security
 
@@ -148,3 +150,175 @@ class TestCombinatorialSystem:
         result = checker.verify(system, (), VerificationBounds(max_depth=2, max_states=100, max_transitions=100, max_model_calls=2))
         assert result.verdict in (VerificationVerdict.SAFE, VerificationVerdict.BOUNDED_SAFE)
         assert result.unique_states > 0
+
+
+class TestFromEnvironment:
+    """The from_environment factory auto-generates nested execution actions."""
+
+    def test_generates_nested_execution_actions_from_data(self) -> None:
+        alice = Principal("alice", "Alice")
+        env = EnvironmentSnapshot(
+            id="env",
+            data=(
+                DataItem("d1", "a", frozenset({alice}), frozenset({alice})),
+                DataItem("d2", "b", frozenset({alice}), frozenset({alice})),
+            ),
+        )
+        system = CombinatorialVerificationSystem.from_environment(
+            environment=env,
+            primitive_actions=(_make_action("write"),),
+            kernel=_make_kernel(),
+            session=Session(id="test", participants=frozenset({alice})),
+            max_nested_inputs=2,
+        )
+        nested = [a for a in system.actions if isinstance(a, NestedExecutionAction)]
+        assert len(nested) == 3  # {d1}, {d2}, {d1,d2}
+        primitives = [a for a in system.actions if isinstance(a, PrimitiveAction)]
+        assert len(primitives) == 1
+
+    def test_respects_max_nested_inputs(self) -> None:
+        alice = Principal("alice", "Alice")
+        env = EnvironmentSnapshot(
+            id="env",
+            data=tuple(DataItem(f"d{i}", f"v{i}", frozenset({alice}), frozenset({alice})) for i in range(4)),
+        )
+        system = CombinatorialVerificationSystem.from_environment(
+            environment=env,
+            primitive_actions=(_make_action("write"),),
+            kernel=_make_kernel(),
+            session=Session(id="test", participants=frozenset({alice})),
+            max_nested_inputs=1,
+        )
+        nested = [a for a in system.actions if isinstance(a, NestedExecutionAction)]
+        assert len(nested) == 4  # only singletons
+
+    def test_initial_inputs_default_to_environment_artifacts(self) -> None:
+        alice = Principal("alice", "Alice")
+        env = EnvironmentSnapshot(
+            id="env",
+            data=(DataItem("d1", "a", frozenset({alice}), frozenset({alice})),),
+        )
+        system = CombinatorialVerificationSystem.from_environment(
+            environment=env,
+            primitive_actions=(_make_action("write"),),
+            kernel=_make_kernel(),
+            session=Session(id="test", participants=frozenset({alice})),
+        )
+        initial = system.initial_states()[0]
+        assert len(initial.inputs) == 1
+        assert initial.inputs[0].id == "d1"
+
+    def test_verification_runs_with_from_environment(self) -> None:
+        alice = Principal("alice", "Alice")
+        env = EnvironmentSnapshot(
+            id="env",
+            data=(DataItem("d1", "a", frozenset({alice}), frozenset({alice})),),
+        )
+        system = CombinatorialVerificationSystem.from_environment(
+            environment=env,
+            primitive_actions=(_make_action("write"),),
+            kernel=_make_kernel(),
+            session=Session(id="test", participants=frozenset({alice})),
+            max_nested_inputs=1,
+            max_batch_size=1,
+        )
+        checker = ExplicitStateChecker()
+        result = checker.verify(
+            system,
+            (),
+            VerificationBounds(max_depth=2, max_states=100, max_transitions=100, max_model_calls=2),
+        )
+        assert result.verdict in (VerificationVerdict.SAFE, VerificationVerdict.BOUNDED_SAFE)
+        assert result.unique_states > 0
+
+
+class TestDepthDependentOptions:
+    """Depth-dependent option sets restrict proposals at the final model-call depth."""
+
+    def test_final_primitive_only_restricts_at_last_depth(self) -> None:
+        alice = Principal("alice", "Alice")
+        from conflux.domain import Artifact, Provenance
+
+        artifact = Artifact("a1", "v", Provenance.from_principal(alice))
+        nested = NestedExecutionAction(id="nested-1", inputs=(artifact,))
+        primitive = _make_action("write")
+        system = CombinatorialVerificationSystem(
+            initial=(BranchState.initial(()),),
+            actions=(primitive, nested),
+            kernel=_make_kernel(),
+            session=Session(id="test", participants=frozenset({alice})),
+            environment=EnvironmentSnapshot(id="env", version="1"),
+            max_batch_size=2,
+            max_model_calls=2,
+            final_primitive_only=True,
+        )
+        non_final = BranchState.initial(())
+        non_final_enabled = system.enabled(non_final)
+        assert any(isinstance(b.proposals[0], NestedExecutionAction) for b in non_final_enabled)
+
+        final_state = BranchState(
+            branch_id="final",
+            parent_branch_id="root",
+            depth=0,
+            inputs=(),
+            context=PrincipalContext(unknown=True),
+            status=BranchStatus.ACTIVE,
+            model_calls=1,
+        )
+        final_enabled = system.enabled(final_state)
+        for batch in final_enabled:
+            for p in batch.proposals:
+                assert isinstance(p, PrimitiveAction)
+
+    def test_final_max_batch_size_overrides_at_last_depth(self) -> None:
+        alice = Principal("alice", "Alice")
+        primitives = (_make_action("a"), _make_action("b"), _make_action("c"))
+        system = CombinatorialVerificationSystem(
+            initial=(BranchState.initial(()),),
+            actions=primitives,
+            kernel=_make_kernel(),
+            session=Session(id="test", participants=frozenset({alice})),
+            environment=EnvironmentSnapshot(id="env", version="1"),
+            max_batch_size=3,
+            max_model_calls=2,
+            final_max_batch_size=1,
+        )
+        non_final = BranchState.initial(())
+        non_final_enabled = system.enabled(non_final)
+        assert len(non_final_enabled) == 7  # 3 singletons + 3 pairs + 1 triple
+
+        final_state = BranchState(
+            branch_id="final",
+            parent_branch_id="root",
+            depth=0,
+            inputs=(),
+            context=PrincipalContext(unknown=True),
+            status=BranchStatus.ACTIVE,
+            model_calls=1,
+        )
+        final_enabled = system.enabled(final_state)
+        assert len(final_enabled) == 3  # only singletons with final_max_batch_size=1
+
+    def test_defaults_preserve_uniform_behaviour(self) -> None:
+        alice = Principal("alice", "Alice")
+        primitive = _make_action("a")
+        system = CombinatorialVerificationSystem(
+            initial=(BranchState.initial(()),),
+            actions=(primitive,),
+            kernel=_make_kernel(),
+            session=Session(id="test", participants=frozenset({alice})),
+            environment=EnvironmentSnapshot(id="env", version="1"),
+            max_batch_size=1,
+            max_model_calls=2,
+        )
+        non_final = BranchState.initial(())
+        final_state = BranchState(
+            branch_id="final",
+            parent_branch_id="root",
+            depth=0,
+            inputs=(),
+            context=PrincipalContext(unknown=True),
+            status=BranchStatus.ACTIVE,
+            model_calls=1,
+        )
+        assert len(system.enabled(non_final)) == len(system.enabled(final_state))
