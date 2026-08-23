@@ -49,11 +49,16 @@ output/runs/*
 !output/runs/cedar-differential-preflight-v1/**
 !output/runs/direction-readiness-v1/
 !output/runs/direction-readiness-v1/**
+!output/runs/agentdojo-1b5-nf4-v1/
+!output/runs/agentdojo-1b5-nf4-v1/**
+!output/runs/planning-pilot-1b5-v1/
+!output/runs/planning-pilot-1b5-v1/**
 data/
 *.jsonl
 !output/runs/smoke/*.jsonl
 !output/runs/native-sled-reproduction-v1/*.jsonl
 !output/runs/sled-coi-reduction-v1/*.jsonl
+!output/runs/planning-pilot-1b5-v1/*.jsonl
 dist/
 build/
 
