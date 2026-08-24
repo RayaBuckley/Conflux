@@ -30,3 +30,5 @@ documentation.
 | [018](018-fourth-year-direction-programme.md) | specification | Fourth-year direction programme |
 | [019](019-operator-ready-local-evaluation.md) | specification | Operator-ready local evaluation |
 | [020](020-maximal-permissiveness-and-synthesis.md) | specification | Maximal permissiveness and controller synthesis |
+| [021](021-human-reviewable-evidence-and-visualisation.md) | specification | Human-reviewable evidence and visualisation |
+| [022](022-ai-workflow-improvement.md) | specification | AI-assisted development workflow improvement |
