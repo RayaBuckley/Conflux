@@ -176,7 +176,6 @@ def check_docs(errors: list[str]) -> None:
     current_markdown = (
         ROOT / "README.md",
         ROOT / "AGENTS.md",
-        ROOT / "SECURITY.md",
         *DOCS.rglob("*.md"),
         *MANUSCRIPT.glob("*.md"),
         *WORKSHOP.glob("*.md"),
@@ -201,7 +200,6 @@ def check_docs(errors: list[str]) -> None:
 
     rationale_docs = {
         ROOT / "README.md",
-        ROOT / "SECURITY.md",
         DOCS / "OVERVIEW.md",
         DOCS / "DEVELOPMENT.md",
         DOCS / "reference" / "ARCHITECTURE.md",
@@ -1001,8 +999,6 @@ def main() -> int:
     check_direction_evidence(errors)
     check_schemas(errors)
     check_evidence_line_endings(errors)
-    if not (ROOT / "SECURITY.md").is_file():
-        errors.append("missing repository security policy: SECURITY.md")
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))

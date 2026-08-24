@@ -23,9 +23,8 @@ owner; linked documents should reference that owner rather than restating it.
 - [CLI](reference/CLI.md): commands, outputs, failures, and exit codes.
 - [Development](DEVELOPMENT.md): setup, testing ladder, and validation.
 - [Workflow](AI_AGENT_GUIDE.md): change procedure, review checklist, and commit conventions.
-- [Changelog](../CHANGELOG.md): review-level repository history.
 - [AI agent guide](AI_AGENT_GUIDE.md): trust order and drift controls.
-- [Security policy](../SECURITY.md): trust boundary and private reporting.
+- [Security model](reference/SECURITY_MODEL.md): normative rules, trusted computing base, and operational boundary.
 
 ## Understand the system
 

@@ -105,4 +105,18 @@ analysis](../../research/reports/analysis/2026-08-13-foundational-security-liter
 These rules prevent authority amplification; they do not prove that every
 authorised action matches subjective intent. Complete mediation and correct
 authentication, provenance, policy, runtime, and provider isolation remain
-assumptions. See [SECURITY.md](../../SECURITY.md) for the operational boundary.
+assumptions.
+
+## Operational boundary
+
+Conflux is pre-1.0 research software, not a production security product.
+Report vulnerabilities privately to the repository owner rather than placing
+credentials, exploit payloads, or confidential traces in a public issue.
+
+External model secrets are read from environment variables only and must not
+be committed to manifests, logs, fixtures, or retained responses. Keep Docker,
+model, solver, benchmark, and cluster workflows optional and credential-free
+by default.
+
+Supported security fixes target the current default branch. There is no stable
+0.1 API compatibility promise yet.

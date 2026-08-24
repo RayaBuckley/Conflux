@@ -56,7 +56,7 @@ intent, implementation, executable evidence, and prose to converge.
 |---|---|
 | Normative feature behavior | specification and relevant ADR |
 | Package or data-flow change | `reference/ARCHITECTURE.md` and `reference/REFERENCE.md` |
-| Security rule or assumption | `reference/SECURITY_MODEL.md` and `SECURITY.md` |
+| Security rule or assumption | `reference/SECURITY_MODEL.md` |
 | Test or validation workflow | `DEVELOPMENT.md` and `evidence/AUDIT.md` |
 | Programme disposition | `task-registry.json`, summarized in `evidence/STATUS.md` |
 | Claim strength or limitation | `evidence/CLAIMS.md` |

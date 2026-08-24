@@ -163,3 +163,19 @@ This page intentionally summarizes capability rather than reproducing task
 rows, test output, or research claims. The task registry owns programme status,
 retained artifacts own measurements, and the claim ledger owns claim strength;
 keeping those roles separate makes drift visible.
+
+## Recent changes
+
+Unreleased — 31 July 2026:
+
+- Stabilized archive validation across LF and CRLF checkouts while preserving
+  Git-object identity and byte-exact binary checks.
+- Updated GitHub Actions pins, diagnostics, timeouts, retained artifacts, and
+  cross-platform matrix behavior.
+- Added a concise contributor path, AI-agent trust guide, design rationale,
+  documentation ownership model, and installed-wheel quick start.
+- Archived all 18 original report artifacts without changing their Git blobs;
+  added a source-qualified crosswalk and cohesive current analysis.
+- Synchronized the current manuscript with implemented, bounded, optional, and
+  future work; the previous paper remains immutable.
+- Retained the consolidated 220-test, 90.25%-branch-coverage validation record.

@@ -102,9 +102,9 @@ version or omit `--cedar-binary` to report `binary_not_supplied`.
 The repository includes configuration files for VS Code extensions that
 suppress false positives and standardise style:
 
-- `.markdownlint.json` — markdownlint rule configuration.
+- `.markdownlint-cli2.jsonc` — markdownlint rule configuration.
 - `cspell.json` — spell-checker word list (British English, `en-GB`).
-- `.ltexrc.json` — LTeX grammar and spell-check configuration (British English).
+- `.vscode/ltexrc.json` — LTeX grammar and spell-check configuration (British English).
 - `.editorconfig` — editor indentation and line-ending conventions.
 
 Run `python scripts/validate_extensions.py` to execute markdownlint, cspell,
