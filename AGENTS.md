@@ -46,6 +46,33 @@ workflow, review checklist, and commit message convention. For setup
 and testing instructions, see [Development](docs/DEVELOPMENT.md) and the
 [quick start](README.md#run-the-offline-system).
 
+## Commit discipline
+
+- Before editing a multi-file or non-trivial task, formulate an atomic
+  commit plan: one commit per coherent concern that can be understood and
+  reverted independently.
+- Each implementation commit must pass the checks appropriate to that
+  commit independently; do not rely on a later commit to repair an earlier
+  broken state.
+- Separate semantic implementation, refactoring, documentation-only changes,
+  and generated evidence when they are independently meaningful. Do not
+  commit generated evidence in the same commit as the implementation that
+  generates it.
+- Do not mix opportunistic unrelated cleanup into a research or security
+  change; record it separately.
+- Review the staged diff before every commit for authority broadening,
+  provenance loss, hidden trust assumptions, benchmark shortcuts, secrets,
+  accidental generated files, and stale canonical documentation.
+- Use the repository commit message convention and always state
+  `Security impact: <specific impact or "none">`. For security-sensitive
+  changes, name the invariant or boundary affected rather than merely
+  saying "tested".
+- Do not claim stronger scientific evidence in a commit message than the
+  retained artifacts support.
+- Before the final commit, run `python scripts/validate.py` unless the
+  environment prevents it; report unavailable checks explicitly rather than
+  silently skipping them.
+
 ## Validation tooling
 
 The repository has a multi-layer validation pipeline orchestrated by

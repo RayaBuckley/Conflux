@@ -27,6 +27,7 @@ CANONICAL_DOCS = {
     "reference/CLI.md",
     "reference/GLOSSARY.md",
     "reference/SEMANTICS.md",
+    "reference/VISUALISATION.md",
     "evidence/STATUS.md",
     "evidence/CLAIMS.md",
     "evidence/EVALUATION.md",
@@ -163,6 +164,21 @@ def check_architecture(errors: list[str]) -> None:
                 errors.append(f"{path.relative_to(ROOT)}: port imports adapter {imported}")
             if path.is_relative_to(SOURCE / "planning") and imported.startswith("conflux.adapters"):
                 errors.append(f"{path.relative_to(ROOT)}: planning imports adapter {imported}")
+            if (
+                path.is_relative_to(SOURCE / "visualisation")
+                and imported.startswith("conflux.")
+                and not imported.startswith("conflux.visualisation")
+            ):
+                errors.append(f"{path.relative_to(ROOT)}: visualisation imports outward {imported}")
+            if imported.startswith("conflux.visualisation"):
+                if (
+                    path.is_relative_to(SOURCE / "domain")
+                    or path.is_relative_to(SOURCE / "ites")
+                    or path.is_relative_to(SOURCE / "policy")
+                    or path.is_relative_to(SOURCE / "execution")
+                    or path.is_relative_to(SOURCE / "ports")
+                ):
+                    errors.append(f"{path.relative_to(ROOT)}: security-kernel package imports visualisation {imported}")
     benchmark_exports = (SOURCE / "adapters" / "benchmarks" / "__init__.py").read_text(encoding="utf-8")
     if "agentdojo" in benchmark_exports.lower():
         errors.append("experimental AgentDojo integration is publicly re-exported")
@@ -239,6 +255,22 @@ def check_repository_governance(errors: list[str]) -> None:
     template = DOCS / "templates" / "FEATURE_SPEC.md"
     if not template.is_file() or "## Expected file set and change budget" not in (template.read_text(encoding="utf-8")):
         errors.append("feature specifications do not require an expected file set")
+
+
+def check_workflow_guidance(errors: list[str]) -> None:
+    """Verify that AGENTS.md and AI_AGENT_GUIDE.md contain required workflow sections."""
+    agents_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    if "## Commit discipline" not in agents_text:
+        errors.append("AGENTS.md missing commit discipline section")
+    if "Security impact:" not in agents_text:
+        errors.append("AGENTS.md missing Security impact guidance")
+    guide_text = (DOCS / "AI_AGENT_GUIDE.md").read_text(encoding="utf-8")
+    if "Discover -> Falsify -> Research -> Specify -> Human gate" not in guide_text:
+        errors.append("AI_AGENT_GUIDE.md missing staged workflow")
+    if "Authority distinction" not in guide_text:
+        errors.append("AI_AGENT_GUIDE.md missing authority distinction section")
+    if "Finding classification" not in guide_text:
+        errors.append("AI_AGENT_GUIDE.md missing finding classification section")
 
 
 def check_reports(errors: list[str]) -> None:
@@ -988,6 +1020,7 @@ def main() -> int:
     check_docs(errors)
     check_docstrings(errors)
     check_repository_governance(errors)
+    check_workflow_guidance(errors)
     check_reports(errors)
     check_archived_paper(errors)
     check_manuscript(errors)
