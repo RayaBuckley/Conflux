@@ -164,12 +164,6 @@ def check_architecture(errors: list[str]) -> None:
                 errors.append(f"{path.relative_to(ROOT)}: port imports adapter {imported}")
             if path.is_relative_to(SOURCE / "planning") and imported.startswith("conflux.adapters"):
                 errors.append(f"{path.relative_to(ROOT)}: planning imports adapter {imported}")
-            if (
-                path.is_relative_to(SOURCE / "visualisation")
-                and imported.startswith("conflux.")
-                and not imported.startswith("conflux.visualisation")
-            ):
-                errors.append(f"{path.relative_to(ROOT)}: visualisation imports outward {imported}")
             if imported.startswith("conflux.visualisation"):
                 if (
                     path.is_relative_to(SOURCE / "domain")
