@@ -32,6 +32,9 @@ openai-compatible = [
 verification = [
     "z3-solver>=4.13",
 ]
+visualisation = [
+    "graphviz>=0.20",
+]
 agentdojo = [
     "agentdojo==0.1.35",
 ]
@@ -221,7 +224,7 @@ python_version = "3.12"
 strict = true
 exclude = ["build/", "scripts/vulture_whitelist\\.py", "research/reports/archive/"]
 [[tool.mypy.overrides]]
-module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*"]
+module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*", "graphviz"]
 ignore_missing_imports = true
 [tool.setuptools]
 package-dir = { "" = "src" }
