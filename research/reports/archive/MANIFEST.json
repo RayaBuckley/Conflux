@@ -3,7 +3,7 @@
     "integrity_scope": "exact repository blob bytes",
     "hash_algorithm": "sha256",
     "git_object_format": "sha1",
-    "artifact_count": 38,
+    "artifact_count": 40,
     "packages": [
         {
             "id": "2026-07-27-engineering-and-sled",
@@ -196,6 +196,23 @@
             "limitations": [
                 "Original prototype predates the repository; not executable as-is; preserved for reference and comparison only.",
                 "Does not reflect the current architecture, security model, or verification IR."
+            ]
+        },
+        {
+            "id": "2026-08-24-evidence-visualisation-and-workflow",
+            "title": "Human-reviewable evidence visualisation and AI workflow improvement specifications",
+            "snapshot_date": "2026-08-24",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [],
+            "canonical_successors": [
+                "docs/decisions/021-human-reviewable-evidence-and-visualisation.md",
+                "docs/decisions/022-ai-workflow-improvement.md"
+            ],
+            "limitations": [
+                "Proposed implementation specifications pending ADR acceptance; do not interpret as accepted design until the corresponding decision records exist.",
+                "Report 2 references WORKFLOW.md, which has been intentionally folded into AGENTS.md; workflow guidance lives in AGENTS.md and docs/AI_AGENT_GUIDE.md."
             ]
         }
     ],
@@ -616,6 +633,28 @@
             "sha256_bytes": "7902761ca83b9d62b25d234d3a63dc600e7dcd38c9271c301054b1bba4814267",
             "git_blob_oid": "3d1fbd8dc8c77d69901a77aba05c33861eb23494",
             "role": "prototype_source",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-24-evidence-visualisation-and-workflow",
+            "original_path": "Conflux Human-Reviewable Evidence and Visualisation \u2014 Implementation Specification.md",
+            "archive_path": "research/reports/archive/2026-08-24-evidence-visualisation-and-workflow/evidence_visualisation_implementation_spec.md",
+            "media_type": "text/markdown",
+            "size_bytes": 34733,
+            "sha256_bytes": "5cc7c1acb30362de78925bb3e896cb72a056a41bc52bbe8d2f354cbbb94e8e13",
+            "git_blob_oid": "6445328342ef62d4ec4edbd05d7dc120ccdbcd62",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-24-evidence-visualisation-and-workflow",
+            "original_path": "Conflux_AI_Workflow_Improvement_Implementation_Spec.md",
+            "archive_path": "research/reports/archive/2026-08-24-evidence-visualisation-and-workflow/ai_workflow_improvement_implementation_spec.md",
+            "media_type": "text/markdown",
+            "size_bytes": 31391,
+            "sha256_bytes": "8cadb29c81e71d7b3679edc7ed5ccda2a42cdcf0af415c415bbae337f342f02a",
+            "git_blob_oid": "47ce74278a8c39d362655146d7c7f4f52f9470ea",
+            "role": "implementation_specification",
             "duplicate_of": null
         }
     ]
