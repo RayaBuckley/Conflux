@@ -129,6 +129,52 @@ intent, implementation, executable evidence, and prose to converge.
 Do not create a parallel roadmap, status page, glossary, task list, or claim
 ledger. Link instead of copying details.
 
+## Examiner mode
+
+The examiner workflow helps a human or AI reviewer understand an
+unfamiliar part of the codebase before making changes.  It is a
+learning procedure, not a code-change step.
+
+### Learning packet
+
+To build a learning packet for a target area:
+
+1. Identify the canonical specification, ADR, or security-model
+   section that governs the area.
+2. Identify the implementation entry point and key data structures.
+3. Identify the tests that exercise the security-relevant behaviour.
+4. Identify the evidence (SLED traces, verification results, audit
+   output) that demonstrates the behaviour.
+5. Summarise: what invariant does this area enforce, how is it
+   tested, and what evidence exists for it?
+
+### Examiner prompt template
+
+```
+You are examining the <area> subsystem of Conflux.
+
+Read these files in order:
+1. <specification or ADR>
+2. <implementation entry point>
+3. <key test file>
+4. <evidence or audit output>
+
+Answer:
+- What invariant does this area enforce?
+- How is the invariant tested?
+- What evidence exists for it?
+- What assumptions does it depend on?
+- What would break if the invariant were violated?
+```
+
+### Examiner constraints
+
+- Do not implement changes during examination.
+- Do not modify evidence or tests during examination.
+- Report findings as structured findings (see Finding classification).
+- If a finding affects a security invariant, mark it
+  `confirmed_defect` or `design_hypothesis` as appropriate.
+
 ## Stop conditions
 
 Stop and request direction if a change would broaden authority, weaken a fail-
