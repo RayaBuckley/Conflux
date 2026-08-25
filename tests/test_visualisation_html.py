@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from conflux.visualisation.html import render_html_report, write_manifest
+from conflux.visualisation.html import render_full_report, render_html_report, write_manifest
 from conflux.visualisation.model import (
     EdgeKind,
     EvidenceReference,
@@ -142,3 +142,70 @@ class TestWriteManifest:
         assert data["views"]["execution"]["svg"] == "execution.svg"
         assert data["views"]["execution"]["available"] is True
         assert data["views"]["provenance"]["available"] is False
+
+
+class TestRenderFullReport:
+    def test_includes_raw_evidence_section(self, tmp_path: Path) -> None:
+        render_full_report(
+            graphs={"execution": _make_graph()},
+            svg_filenames={"execution": "execution.svg"},
+            run_id="test",
+            output_dir=tmp_path,
+        )
+        content = (tmp_path / "index.html").read_text(encoding="utf-8")
+        assert "Raw Evidence" in content
+
+    def test_shows_warning_when_unavailable(self, tmp_path: Path) -> None:
+        render_full_report(
+            graphs={"execution": _make_graph()},
+            svg_filenames={"execution": None},
+            run_id="test",
+            output_dir=tmp_path,
+        )
+        content = (tmp_path / "index.html").read_text(encoding="utf-8")
+        assert "status-warning" in content
+        assert "UNAVAILABLE" in content
+
+    def test_shows_ok_when_all_available(self, tmp_path: Path) -> None:
+        render_full_report(
+            graphs={"execution": _make_graph()},
+            svg_filenames={"execution": "execution.svg"},
+            run_id="test",
+            output_dir=tmp_path,
+        )
+        content = (tmp_path / "index.html").read_text(encoding="utf-8")
+        assert "status-ok" in content
+
+    def test_metadata_appears_in_overview(self, tmp_path: Path) -> None:
+        render_full_report(
+            graphs={"execution": _make_graph()},
+            svg_filenames={"execution": "execution.svg"},
+            run_id="test",
+            output_dir=tmp_path,
+            metadata={"commit": "abc123", "scenario": "basic"},
+        )
+        content = (tmp_path / "index.html").read_text(encoding="utf-8")
+        assert "abc123" in content
+        assert "basic" in content
+
+    def test_shows_warning_for_unknown_status(self, tmp_path: Path) -> None:
+        graph = VisualGraph(
+            graph_id="g1",
+            title="Test",
+            nodes=(
+                VisualNode(
+                    node_id="n1",
+                    kind=NodeKind.EXECUTION,
+                    label="Unknown Node",
+                    status=VisualStatus.UNKNOWN,
+                ),
+            ),
+        )
+        render_full_report(
+            graphs={"execution": graph},
+            svg_filenames={"execution": "execution.svg"},
+            run_id="test",
+            output_dir=tmp_path,
+        )
+        content = (tmp_path / "index.html").read_text(encoding="utf-8")
+        assert "status-warning" in content
