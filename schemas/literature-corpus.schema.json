@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/literature-corpus-v1.json",
+  "title": "Conflux literature corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "entries"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "title", "year", "verified", "last_checked"],
+        "properties": {
+          "key": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "authors": {"type": "array", "items": {"type": "string"}},
+          "year": {"type": "integer"},
+          "venue": {"type": "string"},
+          "doi": {"type": "string"},
+          "arxiv_id": {"type": "string"},
+          "source_url": {"type": "string"},
+          "verified": {
+            "type": "object",
+            "required": ["method", "date"],
+            "properties": {
+              "method": {"enum": ["primary_source", "scholar_metadata", "unverified"]},
+              "date": {"type": "string", "minLength": 1},
+              "notes": {"type": "string"}
+            }
+          },
+          "last_checked": {"type": "string", "minLength": 1},
+          "adoption_priority": {"enum": ["A", "B", "C", "D"]},
+          "evidence_tier": {"enum": ["A", "B", "C", "D"]},
+          "closest_relation": {"type": "string"},
+          "stream": {"type": "string"},
+          "mechanism": {"type": "string"},
+          "claim_refs": {"type": "array", "items": {"type": "string"}},
+          "snowball_status": {
+            "type": "object",
+            "properties": {
+              "backward": {"enum": ["done", "pending", "not_applicable"]},
+              "forward": {"enum": ["done", "pending", "not_applicable"]}
+            }
+          }
+        }
+      }
+    }
+  }
+}
