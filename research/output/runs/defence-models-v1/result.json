@@ -1,0 +1,82 @@
+{
+  "id": "defence-models-v1",
+  "models": [
+    {
+      "name": "Dual-LLM",
+      "native_property": {
+        "counterexample": true,
+        "counterexample_length": 0,
+        "verdict": "bounded_safe"
+      },
+      "pe_property": {
+        "counterexample": true,
+        "counterexample_length": 4,
+        "verdict": "unsafe"
+      }
+    },
+    {
+      "name": "CaMeL",
+      "native_property": {
+        "counterexample": true,
+        "counterexample_length": 0,
+        "verdict": "bounded_safe"
+      },
+      "pe_property": {
+        "counterexample": true,
+        "counterexample_length": 4,
+        "verdict": "unsafe"
+      }
+    },
+    {
+      "name": "Progent",
+      "native_property": {
+        "counterexample": true,
+        "counterexample_length": 0,
+        "verdict": "bounded_safe"
+      },
+      "pe_property": {
+        "counterexample": true,
+        "counterexample_length": 3,
+        "verdict": "unsafe"
+      }
+    },
+    {
+      "name": "PACT",
+      "native_property": {
+        "counterexample": true,
+        "counterexample_length": 0,
+        "verdict": "bounded_safe"
+      },
+      "pe_property": {
+        "counterexample": true,
+        "counterexample_length": 3,
+        "verdict": "unsafe"
+      }
+    },
+    {
+      "name": "Requester-only",
+      "native_property": null,
+      "pe_property": {
+        "counterexample": true,
+        "counterexample_length": 4,
+        "verdict": "unsafe"
+      }
+    },
+    {
+      "name": "ITES",
+      "native_property": null,
+      "pe_property": {
+        "counterexample": true,
+        "counterexample_length": 0,
+        "verdict": "bounded_safe"
+      }
+    }
+  ],
+  "schema_version": "1",
+  "summary": {
+    "native_satisfied": 4,
+    "pe_safe": 1,
+    "pe_unsafe": 5,
+    "total_models": 6
+  }
+}

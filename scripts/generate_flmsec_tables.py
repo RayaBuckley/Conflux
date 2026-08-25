@@ -195,11 +195,32 @@ models. The unsafe witness lifts to the original model. Finite IR models only.}
 
 
 def table_comparative_defence() -> list[tuple[Path, str]]:
-    source = "tests/test_defence_models.py (IR model definitions + test verdicts)"
-    sha = "test-code"
+    defence_path = RUNS / "defence-models-v1" / "result.json"
+    defence, defence_sha = _read_json(defence_path)
+    source = str(defence_path.relative_to(ROOT))
+
+    rows: list[str] = []
+    for m in defence["models"]:
+        name = m["name"]
+        pe = m["pe_property"]["verdict"]
+        pe_label = "Safe" if pe != "unsafe" else "Unsafe"
+        native = m["native_property"]
+        if native is not None:
+            nat_label = "Safe" if native["verdict"] != "unsafe" else "Unsafe"
+        else:
+            nat_label = "---"
+        if pe == "unsafe":
+            cx = f"{m['pe_property']['counterexample_length']}-step PE witness"
+        else:
+            cx = "---"
+        is_ites = name == "ITES"
+        label = f"\\textbf{{{name}}}" if is_ites else name
+        rows.append(f"{label} & {nat_label} & {pe_label} & {cx} \\\\")
+
+    table_body = "\n".join(rows)
 
     tex = (
-        _header(source, sha)
+        _header(source, defence_sha)
         + r"""\begin{table}[t]
 \centering
 \small
@@ -208,12 +229,9 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
 \textbf{Defence model} & \textbf{Native property Q} & \textbf{PE property} &
 \textbf{Counterexample} \\
 \midrule
-Dual-LLM & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-CaMeL & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-Progent & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-PACT & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-Requester-only (defective) & --- & \textsc{Unsafe} & 1-step PE witness \\
-\textbf{ITES (Principal Context)} & --- & \textbf{Safe} & --- \\
+"""
+        + table_body
+        + r"""
 \bottomrule
 \end{tabular}
 \caption{Comparative defence verification on finite IR models. Each defence

@@ -61,6 +61,8 @@ research/output/runs/*
 !research/output/runs/planning-pilot-1b5-v1/**
 !research/output/runs/coi-scaling-v1/
 !research/output/runs/coi-scaling-v1/**
+!research/output/runs/defence-models-v1/
+!research/output/runs/defence-models-v1/**
 data/
 *.jsonl
 !research/output/runs/smoke/*.jsonl

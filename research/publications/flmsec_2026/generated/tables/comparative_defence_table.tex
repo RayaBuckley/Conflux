@@ -1,6 +1,6 @@
 % GENERATED FILE -- do not edit by hand.
-% Source: tests/test_defence_models.py (IR model definitions + test verdicts)
-% SHA-256: test-code
+% Source: research\output\runs\defence-models-v1\result.json
+% SHA-256: cfbfe288cffdeb27b328d92664bb4650762c15d2c208a12ff22cf7520c6c3c46
 % Run: python scripts/generate_flmsec_tables.py
 \begin{table}[t]
 \centering
@@ -10,12 +10,12 @@
 \textbf{Defence model} & \textbf{Native property Q} & \textbf{PE property} &
 \textbf{Counterexample} \\
 \midrule
-Dual-LLM & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-CaMeL & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-Progent & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-PACT & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
-Requester-only (defective) & --- & \textsc{Unsafe} & 1-step PE witness \\
-\textbf{ITES (Principal Context)} & --- & \textbf{Safe} & --- \\
+Dual-LLM & Safe & Unsafe & 4-step PE witness \\
+CaMeL & Safe & Unsafe & 4-step PE witness \\
+Progent & Safe & Unsafe & 3-step PE witness \\
+PACT & Safe & Unsafe & 3-step PE witness \\
+Requester-only & --- & Unsafe & 4-step PE witness \\
+\textbf{ITES} & --- & Safe & --- \\
 \bottomrule
 \end{tabular}
 \caption{Comparative defence verification on finite IR models. Each defence
