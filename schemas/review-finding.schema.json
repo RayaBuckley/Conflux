@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/review-finding-v1.json",
+  "title": "Conflux review finding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "category",
+    "affected_owners",
+    "evidence",
+    "why_it_matters",
+    "proposed_falsification",
+    "confidence",
+    "likely_scope",
+    "external_research_needed"
+  ],
+  "properties": {
+    "title": {"type": "string", "minLength": 1},
+    "category": {
+      "enum": [
+        "confirmed_defect",
+        "research_gap",
+        "design_hypothesis",
+        "documentation_drift",
+        "cleanup",
+        "rejected"
+      ]
+    },
+    "affected_owners": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "relevant_invariant": {"type": "string"},
+    "why_it_matters": {"type": "string", "minLength": 1},
+    "proposed_falsification": {"type": "string", "minLength": 1},
+    "confidence": {"enum": ["high", "medium", "low"]},
+    "likely_scope": {
+      "enum": ["file", "module", "subsystem", "repository"]
+    },
+    "external_research_needed": {"type": "boolean"}
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/change-impact-manifest-v1.json",
+  "title": "Conflux change-impact manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task",
+    "security_invariants_affected",
+    "expected_implementation_files",
+    "expected_tests",
+    "explicit_non_changes",
+    "commit_plan"
+  ],
+  "properties": {
+    "task": {"type": "string", "minLength": 1},
+    "research_question_affected": {"type": "string"},
+    "security_invariants_affected": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "canonical_source_files": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_implementation_files": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_tests": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_evidence": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "claims_potentially_affected": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "literature_potentially_affected": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "threat_model_assumptions_affected": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "explicit_non_changes": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "commit_plan": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    }
+  }
+}
