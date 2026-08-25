@@ -3,7 +3,7 @@
     "integrity_scope": "exact repository blob bytes",
     "hash_algorithm": "sha256",
     "git_object_format": "sha1",
-    "artifact_count": 40,
+    "artifact_count": 43,
     "packages": [
         {
             "id": "2026-07-27-engineering-and-sled",
@@ -213,6 +213,28 @@
             "limitations": [
                 "Proposed implementation specifications pending ADR acceptance; do not interpret as accepted design until the corresponding decision records exist.",
                 "Report 2 references WORKFLOW.md, which has been intentionally folded into AGENTS.md; workflow guidance lives in AGENTS.md and docs/AI_AGENT_GUIDE.md."
+            ]
+        },
+        {
+            "id": "2026-08-25-flmsec-submission-planning",
+            "title": "FLMSec 2026 submission planning reports",
+            "snapshot_date": "2026-08-25",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [],
+            "canonical_successors": [
+                "research/publications/flmsec_2026/main.tex",
+                "research/publications/flmsec_2026/SUBMISSION_CHECKLIST.md",
+                "research/publications/flmsec_2026/CLAIM_EVIDENCE_MAP.md",
+                "research/publications/flmsec_2026/WORKSHOP_REVIEW_PREMORTEM.md",
+                "research/publications/flmsec_2026/NEXT_REVIEW_2026-08-26.md",
+                "scripts/generate_flmsec_tables.py"
+            ],
+            "limitations": [
+                "The Part B 1.5M reproduction plan has not been executed; it remains a P2 stretch goal.",
+                "The COI scaling experiment and runtime/IR differential conformance testing described in the readiness review have not been implemented.",
+                "These reports were prepared before the FLMSec workshop page was verified; the confirmed page limit is 8 pages (not 4-9 as initially stated for the alternative workshop)."
             ]
         }
     ],
@@ -654,6 +676,39 @@
             "size_bytes": 31391,
             "sha256_bytes": "8cadb29c81e71d7b3679edc7ed5ccda2a42cdcf0af415c415bbae337f342f02a",
             "git_blob_oid": "47ce74278a8c39d362655146d7c7f4f52f9470ea",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-25-flmsec-submission-planning",
+            "original_path": "FLMSec_Immediate_AI_Coder_Plan_2026-08-25.md",
+            "archive_path": "research/reports/archive/2026-08-25-flmsec-submission-planning/flmsec_immediate_ai_coder_plan.md",
+            "media_type": "text/markdown",
+            "size_bytes": 18521,
+            "sha256_bytes": "a3ff6be1671edb2f20c3a5640a2effac70723ffc5f3eb07f3714b7aca909a9ee",
+            "git_blob_oid": "68da727d546591a5ba05f5a623eab09ec822c539",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-25-flmsec-submission-planning",
+            "original_path": "Conflux_Workshop_Submission_Readiness_2026-08-25.md",
+            "archive_path": "research/reports/archive/2026-08-25-flmsec-submission-planning/workshop_submission_readiness_review.md",
+            "media_type": "text/markdown",
+            "size_bytes": 40001,
+            "sha256_bytes": "eb0fe65fb81649d299e6ce9e492f3833315b65a32525062fb49d7623d4b6247d",
+            "git_blob_oid": "775da765d1494d1d23d08338a2ac9b93d7419ab2",
+            "role": "readiness_assessment",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-25-flmsec-submission-planning",
+            "original_path": "Conflux_PartB_SLED_1.5M_Reproduction_Plan_2026-08-25.md",
+            "archive_path": "research/reports/archive/2026-08-25-flmsec-submission-planning/partb_sled_1.5m_reproduction_plan.md",
+            "media_type": "text/markdown",
+            "size_bytes": 26391,
+            "sha256_bytes": "5d5498ebfdcae9c373839202afc8e8a536c4350436fc401a1db81b9b7991dba7",
+            "git_blob_oid": "935fb599a04ef4f3b8bd8b13c2a26fdb68207324",
             "role": "implementation_specification",
             "duplicate_of": null
         }
