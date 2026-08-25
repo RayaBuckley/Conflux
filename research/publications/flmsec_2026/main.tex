@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\PassOptionsToPackage{numbers}{natbib}
 \usepackage{neurips_2026}
 
 \usepackage[utf8]{inputenc}
@@ -10,19 +11,10 @@
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{microtype}
-\usepackage{xcolor}
-\usepackage{tikz}
-\usetikzpicturelibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
-\usepackage[numbers]{natbib}
 
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
-
-\definecolor{safebg}{HTML}{d4edda}
-\definecolor{safebd}{HTML}{28a745}
-\definecolor{unsafebg}{HTML}{f8d7da}
-\definecolor{unsafebd}{HTML}{dc3545}
 
 
 \title{Principal-Context Security for LLM Agents:\\
@@ -77,7 +69,7 @@ language model recognising or resisting malicious instructions. Because prompt
 injection is inherently adaptive, such defences cannot provide stable guarantees.
 
 This paper studies \emph{privilege escalation} (PE) as the fundamental
-system-level security problem. Prompt injection is one mechanism by which PE may
+system-level security problem \citep{provos2003preventing}. Prompt injection is one mechanism by which PE may
 occur, but it is not the only one. More generally, any information influencing
 an agent may affect its subsequent behaviour. Since a system-level defence cannot
 prevent arbitrary prompt injection without preventing the agent from processing
@@ -405,10 +397,10 @@ disclosure) are similarly detected with one-step witnesses.
 
 \subsection{RQ2: Independent Checker Agreement}
 
-Table~\ref{tab:checker-agreement} shows that Z3 bounded model checking agrees
-with the reference interpreter on four IR fixtures, including both safe and
-unsafe cases. COI reduction preserves verdicts on both COI fixtures, and the
-unsafe witness lifts to the original model.
+Table~\ref{tab:checker-agreement} shows that the reference interpreter and
+COI-reduced model agree on two fixtures (safe-noise and unsafe-control),
+including both safe and unsafe cases. The unsafe witness lifts to the original
+model.
 
 \input{generated/tables/checker_agreement_table}
 
@@ -451,46 +443,6 @@ would permit the action, and SLED-V finds a one-step counterexample reaching
 the bad state. This example threads through the paper: it motivates the PE
 definition, illustrates the intersection rule, and provides an intuitive
 witness for the comparative verification result.
-
-\subsection{Model-to-Implementation Architecture}
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[
-  node distance=0.8cm and 1.5cm,
-  box/.style={draw, rounded corners, minimum width=3.5cm, minimum height=0.8cm,
-              font=\small, align=center},
-  trusted/.style={fill=safebg!40, draw=safebd},
-  untrusted/.style={fill=unsafebg!40, draw=unsafebd},
-  arrow/.style={-Stealth, thick},
-  label/.style={font=\footnotesize, align=center},
-]
-\node[untrusted] (propose) {Untrusted LLM proposal};
-\node[trusted, below=of propose] (kernel) {Canonical ITES transition kernel};
-\node[trusted, below left=of kernel] (runtime) {Runtime effect\\certificate};
-\node[trusted, below right=of kernel] (ir) {SLED-V verification IR};
-\node[trusted, below=of runtime] (exec) {Executor};
-\node[trusted, below=of ir] (checker) {Explicit-state / Z3 BMC};
-\node[below=of exec, font=\small] (eff) {Effect};
-\node[below=of checker, font=\small] (verdict) {Verdict / counterexample};
-
-\draw[arrow] (propose) -- (kernel);
-\draw[arrow] (kernel) -- (runtime);
-\draw[arrow] (kernel) -- (ir);
-\draw[arrow] (runtime) -- (exec);
-\draw[arrow] (ir) -- (checker);
-\draw[arrow] (exec) -- (eff);
-\draw[arrow] (checker) -- (verdict);
-
-\node[label, right=0.3cm of kernel] {trust boundary};
-\end{tikzpicture}
-\caption{Verification architecture. Untrusted LLM proposals enter the
-canonical ITES kernel, which produces runtime effect certificates and a
-serialisable verification IR. The IR is checked by independent paths
-(explicit-state and Z3 BMC). The trust boundary separates untrusted model
-output from trusted enforcement.}
-\label{fig:architecture}
-\end{figure}
 
 %% ------------------------------------------------------------------
 \section{Related Work}

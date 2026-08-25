@@ -10,7 +10,7 @@ mapped to the paper section that answers it, or to an acknowledged limitation.
 **Answer**: The paper uses explicit bounded claim language throughout.
 \textsc{SAFE} is reserved for exhausted finite state spaces;
 \textsc{BOUNDED\_SAFE} is never promoted to proof. Section 4.1 states the
-verdict semantics. Section 6 (Limitations) states that results are bounded to
+verdict semantics. Section 7 (Discussion, Limitations) states that results are bounded to
 finite models.
 
 ### Objection 2: "What exactly is the state machine?"
@@ -40,7 +40,7 @@ mechanism itself.
 
 ### Objection 5: "Where is the implementation-refinement argument?"
 
-**Answer**: Acknowledged in Section 6 (Limitations) and Section 4.2. The IR
+**Answer**: Acknowledged in Section 7 (Discussion, Limitations) and Section 4.2. The IR
 shares canonical transition semantics with the runtime kernel, but formal
 equivalence is not claimed. This is a known gap, not a hidden assumption.
 
@@ -63,7 +63,7 @@ explicitly scoped.
 
 ### Objection 3: "Is Principal Context too conservative?"
 
-**Answer**: Section 6 (Discussion) addresses the security-utility frontier:
+**Answer**: Section 7 (Discussion) addresses the security-utility frontier:
 the intersection rule is maximal under the PE objective. Recovering more
 utility requires explicit delegation, trusted declassification, or a
 different security objective. This is a fundamental trade-off, not an

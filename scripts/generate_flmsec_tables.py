@@ -139,9 +139,8 @@ def table_checker_agreement() -> list[tuple[Path, str]]:
 \bottomrule
 \end{tabular}
 \caption{Independent checker agreement. The reference interpreter and COI-reduced
-model agree on both safe and unsafe fixtures. Z3 BMC with COI reduction confirms
-equivalence on both fixtures (safe: bounded safe; unsafe: counterexample found
-and lifted). Finite IR models only.}
+model agree on both safe and unsafe fixtures. The unsafe witness lifts to the
+original model. Finite IR models only.}
 \label{tab:checker-agreement}
 \end{table}
 """
