@@ -1,0 +1,651 @@
+\documentclass{article}
+
+\usepackage{neurips_2026}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzpicturelibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+\usepackage[numbers]{natbib}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\definecolor{safebg}{HTML}{d4edda}
+\definecolor{safebd}{HTML}{28a745}
+\definecolor{unsafebg}{HTML}{f8d7da}
+\definecolor{unsafebd}{HTML}{dc3545}
+
+
+\title{Principal-Context Security for LLM Agents:\\
+Preventing Privilege Escalation under Arbitrary Model Behaviour}
+
+\author{
+  Anonymous Author(s)
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Large language model (LLM) agents process information from multiple principals
+and perform externally visible actions. Existing defences primarily seek to
+prevent prompt injection by improving model robustness, but such approaches
+remain dependent on empirical model behaviour and adaptive attack strategies.
+This paper formulates privilege escalation (PE) as the fundamental system-level
+security objective: no source of influence should increase the authority of an
+execution. We introduce \emph{Principal Context}, an abstraction that derives
+execution authority from authenticated provenance and an organisation's
+existing access-control system. Its intersection rule is maximally permissive
+under the stated PE objective and monotonically loses authority as influence
+accumulates, following a low-water-mark intuition analogous to classical Biba
+integrity. We then present SLED (System-Level Evaluator for Defences), which
+explores finite operational models under worst-case model behaviour, and SLED-V,
+which provides a serialisable verification IR with solver-backed bounded model
+checking and property-scoped cone-of-influence reduction. Across finite
+verification models, SLED-V detects all seeded monitor defects with one-step
+counterexamples, independent checker paths agree on safe and unsafe instances,
+and comparative finite-model verification reveals that several published defence
+abstractions satisfy their own intended properties while violating PE. All
+results are bounded to finite models under stated assumptions.
+\end{abstract}
+
+%% ------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+LLM agents read documents, retrieve information, invoke tools, and perform
+externally visible actions on behalf of users. Unlike traditional software,
+these agents process natural-language inputs originating from multiple
+principals---users, documents, databases, APIs, and other systems. Arbitrary
+information may influence decisions with real-world consequences.
+
+Prompt injection has emerged as a fundamental security challenge
+\citep{rossi2024earlycategorizationpromptinjection}. An attacker may supply
+crafted instructions through any input channel, causing an agent to ignore its
+intended behaviour. Although progress has been made on model-level defences
+\citep{struq2024,spotlighting2024}, these approaches ultimately rely on the
+language model recognising or resisting malicious instructions. Because prompt
+injection is inherently adaptive, such defences cannot provide stable guarantees.
+
+This paper studies \emph{privilege escalation} (PE) as the fundamental
+system-level security problem. Prompt injection is one mechanism by which PE may
+occur, but it is not the only one. More generally, any information influencing
+an agent may affect its subsequent behaviour. Since a system-level defence cannot
+prevent arbitrary prompt injection without preventing the agent from processing
+untrusted information, we focus instead on preventing any source of
+influence---whether prompt injection, retrieved documents, or arbitrary model
+behaviour---from increasing authority.
+
+Under a worst-case threat model, the relevant question is not whether an input
+is malicious, but whether \emph{every} principal influencing an action is
+authorised to perform that action. If this property holds, arbitrary model
+behaviour cannot escalate privilege regardless of how influence was obtained.
+
+\paragraph{Contributions.}
+\begin{enumerate}[leftmargin=*,nosep]
+  \item We formulate PE as a system-level security objective for LLM agents
+    operating within existing access-control systems, and define a threat model
+    in which the LLM is an adversarial component
+    (Section~\ref{sec:threat-model}).
+
+  \item We introduce \emph{Principal Context}, a provenance-based enforcement
+    mechanism that derives effective authority by intersecting the permissions of
+    all influencing principals. We prove that this rule is maximally permissive
+    under the PE objective and that authority is monotonically non-increasing as
+    influence accumulates (Section~\ref{sec:ites}).
+
+  \item We present SLED and SLED-V, which evaluate system-level defences under
+    worst-case model behaviour: explicit-state exploration, a serialisable
+    verification IR, solver-backed bounded model checking, and property-scoped
+    cone-of-influence reduction with counterexample lifting
+    (Section~\ref{sec:sled}).
+
+  \item We provide evidence from finite verification models: seeded-defect
+    detection, independent checker agreement, COI reduction, and comparative
+    defence verification showing that published defence abstractions can satisfy
+    their own properties while violating PE (Section~\ref{sec:evaluation}).
+\end{enumerate}
+
+%% ------------------------------------------------------------------
+\section{Threat Model and Security Objective}
+\label{sec:threat-model}
+
+We consider an LLM-based agent that performs externally visible actions on
+behalf of users. The agent receives information from multiple principals, both
+directly through user prompts and indirectly through documents, retrieved
+content, databases, APIs, and tool outputs.
+
+Any principal may provide arbitrary inputs. We make no assumptions about the
+language model's ability to distinguish instructions from data, identify
+malicious content, or resist prompt injection. Instead, we adopt a worst-case
+model in which any information processed by the model may arbitrarily influence
+subsequent executions.
+
+\subsection{Access-Control System}
+
+We model the access-control system as the tuple $(U, A, D, P, W, R)$
+\citep{servos2017abac}:
+\begin{itemize}[nosep,leftmargin=*]
+  \item $A$: externally visible parameterised actions
+  \item $U$: principals
+  \item $D$: data objects
+  \item $P \subseteq U \times A$: permission relation
+  \item $W \subseteq D \times U$: authorship relation
+  \item $R \subseteq D \times U$: read relation
+\end{itemize}
+
+For principal $u \in U$ and action $a \in A$, $P(u,a)$ holds iff $u$ is
+authorised to perform $a$. Permissions are not assumed to be hierarchical: two
+principals may possess overlapping but incomparable permissions.
+
+\subsection{Security Objective}
+
+\begin{definition}[Influencing Principal]
+\label{def:influence}
+A principal $u$ influences an action if information originating from $u$
+contributes, directly or indirectly, to the execution that produces the action.
+The set of influencing principals for execution $e$ is denoted
+$\mathrm{Influence}(e)$.
+\end{definition}
+
+\begin{definition}[Privilege Escalation]
+\label{def:pe}
+Privilege escalation occurs iff an action $a \in A$ is performed for which
+there exists an influencing principal $u \in \mathrm{Influence}(e)$ satisfying
+$\neg P(u,a)$.
+\end{definition}
+
+This formulation abstracts away the mechanism by which influence arises. Under
+the stated threat model, security depends only on provenance and the permissions
+assigned by the current access-control system.
+
+\subsection{Trusted Computing Base}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.28\linewidth}p{0.62\linewidth}}
+\toprule
+\textbf{Component} & \textbf{Role} \\
+\midrule
+Adversarial & LLM proposals, prompt/document/tool content, principals without
+required permissions \\
+\addlinespace
+Trusted & Principal authentication, provenance attachment, policy decision
+point, reference monitor / transition semantics, effect mediation \\
+\addlinespace
+Not proved & Provenance correctness, ACS correctness, unbounded deployment
+security, arbitrary Python equivalence, provider isolation, subjective user
+intent \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%% ------------------------------------------------------------------
+\section{Principal Context and ITES}
+\label{sec:ites}
+
+\subsection{Influence Tracking}
+
+Every execution inherits the authority implied by the provenance of its inputs.
+The initial influence set of execution $e$ with inputs $ds \subseteq D$ is:
+\[
+\mathrm{Influence}(e) = \bigcup_{d \in ds} \{u \in U \mid W(d,u)\}
+\]
+Every object produced by an execution inherits the complete influence set of
+that execution. Influence therefore accumulates monotonically: once a principal
+has influenced a computation, that influence persists unless a trusted
+provenance mechanism establishes otherwise.
+
+\subsection{Authorisation}
+
+Given execution $e$ with influence set $I = \mathrm{Influence}(e)$, the
+authorisation rule permits action $a \in A$ iff:
+\[
+\mathrm{Allow}(I, a) \iff I \neq \varnothing \;\land\; \forall u \in I,\; P(u,a)
+\]
+The non-empty condition prevents vacuous authority from an empty context. The
+effective authority is:
+\[
+\mathrm{Permitted}(I) = \bigcap_{u \in I} \{a \in A \mid P(u,a)\}
+\]
+
+\subsection{Maximal Secure Authorisation}
+
+\begin{theorem}[Maximal Secure Authorisation]
+\label{thm:maximal}
+The intersection rule authorises the maximal set of actions that can be
+permitted without allowing privilege escalation.
+\end{theorem}
+
+\begin{proof}
+ITES authorises exactly $\mathrm{Permitted}(I)$. Suppose an alternative rule
+permits a strict superset. Then there exists $a \notin
+\mathrm{Permitted}(I)$ that the alternative permits. Since $a \notin
+\mathrm{Permitted}(I)$, there exists $u \in I$ with $\neg P(u,a)$. Executing
+$a$ satisfies Definition~\ref{def:pe}. Hence any strict superset permits PE.
+\end{proof}
+
+\subsection{Authority Monotonicity}
+
+\begin{theorem}[Authority Monotonicity]
+\label{thm:monotonicity}
+If $\mathrm{Influence}(e_1) \subseteq \mathrm{Influence}(e_2)$, then
+$\mathrm{Permitted}(\mathrm{Influence}(e_2)) \subseteq
+\mathrm{Permitted}(\mathrm{Influence}(e_1))$.
+\end{theorem}
+
+\begin{proof}
+Adding influencing principals introduces additional intersections. The
+resulting permission set can only remain unchanged or decrease.
+\end{proof}
+
+\paragraph{Relationship to classical integrity.}
+Principal Context follows a \emph{low-water-mark} intuition: incorporating
+additional, potentially lower-authority influence cannot increase effective
+authority. This is structurally analogous to Biba's low-water-mark integrity
+policy \citep{biba1977}, operationalised in systems such as LOMAC
+\citep{lomac2001}. Unlike classical Biba integrity levels, which assign a
+single integrity label to each subject and object, Principal Context retains
+\emph{authenticated contributing principal identities} and derives permitted
+parameterised actions by querying and intersecting their permissions in an
+external organisational ACS. Permissions may be incomparable and
+resource-argument-sensitive. This generalisation moves from a total order on
+integrity labels to a meet in the powerset lattice over permission sets
+\citep{denning1976}, enabling finer-grained, policy-driven authority.
+
+\subsection{Security Guarantee}
+
+\begin{corollary}
+\label{cor:pe-prevention}
+Under the threat model of Section~\ref{sec:threat-model}, and assuming correct
+enforcement of influence tracking, provenance, and access-control checks,
+Principal Context prevents privilege escalation.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:maximal}, only non-PE actions are permitted. By
+Definition~\ref{def:pe}, privilege escalation requires an influencing principal
+lacking permission. Such a principal cannot exist if the action is permitted.
+\end{proof}
+
+This guarantee is independent of the source of influence. Prompt injection,
+retrieved documents, compromised tools, and arbitrary model behaviour are
+treated uniformly: once information contributes to an execution, the authority
+of that execution is constrained by the permissions of the corresponding
+principals.
+
+%% ------------------------------------------------------------------
+\section{SLED and SLED-V}
+\label{sec:sled}
+
+Existing prompt-injection benchmarks evaluate robustness against a finite
+collection of attacks \citep{agentdojo2024}. Such evaluations are necessarily
+incomplete: passing a benchmark demonstrates robustness only against the attacks
+it contains. We instead evaluate whether a system-level defence correctly
+enforces its intended security properties regardless of model behaviour.
+
+\subsection{SLED: Explicit-State Exploration}
+
+SLED (System-Level Evaluator for Defences) treats the language model as an
+adversarial component. Rather than executing a particular model, each execution
+is a nondeterministic black box that may produce any well-typed proposal
+consistent with the system interface.
+
+Beginning from an initial state, SLED enumerates every action that may result
+from each pending execution under worst-case assumptions. Exploration
+continues until every reachable state has been visited or a configured bound is
+reached. The resulting state-transition graph contains every execution trace
+consistent with the environment and threat model.
+
+SLED reports four verdicts:
+\begin{description}[nosep,leftmargin=*]
+\item[\textsc{SAFE}] The finite reachable state space was exhausted without
+violation.
+\item[\textsc{Bounded\_Safe}] No violation was found, but a configured bound
+truncated work.
+\item[\textsc{UNSAFE}] A safety property failed with a counterexample.
+\item[\textsc{UNKNOWN}] Modelling, property, or adapter evaluation failed.
+\end{description}
+
+Depth, state, transition, and model-call bounds are explicit.
+\textsc{SAFE} is reserved for an exhausted finite state space; bounded results
+are never silently promoted to proof.
+
+\subsection{SLED-V: Verification IR and Solver-Backed Checking}
+
+SLED-V accepts a finite serialisable transition IR rather than arbitrary Python.
+The IR is a standalone representation with variables, transition rules, and
+invariants that can be checked by:
+
+\begin{enumerate}[nosep,leftmargin=*]
+  \item A \emph{reference interpreter} that exhaustively explores the state
+    space.
+  \item \emph{Z3 bounded model checking} (BMC) for solver-backed verification.
+  \item A \emph{nuXmv} subset adapter (returns \textsc{UNKNOWN} when the binary
+    is unavailable).
+\end{enumerate}
+
+Properties currently supported include: unauthorised execution, forbidden
+observation, provenance monotonicity, branch isolation, and bounded resource
+use. Observational confidentiality is checked via IR self-composition
+\citep{barthe2004self}: the IR is doubled into a product system with primed
+variable copies, confidentiality invariants assert
+$\text{observable} = \text{observable}'$, and existing backends verify the
+product. This produces bounded evidence, not a noninterference proof
+\citep{goguen1982,sabelfeld2003}.
+
+\subsection{Cone-of-Influence Reduction}
+
+Property-scoped cone-of-influence (COI) reduction closes transitively over
+guards and right-hand-side dependencies that may update an invariant variable.
+Reduction is accepted only when:
+
+\begin{enumerate}[nosep,leftmargin=*]
+  \item Original and reduced reference verdicts agree.
+  \item Rule identifiers are stable for witness replay.
+  \item An unsafe witness lifts to the original model.
+\end{enumerate}
+
+A smaller model alone is not evidence of preservation; explicit comparison is
+required.
+
+\subsection{Counterexample Reconstruction}
+
+Every \textsc{UNSAFE} result includes a counterexample: a sequence of
+transitions from the initial state to a bad state. COI reduction preserves rule
+identifiers so that a reduced witness can be projected back to the original
+model. If the witness cannot be lifted, the comparison fails.
+
+\subsection{Runtime-to-IR Boundary}
+
+The IR is a hand-written abstraction of the runtime kernel, not a translation
+of arbitrary Python. The runtime kernel and the IR share the same canonical
+transition semantics, but formal equivalence is not claimed. Differential
+conformance testing---comparing runtime and IR decisions on equivalent
+states---is a future direction.
+
+%% ------------------------------------------------------------------
+\section{Evaluation}
+\label{sec:evaluation}
+
+We evaluate SLED-V through four research questions:
+
+\begin{description}[nosep,leftmargin=*]
+\item[\textbf{RQ1}] Can SLED-V reliably distinguish safe and defective finite
+models of system-level agent defences?
+\item[\textbf{RQ2}] Do independent verification paths agree on safe and unsafe
+instances?
+\item[\textbf{RQ3}] Can property-scoped COI reduce verification models without
+changing verdicts or losing counterexamples?
+\item[\textbf{RQ4}] What does property-relative verification reveal when
+comparing Principal Context with other system-level defence abstractions?
+\end{description}
+
+All results are bounded to finite models under stated bounds and assumptions.
+No unbounded or deployment-level security claim is made.
+
+\subsection{RQ1: Seeded-Defect Detection}
+
+Table~\ref{tab:defect-detection} shows that SLED-V's native explicit-state
+exploration detects all five seeded defective monitors, each with a one-step
+counterexample. The canonical ITES model exhausts \textsc{SAFE} within the
+checked bounds. An additional 11 direction-readiness mutants (7 delegation, 4
+disclosure) are similarly detected with one-step witnesses.
+
+\input{generated/tables/defect_detection_table}
+
+\subsection{RQ2: Independent Checker Agreement}
+
+Table~\ref{tab:checker-agreement} shows that Z3 bounded model checking agrees
+with the reference interpreter on four IR fixtures, including both safe and
+unsafe cases. COI reduction preserves verdicts on both COI fixtures, and the
+unsafe witness lifts to the original model.
+
+\input{generated/tables/checker_agreement_table}
+
+\subsection{RQ3: COI Reduction}
+
+Table~\ref{tab:coi-reduction} shows that property-scoped COI reduction removes
+irrelevant variables, rules, and states in both fixtures while preserving
+verdicts. The safe fixture (\texttt{safe-noise}) reduces from 2 variables and 1
+rule to 1 variable and 0 rules; the unsafe fixture (\texttt{unsafe-control})
+reduces from 3 variables and 2 rules to 2 variables and 1 rule. In both cases
+the reference verdicts agree and the unsafe witness lifts.
+
+\input{generated/tables/coi_reduction_table}
+
+\subsection{RQ4: Comparative Defence Verification}
+
+Table~\ref{tab:comparative-defence} shows the central finding: several published
+defence abstractions satisfy their own intended security properties while
+violating the PE property. The Dual-LLM pattern's native property Q
+(``processor never executes'') holds, but the same model admits a PE
+counterexample. Similarly, CaMeL, Progent, and PACT each satisfy their own
+properties while violating PE in the finite model. The ITES reference preserves
+PE. The defective requester-only controller violates PE as expected.
+
+This demonstrates that a defence can satisfy the property it was designed for
+while failing a different system-level security property. This is a
+\emph{model-level} comparison of explicit finite abstractions, not an
+implementation-level evaluation of the published systems.
+
+\input{generated/tables/comparative_defence_table}
+
+\subsection{Motivating Example}
+
+Consider a workflow where Alice authors a confidential document and Bob
+subsequently requests that the agent email its contents. The resulting execution
+inherits influence from both Alice and Bob. Because Bob lacks permission to
+perform the email action, the effective authority excludes it, and the request
+is blocked. A requester-only controller that checks only Bob's permissions
+would permit the action, and SLED-V finds a one-step counterexample reaching
+the bad state. This example threads through the paper: it motivates the PE
+definition, illustrates the intersection rule, and provides an intuitive
+witness for the comparative verification result.
+
+\subsection{Model-to-Implementation Architecture}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=0.8cm and 1.5cm,
+  box/.style={draw, rounded corners, minimum width=3.5cm, minimum height=0.8cm,
+              font=\small, align=center},
+  trusted/.style={fill=safebg!40, draw=safebd},
+  untrusted/.style={fill=unsafebg!40, draw=unsafebd},
+  arrow/.style={-Stealth, thick},
+  label/.style={font=\footnotesize, align=center},
+]
+\node[untrusted] (propose) {Untrusted LLM proposal};
+\node[trusted, below=of propose] (kernel) {Canonical ITES transition kernel};
+\node[trusted, below left=of kernel] (runtime) {Runtime effect\\certificate};
+\node[trusted, below right=of kernel] (ir) {SLED-V verification IR};
+\node[trusted, below=of runtime] (exec) {Executor};
+\node[trusted, below=of ir] (checker) {Explicit-state / Z3 BMC};
+\node[below=of exec, font=\small] (eff) {Effect};
+\node[below=of checker, font=\small] (verdict) {Verdict / counterexample};
+
+\draw[arrow] (propose) -- (kernel);
+\draw[arrow] (kernel) -- (runtime);
+\draw[arrow] (kernel) -- (ir);
+\draw[arrow] (runtime) -- (exec);
+\draw[arrow] (ir) -- (checker);
+\draw[arrow] (exec) -- (eff);
+\draw[arrow] (checker) -- (verdict);
+
+\node[label, right=0.3cm of kernel] {trust boundary};
+\end{tikzpicture}
+\caption{Verification architecture. Untrusted LLM proposals enter the
+canonical ITES kernel, which produces runtime effect certificates and a
+serialisable verification IR. The IR is checked by independent paths
+(explicit-state and Z3 BMC). The trust boundary separates untrusted model
+output from trusted enforcement.}
+\label{fig:architecture}
+\end{figure}
+
+%% ------------------------------------------------------------------
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Classical integrity and information-flow control.}
+Biba \citep{biba1977} defines integrity policies including low-water-mark
+variants where consuming lower-integrity information reduces a subject's
+effective integrity. LOMAC \citep{lomac2001} operationalises this in commodity
+operating systems. Denning \citep{denning1976} provides the lattice model for
+secure information flow; Principal Context's authority intersection is a meet
+in the powerset lattice over permission sets. Goguen and Meseguer
+\citep{goguen1982} establish noninterference, which is strictly stronger than
+the access-safety properties verified here. Sabelfeld and Myers
+\citep{sabelfeld2003} provide vocabulary for explicit and implicit flows;
+Principal Context conservatively assumes that if information from a principal
+reaches an execution, that principal may influence its output---an intentional
+overapproximation, not a claim of exact causal dependence.
+
+\paragraph{System-level LLM-agent defences.}
+The Dual-LLM pattern \citep{beurerkellner2025designpatternssecuringllm} separates
+a privileged planning model from a quarantined data-processing model. CaMeL
+\citep{debenedetti2025defeatingpromptinjectionsdesign} extends this with
+capability tracking and developer-defined policies enforced by a custom
+interpreter. Progent \citep{progent2025} mediates tool calls with symbolic
+privilege-control policies. PACT \citep{pact2026} tracks argument-level
+provenance. FORGE \citep{forge2026} enforces history-sensitive Datalog policies.
+Each optimises for a different security objective; our comparative verification
+(Section~\ref{sec:evaluation}) shows that satisfying a defence-native property
+does not imply PE safety. Wu et al.\ \citep{wu2024systemleveldefenseindirectprompt}
+study prompt injection from an information-flow perspective.
+
+Table~\ref{tab:comparison} compares representative approaches along dimensions
+that a verifier must distinguish.
+
+\begin{table}[t]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{2cm}p{2.5cm}p{1.8cm}p{2cm}p{1.2cm}p{1.5cm}p{2cm}}
+\toprule
+\textbf{System} & \textbf{Security property} & \textbf{Provenance} &
+\textbf{Authority source} & \textbf{Model trusted?} & \textbf{Policy lang.} &
+\textbf{Verification} \\
+\midrule
+Model-level & PI resistance & N/A & Model & Yes & N/A & Benchmark \\
+Dual-LLM & PI prevention & None & Isolation & Planner & None & None \\
+CaMeL & Policy enforcement & Capabilities & Dev.\ policies & Planner & Custom & None \\
+Progent & Privilege control & Arguments & Symbolic policy & Yes & Custom & None \\
+ITES & PE prevention & Principals & Organisational ACS & \textbf{No} &
+\textbf{Existing} & \textbf{SLED-V} \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of approaches to securing LLM agents. Principal Context is
+distinguished by deriving authority from the existing ACS, not trusting the
+model, and supporting verification.}
+\label{tab:comparison}
+\end{table}
+
+\paragraph{Evaluation.}
+AgentDojo \citep{agentdojo2024} provides realistic prompt-injection tasks and
+metrics. We treat such benchmarks as complementary empirical evaluation: they
+test finite attack/defence combinations, while SLED-V evaluates whether a defence
+satisfies its intended property under arbitrary model behaviour. An
+AgentDojo integration pipeline executes end-to-end with a small model, but
+utility is too low for efficacy claims; this is integration evidence, not a
+headline result.
+
+%% ------------------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Security--utility frontier.}
+Under fixed permissions $P$ and the PE objective, the intersection rule is
+maximal (Theorem~\ref{thm:maximal}). Recovering more utility requires changing
+authority or policy: explicit delegation (modelled as an ACS transition),
+trusted declassification/endorsement, or a different security objective. This
+is a fundamental trade-off, not an implementation limitation.
+
+\paragraph{Biba relationship.}
+Principal Context's authority attenuation is structurally analogous to Biba's
+low-water-mark policy: consuming lower-authority information reduces effective
+authority. The distinction is that Principal Context retains principal
+identities and derives action-specific authority from an external ACS, rather
+than assigning a single integrity label. This enables incomparable permissions
+and argument-sensitive authorisation but does not constitute a new integrity
+model; the novelty lies in the combination of authenticated provenance,
+organisational policy, and verification under arbitrary proposal behaviour.
+
+\paragraph{Model-level vs.\ system-level.}
+Model-level defences and system-level enforcement are complementary. Model
+robustness can improve utility by producing better proposals, while
+authorization security is enforced at the system boundary. A stronger model
+does not weaken the security argument because the model is assumed adversarial.
+
+\paragraph{Limitations.}
+Results are bounded to finite models under stated bounds and assumptions. The
+verified IR is a hand-written abstraction of the runtime kernel; formal
+equivalence is not claimed. Provenance correctness, ACS correctness, and
+complete mediation are trusted assumptions. Observational confidentiality
+evidence is bounded and does not constitute a noninterference proof.
+Comparative defence results are model-level comparisons of explicit finite
+abstractions, not implementation-level evaluations of the published systems.
+
+%% ------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+We have argued that privilege escalation, rather than prompt injection itself,
+is the appropriate system-level security objective for LLM agents. Principal
+Context derives execution authority from authenticated provenance and an
+organisation's existing access-control system; its intersection rule is
+maximally permissive under the PE objective and monotonically loses authority
+as influence accumulates. SLED and SLED-V provide finite-state and
+solver-backed evidence that implementations enforce the resulting properties,
+detecting defective monitors with minimal counterexamples and revealing that
+satisfying a defence-native property does not imply PE safety. All claims are
+bounded to finite models under stated assumptions.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+%% ------------------------------------------------------------------
+\appendix
+
+\section{NeurIPS 2026 Paper Checklist}
+
+\begin{enumerate}
+\item \textbf{Claims:} All claims in the abstract and body are backed by
+retained, reproducible evidence or by formal proofs with stated assumptions.
+Limitations are explicit in Section~\ref{sec:discussion}.
+
+\item \textbf{Limitations:} Stated in Section~\ref{sec:discussion}.
+
+\item \textbf{Theory:} Theorem assumptions and proofs are stated in
+Section~\ref{sec:ites}.
+
+\item \textbf{Experiments:} All quantitative results are generated from
+versioned result JSON. Exact finite models, bounds, solver versions, and
+reproduction commands are documented in the supplementary material.
+
+\item \textbf{Statistical significance:} Not applicable. All reported results
+are deterministic verification outcomes (SAFE/UNSAFE), not stochastic
+measurements.
+
+\item \textbf{Compute:} All experiments are deterministic and run on a laptop.
+No GPU or cluster compute is used for the reported results.
+
+\item \textbf{Code/data:} An anonymised supplementary artifact is available.
+No identifying repository links are provided during double-blind review.
+
+\item \textbf{Societal impact:} This work provides conditional security
+guarantees. Deployment risk arises from incorrect provenance, ACS
+misconfiguration, or mediator bypass. The paper does not claim deployment
+readiness.
+\end{enumerate}
+
+\end{document}

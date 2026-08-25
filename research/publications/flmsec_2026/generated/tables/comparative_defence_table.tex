@@ -1,0 +1,26 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: tests/test_defence_models.py (IR model definitions + test verdicts)
+% SHA-256: test-code
+% Run: python scripts/generate_flmsec_tables.py
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Defence model} & \textbf{Native property Q} & \textbf{PE property} &
+\textbf{Counterexample} \\
+\midrule
+Dual-LLM & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
+CaMeL & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
+Progent & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
+PACT & \textsc{Safe} & \textsc{Unsafe} & 1-step PE witness \\
+Requester-only (defective) & --- & \textsc{Unsafe} & 1-step PE witness \\
+\textbf{ITES (Principal Context)} & --- & \textbf{Safe} & --- \\
+\bottomrule
+\end{tabular}
+\caption{Comparative defence verification on finite IR models. Each defence
+satisfies its own intended property Q but violates the PE property. ITES
+preserves PE. All results are finite IR model comparisons, not
+implementation-level evaluations.}
+\label{tab:comparative-defence}
+\end{table}

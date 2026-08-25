@@ -1,0 +1,22 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: research\output\runs\sled-coi-reduction-v1\result.json
+% SHA-256: 8f5ab582212da4ad95e08c3ce0c32b9ce1e36fce808df813ada6008b6ae9e1ca
+% Run: python scripts/generate_flmsec_tables.py
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccpc}
+\toprule
+\textbf{Fixture} & \textbf{Ref.\ verdict} & \textbf{Reduced verdict} &
+\textbf{States (orig$\to$red)} & \textbf{Agree} \\
+\midrule
+safe-noise & \textsc{safe} & \textsc{safe} & 2$\to$1 & \checkmark \\
+unsafe-control & \textsc{unsafe} & \textsc{unsafe} & 3$\to$2 & \checkmark \\
+\bottomrule
+\end{tabular}
+\caption{Independent checker agreement. The reference interpreter and COI-reduced
+model agree on both safe and unsafe fixtures. Z3 BMC with COI reduction confirms
+equivalence on both fixtures (safe: bounded safe; unsafe: counterexample found
+and lifted). Finite IR models only.}
+\label{tab:checker-agreement}
+\end{table}

@@ -1,0 +1,22 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: research\output\runs\sled-coi-reduction-v1\result.json
+% SHA-256: 8f5ab582212da4ad95e08c3ce0c32b9ce1e36fce808df813ada6008b6ae9e1ca
+% Run: python scripts/generate_flmsec_tables.py
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccccp{1.5cm}}
+\toprule
+\textbf{Fixture} & \textbf{Variables} & \textbf{Rules} & \textbf{States} &
+\textbf{Verdict} & \textbf{Agree} \\
+\midrule
+safe-noise & 2$\to$1 & 1$\to$0 & 2$\to$1 & \textsc{safe} / \textsc{safe} & \checkmark \\
+unsafe-control & 3$\to$2 & 2$\to$1 & 3$\to$2 & \textsc{unsafe} / \textsc{unsafe} & \checkmark \\
+\bottomrule
+\end{tabular}
+\caption{Cone-of-influence reduction on two finite IR fixtures. Reduction
+removes the noise variable and its rule in the safe fixture, and one variable
+and one rule in the unsafe fixture. Verdicts agree between original and reduced
+models. The unsafe witness lifts to the original model. Finite IR models only.}
+\label{tab:coi-reduction}
+\end{table}

@@ -1,0 +1,36 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: research\output\runs\native-sled-reproduction-v1\result.json; research\output\runs\direction-readiness-v1\security-mutations.json
+% SHA-256: 37eacfc1e8002d724ff0deeeaef23fc435cbb5cab47dfecbbba8cd43f0200a2c
+% Run: python scripts/generate_flmsec_tables.py
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{p{4cm}cc}
+\toprule
+\textbf{Defective monitor} & \textbf{Detected} & \textbf{Witness length} \\
+\midrule
+no\_defence & \checkmark & 1 \\
+union\_permissions & \checkmark & 1 \\
+initiator\_only & \checkmark & 1 \\
+latest\_input\_only & \checkmark & 1 \\
+no\_read\_check & \checkmark & 1 \\
+delegation/widened\_scope & \checkmark & 1 \footnotesize(delegation\_attenuated) \\
+delegation/wrong\_beneficiary & \checkmark & 1 \footnotesize(delegation\_beneficiary\_bound) \\
+delegation/reuse & \checkmark & 1 \footnotesize(delegation\_single\_use) \\
+delegation/expiry\_bypass & \checkmark & 1 \footnotesize(delegation\_expiry\_enforced) \\
+delegation/revocation\_bypass & \checkmark & 1 \footnotesize(delegation\_revocation\_enforced) \\
+delegation/redelegation & \checkmark & 1 \footnotesize(delegation\_not\_redelegated) \\
+delegation/post\_influence\_issuance & \checkmark & 1 \footnotesize(delegation\_precedes\_influence) \\
+disclosure/unauthorised\_selector & \checkmark & 1 \footnotesize(no\_unauthorised\_selector) \\
+disclosure/hidden\_error\_leak & \checkmark & 1 \footnotesize(no\_hidden\_decision\_leakage) \\
+disclosure/incomplete\_attribution & \checkmark & 1 \footnotesize(complete\_attribution) \\
+disclosure/unsafe\_redaction & \checkmark & 1 \footnotesize(no\_hidden\_decision\_leakage) \\
+\bottomrule
+\end{tabular}
+\caption{Seeded-defect detection. All five native SLED negative controls and
+all 11 direction-readiness mutants (7 delegation, 4 disclosure) are detected
+with one-step counterexamples. The canonical ITES model exhausts
+\textsc{SAFE} within the checked bounds (max depth 1, max states 4).
+Finite fixtures and bounds only.}
+\label{tab:defect-detection}
+\end{table}
