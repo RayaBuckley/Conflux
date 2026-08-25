@@ -73,6 +73,16 @@ and testing instructions, see [Development](docs/DEVELOPMENT.md) and the
   environment prevents it; report unavailable checks explicitly rather than
   silently skipping them.
 
+## Visual evidence requirement
+
+For changes affecting security semantics, evaluation, verification,
+planning, provenance, policy composition, or execution behaviour,
+passing tests alone is not sufficient.  Where a deterministic evidence
+scenario exists, generate or update human-reviewable evidence and
+report its location.
+
+Distinguish: implemented / tested / verified / visually reviewed.
+
 ## Validation tooling
 
 The repository has a multi-layer validation pipeline orchestrated by
@@ -92,7 +102,7 @@ before committing.  The following checkers are included:
 - **vulture** — dead-code detection (`scripts/vulture_whitelist.py`).
 - **pip-audit** — dependency vulnerability scanning (informational).
 - **markdownlint-cli2** and **cspell** — via `scripts/validate_extensions.py`.
-- **Schema validation** — 37 JSON schemas validated by
+- **Schema validation** — 41 JSON schemas validated by
   `scripts/validate_schemas.py`.
 - **Repository audit** — structural and governance checks via
   `scripts/audit_repository.py`.

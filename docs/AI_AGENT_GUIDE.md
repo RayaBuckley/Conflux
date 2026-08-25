@@ -198,6 +198,8 @@ Use this checklist when reviewing a diff:
 - [ ] Terminology and paper notes synchronised if architecture changed.
 - [ ] Diff reviewed for hidden trust assumptions, benchmark shortcuts,
       and permission broadening.
+- [ ] Visual evidence generated or updated where a deterministic
+      evidence scenario exists (see AGENTS.md visual evidence requirement).
 
 ## Commit message convention
 
