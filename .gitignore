@@ -63,6 +63,8 @@ research/output/runs/*
 !research/output/runs/coi-scaling-v1/**
 !research/output/runs/defence-models-v1/
 !research/output/runs/defence-models-v1/**
+!research/output/runs/z3-agreement-v1/
+!research/output/runs/z3-agreement-v1/**
 data/
 *.jsonl
 !research/output/runs/smoke/*.jsonl

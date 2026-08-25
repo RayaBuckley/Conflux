@@ -109,38 +109,45 @@ Finite fixtures and bounds only.}
 def table_checker_agreement() -> list[tuple[Path, str]]:
     coi_path = RUNS / "sled-coi-reduction-v1" / "result.json"
     coi, coi_sha = _read_json(coi_path)
-    source = str(coi_path.relative_to(ROOT))
+    z3_path = RUNS / "z3-agreement-v1" / "result.json"
+    z3_data, z3_sha = _read_json(z3_path)
+    source = f"{coi_path.relative_to(ROOT)}; {z3_path.relative_to(ROOT)}"
+    all_sha = _sha256((coi_sha + z3_sha).encode())
+
+    z3_by_id = {f["fixture_id"]: f for f in z3_data["fixtures"]}
 
     rows: list[str] = []
     for f in coi["fixtures"]:
         fid = f["fixture_id"].replace("_", "\\_")
-        orig = f["reference"]["original"]["verdict"]
-        red = f["reference"]["reduced"]["verdict"]
+        orig = f["reference"]["original"]["verdict"].replace("_", "\\_")
+        red = f["reference"]["reduced"]["verdict"].replace("_", "\\_")
         equiv = r"\checkmark" if f["reference"]["equivalent"] else r"$\times$"
-        orig_states = f["metrics"]["original_states"]
-        red_states = f["metrics"]["reduced_states"]
-        rows.append(f"{fid} & \\textsc{{{orig}}} & \\textsc{{{red}}} & {orig_states}$\\to${red_states} & {equiv} \\\\")
+        z3_info = z3_by_id.get(f["fixture_id"], {})
+        z3_orig = z3_info.get("z3_original", {}).get("verdict", "---").replace("_", "\\_")
+        z3_red = z3_info.get("z3_reduced", {}).get("verdict", "---").replace("_", "\\_")
+        rows.append(f"{fid} & \\textsc{{{orig}}} & \\textsc{{{red}}} & \\textsc{{{z3_orig}}} & \\textsc{{{z3_red}}} & {equiv} \\\\")
 
     table_body = "\n".join(rows)
 
     tex = (
-        _header(source, coi_sha)
+        _header(source, all_sha)
         + r"""\begin{table}[t]
 \centering
 \small
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Fixture} & \textbf{Ref.\ verdict} & \textbf{Reduced verdict} &
-\textbf{States (orig$\to$red)} & \textbf{Agree} \\
+\textbf{Z3 orig.} & \textbf{Z3 reduced} & \textbf{Agree} \\
 \midrule
 """
         + table_body
         + r"""
 \bottomrule
 \end{tabular}
-\caption{Independent checker agreement. The reference interpreter and COI-reduced
-model agree on both safe and unsafe fixtures. The unsafe witness lifts to the
-original model. Finite IR models only.}
+\caption{Independent checker agreement. The reference interpreter, COI-reduced
+model, and Z3 BMC agree on both safe and unsafe fixtures. The unsafe witness
+lifts to the original model. Z3 returns \textsc{bounded\_safe} rather than
+\textsc{safe} because it uses bounded model checking. Finite IR models only.}
 \label{tab:checker-agreement}
 \end{table}
 """

@@ -1,0 +1,42 @@
+{
+  "fixtures": [
+    {
+      "equivalent": true,
+      "fixture_id": "safe-noise",
+      "reduced_verdict": "safe",
+      "reference_verdict": "safe",
+      "z3_original": {
+        "counterexample": true,
+        "counterexample_length": 0,
+        "verdict": "bounded_safe"
+      },
+      "z3_reduced": {
+        "counterexample": true,
+        "counterexample_length": 0,
+        "verdict": "bounded_safe"
+      }
+    },
+    {
+      "equivalent": true,
+      "fixture_id": "unsafe-control",
+      "reduced_verdict": "unsafe",
+      "reference_verdict": "unsafe",
+      "z3_original": {
+        "counterexample": true,
+        "counterexample_length": 2,
+        "verdict": "unsafe"
+      },
+      "z3_reduced": {
+        "counterexample": true,
+        "counterexample_length": 2,
+        "verdict": "unsafe"
+      }
+    }
+  ],
+  "id": "z3-agreement-v1",
+  "schema_version": "1",
+  "summary": {
+    "all_agree": false,
+    "total_fixtures": 2
+  }
+}

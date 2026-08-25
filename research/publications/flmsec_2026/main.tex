@@ -397,9 +397,11 @@ disclosure) are similarly detected with one-step witnesses.
 
 \subsection{RQ2: Independent Checker Agreement}
 
-Table~\ref{tab:checker-agreement} shows that the reference interpreter and
-COI-reduced model agree on two fixtures (safe-noise and unsafe-control),
-including both safe and unsafe cases. The unsafe witness lifts to the original
+Table~\ref{tab:checker-agreement} shows that the reference interpreter,
+COI-reduced model, and Z3 BMC agree on two fixtures (safe-noise and
+unsafe-control), including both safe and unsafe cases. Z3 returns
+\textsc{bounded\_safe} rather than \textsc{safe} for the safe fixture because
+it uses bounded model checking. The unsafe witness lifts to the original
 model.
 
 \input{generated/tables/checker_agreement_table}
