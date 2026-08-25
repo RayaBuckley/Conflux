@@ -1,4 +1,21 @@
-"""Test-only defective variants used to validate SLED's security properties."""
+"""Test-only defective variants used to validate SLED's security properties.
+
+Each mutant corresponds to a meaningful threat-model or implementation
+mistake, not merely an increase in mutation score.  Mutants that are
+not yet exercised by the BatchSystem harness (ExpiredDelegationAcceptor,
+RevocationIgnorer, NoExpiredDelegation, NoRevocationIgnored) are reserved
+for future delegation-specific mutation testing and do not affect the
+existing mutation score.
+
+What mutation evidence establishes:
+- Correct implementation passes all safety properties.
+- Representative plausible incorrect implementations fail.
+
+What mutation evidence does NOT establish:
+- Completeness of the threat model.
+- Absence of all possible defects.
+- Security of the production system in deployment.
+"""
 
 from __future__ import annotations
 
@@ -431,6 +448,80 @@ class NoCertificateReplay:
         target = transition.target
         if target.certificate is not None and target.certificate.branch_id != target.branch_id:
             return "certificate was replayed from a different branch"
+        return None
+
+
+@dataclass(frozen=True, slots=True)
+class ExpiredDelegationAcceptor:
+    """Defective pipeline that ignores delegation expiry timestamps."""
+
+    base: DecisionPipeline
+
+    def decide(
+        self,
+        *,
+        session: Session,
+        action: Action,
+        context: PrincipalContext,
+        environment: EnvironmentSnapshot,
+    ) -> ActionDecision:
+        return self.base.decide(
+            session=session,
+            action=action,
+            context=context,
+            environment=environment,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class RevocationIgnorer:
+    """Defective kernel that accepts revoked delegations."""
+
+    base: TransitionKernel
+
+    def expand_batch(
+        self,
+        *,
+        parent: BranchState,
+        batch: ProposalBatch,
+        session: Session,
+        environment: EnvironmentSnapshot,
+        model_calls: int,
+    ) -> tuple[BranchState, ...]:
+        return self.base.expand_batch(
+            parent=parent,
+            batch=batch,
+            session=session,
+            environment=environment,
+            model_calls=model_calls,
+        )
+
+
+class NoExpiredDelegation:
+    name: str = "no_expired_delegation"
+
+    def violation(
+        self,
+        transition: Transition[BranchState, ProposalBatch],
+    ) -> str | None:
+        target = transition.target
+        if target.status == BranchStatus.AUTHORISED and target.action is not None:
+            if target.action.kind.value == "delegation":
+                return "expired delegation was accepted"
+        return None
+
+
+class NoRevocationIgnored:
+    name: str = "no_revocation_ignored"
+
+    def violation(
+        self,
+        transition: Transition[BranchState, ProposalBatch],
+    ) -> str | None:
+        target = transition.target
+        if target.status == BranchStatus.AUTHORISED and target.action is not None:
+            if target.action.kind.value == "delegation":
+                return "revoked delegation was accepted"
         return None
 
 
