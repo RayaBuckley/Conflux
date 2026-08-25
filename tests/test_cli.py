@@ -159,6 +159,25 @@ def test_demo_retains_manifest_and_reports_an_all_blocked_scenario(
     assert (output / "manifest.json").is_file()
 
 
+def test_visualise_writes_evidence_from_demo_result(tmp_path: Path) -> None:
+    demo_output = tmp_path / "run"
+    assert main(["demo", "--scenario", str(SCENARIO), "--output", str(demo_output)]) == EXIT_OK
+    evidence_output = tmp_path / "evidence"
+    assert (
+        main(
+            [
+                "visualise",
+                str(demo_output / "result.json"),
+                "--output",
+                str(evidence_output),
+            ],
+        )
+        == EXIT_OK
+    )
+    assert (evidence_output / "manifest.json").is_file()
+    assert (evidence_output / "index.html").is_file()
+
+
 def test_native_sled_command_writes_verification_result(tmp_path: Path) -> None:
     output = tmp_path / "sled"
     assert (

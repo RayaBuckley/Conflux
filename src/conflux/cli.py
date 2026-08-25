@@ -215,6 +215,13 @@ def _parser() -> argparse.ArgumentParser:
     report.add_argument("result", type=Path)
     report.add_argument("--json", action="store_true")
 
+    visualise = commands.add_parser("visualise", help="render human-reviewable evidence from a result JSON")
+    visualise.add_argument("result", type=Path, help="path to result.json")
+    visualise.add_argument("--output", type=Path, default=None, help="output directory (default: <result_dir>/evidence)")
+    visualise.add_argument("--format", choices=("svg", "html", "all"), default="all")
+    visualise.add_argument("--view", choices=("execution", "provenance", "all"), default="all")
+    visualise.add_argument("--max-nodes", type=int, default=None)
+
     doctor = commands.add_parser("doctor", help="inspect local capabilities")
     doctor.add_argument("--json", action="store_true")
     doctor.add_argument("--local-model-config", type=Path)
@@ -237,6 +244,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _sled(arguments)
         if command == "report":
             return _report(arguments)
+        if command == "visualise":
+            return _visualise(arguments)
         if command == "doctor":
             return _doctor(arguments)
         if command == "chat":
@@ -436,6 +445,112 @@ def _report(arguments: argparse.Namespace) -> int:
     schema = _result_schema(payload)
     Draft202012Validator(load_schema(schema)).validate(payload)
     print(canonical_json(payload) if arguments.json else _render_any_result(payload))
+    return EXIT_OK
+
+
+def _visualise(arguments: argparse.Namespace) -> int:
+    """Render human-reviewable evidence (SVG + HTML) from a result JSON."""
+    from conflux.visualisation.graph.graphviz import render_svg
+    from conflux.visualisation.html import render_html_report, write_manifest
+    from conflux.visualisation.ites import ites_to_graph
+    from conflux.visualisation.provenance import provenance_to_graph
+
+    result_path = cast(Path, arguments.result)
+    result_dir = result_path.parent
+    output_dir = cast(Path | None, arguments.output) or (result_dir / "evidence")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    payload = cast(
+        dict[str, Any],
+        json.loads(result_path.read_text(encoding="utf-8")),
+    )
+    run_id = str(payload.get("run_id", "unknown"))
+
+    trace_path = result_dir / "trace.jsonl"
+    if not trace_path.exists():
+        print(f"trace file not found: {trace_path}", file=sys.stderr)
+        return EXIT_RUNTIME
+
+    trace_lines = trace_path.read_text(encoding="utf-8").strip().splitlines()
+    trace_records = [json.loads(line) for line in trace_lines if line.strip()]
+
+    branches: list[dict[str, Any]] = []
+    for record in trace_records:
+        if isinstance(record, dict) and record.get("event_type") == "branch.created":
+            branches.append(record)
+
+    from conflux.ites.state import BranchState, BranchStatus, ITESReport, SafetyAssessment
+
+    ites_branches: list[BranchState] = []
+    for b in sorted(branches, key=lambda r: str(r.get("branch_id", ""))):
+        branch_id = str(b.get("branch_id", "unknown"))
+        ites_branches.append(
+            BranchState(
+                branch_id=branch_id,
+                parent_branch_id=b.get("parent_branch_id"),
+                depth=int(b.get("payload", {}).get("depth", 0)),
+                inputs=(),
+                context=BranchState.initial(()).context,
+                status=BranchStatus.ACTIVE,
+            ),
+        )
+
+    if not ites_branches:
+        ites_branches.append(BranchState.initial(()))
+
+    report = ITESReport(
+        run_id=run_id,
+        branches=tuple(ites_branches),
+        assessments=(SafetyAssessment("placeholder", True, "no_assessment_loaded"),),
+        model_calls=int(payload.get("bounds", {}).get("model_calls", 0)),
+        max_model_calls=int(payload.get("bounds", {}).get("max_model_calls", 0)),
+        incomplete=bool(payload.get("bounds", {}).get("incomplete", False)),
+    )
+
+    graphs: dict[str, Any] = {}
+    svg_filenames: dict[str, str | None] = {}
+    max_nodes = int(arguments.max_nodes) if arguments.max_nodes else None
+
+    view_choice = str(arguments.view)
+    fmt_choice = str(arguments.format)
+
+    if view_choice in ("execution", "all"):
+        exec_graph = ites_to_graph(report)
+        graphs["execution"] = exec_graph
+        result = render_svg(exec_graph, max_nodes=max_nodes or 500)
+        if result.svg is not None:
+            svg_path = output_dir / "execution.svg"
+            svg_path.write_text(result.svg, encoding="utf-8")
+            svg_filenames["execution"] = "execution.svg"
+        else:
+            svg_filenames["execution"] = None
+
+    if view_choice in ("provenance", "all"):
+        prov_graph = provenance_to_graph(report)
+        graphs["provenance"] = prov_graph
+        result = render_svg(prov_graph, max_nodes=max_nodes or 500)
+        if result.svg is not None:
+            svg_path = output_dir / "provenance.svg"
+            svg_path.write_text(result.svg, encoding="utf-8")
+            svg_filenames["provenance"] = "provenance.svg"
+        else:
+            svg_filenames["provenance"] = None
+
+    if fmt_choice in ("html", "all"):
+        render_html_report(
+            graphs=graphs,
+            svg_filenames=svg_filenames,
+            run_id=run_id,
+            output_dir=output_dir,
+        )
+
+    write_manifest(
+        run_id=run_id,
+        views=svg_filenames,
+        output_dir=output_dir,
+    )
+
+    print(f"evidence written to {output_dir}")
     return EXIT_OK
 
 
