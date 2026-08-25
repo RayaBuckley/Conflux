@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/evidence-diff-v1.json",
+  "title": "Conflux evidence diff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nodes_added",
+    "nodes_removed",
+    "status_changes",
+    "label_changes",
+    "edges_added",
+    "edges_removed",
+    "metadata_added",
+    "metadata_removed",
+    "metadata_changed"
+  ],
+  "properties": {
+    "nodes_added": {"type": "array", "items": {"type": "string"}},
+    "nodes_removed": {"type": "array", "items": {"type": "string"}},
+    "status_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "baseline", "candidate"],
+        "properties": {
+          "node_id": {"type": "string"},
+          "baseline": {"type": ["string", "null"]},
+          "candidate": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "label_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node_id", "baseline", "candidate"],
+        "properties": {
+          "node_id": {"type": "string"},
+          "baseline": {"type": "string"},
+          "candidate": {"type": "string"}
+        }
+      }
+    },
+    "edges_added": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target", "kind"],
+        "properties": {
+          "source": {"type": "string"},
+          "target": {"type": "string"},
+          "kind": {"type": "string"}
+        }
+      }
+    },
+    "edges_removed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "target", "kind"],
+        "properties": {
+          "source": {"type": "string"},
+          "target": {"type": "string"},
+          "kind": {"type": "string"}
+        }
+      }
+    },
+    "metadata_added": {"type": "array", "items": {"type": "string"}},
+    "metadata_removed": {"type": "array", "items": {"type": "string"}},
+    "metadata_changed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "baseline", "candidate"],
+        "properties": {
+          "key": {"type": "string"},
+          "baseline": {"type": "string"},
+          "candidate": {"type": "string"}
+        }
+      }
+    }
+  }
+}
