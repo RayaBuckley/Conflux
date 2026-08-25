@@ -1,0 +1,307 @@
+{
+  "fixtures": [
+    {
+      "fixture_id": "safe-noise-0",
+      "noise_variables": 3,
+      "original": {
+        "rules": 0,
+        "states": 1,
+        "variables": 1
+      },
+      "reduced": {
+        "rules": 0,
+        "states": 1,
+        "variables": 1
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "safe",
+        "reduced_verdict": "safe"
+      },
+      "witness_length": 0,
+      "z3": {
+        "original_verdict": "bounded_safe",
+        "reduced_verdict": "bounded_safe"
+      }
+    },
+    {
+      "fixture_id": "safe-noise-1",
+      "noise_variables": 1,
+      "original": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reduced": {
+        "rules": 0,
+        "states": 1,
+        "variables": 1
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "safe",
+        "reduced_verdict": "safe"
+      },
+      "witness_length": 0,
+      "z3": {
+        "original_verdict": "bounded_safe",
+        "reduced_verdict": "bounded_safe"
+      }
+    },
+    {
+      "fixture_id": "safe-noise-2",
+      "noise_variables": 2,
+      "original": {
+        "rules": 2,
+        "states": 4,
+        "variables": 3
+      },
+      "reduced": {
+        "rules": 0,
+        "states": 1,
+        "variables": 1
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "safe",
+        "reduced_verdict": "safe"
+      },
+      "witness_length": 0,
+      "z3": {
+        "original_verdict": "bounded_safe",
+        "reduced_verdict": "bounded_safe"
+      }
+    },
+    {
+      "fixture_id": "safe-noise-4",
+      "noise_variables": 4,
+      "original": {
+        "rules": 4,
+        "states": 16,
+        "variables": 5
+      },
+      "reduced": {
+        "rules": 0,
+        "states": 1,
+        "variables": 1
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "safe",
+        "reduced_verdict": "safe"
+      },
+      "witness_length": 0,
+      "z3": {
+        "original_verdict": "bounded_safe",
+        "reduced_verdict": "bounded_safe"
+      }
+    },
+    {
+      "fixture_id": "safe-noise-8",
+      "noise_variables": 8,
+      "original": {
+        "rules": 8,
+        "states": 256,
+        "variables": 9
+      },
+      "reduced": {
+        "rules": 0,
+        "states": 1,
+        "variables": 1
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "safe",
+        "reduced_verdict": "safe"
+      },
+      "witness_length": 0,
+      "z3": {
+        "original_verdict": "bounded_safe",
+        "reduced_verdict": "bounded_safe"
+      }
+    },
+    {
+      "fixture_id": "safe-noise-16",
+      "noise_variables": 16,
+      "original": {
+        "rules": 16,
+        "states": 65536,
+        "variables": 17
+      },
+      "reduced": {
+        "rules": 0,
+        "states": 1,
+        "variables": 1
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "safe",
+        "reduced_verdict": "safe"
+      },
+      "witness_length": 0,
+      "z3": {
+        "original_verdict": "bounded_safe",
+        "reduced_verdict": "bounded_safe"
+      }
+    },
+    {
+      "fixture_id": "unsafe-control-0",
+      "noise_variables": 2,
+      "original": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reduced": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      },
+      "witness_length": 2,
+      "z3": {
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      }
+    },
+    {
+      "fixture_id": "unsafe-control-1",
+      "noise_variables": 1,
+      "original": {
+        "rules": 2,
+        "states": 3,
+        "variables": 3
+      },
+      "reduced": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      },
+      "witness_length": 2,
+      "z3": {
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      }
+    },
+    {
+      "fixture_id": "unsafe-control-2",
+      "noise_variables": 2,
+      "original": {
+        "rules": 3,
+        "states": 4,
+        "variables": 4
+      },
+      "reduced": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      },
+      "witness_length": 2,
+      "z3": {
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      }
+    },
+    {
+      "fixture_id": "unsafe-control-4",
+      "noise_variables": 4,
+      "original": {
+        "rules": 5,
+        "states": 6,
+        "variables": 6
+      },
+      "reduced": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      },
+      "witness_length": 2,
+      "z3": {
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      }
+    },
+    {
+      "fixture_id": "unsafe-control-8",
+      "noise_variables": 8,
+      "original": {
+        "rules": 9,
+        "states": 10,
+        "variables": 10
+      },
+      "reduced": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      },
+      "witness_length": 2,
+      "z3": {
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      }
+    },
+    {
+      "fixture_id": "unsafe-control-16",
+      "noise_variables": 16,
+      "original": {
+        "rules": 17,
+        "states": 18,
+        "variables": 18
+      },
+      "reduced": {
+        "rules": 1,
+        "states": 2,
+        "variables": 2
+      },
+      "reference": {
+        "equivalent": true,
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      },
+      "witness_length": 2,
+      "z3": {
+        "original_verdict": "unsafe",
+        "reduced_verdict": "unsafe"
+      }
+    }
+  ],
+  "id": "coi-scaling-v1",
+  "noise_counts": [
+    0,
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "schema_version": "1",
+  "summary": {
+    "all_equivalent": true,
+    "total_fixtures": 12,
+    "z3_all_agree": true
+  }
+}

@@ -59,6 +59,8 @@ research/output/runs/*
 !research/output/runs/agentdojo-1b5-nf4-v1/**
 !research/output/runs/planning-pilot-1b5-v1/
 !research/output/runs/planning-pilot-1b5-v1/**
+!research/output/runs/coi-scaling-v1/
+!research/output/runs/coi-scaling-v1/**
 data/
 *.jsonl
 !research/output/runs/smoke/*.jsonl

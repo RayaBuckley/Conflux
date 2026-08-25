@@ -128,7 +128,7 @@ def table_checker_agreement() -> list[tuple[Path, str]]:
         + r"""\begin{table}[t]
 \centering
 \small
-\begin{tabular}{lccpc}
+\begin{tabular}{lccccc}
 \toprule
 \textbf{Fixture} & \textbf{Ref.\ verdict} & \textbf{Reduced verdict} &
 \textbf{States (orig$\to$red)} & \textbf{Agree} \\
@@ -173,7 +173,7 @@ def table_coi_reduction() -> list[tuple[Path, str]]:
         + r"""\begin{table}[t]
 \centering
 \small
-\begin{tabular}{lccccp{1.5cm}}
+\begin{tabular}{lccccc}
 \toprule
 \textbf{Fixture} & \textbf{Variables} & \textbf{Rules} & \textbf{States} &
 \textbf{Verdict} & \textbf{Agree} \\
@@ -227,12 +227,61 @@ implementation-level evaluations.}
     return [(OUT / "comparative_defence_table.tex", tex)]
 
 
+def table_coi_scaling() -> list[tuple[Path, str]]:
+    scaling_path = RUNS / "coi-scaling-v1" / "result.json"
+    scaling, scaling_sha = _read_json(scaling_path)
+    source = str(scaling_path.relative_to(ROOT))
+
+    rows: list[str] = []
+    for f in scaling["fixtures"]:
+        fid = f["fixture_id"].replace("_", "\\_")
+        o = f["original"]
+        r = f["reduced"]
+        z3 = f["z3"]
+        wit = f["witness_length"]
+        z3_verdict = z3["original_verdict"].replace("_", "\\_")
+        rows.append(
+            f"{fid} & {o['variables']}$\\rightarrow${r['variables']} & "
+            f"{o['rules']}$\\rightarrow${r['rules']} & "
+            f"{o['states']}$\\rightarrow${r['states']} & "
+            f"\\textsc{{{z3_verdict}}} & {wit} \\\\",
+        )
+
+    table_body = "\n".join(rows)
+
+    tex = (
+        _header(source, scaling_sha)
+        + r"""\begin{table}[t]
+\centering
+\small
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Fixture} & \textbf{Vars} & \textbf{Rules} & \textbf{States} &
+\textbf{Z3} & \textbf{Wit.} \\
+\midrule
+"""
+        + table_body
+        + r"""
+\bottomrule
+\end{tabular}
+\caption{COI scaling on parameterized noise fixtures. Adding up to 16 irrelevant
+noise variables does not change verdicts or witness length. The reduced model
+always collapses to the invariant variable(s) only. Z3 agrees on original and
+reduced models across all 12 fixtures. Finite IR models only.}
+\label{tab:coi-scaling}
+\end{table}
+"""
+    )
+    return [(OUT / "coi_scaling_table.tex", tex)]
+
+
 def generate_all() -> list[tuple[Path, str]]:
     outputs: list[tuple[Path, str]] = []
     outputs.extend(table_defect_detection())
     outputs.extend(table_checker_agreement())
     outputs.extend(table_coi_reduction())
     outputs.extend(table_comparative_defence())
+    outputs.extend(table_coi_scaling())
     return outputs
 
 

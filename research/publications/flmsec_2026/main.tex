@@ -415,6 +415,15 @@ the reference verdicts agree and the unsafe witness lifts.
 
 \input{generated/tables/coi_reduction_table}
 
+Table~\ref{tab:coi-scaling} extends this result across a parameterized family
+of fixtures with up to 16 irrelevant noise variables. COI reduction collapses
+every model to its invariant cone regardless of noise count: the safe fixtures
+reduce from $N{+}1$ variables to 1, and the unsafe fixtures reduce from
+$N{+}2$ variables to 2. Verdicts and witness lengths are preserved across all
+sizes, and Z3 agrees on original and reduced models.
+
+\input{generated/tables/coi_scaling_table}
+
 \subsection{RQ4: Comparative Defence Verification}
 
 Table~\ref{tab:comparative-defence} shows the central finding: several published
