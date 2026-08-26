@@ -1,0 +1,45 @@
+{
+  "environments": [
+    {
+      "env_id": "env-01",
+      "expected_traces": 422535,
+      "incomplete_traces": 0,
+      "num_final_options": 8,
+      "num_intermediate_options": 596,
+      "total_traces": 422535,
+      "trace_count_match": true,
+      "unique_canonical_states": 5
+    },
+    {
+      "env_id": "env-02",
+      "expected_traces": 996451,
+      "incomplete_traces": 0,
+      "num_final_options": 8,
+      "num_intermediate_options": 596,
+      "total_traces": 996451,
+      "trace_count_match": true,
+      "unique_canonical_states": 17
+    },
+    {
+      "env_id": "env-03",
+      "expected_traces": 43621,
+      "incomplete_traces": 0,
+      "num_final_options": 15,
+      "num_intermediate_options": 67,
+      "total_traces": 43621,
+      "trace_count_match": true,
+      "unique_canonical_states": 9
+    }
+  ],
+  "id": "native-sled-partb-reproduction-v1",
+  "max_depth": 3,
+  "schema_version": "1",
+  "source": "research/reports/archive/2026-06-01-original-prototype/main.py",
+  "totals": {
+    "expected_total": 1462607,
+    "incomplete_traces": 0,
+    "total_traces": 1462607,
+    "trace_count_match": true,
+    "unique_canonical_states": 31
+  }
+}
