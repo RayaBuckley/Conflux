@@ -467,7 +467,7 @@ execution inherits influence from both Alice and Mallory. A requester-only
 controller that checks only Alice's permissions would permit the action.
 Principal Context includes both Alice and Mallory in the influence set; since
 Mallory lacks permission, the effective authority excludes the email action.
-SLED-V finds a one-step counterexample in the requester-only model.
+SLED-V finds a counterexample in the requester-only model.
 
 %% ------------------------------------------------------------------
 \section{Related Work}
@@ -483,6 +483,7 @@ in the powerset lattice over permission sets. Goguen and Meseguer
 \citep{goguen1982} establish noninterference, which is strictly stronger than
 the access-safety properties verified here. Sabelfeld and Myers
 \citep{sabelfeld2003} provide vocabulary for explicit and implicit flows;
+Myers and Liskov \citep{myers1997difc} introduce decentralized IFC.
 Principal Context conservatively assumes that if information from a principal
 reaches an execution, that principal may influence its output---an intentional
 overapproximation, not a claim of exact causal dependence.
@@ -607,7 +608,8 @@ Section~\ref{sec:ites}.
 
 \item \textbf{Experiments:} All quantitative results are generated from
 versioned result JSON. Exact finite models, bounds, solver versions, and
-reproduction commands are documented in the supplementary material.
+reproduction commands are documented in the versioned result JSON and
+reproduction scripts.
 
 \item \textbf{Statistical significance:} Not applicable. All reported results
 are deterministic verification outcomes (SAFE/UNSAFE), not stochastic
