@@ -1,0 +1,25 @@
+% GENERATED FILE -- do not edit by hand.
+% Source: research\output\runs\native-sled-partb-reproduction-v1\result.json
+% SHA-256: e3751abf62576d85333f08d8f771e56cb11141f195932d1daa5b79fd7d56158c
+% Run: python scripts/generate_flmsec_tables.py
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Environment} & \textbf{Raw traces} & \textbf{Canonical states} &
+\textbf{Compression} \\
+\midrule
+env-01 & 422,535 & 5 & 84507:1 \\
+env-02 & 996,451 & 17 & 58615:1 \\
+env-03 & 43,621 & 9 & 4847:1 \\
+\textbf{Total} & \textbf{1,462,607} & \textbf{31} & \textbf{47181:1} \\
+\bottomrule
+\end{tabular}
+\caption{Part B reproduction. The original SLED option grammar and
+counter-based enumeration from the archived prototype reproduce the exact
+1{,}462{,}607 trace count across three historical environments. Canonical-state
+exploration maps these raw traces to 31 unique states, demonstrating the
+compression benefit of state memoisation.}
+\label{tab:partb-reproduction}
+\end{table}

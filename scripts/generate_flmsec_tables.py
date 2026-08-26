@@ -300,6 +300,56 @@ reduced models across all 12 fixtures. Finite IR models only.}
     return [(OUT / "coi_scaling_table.tex", tex)]
 
 
+def table_partb_reproduction() -> list[tuple[Path, str]]:
+    partb_path = RUNS / "native-sled-partb-reproduction-v1" / "result.json"
+    partb, partb_sha = _read_json(partb_path)
+    source = str(partb_path.relative_to(ROOT))
+
+    rows: list[str] = []
+    for env in partb["environments"]:
+        eid = env["env_id"]
+        traces = env["total_traces"]
+        states = env["unique_canonical_states"]
+        ratio = f"{traces / states:.0f}:1" if states > 0 else "N/A"
+        rows.append(f"{eid} & {traces:,} & {states} & {ratio} \\\\")
+
+    totals = partb["totals"]
+    total_ratio = f"{totals['total_traces'] / totals['unique_canonical_states']:.0f}:1"
+    rows.append(
+        f"\\textbf{{Total}} & \\textbf{{{totals['total_traces']:,}}} & "
+        f"\\textbf{{{totals['unique_canonical_states']}}} & "
+        f"\\textbf{{{total_ratio}}} \\\\",
+    )
+
+    table_body = "\n".join(rows)
+
+    tex = (
+        _header(source, partb_sha)
+        + r"""\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Environment} & \textbf{Raw traces} & \textbf{Canonical states} &
+\textbf{Compression} \\
+\midrule
+"""
+        + table_body
+        + r"""
+\bottomrule
+\end{tabular}
+\caption{Part B reproduction. The original SLED option grammar and
+counter-based enumeration from the archived prototype reproduce the exact
+1{,}462{,}607 trace count across three historical environments. Canonical-state
+exploration maps these raw traces to 31 unique states, demonstrating the
+compression benefit of state memoisation.}
+\label{tab:partb-reproduction}
+\end{table}
+"""
+    )
+    return [(OUT / "partb_reproduction_table.tex", tex)]
+
+
 def generate_all() -> list[tuple[Path, str]]:
     outputs: list[tuple[Path, str]] = []
     outputs.extend(table_defect_detection())
@@ -307,6 +357,7 @@ def generate_all() -> list[tuple[Path, str]]:
     outputs.extend(table_coi_reduction())
     outputs.extend(table_comparative_defence())
     outputs.extend(table_coi_scaling())
+    outputs.extend(table_partb_reproduction())
     return outputs
 
 
