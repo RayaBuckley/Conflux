@@ -120,7 +120,9 @@ Any principal may provide arbitrary inputs. We make no assumptions about the
 language model's ability to distinguish instructions from data, identify
 malicious content, or resist prompt injection. Instead, we adopt a worst-case
 model in which any information processed by the model may arbitrarily influence
-subsequent executions.
+subsequent executions. Here ``arbitrary'' means any well-typed proposal
+admitted by the system interface---not malformed protocol behaviour, arbitrary
+code execution, or side channels.
 
 \subsection{Access-Control System}
 
@@ -230,7 +232,8 @@ $a$ satisfies Definition~\ref{def:pe}. Hence any strict superset permits PE.
 
 \begin{theorem}[Authority Monotonicity]
 \label{thm:monotonicity}
-If $\mathrm{Influence}(e_1) \subseteq \mathrm{Influence}(e_2)$, then
+For a fixed ACS state, if $\mathrm{Influence}(e_1) \subseteq
+\mathrm{Influence}(e_2)$, then
 $\mathrm{Permitted}(\mathrm{Influence}(e_2)) \subseteq
 \mathrm{Permitted}(\mathrm{Influence}(e_1))$.
 \end{theorem}
@@ -245,14 +248,14 @@ Principal Context follows a \emph{low-water-mark} intuition: incorporating
 additional, potentially lower-authority influence cannot increase effective
 authority. This is structurally analogous to Biba's low-water-mark integrity
 policy \citep{biba1977}, operationalised in systems such as LOMAC
-\citep{lomac2001}. Unlike classical Biba integrity levels, which assign a
-single integrity label to each subject and object, Principal Context retains
-\emph{authenticated contributing principal identities} and derives permitted
-parameterised actions by querying and intersecting their permissions in an
-external organisational ACS. Permissions may be incomparable and
-resource-argument-sensitive. This generalisation moves from a total order on
-integrity labels to a meet in the powerset lattice over permission sets
-\citep{denning1976}, enabling finer-grained, policy-driven authority.
+\citep{lomac2001}. The similarity is structural rather than an equivalence of
+policy models. Low-water-mark integrity lowers a subject's effective integrity
+after consuming lower-integrity information. Principal Context instead retains
+the identities of all conservatively influencing principals and computes
+permitted parameterised actions from the intersection of their current ACS
+permissions. Attenuation is induced by organisational authority rather than by
+assigning a single integrity label to the execution. When permission sets are
+ordered by inclusion, intersection is their meet \citep{denning1976}.
 
 \subsection{Security Guarantee}
 
@@ -295,8 +298,9 @@ consistent with the system interface.
 Beginning from an initial state, SLED enumerates every action that may result
 from each pending execution under worst-case assumptions. Exploration
 continues until every reachable state has been visited or a configured bound is
-reached. The resulting state-transition graph contains every execution trace
-consistent with the environment and threat model.
+reached. The resulting state-transition system covers every reachable state
+under the configured proposal model; predecessor edges retain counterexample
+paths.
 
 SLED reports four verdicts:
 \begin{description}[nosep,leftmargin=*]
@@ -445,15 +449,13 @@ implementation-level evaluation of the published systems.
 
 \subsection{Motivating Example}
 
-Consider a workflow where Alice authors a confidential document and Bob
-subsequently requests that the agent email its contents. The resulting execution
-inherits influence from both Alice and Bob. Because Bob lacks permission to
-perform the email action, the effective authority excludes it, and the request
-is blocked. A requester-only controller that checks only Bob's permissions
-would permit the action, and SLED-V finds a one-step counterexample reaching
-the bad state. This example threads through the paper: it motivates the PE
-definition, illustrates the intersection rule, and provides an intuitive
-witness for the comparative verification result.
+Consider a workflow where Alice, who is authorised to send email, requests
+that the agent email a document authored by Mallory, who is not. The resulting
+execution inherits influence from both Alice and Mallory. A requester-only
+controller that checks only Alice's permissions would permit the action.
+Principal Context includes both Alice and Mallory in the influence set; since
+Mallory lacks permission, the effective authority excludes the email action.
+SLED-V finds a one-step counterexample in the requester-only model.
 
 %% ------------------------------------------------------------------
 \section{Related Work}

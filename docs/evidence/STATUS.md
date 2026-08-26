@@ -5,8 +5,10 @@
 Conflux has a working offline security kernel that mediates every agent
 effect through Principal Context authority checks. It can verify security
 properties on finite models, generate authenticated plans, and translate
-external benchmarks. Live model evidence and delegation activation remain
-future work. The detail below is for maintainers and reviewers.
+external benchmarks. Limited laptop evidence exists for Qwen planning and
+AgentDojo pipeline execution; larger-model evaluation and delegation
+activation remain future work. The detail below is for maintainers and
+reviewers.
 
 The canonical migration and P0 security repair are complete. Immutable values
 live in `domain`; ITES has one transition kernel; Principal Context is derived

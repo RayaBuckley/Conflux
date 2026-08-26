@@ -30,8 +30,12 @@
 | Cloud policy behaviour matches a provider | Not claimed | current AWS adapter is an explicit fail-closed subset |
 | The current evidence pipeline handles allow, block, and vulnerable-control cases | Bounded evidence | `research/output/runs/smoke/`, two scripted cases, one one-step negative-control witness |
 | Observational confidentiality holds on finite IR fixtures | Bounded evidence | IR self-composition with Z3 BMC; safe fixture bounded safe, unsafe fixture produces counterexample showing observation divergence; bounded to finite product state spaces; not a noninterference proof |
-| Dual-LLM satisfies its own property Q but violates Conflux PE | Bounded evidence | `tests/test_defence_models.py`; Dual-LLM native property (processor never executes) is SAFE; Dual-LLM PE property is UNSAFE with counterexample; ITES reference PE property is SAFE; finite IR models only |
-| ITES defective requester-only controller violates PE | Bounded evidence | `tests/test_defence_models.py`; REQUESTER_ONLY negative control is UNSAFE with PE counterexample; ITES reference is SAFE |
+| Dual-LLM finite abstraction satisfies its own property Q but violates PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: Dual-LLM native property (processor never executes) is bounded\_safe; PE property is unsafe with Z3 counterexample; finite IR abstraction only |
+| CaMeL finite abstraction satisfies its own property but violates PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: CaMeL native property bounded\_safe; PE property unsafe with Z3 counterexample; finite IR abstraction, not the published system |
+| Progent finite abstraction satisfies its own property but violates PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: Progent native property bounded\_safe; PE property unsafe with Z3 counterexample; finite IR abstraction |
+| PACT finite abstraction satisfies its own property but violates PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: PACT native property bounded\_safe; PE property unsafe with Z3 counterexample; finite IR abstraction |
+| ITES preserves PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: ITES reference PE property is bounded\_safe; finite IR model |
+| ITES defective requester-only controller violates PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: requester-only PE property unsafe with Z3 counterexample; finite IR model |
 
 ## Novelty qualification
 
