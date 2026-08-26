@@ -3,7 +3,7 @@
     "integrity_scope": "exact repository blob bytes",
     "hash_algorithm": "sha256",
     "git_object_format": "sha1",
-    "artifact_count": 43,
+    "artifact_count": 45,
     "packages": [
         {
             "id": "2026-07-27-engineering-and-sled",
@@ -235,6 +235,23 @@
                 "The Part B 1.5M reproduction plan has not been executed; it remains a P2 stretch goal.",
                 "The COI scaling experiment and runtime/IR differential conformance testing described in the readiness review have not been implemented.",
                 "These reports were prepared before the FLMSec workshop page was verified; the confirmed page limit is 8 pages (not 4-9 as initially stated for the alternative workshop)."
+            ]
+        },
+        {
+            "id": "2026-08-26-flmsec-audit-reports",
+            "title": "FLMSec 2026 morning work plan and writing/factual audit",
+            "snapshot_date": "2026-08-26",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [],
+            "canonical_successors": [
+                "research/publications/flmsec_2026/main.tex",
+                "research/publications/flmsec_2026/CHECKLIST_EVIDENCE.md"
+            ],
+            "limitations": [
+                "These reports were prepared before the P0 factual fixes were applied; some issues they identify have since been resolved.",
+                "The Part B 1.46M reproduction remains a P2 stretch goal."
             ]
         }
     ],
@@ -710,6 +727,28 @@
             "sha256_bytes": "5d5498ebfdcae9c373839202afc8e8a536c4350436fc401a1db81b9b7991dba7",
             "git_blob_oid": "935fb599a04ef4f3b8bd8b13c2a26fdb68207324",
             "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-26-flmsec-audit-reports",
+            "original_path": "Conflux_FLMSec_Morning_Work_Plan_2026-08-26.md",
+            "archive_path": "research/reports/archive/2026-08-26-flmsec-audit-reports/flmsec_morning_work_plan.md",
+            "media_type": "text/markdown",
+            "size_bytes": 13120,
+            "sha256_bytes": "da3df7c4de0eb43dc7e43578a47dd08faf4ce8aceb9a591b998f5b165f94a40c",
+            "git_blob_oid": "f3d7ad9b247d4776464c3162afb59191e47be3b6",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-26-flmsec-audit-reports",
+            "original_path": "FLMSec_Writing_Factual_Checklist_Audit_2026-08-26.md",
+            "archive_path": "research/reports/archive/2026-08-26-flmsec-audit-reports/writing_factual_checklist_audit.md",
+            "media_type": "text/markdown",
+            "size_bytes": 15767,
+            "sha256_bytes": "1b5c15e8824ad5e451114faa346bf0a8211fe865059579024954f47706268fac",
+            "git_blob_oid": "6ae2e3c07414600e650bf88e82c9d160b4eac0af",
+            "role": "audit_report",
             "duplicate_of": null
         }
     ]
