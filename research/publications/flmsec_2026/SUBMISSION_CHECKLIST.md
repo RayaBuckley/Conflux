@@ -8,7 +8,7 @@ Deadline: 27 August 2026, 23:59 AoE
 ## Format requirements
 
 - [x] NeurIPS 2026 template used
-- [x] Main text ≤8 pages excluding references/appendix
+- [x] Main text ≤8 pages excluding references/appendix (needs re-verification after restructuring)
 - [x] Double-blind (anonymous author block)
 - [x] No acknowledgements
 - [x] No identifying repository links
@@ -22,17 +22,17 @@ Deadline: 27 August 2026, 23:59 AoE
 - [x] No "generated result pending" or placeholder text
 - [x] All citations resolve in references.bib
 - [x] Claims evidence-backed (see CLAIM_EVIDENCE_MAP.md)
-- [x] Limitations section exists (Section 6, Discussion)
-- [x] Theorem assumptions and proofs stated (Section 3)
+- [x] Limitations section exists (Section 7, Future Work)
+- [x] Theorem assumptions and proofs stated (Section 4)
 - [x] Finite/bounded scope stated for all relevant claims
-- [x] NeurIPS checklist present (Appendix A)
+- [x] NeurIPS checklist present (Appendix B)
 - [x] SLED/SLED-V distinction accurate
 - [x] Biba/low-water-mark lineage explicit
 
 ## Build
 
-- [x] Clean LaTeX build: `latexmk -pdf -interaction=nonstopmode main.tex`
-- [x] Page count verified (8 main text pages)
+- [ ] Clean LaTeX build: `latexmk -pdf -interaction=nonstopmode main.tex` (needs re-verification)
+- [ ] Page count verified (needs re-verification after restructuring)
 - [x] Tables generated from retained evidence: `python scripts/generate_flmsec_tables.py`
 
 ## Anonymity audit
