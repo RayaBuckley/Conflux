@@ -8,7 +8,7 @@ Deadline: 27 August 2026, 23:59 AoE
 ## Format requirements
 
 - [x] NeurIPS 2026 template used
-- [ ] Main text ≤8 pages excluding references/appendix
+- [x] Main text ≤8 pages excluding references/appendix
 - [x] Double-blind (anonymous author block)
 - [x] No acknowledgements
 - [x] No identifying repository links
@@ -31,9 +31,9 @@ Deadline: 27 August 2026, 23:59 AoE
 
 ## Build
 
-- [ ] Clean LaTeX build: `latexmk -pdf -interaction=nonstopmode main.tex`
-- [ ] Page count verified
-- [ ] Tables generated from retained evidence: `python scripts/generate_flmsec_tables.py`
+- [x] Clean LaTeX build: `latexmk -pdf -interaction=nonstopmode main.tex`
+- [x] Page count verified (8 main text pages)
+- [x] Tables generated from retained evidence: `python scripts/generate_flmsec_tables.py`
 
 ## Anonymity audit
 
