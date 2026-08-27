@@ -10,13 +10,13 @@
 \textbf{Fixture} & \textbf{Ref.\ verdict} & \textbf{Reduced verdict} &
 \textbf{Z3 orig.} & \textbf{Z3 reduced} & \textbf{Agree} \\
 \midrule
-safe-noise & \textsc{safe} & \textsc{safe} & \textsc{bounded\_safe} & \textsc{bounded\_safe} & \checkmark \\
-unsafe-control & \textsc{unsafe} & \textsc{unsafe} & \textsc{unsafe} & \textsc{unsafe} & \checkmark \\
+safe-noise & \textsc{SAFE} & \textsc{SAFE} & \textsc{Bounded\_Safe} & \textsc{Bounded\_Safe} & \checkmark \\
+unsafe-control & \textsc{UNSAFE} & \textsc{UNSAFE} & \textsc{UNSAFE} & \textsc{UNSAFE} & \checkmark \\
 \bottomrule
 \end{tabular}
 \caption{Independent checker agreement. The reference interpreter, COI-reduced
 model, and Z3 BMC agree on both safe and unsafe fixtures. The unsafe witness
-lifts to the original model. Z3 returns \textsc{bounded\_safe} rather than
-\textsc{safe} because it uses bounded model checking. Finite IR models only.}
+lifts to the original model. Z3 returns \textsc{Bounded\_Safe} rather than
+\textsc{SAFE} because it uses bounded model checking.}
 \label{tab:checker-agreement}
 \end{table}

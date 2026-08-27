@@ -14,6 +14,7 @@ union\_permissions & \checkmark & 1 \\
 initiator\_only & \checkmark & 1 \\
 latest\_input\_only & \checkmark & 1 \\
 no\_read\_check & \checkmark & 1 \\
+\midrule
 delegation/widened\_scope & \checkmark & 1 \footnotesize(delegation\_attenuated) \\
 delegation/wrong\_beneficiary & \checkmark & 1 \footnotesize(delegation\_beneficiary\_bound) \\
 delegation/reuse & \checkmark & 1 \footnotesize(delegation\_single\_use) \\
@@ -30,7 +31,6 @@ disclosure/unsafe\_redaction & \checkmark & 1 \footnotesize(no\_hidden\_decision
 \caption{Seeded-defect detection. All five native SLED negative controls and
 all 11 direction-readiness mutants (7 delegation, 4 disclosure) are detected
 with one-step counterexamples. The canonical ITES model exhausts
-\textsc{SAFE} within the checked bounds (max depth 1, max states 4).
-Finite fixtures and bounds only.}
+\textsc{SAFE} within the checked bounds (max depth 1, max states 4).}
 \label{tab:defect-detection}
 \end{table}

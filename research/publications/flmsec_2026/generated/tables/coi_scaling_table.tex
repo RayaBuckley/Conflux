@@ -10,23 +10,23 @@
 \textbf{Fixture} & \textbf{Vars} & \textbf{Rules} & \textbf{States} &
 \textbf{Z3} & \textbf{Wit.} \\
 \midrule
-safe-noise-0 & 1$\rightarrow$1 & 0$\rightarrow$0 & 1$\rightarrow$1 & \textsc{bounded\_safe} & 0 \\
-safe-noise-1 & 2$\rightarrow$1 & 1$\rightarrow$0 & 2$\rightarrow$1 & \textsc{bounded\_safe} & 0 \\
-safe-noise-2 & 3$\rightarrow$1 & 2$\rightarrow$0 & 4$\rightarrow$1 & \textsc{bounded\_safe} & 0 \\
-safe-noise-4 & 5$\rightarrow$1 & 4$\rightarrow$0 & 16$\rightarrow$1 & \textsc{bounded\_safe} & 0 \\
-safe-noise-8 & 9$\rightarrow$1 & 8$\rightarrow$0 & 256$\rightarrow$1 & \textsc{bounded\_safe} & 0 \\
-safe-noise-16 & 17$\rightarrow$1 & 16$\rightarrow$0 & 65536$\rightarrow$1 & \textsc{bounded\_safe} & 0 \\
-unsafe-control-0 & 2$\rightarrow$2 & 1$\rightarrow$1 & 2$\rightarrow$2 & \textsc{unsafe} & 2 \\
-unsafe-control-1 & 3$\rightarrow$2 & 2$\rightarrow$1 & 3$\rightarrow$2 & \textsc{unsafe} & 2 \\
-unsafe-control-2 & 4$\rightarrow$2 & 3$\rightarrow$1 & 4$\rightarrow$2 & \textsc{unsafe} & 2 \\
-unsafe-control-4 & 6$\rightarrow$2 & 5$\rightarrow$1 & 6$\rightarrow$2 & \textsc{unsafe} & 2 \\
-unsafe-control-8 & 10$\rightarrow$2 & 9$\rightarrow$1 & 10$\rightarrow$2 & \textsc{unsafe} & 2 \\
-unsafe-control-16 & 18$\rightarrow$2 & 17$\rightarrow$1 & 18$\rightarrow$2 & \textsc{unsafe} & 2 \\
+safe-noise-0 & 1$\rightarrow$1 & 0$\rightarrow$0 & 1$\rightarrow$1 & \textsc{Bounded\_Safe} & 0 \\
+safe-noise-1 & 2$\rightarrow$1 & 1$\rightarrow$0 & 2$\rightarrow$1 & \textsc{Bounded\_Safe} & 0 \\
+safe-noise-2 & 3$\rightarrow$1 & 2$\rightarrow$0 & 4$\rightarrow$1 & \textsc{Bounded\_Safe} & 0 \\
+safe-noise-4 & 5$\rightarrow$1 & 4$\rightarrow$0 & 16$\rightarrow$1 & \textsc{Bounded\_Safe} & 0 \\
+safe-noise-8 & 9$\rightarrow$1 & 8$\rightarrow$0 & 256$\rightarrow$1 & \textsc{Bounded\_Safe} & 0 \\
+safe-noise-16 & 17$\rightarrow$1 & 16$\rightarrow$0 & 65536$\rightarrow$1 & \textsc{Bounded\_Safe} & 0 \\
+unsafe-control-0 & 2$\rightarrow$2 & 1$\rightarrow$1 & 2$\rightarrow$2 & \textsc{UNSAFE} & 2 \\
+unsafe-control-1 & 3$\rightarrow$2 & 2$\rightarrow$1 & 3$\rightarrow$2 & \textsc{UNSAFE} & 2 \\
+unsafe-control-2 & 4$\rightarrow$2 & 3$\rightarrow$1 & 4$\rightarrow$2 & \textsc{UNSAFE} & 2 \\
+unsafe-control-4 & 6$\rightarrow$2 & 5$\rightarrow$1 & 6$\rightarrow$2 & \textsc{UNSAFE} & 2 \\
+unsafe-control-8 & 10$\rightarrow$2 & 9$\rightarrow$1 & 10$\rightarrow$2 & \textsc{UNSAFE} & 2 \\
+unsafe-control-16 & 18$\rightarrow$2 & 17$\rightarrow$1 & 18$\rightarrow$2 & \textsc{UNSAFE} & 2 \\
 \bottomrule
 \end{tabular}
 \caption{COI scaling on parameterized noise fixtures. Adding up to 16 irrelevant
 noise variables does not change verdicts or witness length. The reduced model
 always collapses to the invariant variable(s) only. Z3 agrees on original and
-reduced models across all 12 fixtures. Finite IR models only.}
+reduced models across all 12 fixtures.}
 \label{tab:coi-scaling}
 \end{table}
