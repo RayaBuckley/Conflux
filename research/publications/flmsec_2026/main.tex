@@ -1,16 +1,20 @@
 \documentclass{article}
 
 \PassOptionsToPackage{numbers}{natbib}
-\usepackage{neurips_2026}
+\usepackage[dblblindworkshop]{neurips_2026}
+\workshoptitle{Foundations of Language Model Security}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{hyperref}
 \usepackage{url}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,shapes.geometric,calc}
+\usepackage{hyperref}
 
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
@@ -42,12 +46,13 @@ accumulates, following a low-water-mark intuition analogous to classical Biba
 integrity. We then present SLED (System-Level Evaluator for Defences), which
 explores finite operational models under worst-case model behaviour, and SLED-V,
 which provides a serialisable verification IR with solver-backed bounded model
-checking and property-scoped cone-of-influence reduction. Across finite
-verification models, SLED-V detects all seeded monitor defects with one-step
-counterexamples, independent checker paths agree on safe and unsafe instances,
-and comparative finite-model verification reveals that several published defence
-abstractions satisfy their own intended properties while violating PE. All
-results are bounded to finite models under stated assumptions.
+checking and property-scoped cone-of-influence reduction. Preliminary evidence
+from finite verification models shows that SLED-V detects all seeded monitor
+defects with one-step counterexamples, independent checker paths agree on safe
+and unsafe instances, and exploratory comparative verification suggests that
+several published defence abstractions satisfy their own intended properties
+while violating PE. All results are preliminary, bounded to finite models under
+stated assumptions.
 \end{abstract}
 
 %% ------------------------------------------------------------------
@@ -82,6 +87,15 @@ is malicious, but whether \emph{every} principal influencing an action is
 authorised to perform that action. If this property holds, arbitrary model
 behaviour cannot escalate privilege regardless of how influence was obtained.
 
+\paragraph{Motivating example.}
+Consider a workflow where Alice, who is authorised to send email, requests
+that the agent email a document authored by Mallory, who is not. The resulting
+execution inherits influence from both Alice and Mallory. A requester-only
+controller that checks only Alice's permissions would permit the action.
+Principal Context includes both Alice and Mallory in the influence set; since
+Mallory lacks permission, the effective authority excludes the email action.
+SLED-V finds a counterexample in the requester-only model.
+
 \paragraph{Contributions.}
 \begin{enumerate}[leftmargin=*,nosep]
   \item We formulate PE as a system-level security objective for LLM agents
@@ -101,10 +115,11 @@ behaviour cannot escalate privilege regardless of how influence was obtained.
     cone-of-influence reduction with counterexample lifting
     (Section~\ref{sec:sled}).
 
-  \item We provide evidence from finite verification models: seeded-defect
-    detection, independent checker agreement, COI reduction, and comparative
-    defence verification showing that published defence abstractions can satisfy
-    their own properties while violating PE (Section~\ref{sec:evaluation}).
+  \item We provide preliminary evidence from finite verification models:
+    seeded-defect detection, independent checker agreement, COI reduction, and
+    exploratory comparative defence verification suggesting that published
+    defence abstractions can satisfy their own properties while violating PE
+    (Section~\ref{sec:evaluation}).
 \end{enumerate}
 
 %% ------------------------------------------------------------------
@@ -186,6 +201,11 @@ intent \\
 %% ------------------------------------------------------------------
 \section{Principal Context and ITES}
 \label{sec:ites}
+
+We present \emph{Influence Tracking with Extrapolated Security} (ITES), a
+provenance-based enforcement mechanism whose central abstraction is the
+Principal Context. ITES derives execution authority from authenticated
+provenance and an organisation's existing access-control system.
 
 \subsection{Influence Tracking}
 
@@ -318,7 +338,8 @@ are never silently promoted to proof.
 
 \subsection{SLED-V: Verification IR and Solver-Backed Checking}
 
-SLED-V accepts a finite serialisable transition IR rather than arbitrary Python.
+SLED-V is an exploratory verification methodology that accepts a finite
+serialisable transition IR rather than arbitrary Python.
 The IR is a standalone representation with variables, transition rules, and
 invariants that can be checked by:
 
@@ -369,9 +390,65 @@ transition semantics, but formal equivalence is not claimed. Differential
 conformance testing---comparing runtime and IR decisions on equivalent
 states---is a future direction.
 
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=0.6cm and 1.2cm,
+  every node/.style={font=\small},
+  box/.style={draw, rounded corners, minimum height=0.8cm, minimum width=2.6cm, align=center, fill=white},
+  adversarial/.style={draw, rounded corners, minimum height=0.8cm, minimum width=2.6cm, align=center, fill=red!8},
+  trusted/.style={draw, rounded corners, minimum height=0.8cm, minimum width=2.6cm, align=center, fill=blue!8},
+  arr/.style={-Stealth, thick},
+  darr/.style={-Stealth, thick, dashed},
+]
+\node[adversarial] (llm) {LLM\\(adversarial)};
+\node[adversarial, below=of llm] (inputs) {Prompts, documents,\\tool outputs};
+\node[trusted, right=1.8cm of llm] (prov) {Provenance\\attachment};
+\node[trusted, below=of prov] (context) {Principal\\Context};
+\node[trusted, right=1.8cm of prov] (monitor) {Reference\\monitor};
+\node[trusted, below=of monitor] (acs) {Access-control\\system};
+\node[box, right=1.8cm of monitor] (action) {External\\action};
+\node[box, below=2.0cm of context] (ir) {Verification IR\\(SLED-V)};
+\node[box, right=of ir] (solvers) {Reference / Z3 /\\nuXmv};
+
+\draw[arr] (inputs) -- (llm);
+\draw[arr] (llm) -- node[above,font=\scriptsize]{proposal} (prov);
+\draw[arr] (prov) -- (context);
+\draw[arr] (context) -- (monitor);
+\draw[arr] (monitor) -- (acs);
+\draw[arr] (acs) -- (action);
+\draw[darr] (monitor) -- (action);
+\draw[darr] (context) -- (ir);
+\draw[darr] (ir) -- (solvers);
+
+\node[font=\scriptsize, above=0.05cm of inputs, xshift=-1.4cm] {\textbf{Adversarial}};
+\node[font=\scriptsize, above=0.05cm of prov] {\textbf{Trusted TCB}};
+\node[font=\scriptsize, above=0.05cm of ir, xshift=-0.3cm] {\textbf{Verification}};
+\end{tikzpicture}
+\caption{Architecture overview. Adversarial components (red) supply arbitrary
+inputs; the LLM produces proposals without trusted decision-making. The trusted
+computing base (blue) attaches provenance, computes Principal Context via
+permission intersection, and mediates actions through the ACS. SLED-V
+(dashed) verifies a serialisable IR abstraction of the trusted path using
+multiple independent backends.}
+\label{fig:architecture}
+\end{figure}
+
 %% ------------------------------------------------------------------
 \section{Evaluation}
 \label{sec:evaluation}
+
+The following evaluation reports \emph{preliminary evidence} from finite
+verification models. These results are exploratory: they demonstrate the
+methodology's capability on small finite models, not deployment-level
+guarantees. Their significance lies in showing that SLED-V can distinguish
+safe from defective defences, that independent checkers agree, that COI
+reduction preserves verdicts, and that property-relative comparison can
+reveal privilege-escalation gaps in defence abstractions that satisfy their
+own intended properties. All results are bounded to finite models under stated
+bounds and assumptions; no unbounded or deployment-level security claim is
+made. Further validation on larger models and with additional solver backends
+is needed before broader conclusions can be drawn.
 
 We evaluate SLED-V through four research questions:
 
@@ -385,9 +462,6 @@ changing verdicts or losing counterexamples?
 \item[\textbf{RQ4}] What does property-relative verification reveal when
 comparing Principal Context with other system-level defence abstractions?
 \end{description}
-
-All results are bounded to finite models under stated bounds and assumptions.
-No unbounded or deployment-level security claim is made.
 
 \subsection{RQ1: Seeded-Defect Detection}
 
@@ -404,7 +478,7 @@ disclosure) are similarly detected with one-step witnesses.
 Table~\ref{tab:checker-agreement} shows that the reference interpreter,
 COI-reduced model, and Z3 BMC agree on two fixtures (safe-noise and
 unsafe-control), including both safe and unsafe cases. Z3 returns
-\textsc{bounded\_safe} rather than \textsc{safe} for the safe fixture because
+\textsc{Bounded\_Safe} rather than \textsc{SAFE} for the safe fixture because
 it uses bounded model checking. The unsafe witness lifts to the original
 model.
 
@@ -430,44 +504,22 @@ sizes, and Z3 agrees on original and reduced models.
 
 \input{generated/tables/coi_scaling_table}
 
-\subsection{Historical Reproduction}
-
-We reconstructed the original bounded SLED experiment using the archived
-prototype's exact option grammar and counter-based enumeration. Across
-three historical environments, the reproduction enumerated 1{,}462{,}607
-model-decision traces, matching the original counts. Canonical-state
-exploration maps these raw traces onto 31 unique states, demonstrating
-the compression benefit of state memoisation
-(Table~\ref{tab:partb-reproduction}).
-
-\input{generated/tables/partb_reproduction_table}
-
 \subsection{RQ4: Comparative Defence Verification}
 
-Table~\ref{tab:comparative-defence} shows the central finding: several published
-defence abstractions satisfy their own intended security properties while
-violating the PE property. The Dual-LLM pattern's native property Q
+Table~\ref{tab:comparative-defence} presents an exploratory finding: several
+published defence abstractions satisfy their own intended security properties
+while violating the PE property. The Dual-LLM pattern's native property Q
 (``processor never executes'') holds, but the same model admits a PE
 counterexample. Similarly, CaMeL, Progent, and PACT each satisfy their own
 properties while violating PE in the finite model. The ITES reference preserves
 PE. The defective requester-only controller violates PE as expected.
 
-This demonstrates that a defence can satisfy the property it was designed for
-while failing a different system-level security property. This is a
-\emph{model-level} comparison of explicit finite abstractions, not an
+This preliminary evidence suggests that a defence can satisfy the property it
+was designed for while failing a different system-level security property. This
+is a \emph{model-level} comparison of explicit finite abstractions, not an
 implementation-level evaluation of the published systems.
 
 \input{generated/tables/comparative_defence_table}
-
-\subsection{Motivating Example}
-
-Consider a workflow where Alice, who is authorised to send email, requests
-that the agent email a document authored by Mallory, who is not. The resulting
-execution inherits influence from both Alice and Mallory. A requester-only
-controller that checks only Alice's permissions would permit the action.
-Principal Context includes both Alice and Mallory in the influence set; since
-Mallory lacks permission, the effective authority excludes the email action.
-SLED-V finds a counterexample in the requester-only model.
 
 %% ------------------------------------------------------------------
 \section{Related Work}
@@ -518,6 +570,8 @@ Model-level & PI resistance & N/A & Model & Yes & N/A & Benchmark \\
 Dual-LLM & PI prevention & None & Isolation & Planner & None & None \\
 CaMeL & Policy enforcement & Capabilities & Dev.\ policies & Planner & Custom & None \\
 Progent & Privilege control & Arguments & Symbolic policy & Yes & Custom & None \\
+PACT & Arg.\ provenance & Arguments & Provenance tags & Yes & Contracts & None \\
+FORGE & Policy enforcement & History & Datalog policies & Yes & Datalog & None \\
 ITES & PE prevention & Principals & Organisational ACS & \textbf{No} &
 \textbf{Existing} & \textbf{SLED-V} \\
 \bottomrule
@@ -548,15 +602,18 @@ authority or policy: explicit delegation (modelled as an ACS transition),
 trusted declassification/endorsement, or a different security objective. This
 is a fundamental trade-off, not an implementation limitation.
 
-\paragraph{Biba relationship.}
-Principal Context's authority attenuation is structurally analogous to Biba's
-low-water-mark policy: consuming lower-authority information reduces effective
-authority. The distinction is that Principal Context retains principal
-identities and derives action-specific authority from an external ACS, rather
-than assigning a single integrity label. This enables incomparable permissions
-and argument-sensitive authorisation but does not constitute a new integrity
-model; the novelty lies in the combination of authenticated provenance,
-organisational policy, and verification under arbitrary proposal behaviour.
+\paragraph{Delegation, consent, and authority-bearing arguments.}
+The PE objective as stated treats all influence uniformly. In practice,
+organisations need delegation (one principal authorising another to act),
+consent (a principal agreeing to an action affecting their data), and
+authority-bearing arguments (an argument whose provenance grants elevated
+permission). Our implementation models these as ACS state transitions---e.g.,
+a delegation grant updates $P$ for a bounded scope and duration---so that
+the PE property is preserved under the updated ACS state. The seeded
+delegation and disclosure mutants in Table~\ref{tab:defect-detection}
+demonstrate that SLED-V detects defective delegation and disclosure monitors
+under this model. A formal treatment of authority-bearing arguments and
+consent as first-class security decisions is left to future work.
 
 \paragraph{Model-level vs.\ system-level.}
 Model-level defences and system-level enforcement are complementary. Model
@@ -565,13 +622,13 @@ authorization security is enforced at the system boundary. A stronger model
 does not weaken the security argument because the model is assumed adversarial.
 
 \paragraph{Limitations.}
-Results are bounded to finite models under stated bounds and assumptions. The
-verified IR is a hand-written abstraction of the runtime kernel; formal
-equivalence is not claimed. Provenance correctness, ACS correctness, and
-complete mediation are trusted assumptions. Observational confidentiality
-evidence is bounded and does not constitute a noninterference proof.
-Comparative defence results are model-level comparisons of explicit finite
-abstractions, not implementation-level evaluations of the published systems.
+Results are preliminary and bounded to finite models (Section~\ref{sec:evaluation}).
+The trusted computing base is specified in Section~\ref{sec:threat-model}; in
+particular, the verified IR is a hand-written abstraction of the runtime kernel
+and formal equivalence is not claimed. Observational confidentiality evidence
+is bounded and does not constitute a noninterference proof. Comparative defence
+results are model-level comparisons of explicit finite abstractions, not
+implementation-level evaluations of the published systems.
 
 %% ------------------------------------------------------------------
 \section{Conclusion}
@@ -582,11 +639,12 @@ is the appropriate system-level security objective for LLM agents. Principal
 Context derives execution authority from authenticated provenance and an
 organisation's existing access-control system; its intersection rule is
 maximally permissive under the PE objective and monotonically loses authority
-as influence accumulates. SLED and SLED-V provide finite-state and
+as influence accumulates. SLED and SLED-V provide preliminary finite-state and
 solver-backed evidence that implementations enforce the resulting properties,
-detecting defective monitors with minimal counterexamples and revealing that
-satisfying a defence-native property does not imply PE safety. All claims are
-bounded to finite models under stated assumptions.
+detecting defective monitors with minimal counterexamples and suggesting that
+satisfying a defence-native property does not imply PE safety. All results are
+preliminary and bounded to finite models under stated assumptions; further
+validation is needed before broader claims can be made.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
@@ -594,37 +652,17 @@ bounded to finite models under stated assumptions.
 %% ------------------------------------------------------------------
 \appendix
 
-\section{NeurIPS 2026 Paper Checklist}
+\section{Trace-Level Reproduction}
+\label{app:partb}
 
-\begin{enumerate}
-\item \textbf{Claims:} All claims in the abstract and body are backed by
-retained, reproducible evidence or by formal proofs with stated assumptions.
-Limitations are explicit in Section~\ref{sec:discussion}.
+The original SLED option grammar and counter-based enumeration reproduce the
+exact 1{,}462{,}607 raw trace count across three historical environments.
+Canonical-state exploration maps these raw traces to 31 unique states,
+demonstrating the compression benefit of state memoisation
+(Table~\ref{tab:partb-reproduction}).
 
-\item \textbf{Limitations:} Stated in Section~\ref{sec:discussion}.
+\input{generated/tables/partb_reproduction_table}
 
-\item \textbf{Theory:} Theorem assumptions and proofs are stated in
-Section~\ref{sec:ites}.
-
-\item \textbf{Experiments:} All quantitative results are generated from
-versioned result JSON. Exact finite models, bounds, solver versions, and
-reproduction commands are documented in the versioned result JSON and
-reproduction scripts.
-
-\item \textbf{Statistical significance:} Not applicable. All reported results
-are deterministic verification outcomes (SAFE/UNSAFE), not stochastic
-measurements.
-
-\item \textbf{Compute:} All experiments are deterministic and run on a laptop.
-No GPU or cluster compute is used for the reported results.
-
-\item \textbf{Code/data:} An anonymised supplementary artifact is available.
-No identifying repository links are provided during double-blind review.
-
-\item \textbf{Societal impact:} This work provides conditional security
-guarantees. Deployment risk arises from incorrect provenance, ACS
-misconfiguration, or mediator bypass. The paper does not claim deployment
-readiness.
-\end{enumerate}
+\input{checklist}
 
 \end{document}
