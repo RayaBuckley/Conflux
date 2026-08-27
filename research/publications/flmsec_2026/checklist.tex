@@ -5,7 +5,7 @@
 \item {\bf Claims}
     \item[] Question: Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The abstract and introduction state the paper's contributions (PE formulation, Principal Context/ITES, SLED/SLED-V, finite-model evaluation) and explicitly scope all results as bounded to finite models under stated assumptions. Limitations are discussed in Section~\ref{sec:discussion}.
+    \item[] Justification: The abstract and introduction state the paper's contributions (PE formulation, ITES, SLED/SLED-V, finite-model evaluation) and explicitly scope all results as bounded to finite models under stated assumptions. Limitations are discussed in Section~\ref{sec:future}.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the abstract and introduction do not include the claims made in the paper.
@@ -17,7 +17,7 @@
 \item {\bf Limitations}
     \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Section~\ref{sec:discussion} discusses limitations including: bounded finite-model scope, IR abstraction gap (no formal equivalence to runtime), trusted assumptions (provenance correctness, ACS correctness, complete mediation), conservative influence overapproximation, bounded confidentiality (not noninterference), and comparative defence results as model-level abstractions rather than implementation-level evaluations.
+    \item[] Justification: Section~\ref{sec:future} discusses limitations including: bounded finite-model scope, IR abstraction gap (no formal equivalence to runtime), trusted assumptions (provenance correctness, ACS correctness, complete mediation), conservative influence overapproximation, bounded confidentiality (not noninterference), and comparative defence results as model-level abstractions rather than implementation-level evaluations.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper has no limitation while the answer \answerNo{} means that the paper has limitations, but those are not discussed in the paper.
@@ -84,7 +84,7 @@
 \item {\bf Experimental setting/details}
     \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer) necessary to understand the results?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The finite IR fixtures, verification bounds (max depth 1, max states 4 for defect detection; bounded model checking for Z3), checker configurations, and fixture construction are documented in Section~\ref{sec:evaluation} and the versioned result JSON files.
+    \item[] Justification: The finite IR fixtures, verification bounds (max depth 1, max states 4 for defect detection; bounded model checking for Z3), checker configurations, and fixture construction are documented in Section~\ref{sec:results-sledv} and the versioned result JSON files.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper does not include experiments.
@@ -136,7 +136,7 @@
 \item {\bf Broader impacts}
     \item[] Question: Does the paper discuss both potential positive societal impacts and negative societal impacts of the work performed?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The work provides conditional security guarantees that could reduce privilege-escalation risk in LLM-agent deployments. Conversely, deployment risk arises from incorrect provenance, ACS misconfiguration, or mediator bypass; the paper does not claim deployment readiness (Section~\ref{sec:discussion}).
+    \item[] Justification: The work provides conditional security guarantees that could reduce privilege-escalation risk in LLM-agent deployments. Conversely, deployment risk arises from incorrect provenance, ACS misconfiguration, or mediator bypass; the paper does not claim deployment readiness (Section~\ref{sec:future}).
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that there is no societal impact of the work performed.
