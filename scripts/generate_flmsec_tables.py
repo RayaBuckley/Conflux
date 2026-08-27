@@ -41,6 +41,13 @@ def _header(source: str, sha: str) -> str:
     )
 
 
+def _fmt_verdict(verdict: str) -> str:
+    """Format a verdict string for LaTeX textsc."""
+    if verdict == "bounded_safe":
+        return r"Bounded\_Safe"
+    return verdict.upper()
+
+
 def _write(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8", newline="\n")
@@ -67,6 +74,8 @@ def table_defect_detection() -> list[tuple[Path, str]]:
     dr_path = RUNS / "direction-readiness-v1" / "security-mutations.json"
     dr, dr_sha = _read_json(dr_path)
     source += f"; {dr_path.relative_to(ROOT)}"
+
+    rows.append(r"\midrule")
 
     for cat, mutants in dr.get("mutants", {}).items():
         for m in mutants:
@@ -97,8 +106,7 @@ def table_defect_detection() -> list[tuple[Path, str]]:
 \caption{Seeded-defect detection. All five native SLED negative controls and
 all 11 direction-readiness mutants (7 delegation, 4 disclosure) are detected
 with one-step counterexamples. The canonical ITES model exhausts
-\textsc{SAFE} within the checked bounds (max depth 1, max states 4).
-Finite fixtures and bounds only.}
+\textsc{SAFE} within the checked bounds (max depth 1, max states 4).}
 \label{tab:defect-detection}
 \end{table}
 """
@@ -119,12 +127,12 @@ def table_checker_agreement() -> list[tuple[Path, str]]:
     rows: list[str] = []
     for f in coi["fixtures"]:
         fid = f["fixture_id"].replace("_", "\\_")
-        orig = f["reference"]["original"]["verdict"].replace("_", "\\_")
-        red = f["reference"]["reduced"]["verdict"].replace("_", "\\_")
+        orig = _fmt_verdict(f["reference"]["original"]["verdict"])
+        red = _fmt_verdict(f["reference"]["reduced"]["verdict"])
         equiv = r"\checkmark" if f["reference"]["equivalent"] else r"$\times$"
         z3_info = z3_by_id.get(f["fixture_id"], {})
-        z3_orig = z3_info.get("z3_original", {}).get("verdict", "---").replace("_", "\\_")
-        z3_red = z3_info.get("z3_reduced", {}).get("verdict", "---").replace("_", "\\_")
+        z3_orig = _fmt_verdict(z3_info.get("z3_original", {}).get("verdict", "---"))
+        z3_red = _fmt_verdict(z3_info.get("z3_reduced", {}).get("verdict", "---"))
         rows.append(f"{fid} & \\textsc{{{orig}}} & \\textsc{{{red}}} & \\textsc{{{z3_orig}}} & \\textsc{{{z3_red}}} & {equiv} \\\\")
 
     table_body = "\n".join(rows)
@@ -146,8 +154,8 @@ def table_checker_agreement() -> list[tuple[Path, str]]:
 \end{tabular}
 \caption{Independent checker agreement. The reference interpreter, COI-reduced
 model, and Z3 BMC agree on both safe and unsafe fixtures. The unsafe witness
-lifts to the original model. Z3 returns \textsc{bounded\_safe} rather than
-\textsc{safe} because it uses bounded model checking. Finite IR models only.}
+lifts to the original model. Z3 returns \textsc{Bounded\_Safe} rather than
+\textsc{SAFE} because it uses bounded model checking.}
 \label{tab:checker-agreement}
 \end{table}
 """
@@ -164,12 +172,14 @@ def table_coi_reduction() -> list[tuple[Path, str]]:
     for f in coi["fixtures"]:
         fid = f["fixture_id"].replace("_", "\\_")
         m = f["metrics"]
+        orig_v = _fmt_verdict(f["reference"]["original"]["verdict"])
+        red_v = _fmt_verdict(f["reference"]["reduced"]["verdict"])
         rows.append(
             f"{fid} & {m['original_variables']}$\\to${m['reduced_variables']} & "
             f"{m['original_rules']}$\\to${m['reduced_rules']} & "
             f"{m['original_states']}$\\to${m['reduced_states']} & "
-            f"\\textsc{{{f['reference']['original']['verdict']}}} / "
-            f"\\textsc{{{f['reference']['reduced']['verdict']}}} & "
+            f"\\textsc{{{orig_v}}} / "
+            f"\\textsc{{{red_v}}} & "
             f"\\checkmark \\\\",
         )
 
@@ -193,7 +203,7 @@ def table_coi_reduction() -> list[tuple[Path, str]]:
 \caption{Cone-of-influence reduction on two finite IR fixtures. Reduction
 removes the noise variable and its rule in the safe fixture, and one variable
 and one rule in the unsafe fixture. Verdicts agree between original and reduced
-models. The unsafe witness lifts to the original model. Finite IR models only.}
+models. The unsafe witness lifts to the original model.}
 \label{tab:coi-reduction}
 \end{table}
 """
@@ -214,6 +224,8 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
         native = m["native_property"]
         if native is not None:
             nat_label = "Safe" if native["verdict"] != "unsafe" else "Unsafe"
+        elif name == "ITES":
+            nat_label = "Safe (PE is native)"
         else:
             nat_label = "---"
         if pe == "unsafe":
@@ -241,10 +253,10 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
         + r"""
 \bottomrule
 \end{tabular}
-\caption{Comparative defence verification on finite IR models. Each defence
+\caption{Comparative defence verification. Each defence
 satisfies its own intended property Q but violates the PE property. ITES
-preserves PE. All results are finite IR model comparisons, not
-implementation-level evaluations.}
+preserves PE. All results are model-level comparisons of finite abstractions,
+not implementation-level evaluations.}
 \label{tab:comparative-defence}
 \end{table}
 """
@@ -264,7 +276,7 @@ def table_coi_scaling() -> list[tuple[Path, str]]:
         r = f["reduced"]
         z3 = f["z3"]
         wit = f["witness_length"]
-        z3_verdict = z3["original_verdict"].replace("_", "\\_")
+        z3_verdict = _fmt_verdict(z3["original_verdict"])
         rows.append(
             f"{fid} & {o['variables']}$\\rightarrow${r['variables']} & "
             f"{o['rules']}$\\rightarrow${r['rules']} & "
@@ -292,7 +304,7 @@ def table_coi_scaling() -> list[tuple[Path, str]]:
 \caption{COI scaling on parameterized noise fixtures. Adding up to 16 irrelevant
 noise variables does not change verdicts or witness length. The reduced model
 always collapses to the invariant variable(s) only. Z3 agrees on original and
-reduced models across all 12 fixtures. Finite IR models only.}
+reduced models across all 12 fixtures.}
 \label{tab:coi-scaling}
 \end{table}
 """
