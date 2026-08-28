@@ -52,15 +52,14 @@ privilege escalation is impossible under the stated threat model.
 
 To evaluate implementations of system-level defences, we introduce the
 \emph{System-Level Evaluator for Defences} (SLED), which models executions
-under worst-case language-model behaviour and exhaustively explores the
-resulting system state space. Across approximately 1.5 million explored
-execution traces, no successful privilege escalation or
-information-exfiltration violations were observed, while maximal utility was
-preserved for all tasks already authorised by the underlying access-control
-system. We additionally report preliminary results from SLED-V, an exploratory
-verification extension using solver-backed bounded model checking, which
-detects seeded monitor defects and reveals that several published defence
-abstractions satisfy their own properties while violating PE.
+under worst-case language-model behaviour and exhaustively enumerates the
+execution traces admitted by each bounded experimental configuration.
+Across approximately 1.5 million explored execution traces, no successful
+privilege escalation or information-exfiltration violations were observed,
+while all tasks already authorised by the underlying access-control system
+remained achievable. We additionally report preliminary results from SLED-V,
+an exploratory verification extension using solver-backed bounded model
+checking (Appendix~\ref{app:sledv}).
 \end{abstract}
 
 %% ------------------------------------------------------------------
@@ -100,11 +99,34 @@ Extrapolated Security} (ITES), a provenance-based enforcement mechanism in
 which every execution inherits the effective authority implied by the
 provenance of its inputs. We also introduce the \emph{System-Level Evaluator
 for Defences} (SLED), which evaluates system-level defences independently of
-language-model behaviour by exhaustively exploring the execution state space.
+language-model behaviour by exhaustively enumerating the execution state space
+admitted by each bounded experimental configuration.
 Across approximately 1.5 million explored execution traces, SLED observed no
 successful privilege escalation or information exfiltration while preserving
-maximal utility for all tasks consistent with the underlying access-control
+utility for all tasks consistent with the underlying access-control
 system.
+
+The closest system-level defence is CaMeL
+\citep{debenedetti2025defeatingpromptinjectionsdesign}. CaMeL derives control
+flow from the trusted user query and prevents untrusted data from modifying
+that control flow. Its threat model therefore relies on the planner's
+interpretation of the trusted query to establish the intended execution
+structure. ITES instead treats information from every principal---including the
+initiating user---as potentially capable of arbitrarily determining model
+proposals, and constrains the authority of those proposals after influence has
+occurred. This guarantee holds even when the model is fully adversarial, at the
+cost of conservatively restricting authority when untrusted information
+influences an action.
+
+Consider a workflow in which Alice asks the agent to inspect a report authored
+by Bob and perform whichever remediation action the report indicates. The
+report may legitimately determine which action is proposed. ITES does not
+prevent this data-dependent influence: after the report is processed, both
+Alice and Bob are influencing principals, and the proposed action is permitted
+only when both are authorised for it under the ACS. CaMeL seeks to derive
+control flow from the trusted user query and prevent untrusted data from
+modifying it; ITES deliberately admits arbitrary data-dependent influence and
+instead restricts the authority available after that influence occurs.
 
 The principal contributions of this paper are:
 
@@ -117,13 +139,9 @@ The principal contributions of this paper are:
     computes effective authority from information provenance and existing
     access-control policies (Section~\ref{sec:ites}).
 
-  \item We introduce SLED, an evaluation framework that exhaustively explores
-    system behaviour under worst-case model assumptions
-    (Section~\ref{sec:sled}).
-
-  \item We report preliminary results from SLED-V, an exploratory verification
-    extension using solver-backed bounded model checking
-    (Section~\ref{sec:results-sledv}).
+  \item We introduce SLED, an evaluation framework that exhaustively enumerates
+    system behaviour under worst-case model assumptions within bounded
+    configurations (Section~\ref{sec:sled}).
 \end{enumerate}
 
 The remainder of the paper is organised as follows.
@@ -159,22 +177,29 @@ Several recent works address prompt injection through system-level enforcement
 \citep{debenedetti2025defeatingpromptinjectionsdesign,wu2024systemleveldefenseindirectprompt,beurerkellner2025designpatternssecuringllm}.
 The Dual LLM pattern separates planning from processing untrusted information
 by employing a privileged planning model together with a quarantined parsing
-model. CaMeL extends this with capability tracking and developer-defined
-security policies enforced by a custom interpreter. Progent
+model. CaMeL \citep{debenedetti2025defeatingpromptinjectionsdesign} extends
+this with a control-flow/data-flow separation: a trusted planner derives the
+execution plan from the user's query, while untrusted data can influence only
+argument values, not control flow. CaMeL enforces developer-defined capability
+policies when tools are called, achieving provable security on 77\% of
+AgentDojo tasks (compared to 84\% utility without defence). Its threat model
+relies on the planner's interpretation of the trusted query to establish the
+intended execution structure. Progent
 \citep{progent2025} mediates tool calls with symbolic privilege-control
 policies. PACT \citep{pact2026} tracks argument-level provenance. FORGE
 \citep{forge2026} enforces history-sensitive Datalog policies. Each optimises
 for a different security objective; our preliminary comparative verification
-(Section~\ref{sec:results-sledv}) suggests that satisfying a defence-native
+(Appendix~\ref{app:sledv}) suggests that satisfying a defence-native
 property does not imply PE safety.
 
 ITES differs from these approaches by deriving authority directly from the
-organisation's existing access-control system. Rather than introducing a
-trusted planning model, binary trust classifications, or a new policy language,
-ITES tracks the principals whose information influences each execution and
-derives effective authority by intersecting their permissions. Consequently,
-security depends only upon correct provenance tracking, access-control
-enforcement, and the access-control system itself.
+organisation's existing access-control system. CaMeL derives control flow from
+the trusted user query and prevents untrusted data from modifying that control
+flow. ITES instead treats information from every principal---including the
+initiating user---as potentially capable of arbitrarily determining model
+proposals, and constrains the authority of those proposals after influence has
+occurred. Consequently, security depends only upon correct provenance tracking,
+access-control enforcement, and the access-control system itself.
 
 \paragraph{Classical integrity and information-flow control.}
 ITES is inspired by information-flow tracking but differs in using provenance
@@ -204,25 +229,22 @@ Table~\ref{tab:comparison} compares representative approaches.
 \centering
 \small
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{2cm}p{2.5cm}p{1.8cm}p{2cm}p{1.2cm}p{1.5cm}p{2cm}}
+\begin{tabular}{p{1.5cm}p{2.5cm}p{3.2cm}p{2.5cm}p{2.2cm}}
 \toprule
-\textbf{System} & \textbf{Security property} & \textbf{Provenance} &
-\textbf{Authority source} & \textbf{Model trusted?} & \textbf{Policy lang.} &
-\textbf{Verification} \\
+\textbf{System} & \textbf{Security objective} & \textbf{Influence/control-flow assumption} &
+\textbf{Authority source} & \textbf{Security metadata} \\
 \midrule
-Model-level & PI resistance & N/A & Model & Yes & N/A & Benchmark \\
-Dual-LLM & PI prevention & None & Isolation & Planner & None & None \\
-CaMeL & Policy enforcement & Capabilities & Dev.\ policies & Planner & Custom & None \\
-Progent & Privilege control & Arguments & Symbolic policy & Yes & Custom & None \\
-PACT & Arg.\ provenance & Arguments & Provenance tags & Yes & Contracts & None \\
-FORGE & Policy enforcement & History & Datalog policies & Yes & Datalog & None \\
-ITES & PE prevention & Principals & Organisational ACS & \textbf{No} &
-\textbf{Existing} & \textbf{SLED} \\
+CaMeL & Policy/data-flow enforcement & Control flow from trusted user query; untrusted data constrained from modifying it & Developer-defined policies & Capabilities / data-flow provenance \\
+Progent & Privilege-policy enforcement & LLM generates initial privilege policy from user task; policy can only narrow without approval & Symbolic/custom policy & Argument/tool metadata \\
+PACT & Argument-sensitive enforcement & Argument-level provenance determines if untrusted content influences authority-bearing arguments & Contracts/policies & Argument provenance \\
+FORGE & History-sensitive policy enforcement & Observability service maintains execution-context predicates for Datalog enforcement & Datalog policies & Causal/history information \\
+ITES & PE prevention under arbitrary influence & Any principal's information may arbitrarily determine proposals & Existing organisational ACS & Influencing principals \\
 \bottomrule
 \end{tabular}
 \caption{Comparison of approaches to securing LLM agents. ITES is
-distinguished by deriving authority from the existing ACS, not trusting the
-model, and supporting verification.}
+distinguished by its broader threat model: any principal's information,
+including the initiating user's, may arbitrarily determine proposals, and
+authority is constrained after influence occurs.}
 \label{tab:comparison}
 \end{table}
 
@@ -282,26 +304,9 @@ there exists an influencing principal $u \in \mathrm{Influence}(e)$ satisfying
 $\neg P(u,a)$.
 \end{definition}
 
-\subsection{Trusted Computing Base}
-
-\begin{center}
-\small
-\begin{tabular}{p{0.28\linewidth}p{0.62\linewidth}}
-\toprule
-\textbf{Component} & \textbf{Role} \\
-\midrule
-Adversarial & LLM proposals, prompt/document/tool content, principals without
-required permissions \\
-\addlinespace
-Trusted & Principal authentication, provenance attachment, policy decision
-point, reference monitor / transition semantics, effect mediation \\
-\addlinespace
-Not proved & Provenance correctness, ACS correctness, unbounded deployment
-security, arbitrary Python equivalence, provider isolation, subjective user
-intent \\
-\bottomrule
-\end{tabular}
-\end{center}
+The trusted computing base comprises provenance attachment, the policy
+decision point, the reference monitor, and effect mediation; see
+Appendix~\ref{app:tcb} for the full TCB breakdown.
 
 %% ------------------------------------------------------------------
 \section{Influence Tracking with Extrapolated Security}
@@ -380,8 +385,7 @@ The non-empty condition prevents vacuous authority. The effective authority is
 $\mathrm{Permitted}(I) = \bigcap_{u \in I} \{a \in A \mid P(u,a)\}$. We
 conservatively model an execution as reading every supplied input before
 producing output; an execution may access datum $d$ only if $\forall u \in I,\;
-R(d,u)$. This provides a straightforward confidentiality guarantee independent
-of subsequent execution behaviour.
+R(d,u)$. This enforces the paper's access-safety confidentiality condition.
 
 \subsection{Maximal Secure Authorisation}
 
@@ -442,7 +446,9 @@ identities of all conservatively influencing principals and computes permitted
 parameterised actions from the intersection of their current ACS permissions.
 Attenuation is induced by organisational authority rather than by assigning a
 single integrity label to the execution. When permission sets are ordered by
-inclusion, intersection is their meet \citep{denning1976}.
+inclusion, intersection is their meet \citep{denning1976}. A delegation
+mechanism that addresses Biba's irrevocable-degradation limitation is
+described in Appendix~\ref{app:extensions}.
 
 \subsection{Security Guarantee}
 
@@ -529,7 +535,7 @@ observation, provenance monotonicity, and branch isolation. Property-scoped
 cone-of-influence (COI) reduction removes irrelevant variables while preserving
 verdicts and counterexample liftability. The IR is a hand-written abstraction
 of the runtime kernel; formal equivalence is not claimed. Preliminary
-verification results are reported in Section~\ref{sec:results-sledv}.
+verification results are reported in Appendix~\ref{app:sledv}.
 
 %% ------------------------------------------------------------------
 \section{Results}
@@ -538,50 +544,37 @@ verification results are reported in Section~\ref{sec:results-sledv}.
 We evaluated ITES using SLED across three representative organisational
 environments. Each environment defined an access-control system, available
 data, agent workflows, and task specifications, while SLED exhaustively
-explored every execution trace consistent with the threat model of
+enumerated the execution traces admitted by each bounded experimental
+configuration consistent with the threat model of
 Section~\ref{sec:threat-model}. Exploration was limited to a maximum recursive
 execution depth of three. Across all environments, SLED explored approximately
 1.5 million execution traces. Approximately 15\% of traces reached the
 execution-depth bound and were excluded from subsequent analysis.
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\begin{tabular}{lcc}
-\hline
-Environment & Explored Traces & Incomplete Traces\\
-\hline
-1 & 422\,535 & 40\,040\\
-2 & 996\,451 & 159\,112\\
-3 & 43\,621 & 19\,755\\
-\hline
-Total & 1\,462\,607 & 218\,907\\
-\hline
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Env.} & \textbf{Traces} & \textbf{Secure actions} & \textbf{Blocked PE} & \textbf{Secure tasks} & \textbf{Blocked PE tasks} \\
+\midrule
+1 & 422\,535 & 176\,352 & 352\,704 & 2\,118\,454 & 75\,648 \\
+2 & 996\,451 & 381\,328 & 878\,096 & 4\,756\,190 & 107\,136 \\
+3 & 43\,621 & 45\,488 & 28\,852 & 141\,342 & 0 \\
+\midrule
+\textbf{Total} & \textbf{1\,462\,607} & \textbf{603\,168} & \textbf{1\,259\,652} & \textbf{7\,015\,986} & \textbf{182\,784} \\
+\bottomrule
 \end{tabular}
-\caption{Summary of exhaustive state-space exploration.}
-\label{tab:exploration}
-\end{table}
-
-\subsection{Security}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lccc}
-\hline
-Environment & Secure Goal Actions & Successful PE & Blocked PE\\
-\hline
-1 & 176\,352 & 0 & 352\,704\\
-2 & 381\,328 & 0 & 878\,096\\
-3 & 45\,488 & 0 & 28\,852\\
-\hline
-\end{tabular}
-\caption{Action-level evaluation results. Every attempted privilege escalation
-was blocked.}
-\label{tab:action_results}
+\caption{SLED evaluation results across three environments. No successful
+privilege escalation was observed. Every secure task remained achievable.}
+\label{tab:results}
 \end{table}
 
 Across all explored traces, SLED observed no successful privilege escalation
 and no successful information-exfiltration task. These observations are
-consistent with the theoretical guarantees of Section~\ref{sec:ites}.
+consistent with the theoretical guarantees of Section~\ref{sec:ites}. All
+ACS-authorised tasks represented by SLED remained achievable, while every
+attempted privilege escalation was correctly blocked.
 
 As a representative example, consider a workflow in which Alice authors a
 confidential document and Bob subsequently requests that the agent email its
@@ -589,54 +582,13 @@ contents. The resulting execution inherits influence from both Alice and Bob.
 Because Bob lacks permission to perform the requested action, the effective
 authority excludes the email action, and the request is blocked.
 
-\subsection{Utility}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lccc}
-\hline
-Environment & Secure Tasks & Successful PE Tasks & Blocked PE Tasks\\
-\hline
-1 & 2\,118\,454 & 0 & 75\,648\\
-2 & 4\,756\,190 & 0 & 107\,136\\
-3 & 141\,342 & 0 & 0\\
-\hline
-\end{tabular}
-\caption{Task-level evaluation results. Every secure task remained achievable.}
-\label{tab:task_results}
-\end{table}
-
-ITES achieved maximal system-level utility: every task already authorised by
-the access-control system remained executable, while every attempted privilege
-escalation was correctly blocked. Several workflows that appear desirable
+Several workflows that appear desirable
 from a usability perspective are fundamentally incompatible with the underlying
 access-control system because they require authority to increase during
 execution. ITES exposes these as requiring explicit delegation or revised
-organisational policy.
-
-\subsection{Preliminary Verification Results (SLED-V)}
-\label{sec:results-sledv}
-
-We report preliminary SLED-V results on finite IR models. These are
-exploratory, demonstrating the methodology on small models.
-
-SLED-V detects all five native negative controls and 11 direction-readiness
-mutants (7 delegation, 4 disclosure), each with one-step counterexamples
-(Table~\ref{tab:defect-detection}). The reference interpreter, COI-reduced
-model, and Z3 BMC agree on both safe and unsafe fixtures
-(Table~\ref{tab:checker-agreement}). COI reduction removes irrelevant
-variables while preserving verdicts, scaling to 16 noise variables without
-change (Tables~\ref{tab:coi-reduction},~\ref{tab:coi-scaling}). Several
-published defence abstractions satisfy their own properties while violating PE
-(Table~\ref{tab:comparative-defence}), suggesting that satisfying a
-defence-native property does not imply PE safety. This is a model-level
-comparison, not an implementation-level evaluation.
-
-\input{generated/tables/defect_detection_table}
-\input{generated/tables/checker_agreement_table}
-\input{generated/tables/coi_reduction_table}
-\input{generated/tables/coi_scaling_table}
-\input{generated/tables/comparative_defence_table}
+organisational policy. Preliminary SLED-V results, including defect
+detection, checker agreement, COI reduction, and comparative defence
+verification, are reported in Appendix~\ref{app:sledv}.
 
 %% ------------------------------------------------------------------
 \section{Future Work}
@@ -655,14 +607,12 @@ strategies.
 
 Third, organisations frequently require temporary delegation, approval
 workflows, and dynamic permission changes. Our implementation models
-delegation and consent as ACS state transitions---a delegation grant updates
-$P$ for a bounded scope and duration---so that PE is preserved under the
-updated ACS state. The seeded mutants in Table~\ref{tab:defect-detection}
-demonstrate that SLED-V detects defective delegation and disclosure monitors.
+delegation as scoped, one-use ACS state transitions that preserve PE, and
+SLED-V detects defective delegation monitors (Appendix~\ref{app:sledv}).
 A formal treatment of authority-bearing arguments and consent as first-class
 security decisions is left to future work.
 
-Finally, the SLED-V preliminary results (Section~\ref{sec:results-sledv})
+Finally, the SLED-V preliminary results (Appendix~\ref{app:sledv})
 represent a first step toward formal verification, but the verified IR is a
 hand-written abstraction and formal equivalence to the runtime kernel is not
 claimed. Applying formal verification to implementations, including
@@ -682,12 +632,13 @@ We introduced ITES, a provenance-based defence that derives the effective
 authority of every execution directly from the organisation's existing
 access-control system. ITES guarantees that authority can only decrease as
 influence accumulates, preventing privilege escalation under the stated threat
-model while preserving maximal utility. SLED evaluates implementations under
+model while preserving utility for ACS-authorised tasks. SLED evaluates implementations under
 worst-case model behaviour; across approximately 1.5 million explored traces,
 SLED observed no successful privilege escalation. Preliminary SLED-V results
 additionally demonstrate that solver-backed verification can detect defective
-monitors and reveal privilege-escalation gaps in defence abstractions that
-satisfy their own intended properties.
+monitors and reveal privilege-escalation counterexamples in preliminary
+finite abstractions of published defences that satisfy their own
+intended properties.
 
 More broadly, this work demonstrates that existing access-control systems can
 provide a practical foundation for securing LLM agents. ITES ensures that no
@@ -700,7 +651,50 @@ tools, or arbitrary model behaviour---can increase the authority of an execution
 %% ------------------------------------------------------------------
 \appendix
 
-\section{Trace-Level Reproduction}
+\section{Trusted Computing Base}
+\label{app:tcb}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.28\linewidth}p{0.62\linewidth}}
+\toprule
+\textbf{Component} & \textbf{Role} \\
+\midrule
+Adversarial & LLM proposals, prompt/document/tool content, principals without
+required permissions \\
+\addlinespace
+Trusted & Principal authentication, provenance attachment, policy decision
+point, reference monitor / transition semantics, effect mediation \\
+\addlinespace
+Not proved & Provenance correctness, ACS correctness, unbounded deployment
+security, arbitrary Python equivalence, provider isolation, subjective user
+intent \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Expanded Theoretical Details}
+\label{app:theory}
+
+Biba's low-water-mark policy has known limitations: integrity degradation is
+irrevocable---a subject that consumes lower-integrity information is
+permanently downgraded with no recovery mechanism---and the single-label
+model flattens the identities of contributing principals into one opacity.
+ITES addresses the first limitation via a delegation mechanism: a principal
+may issue scoped, one-use, expiring, revocable grants that update the ACS
+permission relation~$P$ for a specific operation, resource, and argument
+set. Because the delegation updates the ACS state, PE is preserved under the
+updated permissions, and authority can be recovered in a structured,
+auditable manner without weakening the monotonicity guarantee for
+non-delegated actions. ITES addresses the second limitation by retaining
+the full set of influencing principals rather than a single label, so
+authority reduction is always traceable to specific principals. Furthermore,
+ITES checks~$P(u,a)$ for each specific parameterised action~$a$, and
+delegation pins exact operation identifiers, resource references, and
+argument constraints---a finer-grained authority model than whole-subject
+integrity labels.
+
+\section{Original SLED Details}
 \label{app:partb}
 
 The original SLED option grammar and counter-based enumeration reproduce the
@@ -711,6 +705,69 @@ demonstrating the compression benefit of state memoisation
 
 \input{generated/tables/partb_reproduction_table}
 
+\section{Preliminary ITES Extensions}
+\label{app:extensions}
+
+The following extensions are preliminary implementation work that is not
+part of the core ITES theorem (Theorems~\ref{thm:maximal}
+and~\ref{thm:monotonicity}) or the SLED evaluation
+(Section~\ref{sec:results}). They are included to demonstrate the
+mechanism's extensibility.
+
+\paragraph{Delegation.}
+Our implementation models delegation as scoped, one-use ACS state
+transitions that preserve PE. A delegation grant updates~$P$ for a bounded
+scope and duration, so PE is preserved under the updated ACS state. SLED-V
+detects defective delegation monitors
+(Table~\ref{tab:defect-detection}, Appendix~\ref{app:sledv}), including
+widened-scope, wrong-beneficiary, reuse, expiry-bypass, revocation-bypass,
+redelegation, and post-influence-issuance mutants.
+
+\paragraph{Consent and visibility.}
+Consent is modelled as a first-class security decision: a principal may
+consent to an action that would otherwise be blocked, but consent does not
+manufacture authority---it updates the ACS state within the same
+preservation argument. Observational confidentiality is approximated by an
+access-safety condition: an execution may access datum~$d$ only if every
+influencing principal has read access. This is not noninterference; it is a
+conservative authorised-read guarantee under the stated model.
+
+\paragraph{Finer-grained authority.}
+The implementation supports parameterised action authority: $P(u,a)$ is
+checked per specific action~$a$, and delegation pins exact operation
+identifiers, resource references, and argument constraints. This is a
+finer-grained authority model than whole-subject integrity labels.
+
+\section{Preliminary Verification Results (SLED-V)}
+\label{app:sledv}
+
+The following SLED-V results are preliminary and not part of the core ITES
+guarantee or the main SLED evaluation. They demonstrate the verification
+methodology on small finite models.
+
+SLED-V detects all five native negative controls and 11 direction-readiness
+mutants (7 delegation, 4 disclosure), each with one-step counterexamples
+(Table~\ref{tab:defect-detection}). The reference interpreter, COI-reduced
+model, and Z3 BMC agree on both safe and unsafe fixtures
+(Table~\ref{tab:checker-agreement}). COI reduction removes irrelevant
+variables while preserving verdicts, scaling to 16 noise variables without
+change (Tables~\ref{tab:coi-reduction},~\ref{tab:coi-scaling}).
+
+Each row in Table~\ref{tab:comparative-defence} represents a hand-written
+finite abstraction inspired by the cited defence's published semantics. The
+native property~$Q$ is the security property the defence is designed to
+enforce according to its paper. The PE property is the privilege-escalation
+property of Definition~\ref{def:pe}. These are model-level comparisons on
+finite abstractions, not implementation-level evaluations of the published
+systems.
+
+\input{generated/tables/defect_detection_table}
+\input{generated/tables/checker_agreement_table}
+\input{generated/tables/coi_reduction_table}
+\input{generated/tables/coi_scaling_table}
+\input{generated/tables/comparative_defence_table}
+
+\clearpage
 \input{checklist}
 
 \end{document}

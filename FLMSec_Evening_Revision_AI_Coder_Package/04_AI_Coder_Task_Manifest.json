@@ -1,0 +1,40 @@
+{
+  "priority_order": [
+    "verify_new_camel_verification_work",
+    "rewrite_camel_ites_theoretical_comparison",
+    "refocus_abstract_intro_related_work",
+    "compress_main_paper_and_move_details_to_appendix",
+    "add_preliminary_extensions_agentdojo_sledv_appendices",
+    "build_minimal_anonymous_code_artifact",
+    "fresh_environment_reproduction_and_anonymisation_audit",
+    "final_claim_and_double_blind_review"
+  ],
+  "main_paper_must_keep": [
+    "threat model",
+    "PE definition",
+    "ITES principal influence rule",
+    "ACS-derived authority",
+    "monotonicity/security result",
+    "accurate CaMeL comparison",
+    "one differentiating workflow",
+    "compact SLED evidence",
+    "limitations"
+  ],
+  "appendix_candidates": [
+    "cut SLED detail",
+    "longer proofs",
+    "extended related work",
+    "new ITES extensions",
+    "AgentDojo smoke tests",
+    "SLED-V preliminary results",
+    "reproduction details"
+  ],
+  "anonymous_artifact": {
+    "strategy": "minimal dependency closure for paper-facing claims",
+    "exclude_full_repo": true,
+    "include_git_history": false,
+    "require_identity_scan": true,
+    "require_clean_environment_test": true,
+    "require_third_party_audit": true
+  }
+}

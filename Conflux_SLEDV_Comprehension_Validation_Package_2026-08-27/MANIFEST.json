@@ -1,0 +1,30 @@
+{
+  "package": "Conflux SLED-V Comprehension and Comparative-Model Validation",
+  "date": "2026-08-27",
+  "documents": [
+    "00_README.md",
+    "01_IMMEDIATE_SAFETY_AND_CLAIM_REPAIR.md",
+    "02_SLEDV_RESEARCHER_COMPREHENSION.md",
+    "03_WORKED_EXAMPLE_AND_MUTATION_CURRICULUM.md",
+    "04_HUMAN_REVIEWABLE_VERIFICATION_OUTPUTS.md",
+    "05_COMPARATIVE_MODEL_VALIDATION.md",
+    "06_CaMeL_DEEP_VALIDATION_PROTOCOL.md",
+    "07_PAPER_AND_CLAIM_POLICY.md",
+    "08_ACCEPTANCE_CHECKLIST.md",
+    "09_AI_CODER_MASTER_PROMPT.md",
+    "10_REPO_INSPECTION_FINDINGS.md"
+  ],
+  "primary_repo_areas_inspected": [
+    "README.md",
+    "docs/reference/SLED.md",
+    "docs/evidence/CLAIMS.md",
+    "docs/evidence/STATUS.md",
+    "docs/evidence/task-registry.json",
+    "research/reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md",
+    "src/conflux/verification/defence_models.py",
+    "src/conflux/verification/ir.py",
+    "src/conflux/verification/interpreter.py",
+    "src/conflux/verification/z3_backend.py",
+    "tests/test_defence_models.py"
+  ]
+}

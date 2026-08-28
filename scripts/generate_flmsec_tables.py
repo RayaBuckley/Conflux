@@ -254,9 +254,9 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
 \bottomrule
 \end{tabular}
 \caption{Comparative defence verification. Each defence
-satisfies its own intended property Q but violates the PE property. ITES
-preserves PE. All results are model-level comparisons of finite abstractions,
-not implementation-level evaluations.}
+abstraction satisfies its own intended property Q but admits a PE
+counterexample. ITES preserves PE. All results are preliminary
+finite-model comparisons, not implementation-level evaluations.}
 \label{tab:comparative-defence}
 \end{table}
 """
