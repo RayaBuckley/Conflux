@@ -81,6 +81,11 @@ ADDITIONAL_TASK_IDS = {
     "COMP-001",
     "COMP-002",
     "COMP-003",
+    "SLEDV-COMP-001",
+    "SLEDV-COMP-002",
+    "SLEDV-COMP-003",
+    "SLEDV-COMP-004",
+    "SLEDV-COMP-005",
 }
 APPROVED_TOP_LEVEL_DIRECTORIES = {
     ".github",

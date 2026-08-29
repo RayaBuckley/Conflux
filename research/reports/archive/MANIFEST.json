@@ -3,7 +3,7 @@
     "integrity_scope": "exact repository blob bytes",
     "hash_algorithm": "sha256",
     "git_object_format": "sha1",
-    "artifact_count": 45,
+    "artifact_count": 62,
     "packages": [
         {
             "id": "2026-07-27-engineering-and-sled",
@@ -252,6 +252,41 @@
             "limitations": [
                 "These reports were prepared before the P0 factual fixes were applied; some issues they identify have since been resolved.",
                 "The Part B 1.46M reproduction remains a P2 stretch goal."
+            ]
+        },
+        {
+            "id": "2026-08-27-sledv-comprehension-validation",
+            "title": "SLED-V comprehension and comparative-model validation programme",
+            "snapshot_date": "2026-08-27",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [],
+            "canonical_successors": [
+                "docs/evidence/task-registry.json",
+                "docs/evidence/CLAIMS.md",
+                "src/conflux/verification/defence_models.py"
+            ],
+            "limitations": [
+                "Defines the next-phase research programme; all acceptance checklist items were unchecked at archive time.",
+                "Claim-repair items (relabel defence_models.py, rename tests, create fidelity registry) remain open."
+            ]
+        },
+        {
+            "id": "2026-08-27-flmsec-evening-revision",
+            "title": "FLMSec evening revision plan and final revision brief",
+            "snapshot_date": "2026-08-27",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [],
+            "canonical_successors": [
+                "research/publications/flmsec_2026/main.tex",
+                "research/publications/flmsec_2026/SUBMISSION_CHECKLIST.md"
+            ],
+            "limitations": [
+                "All revision brief items have been implemented in the submitted FLMSec paper.",
+                "The anonymous code artefact was built and tested in a fresh environment."
             ]
         }
     ],
@@ -749,6 +784,193 @@
             "sha256_bytes": "1b5c15e8824ad5e451114faa346bf0a8211fe865059579024954f47706268fac",
             "git_blob_oid": "6ae2e3c07414600e650bf88e82c9d160b4eac0af",
             "role": "audit_report",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/00_README.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/00_README.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2781,
+            "sha256_bytes": "1c83e3c6afaff6219607a47babb3b7798f2492ee55707e763c7b56dd24b11ba9",
+            "git_blob_oid": "593701686dd4646ecca8ce16386b8be04ca87938",
+            "role": "navigation",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/01_IMMEDIATE_SAFETY_AND_CLAIM_REPAIR.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/01_IMMEDIATE_SAFETY_AND_CLAIM_REPAIR.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3603,
+            "sha256_bytes": "ff6292ac89b4af922d0adfdf2beac7fe5c034f6f1a7dc0efe90a096511693cde",
+            "git_blob_oid": "a74317e64e9e9ed2b302cf428a427a197aaed48d",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/02_SLEDV_RESEARCHER_COMPREHENSION.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/02_SLEDV_RESEARCHER_COMPREHENSION.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4331,
+            "sha256_bytes": "934fb77cb1bd3348d8505f91ce9540717dc5607da594b150f5f5dc78d1be0cb1",
+            "git_blob_oid": "fb6e34c7fd03c84267042364aeca36c103847f7d",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/03_WORKED_EXAMPLE_AND_MUTATION_CURRICULUM.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/03_WORKED_EXAMPLE_AND_MUTATION_CURRICULUM.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3889,
+            "sha256_bytes": "c1a747ad910e78f96209d946f946ee280e1ebfce6f0b8c46b8c5cf51c8af7f95",
+            "git_blob_oid": "29c05ce9bd790e7e53316b67659f4f6c5573932e",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/04_HUMAN_REVIEWABLE_VERIFICATION_OUTPUTS.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/04_HUMAN_REVIEWABLE_VERIFICATION_OUTPUTS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2410,
+            "sha256_bytes": "c2856063d2eb7b6a9135feb44be2c012ddeca0939a50faf07c4e964d56d35f2f",
+            "git_blob_oid": "2a793db1583cec580517ff1f2f7e888aba135106",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/05_COMPARATIVE_MODEL_VALIDATION.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/05_COMPARATIVE_MODEL_VALIDATION.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3934,
+            "sha256_bytes": "87ef95514d537ff07d0e562853ca4335fc5ae9983aa004a8cf74e0db901aa682",
+            "git_blob_oid": "13f25c4dd1415a52c304765366dcfd77266c1cff",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/06_CaMeL_DEEP_VALIDATION_PROTOCOL.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/06_CaMeL_DEEP_VALIDATION_PROTOCOL.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4241,
+            "sha256_bytes": "557428201b2eadbda417e3ab3731755194a4c74283acd7d890e9cbbedc7a2c48",
+            "git_blob_oid": "d2a483f2061b55f846a59fdf0f571b47a6d0fb21",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/07_PAPER_AND_CLAIM_POLICY.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/07_PAPER_AND_CLAIM_POLICY.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2147,
+            "sha256_bytes": "ddf23bd0cfbe6900d6a7be40dc27ba140f486eebb56f499929d920ad7048ecff",
+            "git_blob_oid": "dee775e9118b0961a165c2457224ac87af1583e6",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/08_ACCEPTANCE_CHECKLIST.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/08_ACCEPTANCE_CHECKLIST.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2712,
+            "sha256_bytes": "e4a7074ff74422ecdb77921a2202f7c231f42172d64255d30afe22c39357e2fa",
+            "git_blob_oid": "216780ffff806fc2a5beae8f8a5c8cab77f174e3",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/09_AI_CODER_MASTER_PROMPT.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/09_AI_CODER_MASTER_PROMPT.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2349,
+            "sha256_bytes": "1265d1699b7a74c714f3807f70da513bbfd87530179afd769fccae4bd06f68fb",
+            "git_blob_oid": "60c28e7841d92f8fb056573d7117b7828c80621d",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/10_REPO_INSPECTION_FINDINGS.md",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/10_REPO_INSPECTION_FINDINGS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4497,
+            "sha256_bytes": "04ef8bfb63593cae333599a2d1654879e70cc1a378eab01c5c9f2a1ee1b82f09",
+            "git_blob_oid": "d2585de956f9973500838edeba1a4646bb167ec9",
+            "role": "audit_report",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-sledv-comprehension-validation",
+            "original_path": "Conflux_SLEDV_Comprehension_Validation_Package_2026-08-27/MANIFEST.json",
+            "archive_path": "research/reports/archive/2026-08-27-sledv-comprehension-validation/MANIFEST.json",
+            "media_type": "application/json",
+            "size_bytes": 1045,
+            "sha256_bytes": "85d94725795ccd4a28b6e4c7437a7833ff57a7664d043535667d900006559cc6",
+            "git_blob_oid": "4f6a2822d2e709f3faace2fc3ee2d96cd70464d6",
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-flmsec-evening-revision",
+            "original_path": "FLMSec_Evening_Revision_AI_Coder_Package/01_FLMSec_Evening_Revision_Plan.md",
+            "archive_path": "research/reports/archive/2026-08-27-flmsec-evening-revision/01_FLMSec_Evening_Revision_Plan.md",
+            "media_type": "text/markdown",
+            "size_bytes": 11453,
+            "sha256_bytes": "f778b9eb7fb738650ee24a12218f0ec1a049ae40395ab14deeeef8ebc63c25e2",
+            "git_blob_oid": "cbf5227341785cf351a6c97f511c730d972c2c9a",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-flmsec-evening-revision",
+            "original_path": "FLMSec_Evening_Revision_AI_Coder_Package/02_Appendix_Content_Plan.md",
+            "archive_path": "research/reports/archive/2026-08-27-flmsec-evening-revision/02_Appendix_Content_Plan.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2273,
+            "sha256_bytes": "142b9d1e0a626ee4b38bcdbed921650074647e34084d2ada325308cfe8b1e9d2",
+            "git_blob_oid": "9afcac95cef6aa6067761b47e358db50c6159b71",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-flmsec-evening-revision",
+            "original_path": "FLMSec_Evening_Revision_AI_Coder_Package/03_Anonymous_Code_Artifact_Spec.md",
+            "archive_path": "research/reports/archive/2026-08-27-flmsec-evening-revision/03_Anonymous_Code_Artifact_Spec.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3354,
+            "sha256_bytes": "3f101c8076fb25e54cb55255713009de23ec2e30da3f4a2c5e610278cdb07ee9",
+            "git_blob_oid": "ca7db8571a44f92123e7cbf1388c326f51b994c6",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-flmsec-evening-revision",
+            "original_path": "FLMSec_Evening_Revision_AI_Coder_Package/04_AI_Coder_Task_Manifest.json",
+            "archive_path": "research/reports/archive/2026-08-27-flmsec-evening-revision/04_AI_Coder_Task_Manifest.json",
+            "media_type": "application/json",
+            "size_bytes": 1226,
+            "sha256_bytes": "a5e5d5938a71b8af88ee0aacec84680301d00bb4a7cd21cb592ad3e96be97303",
+            "git_blob_oid": "146070af49c88e06862975b2e755dd71450fd1b9",
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-08-27-flmsec-evening-revision",
+            "original_path": "FLMSec_AI_Coder_Final_Revision_Brief.md",
+            "archive_path": "research/reports/archive/2026-08-27-flmsec-evening-revision/FLMSec_AI_Coder_Final_Revision_Brief.md",
+            "media_type": "text/markdown",
+            "size_bytes": 15234,
+            "sha256_bytes": "fcc0cef8c3d3be259686a1642737d24bf947bdd56fdba4221ac278ae8d8389ef",
+            "git_blob_oid": "a4b6a9a2052e4190fb7f71dd1302eb5c438e86e7",
+            "role": "implementation_specification",
             "duplicate_of": null
         }
     ]
