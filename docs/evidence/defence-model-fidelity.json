@@ -1,0 +1,82 @@
+{
+  "schema_version": "1",
+  "description": "Model-fidelity registry for comparative defence abstractions. Each entry tracks the validation status of a finite IR abstraction against its cited external system. An entry with approved_for_publication_claims=false must not be promoted as an implementation-conformance result.",
+  "models": [
+    {
+      "model_id": "dual-llm-candidate-v1",
+      "external_system": "Dual-LLM",
+      "ir_factory": "dual_llm_baseline_ir",
+      "status": "unvalidated",
+      "supported_fragment": [],
+      "primary_sources": [],
+      "source_to_rule_traceability": [],
+      "published_examples_passed": 0,
+      "published_examples_total": 0,
+      "differential_cases_passed": 0,
+      "differential_cases_total": 0,
+      "known_omissions": [
+        "no implementation conformance",
+        "no published-example conformance",
+        "no reference-implementation differential"
+      ],
+      "approved_for_publication_claims": false
+    },
+    {
+      "model_id": "camel-candidate-v1",
+      "external_system": "CaMeL",
+      "ir_factory": "camel_ir",
+      "status": "unvalidated",
+      "supported_fragment": [],
+      "primary_sources": [],
+      "source_to_rule_traceability": [],
+      "published_examples_passed": 0,
+      "published_examples_total": 0,
+      "differential_cases_passed": 0,
+      "differential_cases_total": 0,
+      "known_omissions": [
+        "no implementation conformance",
+        "no published-example conformance",
+        "no reference-implementation differential"
+      ],
+      "approved_for_publication_claims": false
+    },
+    {
+      "model_id": "progent-candidate-v1",
+      "external_system": "Progent",
+      "ir_factory": "progent_ir",
+      "status": "unvalidated",
+      "supported_fragment": [],
+      "primary_sources": [],
+      "source_to_rule_traceability": [],
+      "published_examples_passed": 0,
+      "published_examples_total": 0,
+      "differential_cases_passed": 0,
+      "differential_cases_total": 0,
+      "known_omissions": [
+        "no implementation conformance",
+        "no published-example conformance",
+        "no reference-implementation differential"
+      ],
+      "approved_for_publication_claims": false
+    },
+    {
+      "model_id": "pact-candidate-v1",
+      "external_system": "PACT",
+      "ir_factory": "pact_ir",
+      "status": "unvalidated",
+      "supported_fragment": [],
+      "primary_sources": [],
+      "source_to_rule_traceability": [],
+      "published_examples_passed": 0,
+      "published_examples_total": 0,
+      "differential_cases_passed": 0,
+      "differential_cases_total": 0,
+      "known_omissions": [
+        "no implementation conformance",
+        "no published-example conformance",
+        "no reference-implementation differential"
+      ],
+      "approved_for_publication_claims": false
+    }
+  ]
+}

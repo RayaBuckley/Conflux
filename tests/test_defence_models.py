@@ -1,4 +1,9 @@
-"""Comparative defence verification: Dual-LLM, CaMeL, Progent, PACT, and ITES reference."""
+"""Comparative defence verification: Dual-LLM, CaMeL, Progent, PACT, and ITES reference.
+
+All external defence models are unvalidated candidate abstractions, not
+implementation-conformance evidence for the published systems.  See
+``docs/evidence/defence-model-fidelity.json`` for model-fidelity status.
+"""
 
 from __future__ import annotations
 
@@ -22,9 +27,11 @@ from conflux.verification import (
 
 pytestmark = pytest.mark.security
 
+VALIDATION_STATUS = "unvalidated_external_abstraction"
+
 
 class TestDualLLMBaselinePE:
-    """Dual-LLM satisfies its own property Q but violates Conflux PE."""
+    """Dual-LLM candidate abstraction: satisfies Q but admits PE counterexample."""
 
     def test_pe_property_is_unsafe(self) -> None:
         """The Dual-LLM model admits a PE violation.
@@ -51,7 +58,7 @@ class TestDualLLMBaselinePE:
 
 
 class TestDualLLMNativeProperty:
-    """The Dual-LLM model satisfies its own intended property Q."""
+    """Dual-LLM candidate abstraction: satisfies its own intended property Q."""
 
     def test_native_property_is_safe(self) -> None:
         """Q: the quarantined processor never directly executes effects.
@@ -108,7 +115,7 @@ class TestDefectiveRequesterOnly:
 
 
 class TestCaMeLBaselinePE:
-    """CaMeL satisfies its own property Q but violates Conflux PE."""
+    """CaMeL candidate abstraction: satisfies Q but admits PE counterexample."""
 
     def test_pe_property_is_unsafe(self) -> None:
         ir = camel_ir()
@@ -124,7 +131,7 @@ class TestCaMeLBaselinePE:
 
 
 class TestCaMeLNativeProperty:
-    """CaMeL satisfies its own property Q: processor never executes."""
+    """CaMeL candidate abstraction: satisfies its own property Q (processor never executes)."""
 
     def test_native_property_is_safe(self) -> None:
         ir = camel_native_property_ir()
@@ -133,7 +140,7 @@ class TestCaMeLNativeProperty:
 
 
 class TestProgentBaselinePE:
-    """Progent satisfies its own property Q but violates Conflux PE."""
+    """Progent candidate abstraction: satisfies Q but admits PE counterexample."""
 
     def test_pe_property_is_unsafe(self) -> None:
         ir = progent_ir()
@@ -149,7 +156,7 @@ class TestProgentBaselinePE:
 
 
 class TestProgentNativeProperty:
-    """Progent satisfies its own property Q: all calls satisfy policy."""
+    """Progent candidate abstraction: satisfies its own property Q (all calls satisfy policy)."""
 
     def test_native_property_is_safe(self) -> None:
         ir = progent_native_property_ir()
@@ -158,7 +165,7 @@ class TestProgentNativeProperty:
 
 
 class TestPACTBaselinePE:
-    """PACT satisfies its own property Q but violates Conflux PE."""
+    """PACT candidate abstraction: satisfies Q but admits PE counterexample."""
 
     def test_pe_property_is_unsafe(self) -> None:
         ir = pact_ir()
@@ -174,7 +181,7 @@ class TestPACTBaselinePE:
 
 
 class TestPACTNativeProperty:
-    """PACT satisfies its own property Q: argument provenance preserved."""
+    """PACT candidate abstraction: satisfies its own property Q (argument provenance preserved)."""
 
     def test_native_property_is_safe(self) -> None:
         ir = pact_native_property_ir()

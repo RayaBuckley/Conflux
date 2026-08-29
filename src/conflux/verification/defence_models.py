@@ -1,13 +1,17 @@
 """Verification IR models of contemporary agent defence patterns.
 
-Each factory returns a :class:`VerificationIR` that faithfully encodes the
-defence's transition semantics for a small finite instance.  The models are
-designed for comparative verification against the Conflux PE property:
+Each factory returns a :class:`VerificationIR` that represents a small
+finite abstraction intended for hypothesis generation and verifier
+testing.  The models are **not** implementation-conformance evidence for
+the cited external systems.  They are designed for comparative
+verification against the Conflux PE property:
 
     Executed(a) -> forall p in Influencers(a): ACSAllows(p, a)
 
-A defence can satisfy its own intended property while violating PE because
-it does not track per-principal provenance.
+A candidate abstraction can satisfy its own intended property while
+admitting a PE counterexample because it does not track per-principal
+provenance.  External defence model fidelity is tracked in
+``docs/evidence/defence-model-fidelity.json``.
 """
 
 from __future__ import annotations
@@ -49,19 +53,21 @@ def _var(name: str) -> Expression:
 
 
 def dual_llm_baseline_ir() -> VerificationIR:
-    """Dual-LLM baseline: privileged planner + quarantined data processor.
+    """Dual-LLM candidate abstraction: privileged planner + quarantined data processor.
 
-    The Dual-LLM pattern separates control flow (privileged planner) from
-    data processing (quarantined processor).  The planner decides which tool
+    This is a small finite abstraction inspired by the Dual-LLM pattern, not
+    an implementation-conformance model of any published system.  The
+    abstraction separates control flow (privileged planner) from data
+    processing (quarantined processor).  The planner decides which tool
     to call and with what arguments; the processor handles untrusted data
     but cannot directly invoke tools.
 
     The key security property (Q) is that the quarantined processor never
     directly executes effects — only the privileged planner can.
 
-    **PE vulnerability:** The Dual-LLM model does not track which principals
-    influenced the planner's decision.  If the planner consumes data from
-    principal ``attacker`` and decides to execute an action, the action is
+    **PE vulnerability (in the candidate abstraction):** The Dual-LLM
+    abstraction does not track which principals influenced the planner's
+    decision.  If the planner consumes data from principal ``attacker`` and decides to execute an action, the action is
     performed even though ``attacker`` lacks authorisation.  The model
     satisfies Q (processor never executes directly) but violates PE.
 
@@ -121,7 +127,7 @@ def dual_llm_baseline_ir() -> VerificationIR:
         ),
         4,
         (
-            "dual-llm baseline: privileged planner + quarantined processor",
+            "Dual-LLM candidate abstraction: privileged planner + quarantined processor",
             "planner tracks data consumption but not per-principal provenance",
             "attacker_authorised is False (attacker lacks permission for the action)",
         ),
@@ -129,11 +135,12 @@ def dual_llm_baseline_ir() -> VerificationIR:
 
 
 def dual_llm_native_property_ir() -> VerificationIR:
-    """Dual-LLM with its own intended property Q: processor never executes.
+    """Dual-LLM candidate abstraction: its own intended property Q.
 
-    This model encodes the Dual-LLM's own security guarantee: the quarantined
-    processor never directly performs effects.  Only the privileged planner
-    can execute actions.  This property Q is satisfied by the model.
+    This model encodes the Dual-LLM abstraction's own security guarantee:
+    the quarantined processor never directly performs effects.  Only the
+    privileged planner can execute actions.  This property Q is satisfied
+    by the model.
 
     Variables:
         processor_executed: the quarantined processor directly executed an effect
@@ -168,7 +175,7 @@ def dual_llm_native_property_ir() -> VerificationIR:
         ),
         3,
         (
-            "dual-llm native property: processor never executes",
+            "Dual-LLM candidate abstraction native property: processor never executes",
             "the planner can execute; the processor only receives data",
         ),
     )
@@ -306,17 +313,19 @@ def ites_defective_requester_only_ir() -> VerificationIR:
 
 
 def camel_ir() -> VerificationIR:
-    """CaMeL-style defence: capability flow with data/control separation.
+    """CaMeL candidate abstraction: capability flow with data/control separation.
 
-    CaMeL separates a trusted planner (control flow) from a quarantined
-    data processor.  Capabilities are granted to the planner but data
-    flow is restricted.  The key property Q is that data-controlled
-    actions cannot directly execute — they must go through the planner's
-    capability checks.
+    This is a small finite abstraction inspired by CaMeL, not an
+    implementation-conformance model of the published system.  CaMeL
+    separates a trusted planner (control flow) from a quarantined data
+    processor.  Capabilities are granted to the planner but data flow is
+    restricted.  The key property Q is that data-controlled actions cannot
+    directly execute — they must go through the planner's capability checks.
 
-    **PE vulnerability:** CaMeL's capability checks authorise based on
-    the planner's capabilities, not on the provenance of data consumed
-    by the planner.  If the planner consumes attacker-controlled data
+    **PE vulnerability (in the candidate abstraction):** The CaMeL
+    abstraction's capability checks authorise based on the planner's
+    capabilities, not on the provenance of data consumed by the planner.
+    If the planner consumes attacker-controlled data
     and decides to execute, the action is performed even though the
     attacker lacks authorisation.
 
@@ -367,7 +376,7 @@ def camel_ir() -> VerificationIR:
         ),
         4,
         (
-            "CaMeL: capability flow with data/control separation",
+            "CaMeL candidate abstraction: capability flow with data/control separation",
             "capability_granted is True; attacker_authorised is False",
             "planner checks capabilities but not per-principal provenance",
         ),
@@ -375,10 +384,10 @@ def camel_ir() -> VerificationIR:
 
 
 def camel_native_property_ir() -> VerificationIR:
-    """CaMeL's own property Q: data-flow cannot directly cause effects.
+    """CaMeL candidate abstraction: its own property Q (data-flow cannot cause effects).
 
-    Only the planner (with capabilities) can execute; the quarantined
-    data processor cannot.  This property Q is satisfied.
+    Only the planner (with capabilities) can execute; the quarantined data
+    processor cannot.  This property Q is satisfied by the abstraction.
     """
     return VerificationIR(
         "camel-native-property",
@@ -407,25 +416,26 @@ def camel_native_property_ir() -> VerificationIR:
         ),
         3,
         (
-            "CaMeL native property: processor never executes",
+            "CaMeL candidate abstraction native property: processor never executes",
             "the planner can execute via capabilities; the processor only receives data",
         ),
     )
 
 
 def progent_ir() -> VerificationIR:
-    """Progent-like defence: parameter-sensitive tool policy.
+    """Progent candidate abstraction: parameter-sensitive tool policy.
 
-    Progent applies symbolic policies to tool calls, checking arguments
-    against policy rules.  The key property Q is that all tool calls
-    satisfy the policy.  However, the policy checks arguments, not the
-    provenance of the data that influenced the planner's decision to
-    call the tool.
+    This is a small finite abstraction inspired by Progent, not an
+    implementation-conformance model of the published system.  Progent
+    applies symbolic policies to tool calls, checking arguments against
+    policy rules.  The key property Q is that all tool calls satisfy the
+    policy.  However, the policy checks arguments, not the provenance of
+    the data that influenced the planner's decision to call the tool.
 
-    **PE vulnerability:** If the planner consumed attacker-controlled
-    data and decides to call a tool with arguments that satisfy the
-    policy, the action executes even though the attacker influenced the
-    decision and lacks authorisation.
+    **PE vulnerability (in the candidate abstraction):** If the planner
+    consumed attacker-controlled data and decides to call a tool with
+    arguments that satisfy the policy, the action executes even though
+    the attacker influenced the decision and lacks authorisation.
 
     Variables:
         planner_consumed_attacker: planner read attacker data.
@@ -473,7 +483,7 @@ def progent_ir() -> VerificationIR:
         ),
         4,
         (
-            "Progent: parameter-sensitive tool policy",
+            "Progent candidate abstraction: parameter-sensitive tool policy",
             "policy_satisfied is True; attacker_authorised is False",
             "policy checks arguments but not planner provenance",
         ),
@@ -481,7 +491,7 @@ def progent_ir() -> VerificationIR:
 
 
 def progent_native_property_ir() -> VerificationIR:
-    """Progent's own property Q: all tool calls satisfy the policy."""
+    """Progent candidate abstraction: its own property Q (all calls satisfy policy)."""
     return VerificationIR(
         "progent-native-property",
         (StateVariable("policy_violation", Sort.BOOLEAN, False),),
@@ -500,22 +510,24 @@ def progent_native_property_ir() -> VerificationIR:
             ),
         ),
         2,
-        ("Progent native property: all calls satisfy policy",),
+        ("Progent candidate abstraction native property: all calls satisfy policy",),
     )
 
 
 def pact_ir() -> VerificationIR:
-    """PACT-like defence: argument-level provenance tracking.
+    """PACT candidate abstraction: argument-level provenance tracking.
 
-    PACT tracks provenance at the argument level, not just the execution
+    This is a small finite abstraction inspired by PACT, not an
+    implementation-conformance model of the published system.  PACT
+    tracks provenance at the argument level, not just the execution
     level.  The key property Q is that argument provenance is preserved
     across steps.  However, PACT does not derive action authority from
     the intersection of all influencing principals' permissions.
 
-    **PE vulnerability:** PACT may track that the attacker influenced a
-    specific argument, but it does not block the action based on the
-    attacker's lack of ACS permission.  The action executes because the
-    requester is authorised, even though the attacker also influenced it.
+    **PE vulnerability (in the candidate abstraction):** The PACT
+    abstraction may track that the attacker influenced a specific
+    argument, but it does not block the action based on the attacker's
+    lack of ACS permission.  The action executes because the requester
 
     Variables:
         requester_authorised: the requester has permission (True).
@@ -563,7 +575,7 @@ def pact_ir() -> VerificationIR:
         ),
         4,
         (
-            "PACT: argument-level provenance without authority intersection",
+            "PACT candidate abstraction: argument-level provenance without authority intersection",
             "requester_authorised is True; attacker_authorised is False",
             "tracks arg provenance but does not block based on influencer authority",
         ),
@@ -571,7 +583,7 @@ def pact_ir() -> VerificationIR:
 
 
 def pact_native_property_ir() -> VerificationIR:
-    """PACT's own property Q: argument provenance is preserved."""
+    """PACT candidate abstraction: its own property Q (argument provenance preserved)."""
     return VerificationIR(
         "pact-native-property",
         (
@@ -593,7 +605,7 @@ def pact_native_property_ir() -> VerificationIR:
             ),
         ),
         2,
-        ("PACT native property: argument provenance preserved",),
+        ("PACT candidate abstraction native property: argument provenance preserved",),
     )
 
 
