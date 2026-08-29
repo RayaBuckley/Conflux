@@ -97,17 +97,21 @@ and one rule, and the reduced unsafe model lifts the counterexample.
 Laptop experimental evidence (Qwen2.5-1.5B-Instruct, RTX 4060) is retained
 under `research/output/runs/`:
 
-- `research/output/runs/sled-canon-env01/`, `env02/`, `env03/`: canonical SLED verified safe
-  at depth 12 (2 states, 1 transition each);
-- `research/output/runs/delegation-v2/`: delegation verification complete, classified
-  `bounded_evidence`, all mutants killed;
-- `research/output/runs/verify-coi-safe/` and `verify-coi-unsafe/`: Z3 BMC with COI
-  reduction on security-monitor IR; safe verdict bounded safe, unsafe
-  verdict produces counterexample, original/reduced agree;
-- `research/output/runs/verify-coi-original-safe/` and `verify-coi-original-unsafe/`: Z3 BMC
-  with COI reduction on the larger safe-noise and unsafe-control IR fixtures
-  from `sled-coi-reduction-v1`; reduction removes the noise variable and
-  toggle/increment rules, both verdicts agree with originals;
+- `research/output/runs/smoke/`: scripted canonical SLED verified safe at depth 12
+  (2 states, 1 transition each);
+- `research/output/runs/native-sled-reproduction-v1/`: native SLED reproduction detecting
+  five seeded monitor defects across three fixture pairs;
+- `research/output/runs/direction-readiness-v1/security-mutations.json`: delegation
+  verification complete, classified `bounded_evidence`, all seven mutants killed;
+- `research/output/runs/sled-coi-reduction-v1/`: COI reduction on two IR fixtures (safe-noise
+  and unsafe-control); safe verdict bounded safe, unsafe verdict produces
+  counterexample, original and reduced verdicts agree;
+- `research/output/runs/z3-agreement-v1/`: Z3 BMC agreement on the same two fixtures;
+  reference interpreter, reduced model, and Z3 agree (safe returns `bounded_safe`
+  vs `safe` semantically);
+- `research/output/runs/coi-scaling-v1/`: COI scaling across 12 fixtures (0–16 noise
+  variables); all original/reduced verdicts agree, Z3 agrees on all, reduction
+  collapses noise variables while preserving the invariant;
 - `research/output/runs/planning-pilot-1b5-v1/`: eight-cell planning pilot completed with
   Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all cells `complete=True`; model is
   too small for high utility but the planning pipeline executes end-to-end;
