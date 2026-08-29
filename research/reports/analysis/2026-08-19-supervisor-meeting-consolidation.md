@@ -91,10 +91,7 @@ linked to commit `d6d9857954ac`
   unsafe model lifts the counterexample
 
 **Evidence:** [output/runs/sled-coi-reduction-v1/](../../../research/output/runs/sled-coi-reduction-v1/),
-[output/runs/verify-coi-safe/](../../../research/output/runs/verify-coi-safe/),
-[output/runs/verify-coi-unsafe/](../../../research/output/runs/verify-coi-unsafe/),
-[output/runs/verify-coi-original-safe/](../../../research/output/runs/verify-coi-original-safe/),
-[output/runs/verify-coi-original-unsafe/](../../../research/output/runs/verify-coi-original-unsafe/)
+[output/runs/z3-agreement-v1/](../../../research/output/runs/z3-agreement-v1/)
 
 ### 2.5 Security extensions (Spec 013) — implemented
 
@@ -128,7 +125,7 @@ linked to commit `d6d9857954ac`
   to GPU availability
 - Raw upstream trace retained (47s benign inference)
 
-**Evidence:** [output/runs/agentdojo-qwen-1.5b/](../../../research/output/runs/agentdojo-qwen-1.5b/),
+**Evidence:** [output/runs/agentdojo-1b5-nf4-v1/](../../../research/output/runs/agentdojo-1b5-nf4-v1/),
 [experiments/agentdojo.lock](../../experiments/agentdojo.lock),
 [tests/test_agentdojo_runner.py](../../../tests/test_agentdojo_runner.py)
 
@@ -140,7 +137,7 @@ linked to commit `d6d9857954ac`
   parse issue)
 - Offline modeled fixtures are mechanics evidence only
 
-**Evidence:** [output/runs/planning-pilot-qwen-1.5b/](../../../research/output/runs/planning-pilot-qwen-1.5b/),
+**Evidence:** [output/runs/planning-pilot-1b5-v1/](../../../research/output/runs/planning-pilot-1b5-v1/),
 [tests/test_planning_runner.py](../../../tests/test_planning_runner.py)
 
 ### 2.8 Model adapters — evaluation ready
