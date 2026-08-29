@@ -168,6 +168,27 @@ keeping those roles separate makes drift visible.
 
 ## Recent changes
 
+Unreleased — 29 August 2026:
+
+- Archived FLMSec evening revision package and SLED-V comprehension validation
+  package to `research/reports/archive/`; updated the archive manifest with 17
+  new artifacts across two new dated packages.
+- Added RunPod remote access guide to `docs/reference/RUNPOD.md` with
+  supervisor usage guidelines (single H100/H200 day-to-day, occasional
+  short multi-GPU runs).
+- Recorded the SLED-V comprehension programme (claim repair, tutorial,
+  worked example, mutation curriculum, explainable outputs, CaMeL deep
+  validation) in the task registry as deferred next-phase work.
+- Recorded supervisor research pointers: Clark-Wilson integrity model
+  relationship and LLMbda Calculus multi-CaMeL extension
+  (arXiv:2602.20064) in deferred research.
+- Fixed stale evidence links in the 2026-08-19 supervisor meeting
+  consolidation (verify-coi-* → sled-coi-reduction-v1/z3-agreement-v1;
+  agentdojo-qwen-1.5b → agentdojo-1b5-nf4-v1; planning-pilot-qwen-1.5b →
+  planning-pilot-1b5-v1).
+- Updated comparative defence model gap to reflect that CaMeL, Progent, and
+  PACT finite IR abstractions now exist alongside Dual-LLM and ITES.
+
 Unreleased — 31 July 2026:
 
 - Stabilized archive validation across LF and CRLF checkouts while preserving

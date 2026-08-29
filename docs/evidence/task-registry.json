@@ -167,7 +167,37 @@
       "ids": ["COMP-001", "COMP-002", "COMP-003"],
       "status": "bounded_evidence",
       "evidence": ["src/conflux/verification/defence_models.py", "tests/test_defence_models.py"],
-      "gap": "Finite IR models of Dual-LLM and ITES only; no CaMeL model; no implementation conformance"
+      "gap": "Finite IR abstractions of Dual-LLM, CaMeL, Progent, PACT, and ITES; no implementation conformance; model fidelity unvalidated"
+    },
+    {
+      "ids": ["SLEDV-COMP-001"],
+      "status": "deferred",
+      "evidence": ["research/reports/archive/2026-08-27-sledv-comprehension-validation/"],
+      "gap": "Relabel comparative models in defence_models.py from 'faithfully encodes' to 'finite abstraction'; rename test docstrings from 'CaMeL violates PE' to 'candidate abstraction admits PE counterexample'; create docs/evidence/defence-model-fidelity.json"
+    },
+    {
+      "ids": ["SLEDV-COMP-002"],
+      "status": "deferred",
+      "evidence": ["research/reports/archive/2026-08-27-sledv-comprehension-validation/"],
+      "gap": "Create docs/tutorials/SLEDV_FOR_PROJECT_AUTHOR.md with conceptual ladder from original SLED through native SLED, verification IR, reference interpreter, and Z3 BMC; include verdict-strength table and three correctness layers"
+    },
+    {
+      "ids": ["SLEDV-COMP-003"],
+      "status": "deferred",
+      "evidence": ["research/reports/archive/2026-08-27-sledv-comprehension-validation/"],
+      "gap": "Build Alice/Mallory worked example in five representations: handwritten semantics, native SLED, verification IR, reference interpreter, Z3 BMC; include prediction-first mutation curriculum (M1-M5)"
+    },
+    {
+      "ids": ["SLEDV-COMP-004"],
+      "status": "deferred",
+      "evidence": ["research/reports/archive/2026-08-27-sledv-comprehension-validation/"],
+      "gap": "Implement human-reviewable verification output renderer with structured claim boundaries, domain-language counterexamples, and external-abstraction warnings"
+    },
+    {
+      "ids": ["SLEDV-COMP-005"],
+      "status": "deferred",
+      "evidence": ["research/reports/archive/2026-08-27-sledv-comprehension-validation/"],
+      "gap": "CaMeL deep validation: source spec, discrepancy analysis, supported-fragment definition, published-example conformance, reference-implementation differential, human counterexample review"
     }
   ],
   "deferred_research": [
@@ -180,6 +210,8 @@
     "foundational bibliography audit (primary-source verification of Priority A papers in research/publications/manuscript/REFERENCES.md)",
     "literature matrix (classical integrity/IFC stream with structured fields: work, year, stream, security objective, label/provenance model, authority model, downgrading model, formal guarantee, implementation, relation to Conflux)",
     "novelty audit (search repository for claims made unsafe by classical IFC/integrity precedent)",
-    "noninterference/observational confidentiality verification (relational property requiring execution-pair comparison)"
+    "noninterference/observational confidentiality verification (relational property requiring execution-pair comparison)",
+    "Clark-Wilson integrity model relationship analysis (well-formed transactions, constrained data items, transformation procedures, separation of duty; complement existing Biba/LOMAC analysis in ADR 012)",
+    "LLMbda Calculus study and multi-CaMeL extension feasibility (arXiv:2602.20064, Garby/Gordon/Sands; provenance-labeled lambda calculus with noninterference theorem; supervisor suggests extension for multi-principal confinement analysis)"
   ]
 }
