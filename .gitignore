@@ -67,12 +67,18 @@ research/output/runs/*
 !research/output/runs/z3-agreement-v1/**
 !research/output/runs/native-sled-partb-reproduction-v1/
 !research/output/runs/native-sled-partb-reproduction-v1/**
+!research/output/runs/agentdojo-7b-v1/
+!research/output/runs/agentdojo-7b-v1/**
+!research/output/runs/planning-pilot-7b-v1/
+!research/output/runs/planning-pilot-7b-v1/**
 data/
 *.jsonl
 !research/output/runs/smoke/*.jsonl
 !research/output/runs/native-sled-reproduction-v1/*.jsonl
 !research/output/runs/sled-coi-reduction-v1/*.jsonl
 !research/output/runs/planning-pilot-1b5-v1/*.jsonl
+!research/output/runs/agentdojo-7b-v1/*.jsonl
+!research/output/runs/planning-pilot-7b-v1/*.jsonl
 dist/
 build/
 
