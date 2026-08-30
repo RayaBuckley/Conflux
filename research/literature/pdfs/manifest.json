@@ -1,0 +1,103 @@
+{
+  "description": "Local PDF manifest for literature corpus entries that are not available on arXiv. Maps corpus keys to local PDF filenames. PDFs are gitignored and must be sourced by the operator via institutional access.",
+  "entries": {
+    "biba1977": {
+      "filename": "biba1977_integrity_considerations.pdf",
+      "source": "MITRE Technical Report MTR-3153 (ESD-TR-76-372)",
+      "url_tried": [
+        "https://apps.dtic.mil/sti/tr/pdf/ADA039324.pdf",
+        "https://csrc.nist.gov/CSRC/media/Publications/conference-paper/1997/06/01/integrity-considerations-for-secure-computer-systems/documents/biba.pdf",
+        "http://seclab.cs.ucdavis.edu/projects/history/papers/biba75.pdf"
+      ],
+      "status": "needed"
+    },
+    "lomac": {
+      "filename": "lomac_2000.pdf",
+      "source": "Proceedings of the 2000 IEEE Symposium on Security and Privacy",
+      "url_tried": [
+        "https://ieeexplore.ieee.org/document/848460"
+      ],
+      "status": "needed"
+    },
+    "denning1976": {
+      "filename": "denning1976_lattice_model.pdf",
+      "source": "Communications of the ACM, 19(5), 236-243",
+      "url_tried": [
+        "https://doi.org/10.1145/360051.360056",
+        "https://www.cs.purdue.edu/homes/ninghui/readings/AccessControl/denning_cacm76.pdf"
+      ],
+      "status": "needed"
+    },
+    "sabelfeld2003": {
+      "filename": "sabelfeld2003_language_based_ifc.pdf",
+      "source": "IEEE Journal on Selected Areas in Communications, 21(1), 5-19",
+      "url_tried": [
+        "https://doi.org/10.1109/JSAC.2002.806121"
+      ],
+      "status": "needed"
+    },
+    "myersliskov": {
+      "filename": "myersliskov2000_dlm.pdf",
+      "source": "ACM TOSEM, 9(4), 410-442",
+      "url_tried": [
+        "https://doi.org/10.1145/363516.363524",
+        "https://www.cs.cornell.edu/andru/papers/dlm.pdf",
+        "https://www.cs.cornell.edu/andru/papers/dlm.html"
+      ],
+      "status": "needed"
+    },
+    "declassificationsurvey": {
+      "filename": "sabelfeld2009_declassification.pdf",
+      "source": "Journal of Computer Security, 17(5), 609-655",
+      "url_tried": [
+        "https://doi.org/10.3233/JCS-2009-0357"
+      ],
+      "status": "needed"
+    },
+    "robustdeclassification": {
+      "filename": "zdancewic2001_robust_declassification.pdf",
+      "source": "Proceedings of the 14th IEEE CSFW, 15-23",
+      "url_tried": [
+        "https://www.cs.cornell.edu/andru/papers/robust-dec.pdf",
+        "https://www.cs.cornell.edu/andru/papers/robust-dec.html"
+      ],
+      "status": "needed"
+    },
+    "asbestos": {
+      "filename": "asbestos_2005.pdf",
+      "source": "SOSP 2005",
+      "url_tried": [],
+      "status": "needed"
+    },
+    "histar": {
+      "filename": "histar_2006.pdf",
+      "source": "OSDI 2006",
+      "url_tried": [],
+      "status": "needed"
+    },
+    "flume": {
+      "filename": "flume_2007.pdf",
+      "source": "SOSP 2007",
+      "url_tried": [],
+      "status": "needed"
+    },
+    "dstar": {
+      "filename": "dstar_2008.pdf",
+      "source": "SOSP 2007 / PhD thesis",
+      "url_tried": [],
+      "status": "needed"
+    },
+    "lio": {
+      "filename": "lio_2012.pdf",
+      "source": "ASPLOS 2012",
+      "url_tried": [],
+      "status": "needed"
+    },
+    "camflow": {
+      "filename": "camflow_2018.pdf",
+      "source": "IEEE EuroS&PW 2018",
+      "url_tried": [],
+      "status": "needed"
+    }
+  }
+}
