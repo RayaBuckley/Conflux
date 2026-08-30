@@ -1,1 +1,1 @@
-python scripts/generate_cedar_preflight.py runs/cedar-differential-preflight-v1 --source-commit 2f55ac31abee17e25f05055f494802a277af5bec
+python scripts/generate_cedar_preflight.py runs/cedar-differential-preflight-v1 --source-commit 8437c01f3db52310b299106f5c1f7abc241c820c

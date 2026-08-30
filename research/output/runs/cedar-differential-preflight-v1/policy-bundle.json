@@ -27,7 +27,7 @@
   "binary": {
     "version": "4.12.0",
     "commit": "fdcbaed32bdb8c8d13e4eaf2b58db5555e9fb8c5",
-    "sha256": "2698c1dbe1d00c2b52149f54faa3d2c2e0780bf26322d0f7462f9b3272f483df"
+    "sha256": "4a9f6795cc08b602c94d3a8349f07a2471577d5c3e74b242626423cd5f1c1272"
   },
   "supported_features": ["entities_json", "explicit_forbid", "json_schema", "parc", "request_context"]
 }
