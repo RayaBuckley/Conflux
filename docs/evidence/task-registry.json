@@ -65,9 +65,9 @@
     },
     {
       "ids": ["SLEDV-004"],
-      "status": "partial",
-      "evidence": ["src/conflux/verification/nuxmv_backend.py", "tests/test_verification_ir.py"],
-      "gap": "The nuXmv binary is unavailable; the adapter returns UNKNOWN."
+      "status": "implemented",
+      "evidence": ["src/conflux/verification/nuxmv_backend.py", "tests/test_verification_ir.py", "research/output/runs/defence-models-v1/result.json"],
+      "gap": null
     },
     {
       "ids": ["PLAN-001", "PLAN-002", "PLAN-003"],

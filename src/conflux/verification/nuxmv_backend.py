@@ -94,7 +94,7 @@ _WSL_TMP = Path(f"//wsl.localhost/{_WSL_DISTRIBUTION}/tmp")
 def _wsl_available() -> bool:
     try:
         result = subprocess.run(
-            ("wsl", "-d", _WSL_DISTRIBUTION, "--", "which", "nuXmv"),
+            ("wsl", "-d", _WSL_DISTRIBUTION, "--", "bash", "-ic", "which nuXmv"),
             check=False,
             capture_output=True,
             text=True,
@@ -125,10 +125,10 @@ class WslNuXmvRunner:
         try:
             smv_file.write_text(model_path.read_text(encoding="utf-8"), encoding="utf-8", newline="\n")
             linux_model = f"/tmp/{wsl_dir.name}/model.smv"
-            wsl_prefix: tuple[str, ...] = ("wsl", "-d", _WSL_DISTRIBUTION, "--")
+            wsl_prefix: tuple[str, ...] = ("wsl", "-d", _WSL_DISTRIBUTION, "--", "bash", "-ic")
             try:
                 version = subprocess.run(
-                    (*wsl_prefix, binary, "-h"),
+                    (*wsl_prefix, f"{binary} -h"),
                     check=False,
                     capture_output=True,
                     text=True,
@@ -136,7 +136,7 @@ class WslNuXmvRunner:
                     shell=False,
                 )
                 process = subprocess.run(
-                    (*wsl_prefix, binary, "-int", linux_model),
+                    (*wsl_prefix, f"{binary} -int {linux_model}"),
                     input=commands,
                     check=False,
                     capture_output=True,
@@ -194,7 +194,7 @@ class NuXmvBackend:
             model = _smv(ir)
         except ValueError as error:
             return self._unknown(ir, f"unsupported_ir:{error}")
-        commands = "go\ncheck_invar_ic3\nquit\n"
+        commands = "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n"
         with TemporaryDirectory(prefix="conflux-nuxmv-") as temporary:
             path = Path(temporary) / "model.smv"
             path.write_text(model, encoding="utf-8", newline="\n")

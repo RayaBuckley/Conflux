@@ -483,6 +483,10 @@ def test_verify_cli_explains_unavailable_nuxmv(
         "conflux.verification.nuxmv_backend.shutil.which",
         lambda _: None,
     )
+    monkeypatch.setattr(
+        "conflux.verification.nuxmv_backend._wsl_available",
+        lambda: False,
+    )
     model = tmp_path / "model.json"
     model.write_text(
         json.dumps(

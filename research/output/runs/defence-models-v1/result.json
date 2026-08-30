@@ -6,6 +6,7 @@
       "native_property": {
         "counterexample": true,
         "counterexample_length": 0,
+        "nuxmv_verdict": "safe",
         "reference_states": 2,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -13,6 +14,7 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 4,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 4,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -23,6 +25,7 @@
       "native_property": {
         "counterexample": true,
         "counterexample_length": 0,
+        "nuxmv_verdict": "safe",
         "reference_states": 2,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -30,6 +33,7 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 4,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -40,6 +44,7 @@
       "native_property": {
         "counterexample": true,
         "counterexample_length": 0,
+        "nuxmv_verdict": "safe",
         "reference_states": 1,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -47,6 +52,7 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 3,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -57,6 +63,7 @@
       "native_property": {
         "counterexample": true,
         "counterexample_length": 0,
+        "nuxmv_verdict": "safe",
         "reference_states": 1,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -64,6 +71,7 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 3,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -75,6 +83,7 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 4,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -86,6 +95,7 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 0,
+        "nuxmv_verdict": "safe",
         "reference_states": 5,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"

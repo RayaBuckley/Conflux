@@ -203,7 +203,7 @@ def test_wsl_nuxmv_runner_writes_to_wsl_tmp(monkeypatch: pytest.MonkeyPatch, tmp
             captured.append((command, input_text))
         from subprocess import CompletedProcess
 
-        if "-h" in command:
+        if any("-h" in str(part) for part in command):
             return CompletedProcess(command, 0, "nuXmv 2.2.0\n", "")
         return CompletedProcess(command, 0, "-- invariant x is true\n", "")
 
@@ -223,8 +223,9 @@ def test_wsl_nuxmv_runner_writes_to_wsl_tmp(monkeypatch: pytest.MonkeyPatch, tmp
     version_cmd = captured[0][0]
     verify_cmd = captured[1][0]
     assert "wsl" in version_cmd[0].lower() or version_cmd[0] == "wsl"
-    assert verify_cmd[-1].startswith("/tmp/")
-    assert verify_cmd[-1].endswith("/model.smv")
+    verify_cmd_str = verify_cmd[-1]
+    assert "/tmp/" in verify_cmd_str
+    assert verify_cmd_str.endswith("/model.smv")
 
 
 @pytest.mark.parametrize(
