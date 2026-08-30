@@ -58,14 +58,21 @@
     {
       "key": "adaptiveeval",
       "title": "Adaptive Evaluation of Out-of-Band Defenses Against Prompt Injection in LLM Agents",
-      "authors": [],
+      "authors": [
+        "Praneeth Narisetty",
+        "Shiva Nagendra Babu Kore",
+        "Uday Kumar Reddy Kattamanchi",
+        "Jayaram Kumarapu"
+      ],
       "year": 2026,
       "venue": "reproduction",
       "source_url": "https://arxiv.org/abs/2606.26479",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2606.26479",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -78,22 +85,45 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2606.26479"
+      "arxiv_id": "2606.26479",
+      "relevance": {
+        "useful_parts": "Recent work (2024 to 2026) has converged on a strategy for defending tool-using LLM agents against indirect prompt injection: rather than training the model to refuse malicious instructions, enforce security outside the model with a deterministic policy that mediates the agent's actions. Systems suc...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Recent work (2024 to 2026) has converged on a strategy for defending tool-using LLM agents against indirect prompt injection: rather than training the model to refuse malicious instructions, enforce s..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentarmor",
       "title": "AgentArmor: Enforcing Program Analysis on Agent Runtime Trace to Defend Against Prompt Injection",
-      "authors": [],
+      "authors": [
+        "Peiran Wang",
+        "Yang Liu",
+        "Yunfei Lu",
+        "Yifeng Cai",
+        "Hongbo Chen",
+        "Qingyou Yang",
+        "Jie Zhang",
+        "Jue Hong",
+        "Ye Wu"
+      ],
       "year": 2025,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2508.01249",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2508.01249",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -106,10 +136,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2508.01249"
+      "arxiv_id": "2508.01249",
+      "relevance": {
+        "useful_parts": "Large Language Model (LLM) agents offer a powerful new paradigm for solving various problems by combining natural language reasoning with the execution of external tools. However, their dynamic and non-transparent behavior introduces critical security risks, particularly in the presence of prompt in...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Large Language Model (LLM) agents offer a powerful new paradigm for solving various problems by combining natural language reasoning with the execution of external tools. However, their dynamic and no..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentdojo",
@@ -167,14 +208,23 @@
     {
       "key": "agentdyn",
       "title": "AgentDyn: A Dynamic Open-Ended Benchmark for Evaluating Prompt Injection Attacks of Real-World Agent Security System",
-      "authors": [],
+      "authors": [
+        "Hao Li",
+        "Ruoyao Wen",
+        "Shanghao Shi",
+        "Ning Zhang",
+        "Yevgeniy Vorobeychik",
+        "Chaowei Xiao"
+      ],
       "year": 2026,
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2602.03117",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2602.03117",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -187,22 +237,45 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2602.03117"
+      "arxiv_id": "2602.03117",
+      "relevance": {
+        "useful_parts": "AI agents that autonomously interact with external tools and environments have shown great promise across real-world applications. However, their reliance on external data exposes them to serious indirect prompt injection attacks, where malicious instructions embedded in third-party content hijack a...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "AI agents that autonomously interact with external tools and environments have shown great promise across real-world applications. However, their reliance on external data exposes them to serious indi..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentguard",
       "title": "AgentGuard: An Attribute-Based Access Control Framework for Tool-Use LLM-Based Agent",
-      "authors": [],
+      "authors": [
+        "Jiaqi Luo",
+        "Songyang Peng",
+        "Jiarun Dai",
+        "Zhile Chen",
+        "Zhuoxiang Shen",
+        "Geng Hong",
+        "Xudong Pan",
+        "Yuan Zhang",
+        "Min Yang"
+      ],
       "year": 2026,
       "venue": "public implementation",
       "source_url": "https://arxiv.org/abs/2605.28071",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.28071",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -215,22 +288,50 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.28071"
+      "arxiv_id": "2605.28071",
+      "relevance": {
+        "useful_parts": "LLM-based agents have recently attracted significant attention due to their ability to autonomously invoke relevant tools to accomplish complex tasks. However, recent studies have shown that these agents face severe security risks, which may lead to privacy leakage, financial loss, or even full syst...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "LLM-based agents have recently attracted significant attention due to their ability to autonomously invoke relevant tools to accomplish complex tasks. However, recent studies have shown that these age..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentharm",
       "title": "AgentHarm: A Benchmark for Measuring Harmfulness of LLM Agents",
-      "authors": [],
+      "authors": [
+        "Maksym Andriushchenko",
+        "Alexandra Souly",
+        "Mateusz Dziemian",
+        "Derek Duenas",
+        "Maxwell Lin",
+        "Justin Wang",
+        "Dan Hendrycks",
+        "Andy Zou",
+        "Zico Kolter",
+        "Matt Fredrikson",
+        "Eric Winsor",
+        "Jerome Wynne",
+        "Yarin Gal",
+        "Xander Davies"
+      ],
       "year": 2024,
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2410.09024",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2410.09024",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -243,22 +344,42 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2410.09024"
+      "arxiv_id": "2410.09024",
+      "relevance": {
+        "useful_parts": "The robustness of LLMs to jailbreak attacks, where users design prompts to circumvent safety measures and misuse model capabilities, has been studied primarily for LLMs acting as simple chatbots. Meanwhile, LLM agents -- which use external tools and can execute multi-stage tasks -- may pose a greate...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "The robustness of LLMs to jailbreak attacks, where users design prompts to circumvent safety measures and misuse model capabilities, has been studied primarily for LLMs acting as simple chatbots. Mean..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agenthijack",
       "title": "AgentHijack: Benchmarking Computer Use Agent Robustness to Common Environment Corruptions",
-      "authors": [],
+      "authors": [
+        "Jingwei Sun",
+        "Jianing Zhu",
+        "Yuanyi Li",
+        "Tongliang Liu",
+        "Xia HU",
+        "Bo Han"
+      ],
       "year": 2026,
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2605.25707",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.25707",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -271,22 +392,40 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.25707"
+      "arxiv_id": "2605.25707",
+      "relevance": {
+        "useful_parts": "Autonomous computer use agents that powered by multimodal large language models (MLLMs) are emerging as capable assistants for completing complex digital workflows. However, real-world execution environments are far from ideal: pop-ups, resolution changes, and competing applications frequently inter...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Autonomous computer use agents that powered by multimodal large language models (MLLMs) are emerging as capable assistants for completing complex digital workflows. However, real-world execution envir..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentlab",
       "title": "AgentLAB: Benchmarking LLM Agents against Long-Horizon Attacks",
-      "authors": [],
+      "authors": [
+        "Tanqiu Jiang",
+        "Yuhui Wang",
+        "Jiacheng Liang",
+        "Ting Wang"
+      ],
       "year": 2026,
       "venue": "public benchmark",
       "source_url": "https://arxiv.org/abs/2602.16901",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2602.16901",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -299,22 +438,39 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2602.16901"
+      "arxiv_id": "2602.16901",
+      "relevance": {
+        "useful_parts": "LLM agents are increasingly deployed in long-horizon, complex environments to solve challenging problems, but this expansion exposes them to long-horizon attacks that exploit multi-turn user-agent-environment interactions to achieve objectives infeasible in single-turn settings. To measure agent vul...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "LLM agents are increasingly deployed in long-horizon, complex environments to solve challenging problems, but this expansion exposes them to long-horizon attacks that exploit multi-turn user-agent-env..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentleak",
       "title": "AgentLeak: A Full-Stack Benchmark for Privacy Leakage in Multi-Agent LLM Systems",
-      "authors": [],
+      "authors": [
+        "Faouzi El Yagoubi",
+        "Godwin Badu-Marfo",
+        "Ranwa Al Mallah"
+      ],
       "year": 2026,
       "venue": "benchmark + detection pipeline",
       "source_url": "https://arxiv.org/abs/2602.11510",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2602.11510",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -327,10 +483,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2602.11510"
+      "arxiv_id": "2602.11510",
+      "relevance": {
+        "useful_parts": "Multi-agent Large Language Model (LLM) systems create privacy risks that current output-only benchmarks cannot measure. When agents coordinate on tasks, sensitive data may pass through inter-agent messages, shared memory, and tool arguments, all pathways that final-output audits typically do not ins...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Multi-agent Large Language Model (LLM) systems create privacy risks that current output-only benchmarks cannot measure. When agents coordinate on tasks, sensitive data may pass through inter-agent mes..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentpi",
@@ -362,14 +529,24 @@
     {
       "key": "agentsafetybench",
       "title": "Agent-SafetyBench: Evaluating the Safety of LLM Agents",
-      "authors": [],
+      "authors": [
+        "Zhexin Zhang",
+        "Shiyao Cui",
+        "Yida Lu",
+        "Jingzhuo Zhou",
+        "Junxiao Yang",
+        "Hongning Wang",
+        "Minlie Huang"
+      ],
       "year": 2024,
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2412.14470",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2412.14470",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -382,22 +559,38 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2412.14470"
+      "arxiv_id": "2412.14470",
+      "relevance": {
+        "useful_parts": "As large language models (LLMs) are increasingly deployed as agents, their integration into interactive environments and tool use introduce new safety challenges beyond those associated with the models themselves. However, the absence of comprehensive benchmarks for evaluating agent safety presents ...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "As large language models (LLMs) are increasingly deployed as agents, their integration into interactive environments and tool use introduce new safety challenges beyond those associated with the model..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentsecbench",
       "title": "AgentSecBench",
-      "authors": [],
+      "authors": [
+        "Faruk Alpay",
+        "Taylan Alpay"
+      ],
       "year": 2026,
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2605.26269",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.26269",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -410,22 +603,40 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.26269"
+      "arxiv_id": "2605.26269",
+      "relevance": {
+        "useful_parts": "LLM agents process trusted instructions, retrieved records, and tool observations through a common generative channel. This conflates data flow with authority: an untrusted string can affect a secret-bearing response or an action proposal even when no application policy authorizes that influence. We...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "LLM agents process trusted instructions, retrieved records, and tool observations through a common generative channel. This conflates data flow with authority: an untrusted string can affect a secret-..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentsentrybound",
       "title": "Agent-Sentry: Bounding LLM Agents via Execution Provenance",
-      "authors": [],
+      "authors": [
+        "Rohan Sequeira",
+        "Stavros Damianakis",
+        "Umar Iqbal",
+        "Konstantinos Psounis"
+      ],
       "year": 2026,
       "venue": "prototype",
       "source_url": "https://arxiv.org/abs/2603.22868",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2603.22868",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -438,22 +649,47 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2603.22868"
+      "arxiv_id": "2603.22868",
+      "relevance": {
+        "useful_parts": "Agentic computing systems, while immensely capable, raise serious security, privacy, and safety concerns. A key issue is that the full set of functionalities offered by these systems, combined with their probabilistic execution flows, is not known beforehand. Given this lack of characterization, it ...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Agentic computing systems, while immensely capable, raise serious security, privacy, and safety concerns. A key issue is that the full set of functionalities offered by these systems, combined with th..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentsentrycausal",
       "title": "AgentSentry: Mitigating Indirect Prompt Injection in LLM Agents via Temporal Causal Diagnostics and Context Purification",
-      "authors": [],
+      "authors": [
+        "Tian Zhang",
+        "Yiwei Xu",
+        "Juan Wang",
+        "Keyan Guo",
+        "Xiaoyang Xu",
+        "Bowen Xiao",
+        "Quanlong Guan",
+        "Jinlin Fan",
+        "Jiawei Liu",
+        "Zhiquan Liu",
+        "Hongxin Hu"
+      ],
       "year": 2026,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2602.22724",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2602.22724",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -466,22 +702,39 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2602.22724"
+      "arxiv_id": "2602.22724",
+      "relevance": {
+        "useful_parts": "Large language model (LLM) agents increasingly rely on external tools and retrieval systems to autonomously complete complex tasks. However, this design exposes agents to indirect prompt injection (IPI), where attacker-controlled context embedded in tool outputs or retrieved content silently steers ...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Large language model (LLM) agents increasingly rely on external tools and retrieval systems to autonomously complete complex tasks. However, this design exposes agents to indirect prompt injection (IP..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "agentspec",
       "title": "AgentSpec: Customizable Runtime Enforcement for Safe and Reliable LLM Agents",
-      "authors": [],
+      "authors": [
+        "Haoyu Wang",
+        "Christopher M. Poskitt",
+        "Jun Sun"
+      ],
       "year": 2025,
       "venue": "runtime framework",
       "source_url": "https://arxiv.org/abs/2503.18666",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2503.18666",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -494,10 +747,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2503.18666"
+      "arxiv_id": "2503.18666",
+      "relevance": {
+        "useful_parts": "Agents built on LLMs are increasingly deployed across diverse domains, automating complex decision-making and task execution. However, their autonomy introduces safety risks, including security vulnerabilities, legal violations, and unintended harmful actions. Existing mitigation methods, such as mo...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Agents built on LLMs are increasingly deployed across diverse domains, automating complex decision-making and task execution. However, their autonomy introduces safety risks, including security vulner..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "alloy",
@@ -529,14 +793,23 @@
     {
       "key": "argus",
       "title": "ARGUS: Defending LLM Agents Against Context-Aware Prompt Injection",
-      "authors": [],
+      "authors": [
+        "Shihao Weng",
+        "Yang Feng",
+        "Jinrui Zhang",
+        "Xiaofei Xie",
+        "Jiongchi Yu",
+        "Jia Liu"
+      ],
       "year": 2026,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2605.03378",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.03378",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -549,22 +822,53 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.03378"
+      "arxiv_id": "2605.03378",
+      "relevance": {
+        "useful_parts": "Large Language Model (LLM) agents are increasingly deployed as task-oriented software systems that use runtime context to decide and act on behalf of users. This delegation model makes prompt injection especially dangerous: an attacker can hide a context-aware instruction inside evidence the agent m...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Large Language Model (LLM) agents are increasingly deployed as task-oriented software systems that use runtime context to decide and act on behalf of users. This delegation model makes prompt injectio..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "artcomp",
       "title": "Security Challenges in AI Agent Deployment: Insights from a Large Scale Public Competition",
-      "authors": [],
+      "authors": [
+        "Andy Zou",
+        "Maxwell Lin",
+        "Eliot Jones",
+        "Micha Nowak",
+        "Mateusz Dziemian",
+        "Nick Winter",
+        "Alexander Grattan",
+        "Valent Nathanael",
+        "Ayla Croft",
+        "Xander Davies",
+        "Jai Patel",
+        "Robert Kirk",
+        "Nate Burnikell",
+        "Yarin Gal",
+        "Dan Hendrycks",
+        "J. Zico Kolter",
+        "Matt Fredrikson"
+      ],
       "year": 2025,
       "venue": "dataset/report",
       "source_url": "https://arxiv.org/abs/2507.20526",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2507.20526",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -577,22 +881,44 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2507.20526"
+      "arxiv_id": "2507.20526",
+      "relevance": {
+        "useful_parts": "Recent advances have enabled LLM-powered AI agents to autonomously execute complex tasks by combining language model reasoning with tools, memory, and web access. But can these systems be trusted to follow deployment policies in realistic environments, especially under attack? To investigate, we ran...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Recent advances have enabled LLM-powered AI agents to autonomously execute complex tasks by combining language model reasoning with tools, memory, and web access. But can these systems be trusted to f..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "asb",
       "title": "Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents",
-      "authors": [],
-      "year": 2025,
+      "authors": [
+        "Hanrong Zhang",
+        "Jingyuan Huang",
+        "Kai Mei",
+        "Yifei Yao",
+        "Zhenting Wang",
+        "Chenlu Zhan",
+        "Hongwei Wang",
+        "Yongfeng Zhang"
+      ],
+      "year": 2024,
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2410.02644",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2410.02644",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -605,10 +931,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2410.02644"
+      "arxiv_id": "2410.02644",
+      "relevance": {
+        "useful_parts": "Although LLM-based agents, powered by Large Language Models (LLMs), can use external tools and memory mechanisms to solve complex real-world tasks, they may also introduce critical security vulnerabilities. However, the existing literature does not comprehensively evaluate attacks and defenses again...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Although LLM-based agents, powered by Large Language Models (LLMs), can use external tools and memory mechanisms to solve complex real-world tasks, they may also introduce critical security vulnerabil..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "asbestos",
@@ -717,14 +1054,20 @@
     {
       "key": "authgraph",
       "title": "Aligning Provenance with Authorization: A Dual-Graph Defense for LLM Agents",
-      "authors": [],
+      "authors": [
+        "Peiran Wang",
+        "Ying Li",
+        "Yuan Tian"
+      ],
       "year": 2026,
       "venue": "prototype",
       "source_url": "https://arxiv.org/abs/2605.26497",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.26497",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -737,22 +1080,38 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.26497"
+      "arxiv_id": "2605.26497",
+      "relevance": {
+        "useful_parts": "LLM-based agents are increasingly deployed in high-stakes scenarios such as email management, financial transactions, and code execution, where they interact with the external world through tool calling. During execution, these agents must read external data sources (emails, webpages, files) that at...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "LLM-based agents are increasingly deployed in high-stakes scenarios such as email management, financial transactions, and code execution, where they interact with the external world through tool calli..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "authworkflows",
       "title": "Authenticated Workflows: A Systems Approach to Protecting Agentic AI",
-      "authors": [],
+      "authors": [
+        "Mohan Rajagopalan",
+        "Vinay Rao"
+      ],
       "year": 2026,
       "venue": "prototype/concept",
       "source_url": "https://arxiv.org/abs/2602.10465",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2602.10465",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -765,22 +1124,42 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2602.10465"
+      "arxiv_id": "2602.10465",
+      "relevance": {
+        "useful_parts": "Agentic AI systems automate enterprise workflows but existing defenses--guardrails, semantic filters--are probabilistic and routinely bypassed. We introduce authenticated workflows, the first complete trust layer for enterprise agentic AI. Security reduces to protecting four fundamental boundaries: ...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Agentic AI systems automate enterprise workflows but existing defenses--guardrails, semantic filters--are probabilistic and routinely bypassed. We introduce authenticated workflows, the first complete..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "autodojo",
       "title": "AutoDojo: Adaptive Attacks Expose Superficial Defenses and User-Underspecification Limits in LLM Agents",
-      "authors": [],
+      "authors": [
+        "Xinhang Ma",
+        "Taoran Li",
+        "Chaowei Xiao",
+        "Zhiyuan Yu",
+        "Ning Zhang",
+        "Yevgeniy Vorobeychik"
+      ],
       "year": 2026,
       "venue": "code/benchmark",
       "source_url": "https://arxiv.org/abs/2606.15057",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2606.15057",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -793,22 +1172,39 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2606.15057"
+      "arxiv_id": "2606.15057",
+      "relevance": {
+        "useful_parts": "Indirect prompt injection (IPI) is a major security threat to LLM-powered agents. Thus, a growing body of work have proposed a variety of defensive approaches against IPI. These can be grouped into three broad categories: 1) prompt-based (using prompting as a way to prevent agents from following mal...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Indirect prompt injection (IPI) is a major security threat to LLM-powered agents. Thus, a growing body of work have proposed a variety of defensive approaches against IPI. These can be grouped into th..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "automatedpi",
       "title": "Assessing Automated Prompt Injection Attacks in Agentic Environments",
-      "authors": [],
+      "authors": [
+        "David Hofer",
+        "Edoardo Debenedetti",
+        "Florian Tramèr"
+      ],
       "year": 2026,
       "venue": "attack harness",
       "source_url": "https://arxiv.org/abs/2606.10525",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2606.10525",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -821,10 +1217,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2606.10525"
+      "arxiv_id": "2606.10525",
+      "relevance": {
+        "useful_parts": "Indirect prompt injection poses a critical threat to LLM agents that interact with untrusted external data, yet automated attack methods--proven effective for jailbreaking--remain underexplored in realistic agentic settings. We present a comprehensive empirical evaluation of automated prompt injecti...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Indirect prompt injection poses a critical threat to LLM agents that interact with untrusted external data, yet automated attack methods--proven effective for jailbreaking--remain underexplored in rea..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "awsiam",
@@ -856,14 +1263,21 @@
     {
       "key": "badmemory",
       "title": "Bad Memory: Evaluating Prompt Injection Risks from Memory in Agentic Systems",
-      "authors": [],
+      "authors": [
+        "Soham Gadgil",
+        "David Alexander",
+        "Sai Sunku",
+        "Franziska Roesner"
+      ],
       "year": 2026,
       "venue": "sandbox harness",
       "source_url": "https://arxiv.org/abs/2607.14611",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2607.14611",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -876,10 +1290,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2607.14611"
+      "arxiv_id": "2607.14611",
+      "relevance": {
+        "useful_parts": "A growing class of agentic systems maintain persistent state across sessions through memory files, behavioral preferences, and knowledge bases. While this makes agents more useful and self-improving, it also creates a new attack surface for prompt injections in which malicious instructions can be em...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "A growing class of agentic systems maintain persistent state across sessions through memory files, behavioral preferences, and knowledge bases. While this makes agents more useful and self-improving, ..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "belllapadula",
@@ -1133,14 +1558,18 @@
     {
       "key": "causalitylaundering",
       "title": "Causality Laundering: Denial-Feedback Leakage in Tool-Calling LLM Agents",
-      "authors": [],
+      "authors": [
+        "Mohammad Hossein Chinaei"
+      ],
       "year": 2026,
       "venue": "ARM prototype",
       "source_url": "https://arxiv.org/abs/2604.04035",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2604.04035",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1153,10 +1582,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2604.04035"
+      "arxiv_id": "2604.04035",
+      "relevance": {
+        "useful_parts": "Tool-calling LLM agents can read private data, invoke external services, and trigger real-world actions, creating a security problem at the point of tool execution. We identify a denial-feedback leakage pattern, which we term causality laundering, in which an adversary probes a protected action, lea...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Tool-calling LLM agents can read private data, invoke external services, and trigger real-world actions, creating a security problem at the point of tool execution. We identify a denial-feedback leaka..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "cedar",
@@ -1216,14 +1656,21 @@
     {
       "key": "checkpointgcg",
       "title": "Checkpoint-GCG: Auditing and Attacking Fine-Tuning-Based Prompt Injection Defenses",
-      "authors": [],
+      "authors": [
+        "Xiaoxue Yang",
+        "Bozhidar Stevanoski",
+        "Matthieu Meeus",
+        "Yves-Alexandre de Montjoye"
+      ],
       "year": 2025,
       "venue": "attack method",
       "source_url": "https://arxiv.org/abs/2505.15738",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2505.15738",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1236,10 +1683,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2505.15738"
+      "arxiv_id": "2505.15738",
+      "relevance": {
+        "useful_parts": "Large language models (LLMs) are increasingly deployed in real-world applications ranging from chatbots to agentic systems, where they are expected to process untrusted data and follow trusted instructions. Failure to distinguish between the two poses significant security risks, exploited by prompt ...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Large language models (LLMs) are increasingly deployed in real-world applications ranging from chatbots to agentic systems, where they are expected to process untrusted data and follow trusted instruc..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "clarkwilson",
@@ -1383,14 +1841,19 @@
     {
       "key": "conseca",
       "title": "Contextual Agent Security: A Policy for Every Purpose",
-      "authors": [],
+      "authors": [
+        "Lillian Tsai",
+        "Eugene Bagdasarian"
+      ],
       "year": 2025,
       "venue": "prototype",
       "source_url": "https://arxiv.org/abs/2501.17070",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2501.17070",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1403,22 +1866,42 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2501.17070"
+      "arxiv_id": "2501.17070",
+      "relevance": {
+        "useful_parts": "Judging an action's safety requires knowledge of the context in which the action takes place. To human agents who act in various contexts, this may seem obvious: performing an action such as email deletion may or may not be appropriate depending on the email's content, the goal (e.g., to erase sensi...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Judging an action's safety requires knowledge of the context in which the action takes place. To human agents who act in various contexts, this may seem obvious: performing an action such as email del..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "criticaleval",
       "title": "A Critical Evaluation of Defenses Against Prompt Injection Attacks",
-      "authors": [],
+      "authors": [
+        "Yuqi Jia",
+        "Zedian Shao",
+        "Yupei Liu",
+        "Jinyuan Jia",
+        "Dawn Song",
+        "Neil Zhenqiang Gong"
+      ],
       "year": 2025,
       "venue": "evaluation",
       "source_url": "https://arxiv.org/abs/2505.18333",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2505.18333",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1431,22 +1914,41 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2505.18333"
+      "arxiv_id": "2505.18333",
+      "relevance": {
+        "useful_parts": "Large Language Models (LLMs) are vulnerable to prompt injection attacks, and several defenses have recently been proposed, often claiming to mitigate these attacks successfully. However, we argue that existing studies lack a principled approach to evaluating these defenses. In this paper, we argue t...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Large Language Models (LLMs) are vulnerable to prompt injection attacks, and several defenses have recently been proposed, often claiming to mitigate these attacks successfully. However, we argue that..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "datasentinel",
       "title": "DataSentinel: A Game-Theoretic Detection of Prompt Injection Attacks",
-      "authors": [],
+      "authors": [
+        "Yupei Liu",
+        "Yuqi Jia",
+        "Jinyuan Jia",
+        "Dawn Song",
+        "Neil Zhenqiang Gong"
+      ],
       "year": 2025,
       "venue": "detector",
       "source_url": "https://arxiv.org/abs/2504.11358",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2504.11358",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1459,10 +1961,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2504.11358"
+      "arxiv_id": "2504.11358",
+      "relevance": {
+        "useful_parts": "LLM-integrated applications and agents are vulnerable to prompt injection attacks, where an attacker injects prompts into their inputs to induce attacker-desired outputs. A detection method aims to determine whether a given input is contaminated by an injected prompt. However, existing detection met...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "LLM-integrated applications and agents are vulnerable to prompt injection attacks, where an attacker injects prompts into their inputs to induce attacker-desired outputs. A detection method aims to de..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "declassificationsurvey",
@@ -1523,14 +2036,22 @@
     {
       "key": "defensivetokens",
       "title": "Defending Against Prompt Injection with a Few DefensiveTokens",
-      "authors": [],
+      "authors": [
+        "Sizhe Chen",
+        "Yizhu Wang",
+        "Nicholas Carlini",
+        "Chawin Sitawarin",
+        "David Wagner"
+      ],
       "year": 2025,
       "venue": "model method",
       "source_url": "https://arxiv.org/abs/2507.07974",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2507.07974",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1543,10 +2064,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2507.07974"
+      "arxiv_id": "2507.07974",
+      "relevance": {
+        "useful_parts": "When large language model (LLM) systems interact with external data to perform complex tasks, a new attack, namely prompt injection, becomes a significant threat. By injecting instructions into the data accessed by the system, the attacker is able to override the initial user task with an arbitrary ...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "When large language model (LLM) systems interact with external data to perform complex tasks, a new attack, namely prompt injection, becomes a significant threat. By injecting instructions into the da..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "denning1976",
@@ -1715,14 +2247,28 @@
     {
       "key": "evidencetracing",
       "title": "From Agent Traces to Trust: Evidence Tracing and Execution Provenance in LLM Agents",
-      "authors": [],
+      "authors": [
+        "Yiqi Wang",
+        "Jiaqi Zhang",
+        "Taotao Cai",
+        "Zirui Liu",
+        "Qingqiang Sun",
+        "Zequn Sun",
+        "Zhangkai Wu",
+        "Manqing Dong",
+        "Mingkai Zheng",
+        "Xuefei Yin",
+        "Yanming Zhu"
+      ],
       "year": 2026,
       "venue": "survey",
       "source_url": "https://arxiv.org/abs/2606.04990",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2606.04990",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1735,10 +2281,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "survey",
-      "arxiv_id": "2606.04990"
+      "arxiv_id": "2606.04990",
+      "relevance": {
+        "useful_parts": "Large language model (LLM)-based agents are evolving from passive text generators into autonomous systems capable of planning, tool use, retrieval, memory access, environmental interaction, and multi-agent collaboration. These capabilities expand agent autonomy, but also make agent behavior harder t...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Large language model (LLM)-based agents are evolving from passive text generators into autonomous systems capable of planning, tool use, retrieval, memory access, environmental interaction, and multi-..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "fabric",
@@ -1770,14 +2327,26 @@
     {
       "key": "fides",
       "title": "Securing AI Agents with Information-Flow Control",
-      "authors": [],
+      "authors": [
+        "Manuel Costa",
+        "Boris Köpf",
+        "Aashish Kolluri",
+        "Andrew Paverd",
+        "Mark Russinovich",
+        "Ahmed Salem",
+        "Shruti Tople",
+        "Lukas Wutschitz",
+        "Santiago Zanella-Béguelin"
+      ],
       "year": 2025,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2505.23643",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2505.23643",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1790,10 +2359,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2505.23643"
+      "arxiv_id": "2505.23643",
+      "relevance": {
+        "useful_parts": "As AI agents become increasingly autonomous and capable, ensuring their security against vulnerabilities such as prompt injection becomes critical. This paper explores the use of information-flow control (IFC) to provide security guarantees for AI agents. We present a formal model to reason about th...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "As AI agents become increasingly autonomous and capable, ensuring their security against vulnerabilities such as prompt injection becomes critical. This paper explores the use of information-flow cont..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "flume",
@@ -1890,14 +2470,24 @@
     {
       "key": "formalagentsec",
       "title": "A Framework for Formalizing LLM Agent Security",
-      "authors": [],
+      "authors": [
+        "Vincent Siu",
+        "Jingxuan He",
+        "Kyle Montgomery",
+        "Zhun Wang",
+        "Neil Gong",
+        "Chenguang Wang",
+        "Dawn Song"
+      ],
       "year": 2026,
       "venue": "paper",
       "source_url": "https://arxiv.org/abs/2603.19469",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2603.19469",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1910,22 +2500,39 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2603.19469"
+      "arxiv_id": "2603.19469",
+      "relevance": {
+        "useful_parts": "Security in LLM agents is inherently contextual. For example, the same action taken by an agent may represent legitimate behavior or a security violation depending on whose instruction led to the action, what objective is being pursued, and whether the action serves that objective. However, existing...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Security in LLM agents is inherently contextual. For example, the same action taken by an agent may represent legitimate behavior or a security violation depending on whose instruction led to the acti..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "fsecure",
       "title": "System-Level Defense against Indirect Prompt Injection Attacks: An Information Flow Control Perspective",
-      "authors": [],
+      "authors": [
+        "Fangzhou Wu",
+        "Ethan Cecchetti",
+        "Chaowei Xiao"
+      ],
       "year": 2024,
       "venue": "prototype/paper",
       "source_url": "https://arxiv.org/abs/2409.19091",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2409.19091",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1938,10 +2545,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2409.19091"
+      "arxiv_id": "2409.19091",
+      "relevance": {
+        "useful_parts": "Large Language Model-based systems (LLM systems) are information and query processing systems that use LLMs to plan operations from natural-language prompts and feed the output of each successive step into the LLM to plan the next. This structure results in powerful tools that can process complex in...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Large Language Model-based systems (LLM systems) are information and query processing systems that use LLMs to plan operations from natural-language prompts and feed the output of each successive step..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "goguenmeseguer",
@@ -2071,14 +2689,21 @@
     {
       "key": "injecagent",
       "title": "InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated LLM Agents",
-      "authors": [],
+      "authors": [
+        "Qiusi Zhan",
+        "Zhixiang Liang",
+        "Zifan Ying",
+        "Daniel Kang"
+      ],
       "year": 2024,
       "venue": "dataset/benchmark",
       "source_url": "https://arxiv.org/abs/2403.02691",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2403.02691",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2091,10 +2716,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2403.02691"
+      "arxiv_id": "2403.02691",
+      "relevance": {
+        "useful_parts": "Recent work has embodied LLMs as agents, allowing them to access tools, perform actions, and interact with external content (e.g., emails or websites). However, external content introduces the risk of indirect prompt injection (IPI) attacks, where malicious instructions are embedded within the conte...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Recent work has embodied LLMs as agents, allowing them to access tools, perform actions, and interact with external content (e.g., emails or websites). However, external content introduces the risk of..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "intoto",
@@ -2238,14 +2874,20 @@
     {
       "key": "livepi",
       "title": "LivePI: More Realistic Benchmarking of Agents Against Indirect Prompt Injection",
-      "authors": [],
+      "authors": [
+        "Lei Zhao",
+        "Abhay Bhaskar",
+        "Edgar Dobriban"
+      ],
       "year": 2026,
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2605.17986",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.17986",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2258,10 +2900,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.17986"
+      "arxiv_id": "2605.17986",
+      "relevance": {
+        "useful_parts": "AI agents such as OpenClaw are increasingly deployed in local workflows with access to external tools. This creates indirect prompt-injection (IPI) risk: an agent may execute harmful instructions embedded in untrusted inputs such as email, downloaded files, webpages, repositories, or group-chat mess...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "AI agents such as OpenClaw are increasingly deployed in local workflows with access to external tools. This creates indirect prompt-injection (IPI) risk: an agent may execute harmful instructions embe..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "lomac",
@@ -2404,14 +3057,22 @@
     {
       "key": "melon",
       "title": "MELON: Indirect Prompt Injection Defense via Masked Re-execution and Tool Comparison",
-      "authors": [],
+      "authors": [
+        "Kaijie Zhu",
+        "Xianjun Yang",
+        "Jindong Wang",
+        "Wenbo Guo",
+        "William Yang Wang"
+      ],
       "year": 2025,
       "venue": "defence implementation",
       "source_url": "https://arxiv.org/abs/2502.05174",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2502.05174",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2424,22 +3085,38 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2502.05174"
+      "arxiv_id": "2502.05174",
+      "relevance": {
+        "useful_parts": "Recent research has explored that LLM agents are vulnerable to indirect prompt injection (IPI) attacks, where malicious tasks embedded in tool-retrieved information can redirect the agent to take unauthorized actions. Existing defenses against IPI have significant limitations: either require essenti...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Recent research has explored that LLM agents are vulnerable to indirect prompt injection (IPI) attacks, where malicious tasks embedded in tool-retrieved information can redirect the agent to take unau..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "memlineage",
       "title": "MemLineage: Lineage-Guided Enforcement for LLM Agent Memory",
-      "authors": [],
+      "authors": [
+        "Ciyan Ouyang",
+        "Rui Hou"
+      ],
       "year": 2026,
       "venue": "prototype + deterministic harness",
       "source_url": "https://arxiv.org/abs/2605.14421",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.14421",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2452,10 +3129,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.14421"
+      "arxiv_id": "2605.14421",
+      "relevance": {
+        "useful_parts": "We introduce MemLineage, a defense for LLM agent memory that attaches both cryptographic provenance and LLM-mediated derivation lineage to every entry. Recent and concurrent work shows that untrusted content can be written into persistent agent state and re-enter later sessions as an instruction; th...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "We introduce MemLineage, a defense for LLM agent memory that attaches both cryptographic provenance and LLM-mediated derivation lineage to every entry. Recent and concurrent work shows that untrusted ..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "myersliskov",
@@ -2518,14 +3206,20 @@
     {
       "key": "neuralexec",
       "title": "Neural Exec: Learning (and Learning from) Execution Triggers for Prompt Injection Attacks",
-      "authors": [],
+      "authors": [
+        "Dario Pasquini",
+        "Martin Strohmeier",
+        "Carmela Troncoso"
+      ],
       "year": 2024,
       "venue": "attack method",
       "source_url": "https://arxiv.org/abs/2403.03792",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2403.03792",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2538,22 +3232,40 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2403.03792"
+      "arxiv_id": "2403.03792",
+      "relevance": {
+        "useful_parts": "We introduce a new family of prompt injection attacks, termed Neural Exec. Unlike known attacks that rely on handcrafted strings (e.g., \"Ignore previous instructions and...\"), we show that it is possible to conceptualize the creation of execution triggers as a differentiable search problem and use l...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "We introduce a new family of prompt injection attacks, termed Neural Exec. Unlike known attacks that rely on handcrafted strings (e.g., \"Ignore previous instructions and...\"), we show that it is possi..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "neurotaint",
       "title": "Ghost in the Agent: Redefining Information Flow Tracking for LLM Agents",
-      "authors": [],
+      "authors": [
+        "Yuandao Cai",
+        "Wensheng Tang",
+        "Cheng Wen",
+        "Shengchao Qin"
+      ],
       "year": 2026,
       "venue": "prototype",
       "source_url": "https://arxiv.org/abs/2604.23374",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2604.23374",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2566,10 +3278,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2604.23374"
+      "arxiv_id": "2604.23374",
+      "relevance": {
+        "useful_parts": "Autonomous Large Language Model (LLM) agents are increasingly deployed to conduct complex tasks by interacting with external tools, APIs, and memory stores. However, processing untrusted external data exposes these agents to severe security threats, such as indirect prompt injection and unauthorized...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Autonomous Large Language Model (LLM) agents are increasingly deployed to conduct complex tasks by interacting with external tools, APIs, and memory stores. However, processing untrusted external data..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "nmifc",
@@ -2853,14 +3576,25 @@
     {
       "key": "pilandscape2026",
       "title": "The Landscape of Prompt Injection Threats in LLM Agents: From Taxonomy to Analysis",
-      "authors": [],
+      "authors": [
+        "Peiran Wang",
+        "Xinfeng Li",
+        "Chong Xiang",
+        "Jinghuai Zhang",
+        "Ying Li",
+        "Lixia Zhang",
+        "Xiaofeng Wang",
+        "Yuan Tian"
+      ],
       "year": 2026,
       "venue": "survey + benchmark",
       "source_url": "https://arxiv.org/abs/2602.10453",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2602.10453",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2873,10 +3607,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "survey",
-      "arxiv_id": "2602.10453"
+      "arxiv_id": "2602.10453",
+      "relevance": {
+        "useful_parts": "The evolution of Large Language Models (LLMs) has resulted in a paradigm shift towards autonomous agents, necessitating robust security against Prompt Injection (PI) vulnerabilities where untrusted inputs hijack agent behaviors. This SoK presents a comprehensive overview of the PI landscape, coverin...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "The evolution of Large Language Models (LLMs) has resulted in a paradigm shift towards autonomous agents, necessitating robust security against Prompt Injection (PI) vulnerabilities where untrusted in..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "poisoningalign",
@@ -2965,14 +3710,20 @@
     {
       "key": "provenanceguardaction",
       "title": "Safeguarding LLM Agents from Misalignment through Provenance Analysis",
-      "authors": [],
+      "authors": [
+        "Yining She",
+        "Yiliang Liang",
+        "Eunsuk Kang"
+      ],
       "year": 2026,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2607.01236",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2607.01236",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2985,10 +3736,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2607.01236"
+      "arxiv_id": "2607.01236",
+      "relevance": {
+        "useful_parts": "As LLM agents gain increasing access to powerful tools, ensuring that their actions align with the user's intent becomes critical. When an agent's proposed action deviates from that intent---a phenomenon called misalignment---it may cause harm that is difficult to undo. Existing runtime guardrails r...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "As LLM agents gain increasing access to powerful tools, ensuring that their actions align with the user's intent becomes critical. When an agent's proposed action deviates from that intent---a phenome..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "provsemirings",
@@ -3021,14 +3783,48 @@
     {
       "key": "publiccomp",
       "title": "How Vulnerable Are AI Agents to Indirect Prompt Injections? Insights from a Large-Scale Public Competition",
-      "authors": [],
+      "authors": [
+        "Mateusz Dziemian",
+        "Maxwell Lin",
+        "Xiaohan Fu",
+        "Micha Nowak",
+        "Nick Winter",
+        "Eliot Jones",
+        "Andy Zou",
+        "Lama Ahmad",
+        "Kamalika Chaudhuri",
+        "Sahana Chennabasappa",
+        "Xander Davies",
+        "Lauren Deason",
+        "Benjamin L. Edelman",
+        "Tanner Emek",
+        "Ivan Evtimov",
+        "Jim Gust",
+        "Maia Hamin",
+        "Kat He",
+        "Klaudia Krawiecka",
+        "Riccardo Patana",
+        "Neil Perry",
+        "Troy Peterson",
+        "Xiangyu Qi",
+        "Javier Rando",
+        "Zifan Wang",
+        "Zihan Wang",
+        "Spencer Whitman",
+        "Eric Winsor",
+        "Arman Zharmagambetov",
+        "Matt Fredrikson",
+        "Zico Kolter"
+      ],
       "year": 2026,
       "venue": "dataset/report",
       "source_url": "https://arxiv.org/abs/2603.15714",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2603.15714",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3041,10 +3837,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2603.15714"
+      "arxiv_id": "2603.15714",
+      "relevance": {
+        "useful_parts": "LLM based agents are increasingly deployed in high stakes settings where they process external data sources such as emails, documents, and code repositories. This creates exposure to indirect prompt injection attacks, where adversarial instructions embedded in external content manipulate agent behav...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "LLM based agents are increasingly deployed in high stakes settings where they process external data sources such as emails, documents, and code repositories. This creates exposure to indirect prompt i..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "rbac",
@@ -3158,14 +3965,24 @@
     {
       "key": "rtbas",
       "title": "RTBAS: Defending LLM Agents Against Prompt Injection and Privacy Leakage",
-      "authors": [],
+      "authors": [
+        "Peter Yong Zhong",
+        "Siyuan Chen",
+        "Ruiqi Wang",
+        "McKenna McCall",
+        "Ben L. Titzer",
+        "Heather Miller",
+        "Phillip B. Gibbons"
+      ],
       "year": 2025,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2502.08966",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2502.08966",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3178,10 +3995,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2502.08966"
+      "arxiv_id": "2502.08966",
+      "relevance": {
+        "useful_parts": "Tool-Based Agent Systems (TBAS) allow Language Models (LMs) to use external tools for tasks beyond their standalone capabilities, such as searching websites, booking flights, or making financial transactions. However, these tools greatly increase the risks of prompt injection attacks, where maliciou...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Tool-Based Agent Systems (TBAS) allow Language Models (LMs) to use external tools for tasks beyond their standalone capabilities, such as searching websites, booking flights, or making financial trans..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "rushbynoninterference",
@@ -3300,14 +4128,25 @@
     {
       "key": "seagent",
       "title": "Taming Various Privilege Escalation in LLM-Based Agent Systems: A Mandatory Access Control Framework",
-      "authors": [],
+      "authors": [
+        "Zimo Ji",
+        "Daoyuan Wu",
+        "Wenyuan Jiang",
+        "Pingchuan Ma",
+        "Zongjie Li",
+        "Yudong Gao",
+        "Shuai Wang",
+        "Yingjiu Li"
+      ],
       "year": 2026,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2601.11893",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2601.11893",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3320,10 +4159,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2601.11893"
+      "arxiv_id": "2601.11893",
+      "relevance": {
+        "useful_parts": "Large Language Model (LLM)-based agent systems are increasingly deployed for complex real-world tasks but remain vulnerable to natural language-based attacks that exploit over-privileged tool use. This paper aims to understand and mitigate such attacks through the lens of privilege escalation, defin...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Large Language Model (LLM)-based agent systems are increasingly deployed for complex real-world tasks but remain vulnerable to natural language-based attacks that exploit over-privileged tool use. Thi..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "secalign",
@@ -3377,14 +4227,19 @@
     {
       "key": "secureclaw",
       "title": "SecureClaw: Clawing Back Control of LLM Agents",
-      "authors": [],
+      "authors": [
+        "Yuhan Ma",
+        "Stefan Schmid"
+      ],
       "year": 2026,
       "venue": "implementation",
       "source_url": "https://arxiv.org/abs/2606.09549",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2606.09549",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3397,22 +4252,40 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2606.09549"
+      "arxiv_id": "2606.09549",
+      "relevance": {
+        "useful_parts": "Tool-using large language model (LLM) agents face two distinct security failures: unauthorized external actions and exposure of sensitive plaintext inside the runtime before any final output check can intervene. Existing defenses usually protect one boundary, either the planner/runtime or the action...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Tool-using large language model (LLM) agents face two distinct security failures: unauthorized external actions and exposure of sensitive plaintext inside the runtime before any final output check can..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "securesurvey2026",
       "title": "Toward Secure LLM Agents: Threat Surfaces, Attacks, Defenses, and Evaluation",
-      "authors": [],
+      "authors": [
+        "Yuchen Ling",
+        "Shengcheng Yu",
+        "Zhenyu Chen",
+        "Chunrong Fang"
+      ],
       "year": 2026,
       "venue": "survey",
       "source_url": "https://arxiv.org/abs/2606.10749",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2606.10749",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3425,10 +4298,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "survey",
-      "arxiv_id": "2606.10749"
+      "arxiv_id": "2606.10749",
+      "relevance": {
+        "useful_parts": "Large language model (LLM) agents are rapidly moving from conversational interfaces to software components that plan, invoke tools, maintain memory, and act on external environments. This transition changes the nature of security risk. In agentic settings, failures are no longer limited to unsafe te...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Large language model (LLM) agents are rapidly moving from conversational interfaces to software components that plan, invoke tools, maintain memory, and act on external environments. This transition c..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "securityautomata",
@@ -3487,14 +4371,21 @@
     {
       "key": "silentegress",
       "title": "Silent Egress",
-      "authors": [],
+      "authors": [
+        "Qianlong Lan",
+        "Anuj Kaul",
+        "Shaun Jones",
+        "Stephanie Westrum"
+      ],
       "year": 2026,
       "venue": "paper/artifact",
       "source_url": "https://arxiv.org/abs/2602.22450",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2602.22450",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3507,10 +4398,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2602.22450"
+      "arxiv_id": "2602.22450",
+      "relevance": {
+        "useful_parts": "Agentic large language model systems increasingly automate tasks by retrieving URLs and calling external tools. We show that this workflow gives rise to implicit prompt injection: adversarial instructions embedded in automatically generated URL previews, including titles, metadata, and snippets, can...",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Agentic large language model systems increasingly automate tasks by retrieving URLs and calling external tools. We show that this workflow gives rise to implicit prompt injection: adversarial instruct..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "slsa",
@@ -3698,14 +4600,31 @@
     {
       "key": "systemsproblem",
       "title": "Agent Security is a Systems Problem",
-      "authors": [],
+      "authors": [
+        "Mihai Christodorescu",
+        "Earlence Fernandes",
+        "Ashish Hooda",
+        "Somesh Jha",
+        "Johann Rehberger",
+        "Kamalika Chaudhuri",
+        "Xiaohan Fu",
+        "Khawaja Shams",
+        "Guy Amir",
+        "Jihye Choi",
+        "Sarthak Choudhary",
+        "Nils Palumbo",
+        "Andrey Labunets",
+        "Nishit V. Pandya"
+      ],
       "year": 2026,
       "venue": "paper",
       "source_url": "https://arxiv.org/abs/2605.18991",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2605.18991",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3718,10 +4637,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2605.18991"
+      "arxiv_id": "2605.18991",
+      "relevance": {
+        "useful_parts": "We take the position that agent security must be approached as a systems problem: the AI model powering the agent must be treated as an untrusted component, and security invariants must be enforced at the system level. Through this lens, efforts to increase model robustness (the dominant viewpoint i...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "We take the position that agent security must be approached as a systems problem: the AI model powering the agent must be treated as an untrusted component, and security invariants must be enforced at..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "taint",
@@ -3780,14 +4710,18 @@
     {
       "key": "tmanm",
       "title": "Securing LLM-Agent Long-Term Memory Against Poisoning: Non-Malleable, Origin-Bound Authority with Machine-Checked Guarantees",
-      "authors": [],
+      "authors": [
+        "Yedidel Louck"
+      ],
       "year": 2026,
       "venue": "benchmark + TLA+ models",
       "source_url": "https://arxiv.org/abs/2606.24322",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "arXiv abstract fetched via API; arxiv_id=2606.24322",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3800,10 +4734,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "arxiv_id": "2606.24322"
+      "arxiv_id": "2606.24322",
+      "relevance": {
+        "useful_parts": "LLM agents increasingly rely on persistent long-term memory, which creates a critical vulnerability that we study here: memory poisoning. An adversary can store untrusted content in one session that later steers a consequential action, such as a payment, a setting change, or data exfiltration, in a ...",
+        "conflux_relation": "background",
+        "key_findings": [
+          "LLM agents increasingly rely on persistent long-term memory, which creates a critical vulnerability that we study here: memory poisoning. An adversary can store untrusted content in one session that l..."
+        ],
+        "limitations": [
+          "Abstract only read; full text not inspected",
+          "No principal identities or ACS connection identified in abstract"
+        ]
+      }
     },
     {
       "key": "tuf",
