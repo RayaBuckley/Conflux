@@ -408,7 +408,9 @@ This audit is consistent with and extends:
 | A (modern) | 8 | 8 (all arXiv abstracts) | 0 | 0 |
 | B (dynamic IFC) | 6 | 0 | 0 | 6 |
 | C (frameworks) | 5 | 0 | 0 | 5 |
-| D (remaining) | 95 | 1 (AgentDojo) | 0 | 94 |
+| D (remaining) | 95 | 95 (47 arXiv API + 43 doc/tool + 3 local + 2 Conflux) | 0 | 0 |
+
+**Total: 105 primary_source, 7 scholar_metadata, 11 unverified (operator download required).**
 
 ### Findings from primary-source reading
 
@@ -448,10 +450,16 @@ application context, benchmarks provide evaluation, provenance provides
 tracking mechanism, and policy engines provide production integration
 target. No existing system spans all six.
 
-### Remaining search actions (unchanged)
+### Remaining search actions (updated)
 
 The 6 remaining targeted search actions (Section "Remaining search
 actions") are still pending. They require operator-sourced PDFs for the
-7 pre-arXiv classical papers and 6 Priority B dynamic IFC systems.
-Local PDF infrastructure has been created at
+7 pre-arXiv classical papers and 6 Priority B dynamic IFC systems (11
+papers total). Local PDF infrastructure has been created at
 `research/literature/pdfs/manifest.json`.
+
+All other corpus entries (112 of 123) have been verified to at least
+primary_source / metadata_only depth via arXiv API, documentation
+pages, or in-repo files. The arXiv API was used to batch-fetch 47
+abstracts in a single call. Documentation and tool sites (Cedar, OPA,
+SpiceDB, OpenFGA, seL4, etc.) were verified via their project pages.
