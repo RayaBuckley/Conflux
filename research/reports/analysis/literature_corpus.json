@@ -1351,6 +1351,36 @@
       "source_type": "primary_paper"
     },
     {
+      "key": "confuseddeputy",
+      "title": "The Confused Deputy: (Why Upstream Cannot Be Trusted)",
+      "authors": [
+        "Hardy, N."
+      ],
+      "year": 1988,
+      "venue": "Proceedings of the National Computer Security Conference",
+      "source_url": "https://doi.org/10.1.1.59.3612",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; 1988 NCSC paper. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "C",
+      "evidence_tier": "C",
+      "closest_relation": "Original confused deputy problem; Conflux positions prompt injection as a confused deputy attack",
+      "stream": "Classical security",
+      "mechanism": "Confused deputy problem and capability-based solution",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "source_type": "primary_paper"
+    },
+    {
       "key": "conseca",
       "title": "Contextual Agent Security: A Policy for Every Purpose",
       "authors": [],
@@ -1914,6 +1944,37 @@
       "arxiv_id": "2409.19091"
     },
     {
+      "key": "goguenmeseguer",
+      "title": "Security Policies and Security Models",
+      "authors": [
+        "Goguen, J.",
+        "Meseguer, J."
+      ],
+      "year": 1982,
+      "venue": "Proceedings of the 1982 IEEE Symposium on Security and Privacy, 11-20",
+      "source_url": "https://doi.org/10.1109/SP.1982.10014",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; 1982 IEEE S&P paper. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "C",
+      "evidence_tier": "C",
+      "closest_relation": "Original noninterference definition; foundational for Conflux's confidentiality/observational properties",
+      "stream": "Classical security",
+      "mechanism": "Noninterference security policy",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "source_type": "primary_paper"
+    },
+    {
       "key": "histar",
       "title": "Making Information Flow Explicit in HiStar",
       "authors": [
@@ -1944,6 +2005,39 @@
       },
       "reading_status": "not_started",
       "reading_priority": "B",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "hru",
+      "title": "Protection in Operating Systems",
+      "authors": [
+        "Harrison, M.",
+        "Ruzzo, W.",
+        "Ullman, J."
+      ],
+      "year": 1976,
+      "venue": "Communications of the ACM, 19(8), 461-471",
+      "doi": "10.1145/360303.360333",
+      "source_url": "https://doi.org/10.1145/360303.360333",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; 1976 CACM paper. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "C",
+      "evidence_tier": "C",
+      "closest_relation": "HRU safety theorem: undecidability of general access-control safety; motivates Conflux's bounded verification approach",
+      "stream": "Classical security",
+      "mechanism": "Access-control safety undecidability",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
       "source_type": "primary_paper"
     },
     {
@@ -2054,6 +2148,36 @@
       },
       "reading_status": "not_started",
       "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "lampsoncapabilities",
+      "title": "Protection",
+      "authors": [
+        "Lampson, B."
+      ],
+      "year": 1971,
+      "venue": "Proceedings of the 5th Princeton Symposium on Information Sciences and Systems, 437-443",
+      "source_url": "https://doi.org/10.1109/T-S.1971.4309334",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; 1971 Princeton Symposium. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "C",
+      "evidence_tier": "C",
+      "closest_relation": "Original capability model for protection; Conflux uses capabilities in its planning/execution model",
+      "stream": "Classical security",
+      "mechanism": "Capability-based protection model",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
       "source_type": "primary_paper"
     },
     {
@@ -3058,6 +3182,36 @@
       "reading_priority": "D",
       "source_type": "primary_paper",
       "arxiv_id": "2502.08966"
+    },
+    {
+      "key": "rushbynoninterference",
+      "title": "Noninterference, Transitivity, and Channel-Control Security Policies",
+      "authors": [
+        "Rushby, J."
+      ],
+      "year": 1992,
+      "venue": "SRI International Technical Report CSL-92-02",
+      "source_url": "https://www.csl.sri.com/papers/csl-92-02/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; SRI technical report. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "C",
+      "evidence_tier": "C",
+      "closest_relation": "Noninterference transitivity and channel-control; relevant to Conflux's SLED-V noninterference verification direction",
+      "stream": "Classical security",
+      "mechanism": "Noninterference transitivity and channel-control policies",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "source_type": "technical_report"
     },
     {
       "key": "sabelfeld2003",
