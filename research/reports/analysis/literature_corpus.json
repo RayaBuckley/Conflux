@@ -507,9 +507,11 @@
       "venue": "benchmark",
       "source_url": "https://arxiv.org/abs/2602.10453",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
         "date": "2026-08-30",
-        "notes": "benchmark component of arXiv:2602.10453; see pilandscape2026 entry"
+        "notes": "benchmark component of arXiv:2602.10453; verified via pilandscape2026 abstract",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -522,9 +524,19 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "AgentPI benchmark introduced within the PI-LANDSCAPE SoK paper",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Benchmark component of the PI-LANDSCAPE paper; see pilandscape2026 for full abstract"
+        ],
+        "limitations": [
+          "Abstract only; not a standalone publication"
+        ]
+      }
     },
     {
       "key": "agentsafetybench",
@@ -1735,9 +1747,11 @@
       "venue": "preprint",
       "source_url": "local:Preprint.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "full_text",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Conflux local preprint; in-repo self-reference",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1750,9 +1764,24 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Conflux self-reference",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Conflux local preprint"
+        ],
+        "limitations": [
+          "Self-reference; no external novelty impact"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [],
+        "risk_level": "none",
+        "qualification_needed": "Self-reference; no novelty impact"
+      }
     },
     {
       "key": "confluxrepo",
@@ -1762,9 +1791,11 @@
       "venue": "Python repository",
       "source_url": "https://github.com/RayaBuckley/Conflux/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "full_text",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Conflux GitHub repository; in-repo self-reference",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1777,9 +1808,24 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Conflux self-reference",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Conflux GitHub repository"
+        ],
+        "limitations": [
+          "Self-reference; no external novelty impact"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [],
+        "risk_level": "none",
+        "qualification_needed": "Self-reference; no novelty impact"
+      }
     },
     {
       "key": "confluxreport",
@@ -1789,9 +1835,11 @@
       "venue": "project report and prototype",
       "source_url": "local:Raya_Project_Report.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "full_text",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Conflux local project report; in-repo self-reference",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1804,9 +1852,24 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Conflux self-reference",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Conflux local project report"
+        ],
+        "limitations": [
+          "Self-reference; no external novelty impact"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [],
+        "risk_level": "none",
+        "qualification_needed": "Self-reference; no novelty impact"
+      }
     },
     {
       "key": "confuseddeputy",
