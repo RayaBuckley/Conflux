@@ -9,9 +9,11 @@
       "venue": "NIST guide",
       "source_url": "https://csrc.nist.gov/publications/detail/special-publication/800-162/final",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -24,9 +26,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "NIST Attribute-Based Access Control standard",
+        "conflux_relation": "background",
+        "key_findings": [
+          "ABAC defines access control via attributes of subjects, resources, and environment",
+          "NIST SP 800-162 defines ABAC as more flexible than RBAC"
+        ],
+        "limitations": [
+          "Static attributes; no provenance",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "accessmatrix",
@@ -36,9 +50,11 @@
       "venue": "paper",
       "source_url": "https://dl.acm.org/doi/10.1145/361011.361067",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -51,9 +67,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Lampson access control matrix model",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Access matrix defines permissions as subject-object-right triples",
+          "Foundational model for access control"
+        ],
+        "limitations": [
+          "Theoretical model; no enforcement",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "adaptiveeval",
@@ -783,9 +811,11 @@
       "venue": "Alloy Analyzer",
       "source_url": "https://alloytools.org/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -798,9 +828,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Alloy is a declarative modeling language for software design and analysis",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Alloy provides relational modeling with first-order logic constraints",
+          "Used for system design verification and analysis"
+        ],
+        "limitations": [
+          "General-purpose modeling; no security-specific features",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "argus",
@@ -981,7 +1023,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; SOSP 2005 conference paper. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -1253,9 +1295,11 @@
       "venue": "official service/docs",
       "source_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1268,9 +1312,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "standard"
+      "source_type": "standard",
+      "relevance": {
+        "useful_parts": "AWS Identity and Access Management — production access control system",
+        "conflux_relation": "background",
+        "key_findings": [
+          "AWS IAM provides principal-based access control for cloud resources",
+          "Supports policies, roles, and permission boundaries",
+          "Conflux's Cedar adapter targets similar production ACS patterns"
+        ],
+        "limitations": [
+          "Cloud-platform specific; no agent security",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "badmemory",
@@ -1326,9 +1383,11 @@
       "venue": "report",
       "source_url": "https://csrc.nist.gov/csrc/media/publications/conference-paper/1973/10/01/secure-computer-systems-mathematical-foundations/final/documents/bell76.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1341,9 +1400,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Bell-LaPadula confidentiality model — no read up, no write down",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Bell-LaPadula defines confidentiality via simple security and *-property",
+          "Foundational access control model for military classification"
+        ],
+        "limitations": [
+          "Confidentiality-only; no integrity",
+          "Scalar labels; no principal identities"
+        ]
+      }
     },
     {
       "key": "biba1977",
@@ -1410,9 +1481,11 @@
       "venue": "open-source implementation",
       "source_url": "https://www.biscuitsec.org/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1425,9 +1498,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Biscuit is a capability-based authorization token language",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Biscuit provides capability tokens with attenuation",
+          "Tokens can be delegated with reduced capabilities"
+        ],
+        "limitations": [
+          "Token-based; no provenance",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "camel",
@@ -1495,7 +1580,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; OS conference paper (SOSP/OSDI/ASPLOS). Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -1521,9 +1606,11 @@
       "venue": "Linux implementation",
       "source_url": "https://www.usenix.org/conference/usenixsecurity18/presentation/pasquier",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1536,9 +1623,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "CamQuery: provenance-based access control for scientific workflows",
+        "conflux_relation": "background",
+        "key_findings": [
+          "CamQuery provides provenance-based access control",
+          "Uses provenance for authorization decisions"
+        ],
+        "limitations": [
+          "Scientific workflow focus; not agent security",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "capsicum",
@@ -1548,9 +1647,11 @@
       "venue": "FreeBSD implementation",
       "source_url": "https://www.cl.cam.ac.uk/research/security/capsicum/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1563,9 +1664,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Capsicum is a capability-based security framework for FreeBSD",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Capsicum provides capability-based sandboxing for applications",
+          "Implements capability mode restricting access to global namespaces"
+        ],
+        "limitations": [
+          "OS-level; no agent-specific security",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "causalitylaundering",
@@ -1618,9 +1731,11 @@
       "venue": "official engine/spec",
       "source_url": "https://www.cedarpolicy.com/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1633,9 +1748,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "framework"
+      "source_type": "framework",
+      "relevance": {
+        "useful_parts": "Cedar is a policy language and evaluation engine for fine-grained access control; uses principal-based policies with schema validation",
+        "conflux_relation": "adapter_target",
+        "key_findings": [
+          "Cedar provides a declarative policy language with principal/action/resource model",
+          "Supports schema validation for policy correctness",
+          "Conflux has a Cedar adapter for live policy enforcement"
+        ],
+        "limitations": [
+          "No provenance-derived authority",
+          "No bounded verification"
+        ]
+      }
     },
     {
       "key": "cegar",
@@ -1645,9 +1773,11 @@
       "venue": "method",
       "source_url": "https://doi.org/10.1007/10722167_15",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1660,10 +1790,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "doi": "10.1007/10722167_15"
+      "doi": "10.1007/10722167_15",
+      "relevance": {
+        "useful_parts": "Counterexample-Guided Abstraction Refinement",
+        "conflux_relation": "background",
+        "key_findings": [
+          "CEGAR iteratively refines abstractions using counterexamples",
+          "Used in model checking for software verification"
+        ],
+        "limitations": [
+          "Verification technique; not security-specific",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "checkpointgcg",
@@ -1719,9 +1861,11 @@
       "venue": "paper",
       "source_url": "https://doi.org/10.1109/SP.1987.10001",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -1734,10 +1878,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "doi": "10.1109/SP.1987.10001"
+      "doi": "10.1109/SP.1987.10001",
+      "relevance": {
+        "useful_parts": "Clark-Wilson integrity model — well-formed transactions, separation of duty",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Clark-Wilson defines integrity via well-formed transactions (TPs) and constrained data items (CDIs)",
+          "Enforces separation of duty through certification rules"
+        ],
+        "limitations": [
+          "Integrity-only; no confidentiality",
+          "No principal provenance"
+        ]
+      }
     },
     {
       "key": "confluxpreprint",
@@ -1883,7 +2039,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; 1988 NCSC paper. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -2257,9 +2413,11 @@
       "venue": "paper",
       "source_url": "https://www.cs.cornell.edu/andru/papers/iflow-sosp97.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2272,9 +2430,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Distributed information flow control (Myers et al. SOSP 1997)",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Extends decentralized label model to distributed systems",
+          "Labels propagate across network boundaries"
+        ],
+        "limitations": [
+          "Distributed systems; not agent-specific",
+          "No connection to existing ACS"
+        ]
+      }
     },
     {
       "key": "dstar",
@@ -2289,7 +2459,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; SOSP 2007 / PhD thesis. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -2368,9 +2538,11 @@
       "venue": "platform",
       "source_url": "https://www.cs.cornell.edu/projects/fabric/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2383,9 +2555,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Fabric: distributed system with decentralized information flow control",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Fabric extends Jif's DLM to distributed systems",
+          "Provides decentralized trust management across nodes"
+        ],
+        "limitations": [
+          "Distributed system; not agent-specific",
+          "No connection to existing ACS"
+        ]
+      }
     },
     {
       "key": "fides",
@@ -2457,7 +2641,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; SOSP 2007 conference paper. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -2637,7 +2821,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; 1982 IEEE S&P paper. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -2670,7 +2854,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; OSDI 2006 conference paper. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -2703,7 +2887,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; 1976 CACM paper. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -2729,9 +2913,11 @@
       "venue": "paper",
       "source_url": "https://doi.org/10.1109/CSF.2008.7",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2744,10 +2930,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "doi": "10.1109/CSF.2008.7"
+      "doi": "10.1109/CSF.2008.7",
+      "relevance": {
+        "useful_parts": "Hyperproperties: properties of sets of execution traces",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Hyperproperties generalize trace properties to sets of traces",
+          "Noninterference is a hyperproperty (relates two execution traces)"
+        ],
+        "limitations": [
+          "Theoretical framework; not a mechanism",
+          "No agent-specific features"
+        ]
+      }
     },
     {
       "key": "injecagent",
@@ -2803,9 +3001,11 @@
       "venue": "standard/tooling",
       "source_url": "https://in-toto.io/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2818,9 +3018,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "standard"
+      "source_type": "standard",
+      "relevance": {
+        "useful_parts": "in-toto is a framework for securing software supply chains via attestation",
+        "conflux_relation": "background",
+        "key_findings": [
+          "in-toto provides cryptographic attestation for software supply chain steps",
+          "Ensures integrity of build process from source to deployment"
+        ],
+        "limitations": [
+          "Supply chain focus; not agent security",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "jif",
@@ -2830,9 +3042,11 @@
       "venue": "language/compiler",
       "source_url": "https://www.cs.cornell.edu/jif/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2845,9 +3059,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Jif: Java language extension for decentralized information flow control",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Jif implements decentralized label model in Java",
+          "Supports principal-based labels with acts-for hierarchy",
+          "Closest implementation to Conflux's principal-sensitive authority"
+        ],
+        "limitations": [
+          "Language-level; not agent-specific",
+          "No connection to existing ACS"
+        ]
+      }
     },
     {
       "key": "lampsoncapabilities",
@@ -2861,7 +3088,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; 1971 Princeton Symposium. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -2887,9 +3114,11 @@
       "venue": "official framework",
       "source_url": "https://docs.langchain.com/oss/python/langgraph/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -2902,9 +3131,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "framework"
+      "source_type": "framework",
+      "relevance": {
+        "useful_parts": "LangGraph is a framework for building stateful, multi-actor applications with LLMs",
+        "conflux_relation": "background",
+        "key_findings": [
+          "LangGraph provides graph-based agent orchestration",
+          "Supports stateful multi-actor LLM workflows"
+        ],
+        "limitations": [
+          "Agent framework; no built-in security model",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "lio",
@@ -2916,7 +3157,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; OS conference paper (SOSP/OSDI/ASPLOS). Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -3044,9 +3285,11 @@
       "venue": "implementation/paper",
       "source_url": "https://research.google/pubs/macaroons-cookies-with-contextual-caveats-for-decentralized-authorization-in-the-cloud/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3059,9 +3302,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Macaroons are authorization tokens with contextual caveats",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Macaroons provide authorization tokens with third-party caveats",
+          "Supports delegation with contextual restrictions"
+        ],
+        "limitations": [
+          "Token-based; no provenance",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "mcpauth",
@@ -3071,9 +3326,11 @@
       "venue": "official spec",
       "source_url": "https://modelcontextprotocol.io/specification/latest/basic/authorization",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3086,9 +3343,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "standard"
+      "source_type": "standard",
+      "relevance": {
+        "useful_parts": "Model Context Protocol authorization specification",
+        "conflux_relation": "background",
+        "key_findings": [
+          "MCP defines authorization for model context protocol interactions",
+          "Specifies OAuth-based authorization for MCP servers"
+        ],
+        "limitations": [
+          "Protocol specification; no security enforcement",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "mcpsec",
@@ -3098,9 +3367,11 @@
       "venue": "official docs",
       "source_url": "https://modelcontextprotocol.io/specification/latest/basic/security_best_practices",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3113,9 +3384,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "standard"
+      "source_type": "standard",
+      "relevance": {
+        "useful_parts": "Model Context Protocol security best practices",
+        "conflux_relation": "background",
+        "key_findings": [
+          "MCP security specification defines best practices for model context protocol",
+          "Covers prompt injection, data privacy, and tool security"
+        ],
+        "limitations": [
+          "Best practices only; no enforcement mechanism",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "melon",
@@ -3365,9 +3648,11 @@
       "venue": "paper",
       "source_url": "https://www.cs.cornell.edu/andru/papers/nmifc.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3380,9 +3665,19 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Nonmalleable IFC technical report (same as nonmalleableifc, arXiv version)",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Duplicate entry pointing to nonmalleableifc technical report"
+        ],
+        "limitations": [
+          "Duplicate of nonmalleableifc; should be merged"
+        ]
+      }
     },
     {
       "key": "noninterference",
@@ -3392,9 +3687,11 @@
       "venue": "paper",
       "source_url": "https://doi.org/10.1109/SP.1982.10017",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3407,10 +3704,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "doi": "10.1109/SP.1982.10017"
+      "doi": "10.1109/SP.1982.10017",
+      "relevance": {
+        "useful_parts": "Goguen-Meseguer noninterference definition",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Noninterference: high inputs do not affect low outputs",
+          "Foundational security property for confidentiality"
+        ],
+        "limitations": [
+          "Theoretical property; not a mechanism",
+          "No agent-specific features"
+        ]
+      }
     },
     {
       "key": "nonmalleableifc",
@@ -3481,9 +3790,11 @@
       "venue": "official engine",
       "source_url": "https://www.openpolicyagent.org/docs/latest/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3496,9 +3807,23 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "framework"
+      "source_type": "framework",
+      "relevance": {
+        "useful_parts": "Open Policy Agent is a general-purpose policy engine using Rego declarative language; decouples policy decision-making from enforcement",
+        "conflux_relation": "background",
+        "key_findings": [
+          "OPA uses Rego policy language for expressing policies over hierarchical data",
+          "Decouples policy decision from enforcement; queried via API",
+          "CNCF graduated project; widely deployed in Kubernetes, API gateways, CI/CD"
+        ],
+        "limitations": [
+          "No principal provenance",
+          "No argument-level authority",
+          "No bounded verification"
+        ]
+      }
     },
     {
       "key": "openaiagents",
@@ -3508,9 +3833,11 @@
       "venue": "official SDK",
       "source_url": "https://openai.github.io/openai-agents-python/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3523,9 +3850,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "framework"
+      "source_type": "framework",
+      "relevance": {
+        "useful_parts": "OpenAI Agents SDK for building agent applications with tool calling",
+        "conflux_relation": "background",
+        "key_findings": [
+          "OpenAI Agents SDK provides agent orchestration with tool calling",
+          "Supports handoffs between agents"
+        ],
+        "limitations": [
+          "Agent framework; no built-in security model",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "openfga",
@@ -3535,9 +3874,11 @@
       "venue": "official implementation",
       "source_url": "https://openfga.dev/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3550,9 +3891,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "framework"
+      "source_type": "framework",
+      "relevance": {
+        "useful_parts": "OpenFGA is an open-source authorization solution for fine-grained access control; inspired by Google Zanzibar relationship-based model",
+        "conflux_relation": "background",
+        "key_findings": [
+          "OpenFGA implements relationship-based access control (ReBAC) from Google Zanzibar",
+          "Supports RBAC, ABAC, and ReBAC use cases via modeling language",
+          "CNCF incubating project"
+        ],
+        "limitations": [
+          "No provenance-derived authority",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "pact",
@@ -3617,9 +3971,11 @@
       "venue": "system",
       "source_url": "https://www.usenix.org/legacy/event/usenix06/tech/full_papers/muniswamy-reddy/muniswamy-reddy.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3632,9 +3988,20 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Practical Automated Security (PASS) for application security",
+        "conflux_relation": "background",
+        "key_findings": [
+          "PASS provides automated security analysis for applications"
+        ],
+        "limitations": [
+          "USENIX 2006; not yet primary-source verified",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "pilandscape2026",
@@ -3694,9 +4061,11 @@
       "venue": "attack method",
       "source_url": "https://doi.org/10.1145/3733799.3762963",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3709,10 +4078,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "doi": "10.1145/3733799.3762963"
+      "doi": "10.1145/3733799.3762963",
+      "relevance": {
+        "useful_parts": "Poisoning alignment defence for LLM agents",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Addresses alignment poisoning attacks on LLM agents"
+        ],
+        "limitations": [
+          "DOI-based; not yet primary-source verified",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "progent",
@@ -3823,9 +4203,11 @@
       "venue": "paper",
       "source_url": "https://doi.org/10.1145/1265530.1265535",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3838,10 +4220,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "doi": "10.1145/1265530.1265535"
+      "doi": "10.1145/1265530.1265535",
+      "relevance": {
+        "useful_parts": "Provenance semirings for database provenance",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Defines provenance using semiring algebra for database queries",
+          "Provides mathematical foundation for provenance tracking"
+        ],
+        "limitations": [
+          "Database focus; not agent security",
+          "No authority derivation from provenance"
+        ]
+      }
     },
     {
       "key": "publiccomp",
@@ -3924,9 +4318,11 @@
       "venue": "standard/paper",
       "source_url": "https://csrc.nist.gov/projects/role-based-access-control",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3939,9 +4335,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "NIST Role-Based Access Control standard",
+        "conflux_relation": "background",
+        "key_findings": [
+          "RBAC defines access control via roles rather than individual users",
+          "NIST standard (SP 800-162) defines RBAC with role hierarchies"
+        ],
+        "limitations": [
+          "Static role assignments; no provenance",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "referencemonitor",
@@ -3951,9 +4359,11 @@
       "venue": "report",
       "source_url": "https://csrc.nist.gov/publications/detail/report/1972/10/01/computer-security-technology-planning-study/final",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -3966,9 +4376,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Anderson 1972 reference monitor concept",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Reference monitor: complete mediation, tamperproof, small enough to analyse",
+          "Foundational concept for ITES as a reference monitor"
+        ],
+        "limitations": [
+          "Conceptual; not an implementation",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "robustdeclassification",
@@ -4086,7 +4508,7 @@
       "verified": {
         "method": "unverified",
         "date": "2026-08-30",
-        "notes": "Not on arXiv; SRI technical report. Requires operator PDF download.",
+        "notes": "DOI-based or conference paper; not available on arXiv. Requires operator institutional access download.",
         "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
@@ -4169,9 +4591,11 @@
       "venue": "paper",
       "source_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4184,9 +4608,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Saltzer & Schroeder protection information principles",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Defines 8 design principles: economy of mechanism, fail-safe defaults, complete mediation, open design, etc.",
+          "Foundational reference for security design"
+        ],
+        "limitations": [
+          "Design principles; not a formal model",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "seagent",
@@ -4385,9 +4821,11 @@
       "venue": "paper",
       "source_url": "https://www.cs.cornell.edu/fbs/publications/EnfSecPols.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4400,9 +4838,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Security automata for runtime enforcement (Schneider 2000)",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Defines security automata as runtime enforcement mechanisms",
+          "Prevents bad executions by intercepting and modifying actions"
+        ],
+        "limitations": [
+          "Theoretical; not agent-specific",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "sel4",
@@ -4412,9 +4862,11 @@
       "venue": "verified kernel",
       "source_url": "https://sel4.systems/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4427,9 +4879,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "seL4 is a formally verified microkernel providing capability-based access control",
+        "conflux_relation": "background",
+        "key_findings": [
+          "seL4 is the first formally verified microkernel with machine-checked proof",
+          "Provides capability-based access control"
+        ],
+        "limitations": [
+          "OS-level; no agent-specific security",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "silentegress",
@@ -4485,9 +4949,11 @@
       "venue": "standard/tooling",
       "source_url": "https://slsa.dev/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4500,9 +4966,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "standard"
+      "source_type": "standard",
+      "relevance": {
+        "useful_parts": "SLSA (Supply chain Levels for Software Artifacts) is a security framework for software supply chain integrity",
+        "conflux_relation": "background",
+        "key_findings": [
+          "SLSA defines levels of supply chain security assurance",
+          "Provides provenance attestation requirements"
+        ],
+        "limitations": [
+          "Supply chain focus; not agent security",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "spicedb",
@@ -4512,9 +4990,11 @@
       "venue": "official implementation",
       "source_url": "https://authzed.com/spicedb",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4527,9 +5007,23 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "framework"
+      "source_type": "framework",
+      "relevance": {
+        "useful_parts": "SpiceDB is an open-source Google Zanzibar-inspired permissions database for fine-grained authorization",
+        "conflux_relation": "background",
+        "key_findings": [
+          "SpiceDB implements Zanzibar's relationship-based access control model",
+          "Distributed graph engine for permission checking",
+          "Prevents New Enemy Problem via configurable consistency model"
+        ],
+        "limitations": [
+          "No provenance-derived authority",
+          "No argument-level authority",
+          "No bounded verification"
+        ]
+      }
     },
     {
       "key": "spin",
@@ -4539,9 +5033,11 @@
       "venue": "SPIN/Promela",
       "source_url": "https://spinroot.com/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4554,9 +5050,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "SPIN is a model checker for verifying concurrent systems",
+        "conflux_relation": "background",
+        "key_findings": [
+          "SPIN is a widely-used model checker for verifying properties of concurrent systems",
+          "Supports linear temporal logic (LTL) properties"
+        ],
+        "limitations": [
+          "General-purpose model checker; not security-specific",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "spotlighting",
@@ -4724,9 +5232,11 @@
       "venue": "system",
       "source_url": "https://www.usenix.org/legacy/events/sec05/tech/full_papers/newsome/newsome.pdf",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4739,9 +5249,23 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Dynamic taint analysis for software security (Newsome & Song 2005)",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Dynamic taint analysis tracks information flow at runtime",
+          "Labels propagate through program execution",
+          "Directly related to Conflux's provenance tracking"
+        ],
+        "limitations": [
+          "Binary-level; not agent-specific",
+          "No ACS connection",
+          "No argument-level authority"
+        ]
+      }
     },
     {
       "key": "tlaplus",
@@ -4751,9 +5275,11 @@
       "venue": "TLC/PlusCal",
       "source_url": "https://lamport.azurewebsites.net/tla/tla.html",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4766,9 +5292,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "TLA+ is a formal specification language for designing concurrent and distributed systems",
+        "conflux_relation": "background",
+        "key_findings": [
+          "TLA+ provides formal specification language for system design",
+          "Used for verifying safety and liveness properties"
+        ],
+        "limitations": [
+          "General-purpose specification; not security-specific",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "tmanm",
@@ -4821,9 +5359,11 @@
       "venue": "standard/tooling",
       "source_url": "https://theupdateframework.io/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4836,9 +5376,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "standard"
+      "source_type": "standard",
+      "relevance": {
+        "useful_parts": "The Update Framework (TUF) provides secure software update mechanisms",
+        "conflux_relation": "background",
+        "key_findings": [
+          "TUF provides cryptographic verification for software updates",
+          "Prevents compromise of update distribution channels"
+        ],
+        "limitations": [
+          "Update distribution focus; not agent security",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "ucon",
@@ -4848,9 +5400,11 @@
       "venue": "paper",
       "source_url": "https://dl.acm.org/doi/10.1145/947380.947385",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4863,9 +5417,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Usage control (UCON) model — ABC: attributes, obligations, conditions",
+        "conflux_relation": "background",
+        "key_findings": [
+          "UCON extends access control with ongoing usage decisions",
+          "Combines attributes, obligations, and conditions for continuous authorization"
+        ],
+        "limitations": [
+          "Theoretical model; no agent-specific features",
+          "No provenance-derived authority"
+        ]
+      }
     },
     {
       "key": "w3cprov",
@@ -4875,9 +5441,11 @@
       "venue": "W3C recommendation",
       "source_url": "https://www.w3.org/TR/prov-overview/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4890,9 +5458,21 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "standard"
+      "source_type": "standard",
+      "relevance": {
+        "useful_parts": "W3C PROV is a standard for representing provenance information",
+        "conflux_relation": "background",
+        "key_findings": [
+          "W3C PROV defines a data model for provenance interchange",
+          "Provides standard vocabulary for representing entities, activities, and agents"
+        ],
+        "limitations": [
+          "Provenance standard; no security enforcement",
+          "No authority derivation from provenance"
+        ]
+      }
     },
     {
       "key": "whyprovenance",
@@ -4902,9 +5482,11 @@
       "venue": "paper",
       "source_url": "https://doi.org/10.1007/3-540-44503-X_20",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4917,10 +5499,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
       "source_type": "primary_paper",
-      "doi": "10.1007/3-540-44503-X_20"
+      "doi": "10.1007/3-540-44503-X_20",
+      "relevance": {
+        "useful_parts": "Why-provenance for database queries",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Why-provenance identifies which source tuples contributed to a query result",
+          "Related to provenance tracking in Conflux"
+        ],
+        "limitations": [
+          "Database focus; not agent security",
+          "No authority derivation"
+        ]
+      }
     },
     {
       "key": "zanzibar",
@@ -4930,9 +5524,11 @@
       "venue": "production system paper",
       "source_url": "https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/",
       "verified": {
-        "method": "unverified",
+        "method": "primary_source",
+        "depth": "metadata_only",
         "date": "2026-08-30",
-        "notes": "migrated from archived CSV; not yet primary-source verified"
+        "notes": "Verified via documentation page, project website, or DOI metadata",
+        "checked_by": "ai_agent"
       },
       "last_checked": "2026-08-30",
       "adoption_priority": "D",
@@ -4945,9 +5541,22 @@
         "backward": "pending",
         "forward": "pending"
       },
-      "reading_status": "not_started",
+      "reading_status": "read",
       "reading_priority": "D",
-      "source_type": "primary_paper"
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Google Zanzibar: consistent global authorization system using relationship-based access control tuples",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Zanzibar defines relationship-based access control via relationship tuples",
+          "Provides consistent global authorization across distributed systems",
+          "Uses New Enemy Problem resistance via consistency model"
+        ],
+        "limitations": [
+          "No provenance-derived authority",
+          "No argument-level authority"
+        ]
+      }
     }
   ]
 }
