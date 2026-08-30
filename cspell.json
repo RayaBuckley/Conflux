@@ -726,7 +726,10 @@
     "ATPI",
     "UTPI",
     "BTPI",
-    "ingenuine"
+    "ingenuine",
+    "dois",
+    "srcs",
+    "nonmalleableifc"
   ],
   "ignorePaths": [
     "research/reports/archive/**",

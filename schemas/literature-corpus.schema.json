@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "entries"],
   "properties": {
-    "schema_version": {"const": "1"},
+    "schema_version": {"const": "2"},
     "entries": {
       "type": "array",
       "items": {
@@ -27,8 +27,10 @@
             "required": ["method", "date"],
             "properties": {
               "method": {"enum": ["primary_source", "scholar_metadata", "unverified"]},
+              "depth": {"enum": ["full_text", "abstract_and_key_sections", "metadata_only", "unverified"]},
               "date": {"type": "string", "minLength": 1},
-              "notes": {"type": "string"}
+              "notes": {"type": "string"},
+              "checked_by": {"type": "string"}
             }
           },
           "last_checked": {"type": "string", "minLength": 1},
@@ -43,6 +45,28 @@
             "properties": {
               "backward": {"enum": ["done", "pending", "not_applicable"]},
               "forward": {"enum": ["done", "pending", "not_applicable"]}
+            }
+          },
+          "reading_status": {"enum": ["not_started", "in_progress", "read", "skipped"]},
+          "reading_priority": {"enum": ["A", "B", "C", "D"]},
+          "source_type": {"enum": ["primary_paper", "survey", "technical_report", "standard", "framework", "system", "book"]},
+          "relevance": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "useful_parts": {"type": "string"},
+              "conflux_relation": {"type": "string"},
+              "key_findings": {"type": "array", "items": {"type": "string"}},
+              "limitations": {"type": "array", "items": {"type": "string"}}
+            }
+          },
+          "novelty_impact": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "affected_claims": {"type": "array", "items": {"type": "string"}},
+              "risk_level": {"enum": ["high", "medium", "low", "none"]},
+              "qualification_needed": {"type": "string"}
             }
           }
         }
