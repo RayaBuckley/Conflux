@@ -148,9 +148,9 @@
     },
     {
       "ids": ["DIR-PDP-001"],
-      "status": "evaluation_ready",
-      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "research/experiments/suites/cedar-differential-v1.json", "research/output/runs/cedar-differential-preflight-v1/manifest.json", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
-      "gap": "Cedar was not invoked. Bounded parity requires the pinned binary to complete every differential cell with agreement."
+      "status": "partial",
+      "evidence": ["docs/decisions/018-fourth-year-direction-programme.md", "src/conflux/adapters/policy/cedar.py", "src/conflux/experiments/cedar_preflight.py", "research/experiments/suites/cedar-differential-v1.json", "research/output/runs/cedar-differential-preflight-v1/manifest.json", "research/output/runs/cedar-differential-preflight-v1/live-preflight/preflight.json", "research/output/runs/cedar-differential-v1/result.json", "scripts/run_cedar_differential.py", "tests/test_cedar_policy.py", "tests/test_cedar_preflight.py"],
+      "gap": "Cedar binary identity verified (SHA-256 match, version 4.12.0). Offline preflight evaluation_ready. Live binary invocation blocked by schema compatibility: additionalAttributes is experimental in Cedar 4.12.0 and the binary was not built with experimental features. Fix: declare all context attributes in the schema or build Cedar with --features experimental."
     },
     {
       "ids": ["DIR-GOV-001"],

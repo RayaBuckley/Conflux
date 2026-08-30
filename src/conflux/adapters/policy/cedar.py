@@ -216,6 +216,8 @@ class CedarCliRunner:
                         "validate",
                         "--schema",
                         str(schema_path),
+                        "--schema-format",
+                        "json",
                         "--policies",
                         str(policy_path),
                     ),
@@ -225,6 +227,8 @@ class CedarCliRunner:
                         "validation_error",
                         _combined_hash(validation.stdout, validation.stderr),
                     )
+                context_path = root / "context.json"
+                context_path.write_text(request.context_json + "\n", encoding="utf-8", newline="\n")
                 response = self._invoke(
                     (
                         str(binary),
@@ -240,7 +244,7 @@ class CedarCliRunner:
                         "--resource",
                         request.resource,
                         "--context",
-                        request.context_json,
+                        str(context_path),
                     ),
                 )
         except subprocess.TimeoutExpired:
