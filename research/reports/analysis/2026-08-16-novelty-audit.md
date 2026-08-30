@@ -396,3 +396,62 @@ This audit is consistent with and extends:
 - `docs/research/RELATED_WORK.md` (Foundational security lineage)
 - `docs/research/RESEARCH_OVERVIEW.md` (Classical security foundations)
 - `reports/analysis/2026-08-13-foundational-security-literature.md` (§20, §31)
+- `reports/analysis/2026-08-30-literature-landscape.md` (cluster summaries)
+
+## Update: 30 August 2026 — Primary-source verification progress
+
+### Verification status
+
+| Priority | Papers | primary_source | scholar_metadata | unverified |
+|---|---|---|---|---|
+| A (classical) | 9 | 2 (Askarov-Myers full text, Cecchetti abstract) | 7 | 0 |
+| A (modern) | 8 | 8 (all arXiv abstracts) | 0 | 0 |
+| B (dynamic IFC) | 6 | 0 | 0 | 6 |
+| C (frameworks) | 5 | 0 | 0 | 5 |
+| D (remaining) | 95 | 1 (AgentDojo) | 0 | 94 |
+
+### Findings from primary-source reading
+
+**Askarov-Myers (arXiv:1107.5594, full text):** The checked endorsement
+construct is the closest classical analogue to Conflux's scoped
+delegation — it endorses variable values conditionally, requiring trusted
+context for both the endorsement and the check. However, it operates on
+variable values, not principal authority derived from an ACS. The
+attacker-control/impact framework directly applies to Conflux's
+exceptions to monotonicity (delegation, disclosure, consent). Claim A11
+risk remains "partially anticipated."
+
+**Cecchetti et al. (arXiv:1708.08596, abstract):** Transparent
+endorsement restores the confidentiality/integrity duality by making
+integrity downgrading depend on confidentiality. This is applicable to
+Conflux's multiple exceptions to monotonicity but Conflux has not yet
+implemented the corresponding mechanisms. Claim A14 risk remains "low."
+
+**Modern agent papers (8, all arXiv abstracts):** No modern agent defence
+derives authority from an existing organisational ACS using named
+principal identities. PACT is the closest to argument-level provenance
+but uses role-specific trust contracts, not principal-derived authority.
+Progent's SMT-verified monotonic confinement is the closest analogue to
+ITES authority intersection but uses task-specific symbolic rules, not
+ACS permissions. CaMeL separates control/data flows with capabilities
+but does not track principal provenance. These findings are consistent
+with the novelty audit's current classifications.
+
+### Landscape summary
+
+The literature landscape
+([`2026-08-30-literature-landscape.md`](2026-08-30-literature-landscape.md))
+groups 123 sources into 6 clusters. The Conflux contribution sits at the
+intersection of all six: classical IFC provides formal foundations,
+dynamic IFC provides implementation experience, agent defences provide
+application context, benchmarks provide evaluation, provenance provides
+tracking mechanism, and policy engines provide production integration
+target. No existing system spans all six.
+
+### Remaining search actions (unchanged)
+
+The 6 remaining targeted search actions (Section "Remaining search
+actions") are still pending. They require operator-sourced PDFs for the
+7 pre-arXiv classical papers and 6 Priority B dynamic IFC systems.
+Local PDF infrastructure has been created at
+`research/literature/pdfs/manifest.json`.
