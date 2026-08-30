@@ -11,9 +11,12 @@ import sys
 from collections.abc import Sequence
 from dataclasses import replace
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from jsonschema import Draft202012Validator, ValidationError
+
+if TYPE_CHECKING:
+    from conflux.ites.state import ITESReport
 
 from conflux.adapters.benchmarks.agentdojo_local import PinnedAgentDojoCellExecutor
 from conflux.adapters.benchmarks.agentdojo_v1 import (
@@ -448,6 +451,208 @@ def _report(arguments: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _reconstruct_ites_report(
+    trace_records: list[dict[str, Any]],
+    payload: dict[str, Any],
+    run_id: str,
+) -> ITESReport:
+    """Reconstruct an ITESReport from trace.jsonl records and result.json.
+
+    Parses branch.created, action.allowed/executed/blocked, and
+    branch.completed events to build a report with real trace events,
+    decisions, and branch statuses.
+    """
+    from conflux.domain import (
+        ActionDecision,
+        Decision,
+        DecisionCategory,
+        NoOpAction,
+        Principal,
+        PrincipalContext,
+    )
+    from conflux.ites.state import (
+        ActionOutcome,
+        BranchState,
+        BranchStatus,
+        ITESReport,
+        SafetyAssessment,
+        TraceEvent,
+    )
+
+    _status_map = {
+        "active": BranchStatus.ACTIVE,
+        "authorised": BranchStatus.AUTHORISED,
+        "blocked": BranchStatus.BLOCKED,
+        "executed": BranchStatus.EXECUTED,
+        "provider_failed": BranchStatus.PROVIDER_FAILED,
+        "terminal": BranchStatus.TERMINAL,
+        "incomplete": BranchStatus.INCOMPLETE,
+    }
+
+    _outcome_map = {
+        "authorised": ActionOutcome.AUTHORISED,
+        "blocked": ActionOutcome.BLOCKED,
+        "executed": ActionOutcome.EXECUTED,
+        "proposed": ActionOutcome.PROPOSED,
+        "provider_failed": ActionOutcome.PROVIDER_FAILED,
+        "incomplete": ActionOutcome.INCOMPLETE,
+        "complete": ActionOutcome.COMPLETE,
+    }
+
+    _category_map = {
+        "authorisation": DecisionCategory.AUTHORISATION,
+        "read": DecisionCategory.READ,
+        "visibility": DecisionCategory.VISIBILITY,
+        "consent": DecisionCategory.CONSENT,
+    }
+
+    branch_meta: dict[str, dict[str, Any]] = {}
+    branch_statuses: dict[str, str] = {}
+    branch_model_calls: dict[str, int] = {}
+    trace_by_branch: dict[str, list[dict[str, Any]]] = {}
+
+    for record in trace_records:
+        if not isinstance(record, dict):
+            continue
+        et = str(record.get("event_type", ""))
+        bid = str(record.get("branch_id", ""))
+        p = cast(dict[str, Any], record.get("payload", {}))
+
+        if et == "branch.created":
+            branch_meta[bid] = {
+                "parent_branch_id": p.get("parent_branch_id"),
+                "depth": int(p.get("depth", 0)),
+            }
+        elif et == "branch.completed":
+            branch_statuses[bid] = str(p.get("status", "active"))
+            branch_model_calls[bid] = int(p.get("model_calls", 0))
+        elif et in ("action.allowed", "action.blocked", "action.executed"):
+            trace_by_branch.setdefault(bid, []).append(record)
+
+    if not branch_meta:
+        branch_meta["root"] = {"parent_branch_id": None, "depth": 0}
+
+    ites_branches: list[BranchState] = []
+    for bid in sorted(branch_meta):
+        meta = branch_meta[bid]
+        parent_id = meta.get("parent_branch_id")
+        depth = int(meta.get("depth", 0))
+        status_str = branch_statuses.get(bid, "active")
+        status = _status_map.get(status_str, BranchStatus.ACTIVE)
+        model_calls = branch_model_calls.get(bid, 0)
+
+        trace_events: list[TraceEvent] = []
+        for rec in sorted(trace_by_branch.get(bid, []), key=lambda r: r.get("sequence", 0)):
+            p = cast(dict[str, Any], rec.get("payload", {}))
+            seq = int(p.get("sequence", rec.get("sequence", 0)))
+            parent_bid = p.get("parent_branch_id", parent_id)
+            event_depth = int(p.get("depth", depth))
+            outcome_str = str(p.get("outcome", "proposed"))
+            outcome = _outcome_map.get(outcome_str, ActionOutcome.PROPOSED)
+            reason = str(p.get("reason", ""))
+
+            ctx_data = cast(dict[str, Any], p.get("context", {}))
+            principal_ids = cast(list[str], ctx_data.get("principal_ids", []))
+            principals = frozenset(Principal(pid, pid) for pid in principal_ids)
+            ctx = PrincipalContext.from_principals(principals) if principals else PrincipalContext(unknown=True)
+
+            action_id = str(p.get("action_id", "")) if p.get("action_id") else None
+            action: Any = None
+            if action_id:
+                action = NoOpAction(action_id)
+
+            decision: ActionDecision | None = None
+            dec_data = cast(dict[str, Any] | None, p.get("decision"))
+            if dec_data and dec_data.get("decisions"):
+                decisions_list = cast(list[dict[str, Any]], dec_data["decisions"])
+                dec_map: dict[str, Decision] = {}
+                arg_auth: Decision | None = None
+                for d in decisions_list:
+                    cat_str = str(d.get("category", ""))
+                    cat = _category_map.get(cat_str)
+                    if cat is None:
+                        continue
+                    dec = Decision(
+                        category=cat,
+                        allowed=bool(d.get("allowed", False)),
+                        reason=str(d.get("reason", "")),
+                        policy_id=str(d.get("policy_id", "")),
+                        policy_version=str(d.get("policy_version", "")),
+                        evidence=tuple(cast(list[str], d.get("evidence", []))),
+                    )
+                    if cat == DecisionCategory.AUTHORISATION:
+                        dec_map["authorisation"] = dec
+                    elif cat == DecisionCategory.READ:
+                        dec_map["read"] = dec
+                    elif cat == DecisionCategory.VISIBILITY:
+                        dec_map["visibility"] = dec
+                    elif cat == DecisionCategory.CONSENT:
+                        dec_map["consent"] = dec
+                    elif cat == DecisionCategory.ARGUMENT_AUTHORISATION:
+                        arg_auth = dec
+
+                if len(dec_map) >= 4:
+                    decision = ActionDecision(
+                        context=ctx,
+                        authorisation=dec_map["authorisation"],
+                        read=dec_map["read"],
+                        visibility=dec_map["visibility"],
+                        consent=dec_map["consent"],
+                        argument_authorisation=arg_auth,
+                    )
+
+            trace_events.append(
+                TraceEvent(
+                    sequence=seq,
+                    branch_id=bid,
+                    parent_branch_id=parent_bid,
+                    depth=event_depth,
+                    outcome=outcome,
+                    context=ctx,
+                    action=action,
+                    decision=decision,
+                    reason=reason,
+                ),
+            )
+
+        branch = BranchState(
+            branch_id=bid,
+            parent_branch_id=parent_id,
+            depth=depth,
+            inputs=(),
+            context=PrincipalContext(unknown=True),
+            status=status,
+            model_calls=model_calls,
+            trace=tuple(trace_events),
+        )
+        ites_branches.append(branch)
+
+    security = cast(dict[str, Any], payload.get("security", {}))
+    assessments: list[SafetyAssessment] = []
+    if isinstance(security, dict):
+        for name, val in security.items():
+            if isinstance(val, dict):
+                assessments.append(
+                    SafetyAssessment(
+                        name=str(name),
+                        holds=bool(val.get("holds", False)),
+                        details=str(val.get("details", "")),
+                    ),
+                )
+
+    if not assessments:
+        assessments.append(SafetyAssessment("unknown", False, "no_security_data"))
+
+    return ITESReport(
+        run_id=run_id,
+        branches=tuple(ites_branches),
+        assessments=tuple(assessments),
+        model_calls=int(payload.get("bounds", {}).get("model_calls", 0)),
+        max_model_calls=int(payload.get("bounds", {}).get("max_model_calls", 0)),
+        incomplete=bool(payload.get("bounds", {}).get("incomplete", False)),
+    )
+
+
 def _visualise(arguments: argparse.Namespace) -> int:
     """Render human-reviewable evidence (SVG + HTML) from a result JSON."""
     from conflux.visualisation.graph.graphviz import render_svg
@@ -474,38 +679,7 @@ def _visualise(arguments: argparse.Namespace) -> int:
     trace_lines = trace_path.read_text(encoding="utf-8").strip().splitlines()
     trace_records = [json.loads(line) for line in trace_lines if line.strip()]
 
-    branches: list[dict[str, Any]] = []
-    for record in trace_records:
-        if isinstance(record, dict) and record.get("event_type") == "branch.created":
-            branches.append(record)
-
-    from conflux.ites.state import BranchState, BranchStatus, ITESReport, SafetyAssessment
-
-    ites_branches: list[BranchState] = []
-    for b in sorted(branches, key=lambda r: str(r.get("branch_id", ""))):
-        branch_id = str(b.get("branch_id", "unknown"))
-        ites_branches.append(
-            BranchState(
-                branch_id=branch_id,
-                parent_branch_id=b.get("parent_branch_id"),
-                depth=int(b.get("payload", {}).get("depth", 0)),
-                inputs=(),
-                context=BranchState.initial(()).context,
-                status=BranchStatus.ACTIVE,
-            ),
-        )
-
-    if not ites_branches:
-        ites_branches.append(BranchState.initial(()))
-
-    report = ITESReport(
-        run_id=run_id,
-        branches=tuple(ites_branches),
-        assessments=(SafetyAssessment("placeholder", True, "no_assessment_loaded"),),
-        model_calls=int(payload.get("bounds", {}).get("model_calls", 0)),
-        max_model_calls=int(payload.get("bounds", {}).get("max_model_calls", 0)),
-        incomplete=bool(payload.get("bounds", {}).get("incomplete", False)),
-    )
+    report = _reconstruct_ites_report(trace_records, payload, run_id)
 
     graphs: dict[str, Any] = {}
     svg_filenames: dict[str, str | None] = {}
