@@ -611,6 +611,46 @@
       "arxiv_id": "2410.02644"
     },
     {
+      "key": "asbestos",
+      "title": "Asbestos: A Provably Secure and Usable Operating System",
+      "authors": [
+        "Porter, M.",
+        "Bond, M.",
+        "Krohn, M.",
+        "Vandebogart, S.",
+        "Yee, C.",
+        "Efstathopoulos, P.",
+        "Kohler, E.",
+        "Mazieres, D.",
+        "Kasshoek, F.",
+        "Morris, R."
+      ],
+      "year": 2005,
+      "venue": "Proceedings of the 20th ACM Symposium on Operating Systems Principles (SOSP), 159-172",
+      "doi": "10.1145/1095810.1095826",
+      "source_url": "https://doi.org/10.1145/1095810.1095826",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; SOSP 2005 conference paper. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "OS-level dynamic IFC with labels on processes and files; closest systems-level IFC implementation to Conflux's runtime mediation",
+      "stream": "Dynamic IFC",
+      "mechanism": "OS-level information flow control with process/file labels",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "B",
+      "source_type": "primary_paper"
+    },
+    {
       "key": "attackercontrol",
       "title": "Attacker Control and Impact for Confidentiality and Integrity",
       "authors": [
@@ -1612,6 +1652,37 @@
       "source_type": "primary_paper"
     },
     {
+      "key": "dstar",
+      "title": "Toward Enterprise Security in Open Networks",
+      "authors": [
+        "Zeldovich, N.",
+        "Mazieres, D."
+      ],
+      "year": 2008,
+      "venue": "PhD thesis, MIT (also appeared as DStar in SOSP 2007)",
+      "source_url": "https://www.usenix.org/legacy/events/sosp07/tech/zeldovich.html",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; SOSP 2007 / PhD thesis. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "Distributed information flow control across network boundaries with principal delegation",
+      "stream": "Dynamic IFC",
+      "mechanism": "Distributed information flow control with principal delegation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "B",
+      "source_type": "primary_paper"
+    },
+    {
       "key": "evidencetracing",
       "title": "From Agent Traces to Trust: Evidence Tracing and Execution Provenance in LLM Agents",
       "authors": [],
@@ -1693,6 +1764,43 @@
       "reading_priority": "D",
       "source_type": "primary_paper",
       "arxiv_id": "2505.23643"
+    },
+    {
+      "key": "flume",
+      "title": "Information Flow Control for Standard OS Abstractions",
+      "authors": [
+        "Krohn, M.",
+        "Yip, A.",
+        "Brozinick, M.",
+        "Kohler, E.",
+        "Morris, R.",
+        "Kaashoek, F.",
+        "Wallach, D."
+      ],
+      "year": 2007,
+      "venue": "Proceedings of the 21st ACM Symposium on Operating Systems Principles (SOSP), 321-334",
+      "doi": "10.1145/1294261.1294293",
+      "source_url": "https://doi.org/10.1145/1294261.1294293",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; SOSP 2007 conference paper. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "IFC for standard Unix abstractions (processes, pipes, files); label propagation through OS interfaces",
+      "stream": "Dynamic IFC",
+      "mechanism": "Information flow control for standard OS abstractions",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "B",
+      "source_type": "primary_paper"
     },
     {
       "key": "forge",
@@ -1804,6 +1912,39 @@
       "reading_priority": "D",
       "source_type": "primary_paper",
       "arxiv_id": "2409.19091"
+    },
+    {
+      "key": "histar",
+      "title": "Making Information Flow Explicit in HiStar",
+      "authors": [
+        "Zeldovich, N.",
+        "Boyd, C.",
+        "Kohler, E.",
+        "Mazieres, D."
+      ],
+      "year": 2006,
+      "venue": "Proceedings of the 7th USENIX Symposium on Operating Systems Design and Implementation (OSDI)",
+      "source_url": "https://www.usenix.org/legacy/events/osdi06/tech/zeldovich.html",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; OSDI 2006 conference paper. Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "Whole-system information flow tracking at OS level with explicit labels on all kernel objects",
+      "stream": "Dynamic IFC",
+      "mechanism": "OS-level information flow control with explicit labels on kernel objects",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "B",
+      "source_type": "primary_paper"
     },
     {
       "key": "hyperproperties",
