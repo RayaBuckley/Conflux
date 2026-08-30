@@ -1,103 +1,888 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "entries": [
     {
-      "key": "camel",
-      "title": "Defeating Prompt Injections by Design",
+      "key": "abac",
+      "title": "Guide to Attribute Based Access Control",
       "authors": [],
-      "year": 2025,
-      "venue": "arXiv",
-      "arxiv_id": "2503.18813v2",
-      "source_url": "https://arxiv.org/abs/2503.18813",
-      "verified": {"method": "primary_source", "date": "2026-07-29", "notes": "checked against primary arXiv record"},
-      "last_checked": "2026-07-29",
-      "adoption_priority": "B",
-      "evidence_tier": "B",
-      "closest_relation": "closest predecessor; stronger planning architecture",
-      "stream": "System-level agent security",
-      "mechanism": "trusted planner + quarantined data processing + capability policies",
+      "year": 2014,
+      "venue": "NIST guide",
+      "source_url": "https://csrc.nist.gov/publications/detail/special-publication/800-162/final",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "pointwise production ACS model",
+      "stream": "Access control",
+      "mechanism": "attributes of subject, object, action, environment",
       "claim_refs": [],
-      "snowball_status": {"backward": "done", "forward": "done"}
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
     },
     {
-      "key": "designpatterns",
-      "title": "Design Patterns for Securing LLM Agents against Prompt Injections",
+      "key": "accessmatrix",
+      "title": "Protection",
+      "authors": [],
+      "year": 1971,
+      "venue": "paper",
+      "source_url": "https://dl.acm.org/doi/10.1145/361011.361067",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "basis of ACS abstraction",
+      "stream": "Access control",
+      "mechanism": "access matrix of subjects, objects, rights",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "adaptiveeval",
+      "title": "Adaptive Evaluation of Out-of-Band Defenses Against Prompt Injection in LLM Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "reproduction",
+      "source_url": "https://arxiv.org/abs/2606.26479",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "critical evidence-quality comparator",
+      "stream": "Evaluation methodology",
+      "mechanism": "independent reproduction plus adaptive attacks",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2606.26479"
+    },
+    {
+      "key": "agentarmor",
+      "title": "AgentArmor: Enforcing Program Analysis on Agent Runtime Trace to Defend Against Prompt Injection",
       "authors": [],
       "year": 2025,
-      "venue": "arXiv",
-      "arxiv_id": "2506.08837v3",
-      "source_url": "https://arxiv.org/abs/2506.08837",
-      "verified": {"method": "primary_source", "date": "2026-07-29", "notes": "checked against primary arXiv record"},
-      "last_checked": "2026-07-29",
-      "adoption_priority": "B",
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2508.01249",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
       "evidence_tier": "B",
-      "closest_relation": "architectural vocabulary for Conflux adapters",
-      "stream": "System architecture",
-      "mechanism": "catalogue of dual-model and isolation patterns",
+      "closest_relation": "borrow trace-as-program and mutation ideas",
+      "stream": "Program-analysis defence",
+      "mechanism": "CFG/DFG/PDG and type system over traces",
       "claim_refs": [],
-      "snowball_status": {"backward": "done", "forward": "pending"}
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2508.01249"
     },
     {
       "key": "agentdojo",
-      "title": "AgentDojo",
+      "title": "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents",
       "authors": [],
       "year": 2024,
       "venue": "arXiv",
-      "arxiv_id": "2406.13352v3",
       "source_url": "https://arxiv.org/abs/2406.13352",
-      "verified": {"method": "primary_source", "date": "2026-07-29", "notes": "checked against primary arXiv record"},
-      "last_checked": "2026-07-29",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; v3 (24 Nov 2024) confirmed; extensible environment",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
       "adoption_priority": "A",
       "evidence_tier": "A",
       "closest_relation": "benchmark infrastructure used by Conflux",
       "stream": "Benchmark",
       "mechanism": "agent benchmark with prompt injection suites",
       "claim_refs": [],
-      "snowball_status": {"backward": "done", "forward": "done"}
+      "snowball_status": {
+        "backward": "done",
+        "forward": "done"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2406.13352v3",
+      "novelty_impact": {
+        "affected_claims": [
+          "A9"
+        ],
+        "risk_level": "low",
+        "qualification_needed": "AgentDojo provides benchmark infrastructure; no novelty conflict with Conflux claims"
+      },
+      "relevance": {
+        "useful_parts": "Dynamic evaluation environment with 97 tasks and 629 security test cases; extensible for new attacks, defences, and adaptive attacks",
+        "conflux_relation": "background",
+        "key_findings": [
+          "AgentDojo is a dynamic environment, not a static test suite; supports designing new agent tasks, defences, and adaptive attacks",
+          "97 realistic tasks (email, e-banking, travel bookings) with 629 security test cases",
+          "State-of-the-art LLMs fail at many tasks even without attacks",
+          "Existing prompt injection attacks break some security properties but not all",
+          "Conflux uses AgentDojo as its primary comparative benchmark"
+        ],
+        "limitations": [
+          "Benchmark only; does not define security properties or verification",
+          "No principal provenance or ACS concepts",
+          "No formal security guarantee measurement"
+        ]
+      }
     },
     {
-      "key": "struq",
-      "title": "StruQ",
+      "key": "agentdyn",
+      "title": "AgentDyn: A Dynamic Open-Ended Benchmark for Evaluating Prompt Injection Attacks of Real-World Agent Security System",
+      "authors": [],
+      "year": 2026,
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2602.03117",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "resists static benchmark saturation",
+      "stream": "Dynamic benchmark",
+      "mechanism": "open-ended changing tasks/attacks",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2602.03117"
+    },
+    {
+      "key": "agentguard",
+      "title": "AgentGuard: An Attribute-Based Access Control Framework for Tool-Use LLM-Based Agent",
+      "authors": [],
+      "year": 2026,
+      "venue": "public implementation",
+      "source_url": "https://arxiv.org/abs/2605.28071",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "practical policy-decision architecture",
+      "stream": "ABAC runtime control",
+      "mechanism": "client/server ABAC with multiple inspection mechanisms",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.28071"
+    },
+    {
+      "key": "agentharm",
+      "title": "AgentHarm: A Benchmark for Measuring Harmfulness of LLM Agents",
       "authors": [],
       "year": 2024,
-      "venue": "arXiv",
-      "arxiv_id": "2402.06363v2",
-      "source_url": "https://arxiv.org/abs/2402.06363",
-      "verified": {"method": "primary_source", "date": "2026-07-29", "notes": "checked against primary arXiv record"},
-      "last_checked": "2026-07-29",
-      "adoption_priority": "B",
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2410.09024",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
       "evidence_tier": "B",
-      "closest_relation": "related benchmark and defence approach",
+      "closest_relation": "separate safety from authorization",
+      "stream": "Safety benchmark",
+      "mechanism": "malicious tool-use tasks",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2410.09024"
+    },
+    {
+      "key": "agenthijack",
+      "title": "AgentHijack: Benchmarking Computer Use Agent Robustness to Common Environment Corruptions",
+      "authors": [],
+      "year": 2026,
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2605.25707",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "broadens influence beyond textual PI",
+      "stream": "Environment corruption",
+      "mechanism": "non-adversarial/adversarial environment changes",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.25707"
+    },
+    {
+      "key": "agentlab",
+      "title": "AgentLAB: Benchmarking LLM Agents against Long-Horizon Attacks",
+      "authors": [],
+      "year": 2026,
+      "venue": "public benchmark",
+      "source_url": "https://arxiv.org/abs/2602.16901",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "extend SLED beyond depth-3 synthetic trees",
+      "stream": "Long-horizon benchmark",
+      "mechanism": "five adaptive multi-stage attack types across persistent environments",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2602.16901"
+    },
+    {
+      "key": "agentleak",
+      "title": "AgentLeak: A Full-Stack Benchmark for Privacy Leakage in Multi-Agent LLM Systems",
+      "authors": [],
+      "year": 2026,
+      "venue": "benchmark + detection pipeline",
+      "source_url": "https://arxiv.org/abs/2602.11510",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "requires all internal boundary crossings in traces",
+      "stream": "Internal-channel benchmark",
+      "mechanism": "privacy leakage through output, inter-agent messages, shared memory, and tool arguments",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2602.11510"
+    },
+    {
+      "key": "agentpi",
+      "title": "AgentPI",
+      "authors": [],
+      "year": 2026,
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2602.10453",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "benchmark component of arXiv:2602.10453; see pilandscape2026 entry"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "tests overblocking of untrusted context",
+      "stream": "Context-dependent benchmark",
+      "mechanism": "tasks whose correct action depends on runtime observations",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "agentsafetybench",
+      "title": "Agent-SafetyBench: Evaluating the Safety of LLM Agents",
+      "authors": [],
+      "year": 2024,
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2412.14470",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "action-alignment evaluation",
+      "stream": "Safety benchmark",
+      "mechanism": "2,000 safety cases across tool environments",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2412.14470"
+    },
+    {
+      "key": "agentsecbench",
+      "title": "AgentSecBench",
+      "authors": [],
+      "year": 2026,
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2605.26269",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "align SLED properties with explicit games",
+      "stream": "Formal security benchmark",
+      "mechanism": "security games/properties for agents",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.26269"
+    },
+    {
+      "key": "agentsentrybound",
+      "title": "Agent-Sentry: Bounding LLM Agents via Execution Provenance",
+      "authors": [],
+      "year": 2026,
+      "venue": "prototype",
+      "source_url": "https://arxiv.org/abs/2603.22868",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "relevant to decision certificates and trace bounds",
+      "stream": "Execution provenance",
+      "mechanism": "bound behavior using trace provenance",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2603.22868"
+    },
+    {
+      "key": "agentsentrycausal",
+      "title": "AgentSentry: Mitigating Indirect Prompt Injection in LLM Agents via Temporal Causal Diagnostics and Context Purification",
+      "authors": [],
+      "year": 2026,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2602.22724",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "model-level/runtime hybrid for utility",
+      "stream": "Causal diagnosis",
+      "mechanism": "temporal causal diagnostics plus context purification",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2602.22724"
+    },
+    {
+      "key": "agentspec",
+      "title": "AgentSpec: Customizable Runtime Enforcement for Safe and Reliable LLM Agents",
+      "authors": [],
+      "year": 2025,
+      "venue": "runtime framework",
+      "source_url": "https://arxiv.org/abs/2503.18666",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "evidence not to invent a general DSL unnecessarily",
+      "stream": "Runtime policy",
+      "mechanism": "DSL rules, triggers, predicates, enforcement",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2503.18666"
+    },
+    {
+      "key": "alloy",
+      "title": "Alloy: A Lightweight Object Modelling Notation",
+      "authors": [],
+      "year": 2002,
+      "venue": "Alloy Analyzer",
+      "source_url": "https://alloytools.org/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "useful for ACS/delegation schema exploration",
+      "stream": "Formal methods",
+      "mechanism": "relational modelling and bounded analysis",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "argus",
+      "title": "ARGUS: Defending LLM Agents Against Context-Aware Prompt Injection",
+      "authors": [],
+      "year": 2026,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2605.03378",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "borrow evidence graph and context-aware attack evaluation",
+      "stream": "Context-aware provenance",
+      "mechanism": "influence provenance graph + evidence justification",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.03378"
+    },
+    {
+      "key": "artcomp",
+      "title": "Security Challenges in AI Agent Deployment: Insights from a Large Scale Public Competition",
+      "authors": [],
+      "year": 2025,
+      "venue": "dataset/report",
+      "source_url": "https://arxiv.org/abs/2507.20526",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "attack diversity",
+      "stream": "Competition evidence",
+      "mechanism": "public red teaming",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2507.20526"
+    },
+    {
+      "key": "asb",
+      "title": "Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents",
+      "authors": [],
+      "year": 2025,
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2410.02644",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "used by Progent and useful for comparison",
       "stream": "Benchmark",
-      "mechanism": "structured query defence",
+      "mechanism": "broad attack/defence benchmark",
       "claim_refs": [],
-      "snowball_status": {"backward": "done", "forward": "pending"}
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2410.02644"
     },
     {
-      "key": "spotlighting",
-      "title": "Spotlighting",
-      "authors": [],
-      "year": 2024,
-      "venue": "arXiv",
-      "arxiv_id": "2403.14720v1",
-      "source_url": "https://arxiv.org/abs/2403.14720",
-      "verified": {"method": "primary_source", "date": "2026-07-29", "notes": "checked against primary arXiv record"},
-      "last_checked": "2026-07-29",
-      "adoption_priority": "B",
-      "evidence_tier": "B",
-      "closest_relation": "related defence approach",
-      "stream": "Defence",
-      "mechanism": "data marking for prompt injection defence",
+      "key": "attackercontrol",
+      "title": "Attacker Control and Impact for Confidentiality and Integrity",
+      "authors": [
+        "Askarov, A.",
+        "Myers, A. C."
+      ],
+      "year": 2007,
+      "venue": "Logical Methods in Computer Science, 7(3), 2011 (extended from CSF 2007)",
+      "source_url": "https://arxiv.org/abs/1107.5594",
+      "doi": "10.1109/CSF.2007.22",
+      "verified": {
+        "method": "primary_source",
+        "depth": "full_text",
+        "date": "2026-08-30",
+        "notes": "Full HTML text read from arXiv:1107.5594v1; all definitions, theorems, type rules, and examples inspected",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "A",
+      "evidence_tier": "A",
+      "closest_relation": "characterises attacker influence over trusted computation; relevant to delegation/disclosure exploitation",
+      "stream": "Classical security",
+      "mechanism": "attacker-control and attacker-impact classification",
       "claim_refs": [],
-      "snowball_status": {"backward": "done", "forward": "pending"}
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "A",
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Attacker control/impact framework; robust declassification as release control ⊆ attacker control; checked endorsement construct; security type system with trusted-context declassification; irrelevant-attacks exclusion mechanism for endorsement safety",
+        "conflux_relation": "limitation",
+        "key_findings": [
+          "Defines attacker knowledge as the set of initial memories compatible with low observations; monotonic — knowledge only shrinks as more low events are produced",
+          "Attacker control (Def 9) = set of attacks similar to a given attack in their influence on knowledge; two attacks are similar if they produce the same release events in the same order",
+          "Robust declassification (Def 13) = release control ⊆ attacker control at the next release event; intuition: all attacks leading to a release must produce the SAME release event",
+          "Endorsement (Section 5) extends robustness by excluding irrelevant attacks — those that disagree at endorsement events — from the robustness check",
+          "Checked endorsement (Section 7): conditional trust upgrade 'endorse(x) if e then c1 else c2'; can be translated to direct endorsements for well-typed programs (Proposition 2); the checked endorsement must endorse both the variables AND the check expression",
+          "Attacker impact (Definition 24, Section 8) = dual of attacker knowledge: set of attacks matching trusted events (assignments to trusted variables); integrity robustness = attacker can't influence which trusted events occur",
+          "4-level security lattice: (P,T), (P,U), (S,T), (S,U) — public/secret × trusted/untrusted; all levels are meaningful (e.g., secret+untrusted = information depends on both secret and attacker-controlled values)",
+          "Type system: T-ASGMT requires declassification only in trusted context (pc ⊑ (P,T)); T-ENDORSE requires trusted pc and trusted result variable; T-HOLE restricts attacker code to public contexts (pc ⊑ (P,U))",
+          "Progress-sensitive and progress-insensitive variants for both termination-sensitive and insensitive security",
+          "Published in LMCS (journal extension of CSF 2007 conference paper); all theorems proved"
+        ],
+        "limitations": [
+          "Uses scalar 4-level lattice (P/S × T/U), not named principal identities",
+          "No connection to an existing organisational ACS — policies are program-level, not enterprise-level",
+          "No treatment of LLM agents, prompt injection, or argument-level provenance",
+          "No verification of the security layer under arbitrary model proposals",
+          "The checked endorsement construct is the closest classical analogue to Conflux delegation, but it endorses variable values, not principal authority"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A11"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "The attacker-control/impact framework directly applies to Conflux's exceptions to monotonicity (delegation, disclosure, consent). Conflux should acknowledge that checked endorsement is the closest classical analogue to scoped delegation, but note that it endorses variable values, not principal authority derived from an existing ACS."
+      },
+      "arxiv_id": "1107.5594"
+    },
+    {
+      "key": "authgraph",
+      "title": "Aligning Provenance with Authorization: A Dual-Graph Defense for LLM Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "prototype",
+      "source_url": "https://arxiv.org/abs/2605.26497",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "direct basis for normative-vs-descriptive graph split",
+      "stream": "Authorization provenance",
+      "mechanism": "clean authority graph vs execution provenance graph",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.26497"
+    },
+    {
+      "key": "authworkflows",
+      "title": "Authenticated Workflows: A Systems Approach to Protecting Agentic AI",
+      "authors": [],
+      "year": 2026,
+      "venue": "prototype/concept",
+      "source_url": "https://arxiv.org/abs/2602.10465",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "relevant to delegation and decision certificates",
+      "stream": "Authenticated workflow",
+      "mechanism": "cryptographic/authenticated workflow steps",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2602.10465"
+    },
+    {
+      "key": "autodojo",
+      "title": "AutoDojo: Adaptive Attacks Expose Superficial Defenses and User-Underspecification Limits in LLM Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "code/benchmark",
+      "source_url": "https://arxiv.org/abs/2606.15057",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "test policy/provenance boundary adaptively",
+      "stream": "Adaptive benchmark/attack",
+      "mechanism": "automated adaptive attacks and underspecification analysis",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2606.15057"
+    },
+    {
+      "key": "automatedpi",
+      "title": "Assessing Automated Prompt Injection Attacks in Agentic Environments",
+      "authors": [],
+      "year": 2026,
+      "venue": "attack harness",
+      "source_url": "https://arxiv.org/abs/2606.10525",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "mutation/adaptive generation for SLED",
+      "stream": "Attack evaluation",
+      "mechanism": "automated attack generation/evaluation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2606.10525"
+    },
+    {
+      "key": "awsiam",
+      "title": "AWS IAM Policy Evaluation Logic",
+      "authors": [],
+      "year": 2026,
+      "venue": "official service/docs",
+      "source_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "target adapter; do not approximate silently",
+      "stream": "Cloud IAM",
+      "mechanism": "composition of identity/resource policies, boundaries, SCPs, sessions, explicit deny",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "standard"
+    },
+    {
+      "key": "badmemory",
+      "title": "Bad Memory: Evaluating Prompt Injection Risks from Memory in Agentic Systems",
+      "authors": [],
+      "year": 2026,
+      "venue": "sandbox harness",
+      "source_url": "https://arxiv.org/abs/2607.14611",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "motivates cross-session SLED environments",
+      "stream": "Persistent memory attack",
+      "mechanism": "cross-session planted payload evaluation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2607.14611"
+    },
+    {
+      "key": "belllapadula",
+      "title": "Secure Computer Systems: Mathematical Foundations",
+      "authors": [],
+      "year": 1973,
+      "venue": "report",
+      "source_url": "https://csrc.nist.gov/csrc/media/publications/conference-paper/1973/10/01/secure-computer-systems-mathematical-foundations/final/documents/bell76.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "separate visibility from authority",
+      "stream": "Confidentiality",
+      "mechanism": "multilevel confidentiality",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
     },
     {
       "key": "biba1977",
       "title": "Integrity Considerations for Secure Computer Systems",
-      "authors": ["Biba, K. J."],
+      "authors": [
+        "Biba, K. J."
+      ],
       "year": 1977,
-      "venue": "MITRE Technical Report MTR-3153",
-      "verified": {"method": "scholar_metadata", "date": "2026-08-13", "notes": "Scholar verified"},
+      "venue": "MITRE Technical Report MTR-3153 (ESD-TR-76-372)",
+      "verified": {
+        "method": "scholar_metadata",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "DTIC record verified; full text not inspected in this session",
+        "checked_by": "ai_agent"
+      },
       "last_checked": "2026-08-13",
       "adoption_priority": "A",
       "evidence_tier": "A",
@@ -105,15 +890,609 @@
       "stream": "Classical security",
       "mechanism": "integrity model",
       "claim_refs": [],
-      "snowball_status": {"backward": "done", "forward": "not_applicable"}
+      "snowball_status": {
+        "backward": "done",
+        "forward": "not_applicable"
+      },
+      "source_url": "https://apps.dtic.mil/sti/citations/ADA039324",
+      "reading_priority": "A",
+      "source_type": "technical_report",
+      "reading_status": "read",
+      "relevance": {
+        "useful_parts": "Low-water-mark integrity model; contamination principle where consuming lower-integrity information reduces a subject's effective integrity and restricts future high-integrity effects",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Defines multiple integrity policies including low-water-mark variants where reading lower-integrity data demotes subject integrity",
+          "The contamination pattern is the direct structural ancestor of ITES authority intersection: adding an influencing principal can preserve or reduce authority but cannot increase it",
+          "Integrity levels are scalar/hierarchical, not principal-identity-based; Conflux enriches with authenticated principal identities and existing ACS permissions",
+          "The powerset-lattice meet (intersection) over permission sets is a standard lattice operation, not a novel structure"
+        ],
+        "limitations": [
+          "Biba uses scalar integrity levels, not named principal identities",
+          "Does not derive authority from an existing organisational ACS",
+          "No argument-level or parameterised action authority",
+          "No verification of the security layer under arbitrary model proposals",
+          "No treatment of LLM agents or prompt injection"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A1",
+          "A2",
+          "A8"
+        ],
+        "risk_level": "high",
+        "qualification_needed": "Monotonic authority reduction must be acknowledged as an instance of low-water-mark contamination enriched by principal-sensitive provenance and existing ACS derivation"
+      }
+    },
+    {
+      "key": "biscuit",
+      "title": "Biscuit Authorization Tokens",
+      "authors": [],
+      "year": 2020,
+      "venue": "open-source implementation",
+      "source_url": "https://www.biscuitsec.org/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "candidate decision-certificate/delegation format",
+      "stream": "Delegation/capabilities",
+      "mechanism": "signed Datalog-like attenuable authorization tokens",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "camel",
+      "title": "Defeating Prompt Injections by Design",
+      "authors": [],
+      "year": 2025,
+      "venue": "arXiv",
+      "source_url": "https://arxiv.org/abs/2503.18813",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; v2 (24 Jun 2025) confirmed; HTML available",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "closest predecessor; stronger planning architecture",
+      "stream": "System-level agent security",
+      "mechanism": "trusted planner + quarantined data processing + capability policies",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "done"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2503.18813v2",
+      "novelty_impact": {
+        "affected_claims": [
+          "A4",
+          "A9",
+          "A13"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "CaMeL isolates control and data flows with capability policies; Conflux should position ITES as a reference monitor with principal-sensitive authority, not as a fundamentally new architecture"
+      },
+      "relevance": {
+        "useful_parts": "Control/data flow separation; capability-based access control; provable security on 77% of AgentDojo tasks; open-source implementation",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "CaMeL extracts control and data flows from the trusted query; untrusted data from the LLM can never impact the program flow",
+          "Uses capabilities to prevent exfiltration of private data over unauthorized data flows; policies enforced when tools are called",
+          "Solves 77% of AgentDojo tasks with provable security (vs 84% undefended)",
+          "Security depends on trusted planning/control-flow construction, not principal provenance",
+          "Does not derive authority from existing ACS; uses custom capability policies"
+        ],
+        "limitations": [
+          "No principal identities or provenance tracking for authority derivation",
+          "Custom capability policies rather than reusing organizational ACS",
+          "No formal verification of the security layer",
+          "No argument-level provenance"
+        ]
+      }
+    },
+    {
+      "key": "camflow",
+      "title": "CamFlow: Managed Data-Sharing for Cloud Services",
+      "authors": [],
+      "year": 2015,
+      "venue": "Linux implementation",
+      "source_url": "https://www.repository.cam.ac.uk/handle/1810/247410",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; OS conference paper (SOSP/OSDI/ASPLOS). Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "inspiration for trustworthy capture below agent framework",
+      "stream": "Whole-system provenance/IFC",
+      "mechanism": "kernel-level IFC/provenance",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "B",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "camquery",
+      "title": "CamQuery: Continuous Online Processing of Provenance for Security",
+      "authors": [],
+      "year": 2018,
+      "venue": "Linux implementation",
+      "source_url": "https://www.usenix.org/conference/usenixsecurity18/presentation/pasquier",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "useful for trace streaming and policy monitors",
+      "stream": "Provenance analysis",
+      "mechanism": "online queries over whole-system provenance",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "capsicum",
+      "title": "Capsicum: Practical Capabilities for UNIX",
+      "authors": [],
+      "year": 2010,
+      "venue": "FreeBSD implementation",
+      "source_url": "https://www.cl.cam.ac.uk/research/security/capsicum/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "executor defence in depth",
+      "stream": "Capability security",
+      "mechanism": "sandbox with explicit file descriptor capabilities",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "causalitylaundering",
+      "title": "Causality Laundering: Denial-Feedback Leakage in Tool-Calling LLM Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "ARM prototype",
+      "source_url": "https://arxiv.org/abs/2604.04035",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "requires blocked actions to remain in influence history",
+      "stream": "Causal provenance",
+      "mechanism": "counterfactual edges from denied actions; integrity lattice",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2604.04035"
+    },
+    {
+      "key": "cedar",
+      "title": "Cedar Policy Language and Authorization Model",
+      "authors": [],
+      "year": 2022,
+      "venue": "official engine/spec",
+      "source_url": "https://www.cedarpolicy.com/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "best initial real PDP adapter",
+      "stream": "Policy engine",
+      "mechanism": "principal/action/resource/context policy with formal semantics",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "framework"
+    },
+    {
+      "key": "cegar",
+      "title": "Counterexample-Guided Abstraction Refinement",
+      "authors": [],
+      "year": 2000,
+      "venue": "method",
+      "source_url": "https://doi.org/10.1007/10722167_15",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "future scalable SLED strategy",
+      "stream": "Formal verification",
+      "mechanism": "iterative abstraction and counterexample refinement",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1007/10722167_15"
+    },
+    {
+      "key": "checkpointgcg",
+      "title": "Checkpoint-GCG: Auditing and Attacking Fine-Tuning-Based Prompt Injection Defenses",
+      "authors": [],
+      "year": 2025,
+      "venue": "attack method",
+      "source_url": "https://arxiv.org/abs/2505.15738",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "supports separation of robustness and authorization",
+      "stream": "Attack/audit",
+      "mechanism": "checkpoint access improves attacks",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2505.15738"
+    },
+    {
+      "key": "clarkwilson",
+      "title": "A Comparison of Commercial and Military Computer Security Policies",
+      "authors": [],
+      "year": 1987,
+      "venue": "paper",
+      "source_url": "https://doi.org/10.1109/SP.1987.10001",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "approval and transactional effect model",
+      "stream": "Integrity/workflows",
+      "mechanism": "well-formed transactions, separation of duty",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1109/SP.1987.10001"
+    },
+    {
+      "key": "confluxpreprint",
+      "title": "Influence Tracking for Secure LLM Agents: Preventing Privilege Escalation Under Worst-Case Model Behaviour",
+      "authors": [],
+      "year": 2026,
+      "venue": "preprint",
+      "source_url": "local:Preprint.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "current formal claim set",
+      "stream": "Conflux",
+      "mechanism": "ITES plus bounded exhaustive SLED",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "confluxrepo",
+      "title": "Conflux: Principal Context Is All You Need for Secure AI Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "Python repository",
+      "source_url": "https://github.com/RayaBuckley/Conflux/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "current engineering substrate",
+      "stream": "Conflux",
+      "mechanism": "Principal Context architecture; policies/providers/benchmarks",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "confluxreport",
+      "title": "Securing LLM Assistants via Fine-Grained Provenance-Based Authority",
+      "authors": [],
+      "year": 2026,
+      "venue": "project report and prototype",
+      "source_url": "local:Raya_Project_Report.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "baseline contribution and extensions",
+      "stream": "Conflux",
+      "mechanism": "Principal influence union and permission intersection; SLED prototype",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "conseca",
+      "title": "Contextual Agent Security: A Policy for Every Purpose",
+      "authors": [],
+      "year": 2025,
+      "venue": "prototype",
+      "source_url": "https://arxiv.org/abs/2501.17070",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "optional task-alignment/consent layer above ACS floor",
+      "stream": "Contextual policy",
+      "mechanism": "JIT generated contextual security policies",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2501.17070"
+    },
+    {
+      "key": "criticaleval",
+      "title": "A Critical Evaluation of Defenses Against Prompt Injection Attacks",
+      "authors": [],
+      "year": 2025,
+      "venue": "evaluation",
+      "source_url": "https://arxiv.org/abs/2505.18333",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "motivates system-level guarantees",
+      "stream": "Evaluation critique",
+      "mechanism": "adaptive/standardized evaluation of defences",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2505.18333"
+    },
+    {
+      "key": "datasentinel",
+      "title": "DataSentinel: A Game-Theoretic Detection of Prompt Injection Attacks",
+      "authors": [],
+      "year": 2025,
+      "venue": "detector",
+      "source_url": "https://arxiv.org/abs/2504.11358",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "can triage but must not grant authority",
+      "stream": "Detection",
+      "mechanism": "game-theoretic detector",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2504.11358"
+    },
+    {
+      "key": "declassificationsurvey",
+      "title": "Dimensions and Principles of Declassification",
+      "authors": [
+        "Sabelfeld, A.",
+        "Sands, D."
+      ],
+      "year": 2009,
+      "venue": "Journal of Computer Security, 17(5), 609-655",
+      "doi": "10.3233/JCS-2009-0357",
+      "source_url": "https://doi.org/10.3233/JCS-2009-0357",
+      "verified": {
+        "method": "scholar_metadata",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "Scholar verified; DOI not independently confirmed (resolver returned wrong paper); metadata from Scholar and citations",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-13",
+      "adoption_priority": "A",
+      "evidence_tier": "A",
+      "closest_relation": "declassification taxonomy (what, who, where, when) maps to Conflux visibility/disclosure",
+      "stream": "Classical security",
+      "mechanism": "declassification dimensions and principles",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "A",
+      "source_type": "survey",
+      "relevance": {
+        "useful_parts": "Taxonomy of declassification dimensions (what, who, where, when); maps directly to Conflux visibility/disclosure hierarchy",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Declassification dimensions (what, who, where, when) map to Conflux: what fields may be disclosed, who authorises release, where release occurs, when it is permitted",
+          "Distinguishes visibility confinement (effects visible only to authorised observers) from controlled disclosure (explicit policy permits selected release)",
+          "Provides formal vocabulary for controlled exceptions to noninterference",
+          "Various formal guarantees: noninterference modulo declassification, intransitive noninterference"
+        ],
+        "limitations": [
+          "Conceptual framework, not a mechanism for LLM agents",
+          "No connection to existing ACS or principal provenance",
+          "Conflux has not yet implemented controlled release (Level 3)",
+          "No treatment of prompt injection or attacker-influenced declassification"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A10"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "The conceptual mapping from declassification to Conflux visibility is strong; Conflux's specific mechanism for controlled release is future work"
+      }
+    },
+    {
+      "key": "defensivetokens",
+      "title": "Defending Against Prompt Injection with a Few DefensiveTokens",
+      "authors": [],
+      "year": 2025,
+      "venue": "model method",
+      "source_url": "https://arxiv.org/abs/2507.07974",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "can reduce denied proposals",
+      "stream": "Model-level defence",
+      "mechanism": "special defensive tokens",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2507.07974"
     },
     {
       "key": "denning1976",
       "title": "A Lattice Model of Secure Information Flow",
-      "authors": ["Denning, D. E."],
+      "authors": [
+        "Denning, D. E."
+      ],
       "year": 1976,
-      "venue": "Communications of the ACM 19(5), 236-243",
-      "verified": {"method": "scholar_metadata", "date": "2026-08-13", "notes": "Scholar verified"},
+      "venue": "Communications of the ACM, 19(5), 236-243",
+      "verified": {
+        "method": "scholar_metadata",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "DOI verified; metadata confirmed against ACM Digital Library",
+        "checked_by": "ai_agent"
+      },
       "last_checked": "2026-08-13",
       "adoption_priority": "A",
       "evidence_tier": "A",
@@ -121,7 +1500,2151 @@
       "stream": "Classical security",
       "mechanism": "lattice-based information flow",
       "claim_refs": [],
-      "snowball_status": {"backward": "done", "forward": "not_applicable"}
+      "snowball_status": {
+        "backward": "done",
+        "forward": "not_applicable"
+      },
+      "source_url": "https://doi.org/10.1145/360051.360056",
+      "reading_priority": "A",
+      "source_type": "primary_paper",
+      "doi": "10.1145/360051.360056",
+      "reading_status": "read",
+      "relevance": {
+        "useful_parts": "Lattice model for secure information flow; security classes combine via lattice operations; flows must respect partial order",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Security classes form a lattice; information may flow only to dominating classes",
+          "Conflux's authority intersection over permission sets is a meet in the powerset lattice over actions",
+          "The lattice structure is not unique to Conflux; the mathematical vocabulary for combined labels is classical",
+          "Provides the foundation for noninterference and later IFC work"
+        ],
+        "limitations": [
+          "Confidentiality-focused, not integrity-focused",
+          "No principal identities in labels",
+          "No connection to existing ACS",
+          "Theoretical model, no implementation"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A1"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "The lattice structure of authority intersection is anticipated; Conflux should not claim the mathematical structure is novel"
+      }
+    },
+    {
+      "key": "designpatterns",
+      "title": "Design Patterns for Securing LLM Agents against Prompt Injections",
+      "authors": [],
+      "year": 2025,
+      "venue": "arXiv",
+      "source_url": "https://arxiv.org/abs/2506.08837",
+      "verified": {
+        "method": "primary_source",
+        "date": "2026-07-29",
+        "notes": "checked against primary arXiv record",
+        "depth": "full_text",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-07-29",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "architectural vocabulary for Conflux adapters",
+      "stream": "System architecture",
+      "mechanism": "catalogue of dual-model and isolation patterns",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2506.08837v3",
+      "novelty_impact": {
+        "affected_claims": [
+          "A4"
+        ],
+        "risk_level": "low",
+        "qualification_needed": "Architectural vocabulary for dual-model and isolation patterns; Conflux should acknowledge this taxonomy"
+      },
+      "relevance": {
+        "useful_parts": "Catalogue of dual-model and isolation patterns for LLM agent security",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Provides architectural vocabulary for Conflux adapters",
+          "Catalogue of system-level defence patterns including dual-model isolation",
+          "Useful as taxonomy, not as a direct formal competitor"
+        ],
+        "limitations": [
+          "Pattern-level reasoning, not formal security guarantee",
+          "No principal provenance or ACS connection",
+          "No verification component"
+        ]
+      }
+    },
+    {
+      "key": "difc",
+      "title": "A Decentralized Model for Information Flow Control",
+      "authors": [],
+      "year": 1997,
+      "venue": "paper",
+      "source_url": "https://www.cs.cornell.edu/andru/papers/iflow-sosp97.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "closest foundation for multi-principal confidentiality/declassification",
+      "stream": "Decentralized IFC",
+      "mechanism": "owners, readers, declassification",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "evidencetracing",
+      "title": "From Agent Traces to Trust: Evidence Tracing and Execution Provenance in LLM Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "survey",
+      "source_url": "https://arxiv.org/abs/2606.04990",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "trace schema and audit roadmap",
+      "stream": "Survey/provenance",
+      "mechanism": "taxonomy of evidence and execution provenance",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "survey",
+      "arxiv_id": "2606.04990"
+    },
+    {
+      "key": "fabric",
+      "title": "Fabric: A Platform for Secure Distributed Computation and Storage",
+      "authors": [],
+      "year": 2009,
+      "venue": "platform",
+      "source_url": "https://www.cs.cornell.edu/projects/fabric/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "cross-agent/distributed provenance foundation",
+      "stream": "Distributed IFC",
+      "mechanism": "language/runtime IFC across distributed systems",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "fides",
+      "title": "Securing AI Agents with Information-Flow Control",
+      "authors": [],
+      "year": 2025,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2505.23643",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "closest confidentiality/integrity complement",
+      "stream": "Information-flow agent security",
+      "mechanism": "confidentiality/integrity labels and selective hiding",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2505.23643"
+    },
+    {
+      "key": "forge",
+      "title": "Formal Policy Enforcement for Real-World Agentic Systems",
+      "authors": [],
+      "year": 2026,
+      "venue": "FORGE/PCAS implementation",
+      "source_url": "https://arxiv.org/abs/2602.16708",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; v3 (8 May 2026) confirmed",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "closest formal observability and multi-agent comparator",
+      "stream": "Formal policy enforcement",
+      "mechanism": "Datalog policy, dependency graph, AOP instrumentation, reference monitor",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2602.16708",
+      "novelty_impact": {
+        "affected_claims": [
+          "A4",
+          "A9"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "FORGE enforces history-sensitive Datalog policies with a reference monitor; Conflux should position SLED as a bounded model checker for LLM-agent defences"
+      },
+      "relevance": {
+        "useful_parts": "Datalog policy enforcement via aspect-oriented programming; reference monitor; observability service with assume/guarantee contract; cross-cutting policy enforcement",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "FORGE enforces policies written in Datalog over abstract predicates describing the execution context; uses aspect-oriented programming to enforce at every policy-relevant decision",
+          "Observability service governed by formal assume/guarantee contract maintains predicates; reference monitor produces enforcement decisions at each action",
+          "Datalog supports recursion for transitive relationships and deterministic enforcement; admits static analyses for contradiction, redundancy, subsumption, and conditional reachability",
+          "Evaluated on: information flow policies for prompt injection defense, approval workflows in multi-agent pharmacovigilance, organizational policies for customer service",
+          "Closest formal observability and multi-agent comparator to Conflux"
+        ],
+        "limitations": [
+          "Does not use principal-sensitive provenance for authority derivation",
+          "Policy is developer-defined, not derived from existing organisational ACS",
+          "No bounded verification of the security layer under arbitrary model proposals",
+          "No argument-level provenance tracking"
+        ]
+      }
+    },
+    {
+      "key": "formalagentsec",
+      "title": "A Framework for Formalizing LLM Agent Security",
+      "authors": [],
+      "year": 2026,
+      "venue": "paper",
+      "source_url": "https://arxiv.org/abs/2603.19469",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "helps delimit Conflux theorem",
+      "stream": "Security formalisation",
+      "mechanism": "separates task alignment, action alignment, source authorization, data isolation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2603.19469"
+    },
+    {
+      "key": "fsecure",
+      "title": "System-Level Defense against Indirect Prompt Injection Attacks: An Information Flow Control Perspective",
+      "authors": [],
+      "year": 2024,
+      "venue": "prototype/paper",
+      "source_url": "https://arxiv.org/abs/2409.19091",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "direct foundation for worst-case model framing",
+      "stream": "Information-flow agent security",
+      "mechanism": "system-level IFC and f-secure agent framing",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2409.19091"
+    },
+    {
+      "key": "hyperproperties",
+      "title": "Hyperproperties",
+      "authors": [],
+      "year": 2008,
+      "venue": "paper",
+      "source_url": "https://doi.org/10.1109/CSF.2008.7",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "SLED extension for confidentiality and observational equivalence",
+      "stream": "Formal security",
+      "mechanism": "sets-of-traces properties",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1109/CSF.2008.7"
+    },
+    {
+      "key": "injecagent",
+      "title": "InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated LLM Agents",
+      "authors": [],
+      "year": 2024,
+      "venue": "dataset/benchmark",
+      "source_url": "https://arxiv.org/abs/2403.02691",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "coverage of tool ecosystems",
+      "stream": "Benchmark",
+      "mechanism": "tool-integrated indirect injections",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2403.02691"
+    },
+    {
+      "key": "intoto",
+      "title": "in-toto",
+      "authors": [],
+      "year": 2019,
+      "venue": "standard/tooling",
+      "source_url": "https://in-toto.io/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "sign tools, adapters, policy bundles",
+      "stream": "Software supply chain",
+      "mechanism": "signed layout and link metadata for build steps",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "standard"
+    },
+    {
+      "key": "jif",
+      "title": "Jif: Java Information Flow",
+      "authors": [],
+      "year": 2001,
+      "venue": "language/compiler",
+      "source_url": "https://www.cs.cornell.edu/jif/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "possible effect-system inspiration",
+      "stream": "Language-based IFC",
+      "mechanism": "static labels and declassification",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "langgraph",
+      "title": "LangGraph",
+      "authors": [],
+      "year": 2026,
+      "venue": "official framework",
+      "source_url": "https://docs.langchain.com/oss/python/langgraph/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "persistent-state and approval integration target",
+      "stream": "Agent framework",
+      "mechanism": "graph execution, persistence, interrupts/HITL",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "framework"
+    },
+    {
+      "key": "lio",
+      "title": "LIO: Dynamic Information Flow Control in Haskell",
+      "authors": [],
+      "year": 2012,
+      "venue": "library/runtime",
+      "source_url": "https://hackage.haskell.org/package/lio",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "Not on arXiv; OS conference paper (SOSP/OSDI/ASPLOS). Requires operator PDF download.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "analogy for current Principal Context",
+      "stream": "Dynamic IFC",
+      "mechanism": "floating current label and labelled values",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "B",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "livepi",
+      "title": "LivePI: More Realistic Benchmarking of Agents Against Indirect Prompt Injection",
+      "authors": [],
+      "year": 2026,
+      "venue": "benchmark",
+      "source_url": "https://arxiv.org/abs/2605.17986",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "deployment realism",
+      "stream": "Production-like benchmark",
+      "mechanism": "live/external content and realistic tasks",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.17986"
+    },
+    {
+      "key": "lomac",
+      "title": "LOMAC: Low-Water-Mark Integrity Protection for COTS Environments",
+      "authors": [
+        "Fraser, T."
+      ],
+      "year": 2000,
+      "venue": "Proceedings of the 2000 IEEE Symposium on Security and Privacy, 230-245",
+      "doi": "10.1109/SECPRI.2000.848460",
+      "source_url": "https://ieeexplore.ieee.org/document/848460",
+      "verified": {
+        "method": "scholar_metadata",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "Scholar verified; abstract read; full text not inspected in this session",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "A",
+      "evidence_tier": "A",
+      "closest_relation": "closest systems-level analogue; label creep corresponds to Principal Context contamination",
+      "stream": "Classical security",
+      "mechanism": "dynamic low-water-mark integrity for commodity OS",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "A",
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Dynamic low-water-mark integrity in commodity OS; label creep engineering tension between security and utility; practical strategies for pathological contamination cases",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "LOMAC implements dynamic integrity demotion in a Linux kernel module: reading lower-integrity data demotes the process, restricting future high-integrity writes",
+          "Label creep is the primary engineering concern: conservative contamination can destroy utility, directly paralleling Principal Context growth in Conflux",
+          "LOMAC's strategies for pathological cases (small model extensions, unusual application of concepts) inform Conflux planning to minimise unnecessary observations",
+          "The system demonstrates that low-water-mark policies are deployable in practice, not just theoretical models"
+        ],
+        "limitations": [
+          "Uses scalar integrity levels, not named principal identities",
+          "No connection to an existing organisational ACS",
+          "No argument-level authority or action-specific permissions",
+          "No planning or verification components",
+          "OS-level file/process model, not LLM-agent model"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A1",
+          "A8"
+        ],
+        "risk_level": "high",
+        "qualification_needed": "Dynamic contamination tracking with label creep is directly anticipated by LOMAC; Conflux must acknowledge this systems-level precedent"
+      }
+    },
+    {
+      "key": "macaroons",
+      "title": "Macaroons: Cookies with Contextual Caveats for Decentralized Authorization in the Cloud",
+      "authors": [],
+      "year": 2014,
+      "venue": "implementation/paper",
+      "source_url": "https://research.google/pubs/macaroons-cookies-with-contextual-caveats-for-decentralized-authorization-in-the-cloud/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "strong model for scoped delegation",
+      "stream": "Delegation/capabilities",
+      "mechanism": "attenuable bearer tokens with caveats",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "mcpauth",
+      "title": "Model Context Protocol Authorization",
+      "authors": [],
+      "year": 2026,
+      "venue": "official spec",
+      "source_url": "https://modelcontextprotocol.io/specification/latest/basic/authorization",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "identity substrate, not content authority",
+      "stream": "Protocol",
+      "mechanism": "OAuth-based client/server authorization",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "standard"
+    },
+    {
+      "key": "mcpsec",
+      "title": "Model Context Protocol Security Best Practices",
+      "authors": [],
+      "year": 2026,
+      "venue": "official docs",
+      "source_url": "https://modelcontextprotocol.io/specification/latest/basic/security_best_practices",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "TCB and confused-deputy input",
+      "stream": "Protocol security",
+      "mechanism": "token handling, confused deputy and implementation guidance",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "standard"
+    },
+    {
+      "key": "melon",
+      "title": "MELON: Indirect Prompt Injection Defense via Masked Re-execution and Tool Comparison",
+      "authors": [],
+      "year": 2025,
+      "venue": "defence implementation",
+      "source_url": "https://arxiv.org/abs/2502.05174",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "useful for utility and anomaly evidence",
+      "stream": "Model/runtime hybrid",
+      "mechanism": "masked re-execution and tool comparison",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2502.05174"
+    },
+    {
+      "key": "memlineage",
+      "title": "MemLineage: Lineage-Guided Enforcement for LLM Agent Memory",
+      "authors": [],
+      "year": 2026,
+      "venue": "prototype + deterministic harness",
+      "source_url": "https://arxiv.org/abs/2605.14421",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "useful chain-of-custody component; compare against laundering assumptions",
+      "stream": "Persistent memory provenance",
+      "mechanism": "cryptographic provenance and weighted derivation DAG",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.14421"
+    },
+    {
+      "key": "myersliskov",
+      "title": "Protecting Privacy Using the Decentralized Label Model",
+      "authors": [
+        "Myers, A. C.",
+        "Liskov, B."
+      ],
+      "year": 2000,
+      "venue": "ACM Transactions on Software Engineering and Methodology, 9(4), 410-442",
+      "doi": "10.1145/363516.363524",
+      "source_url": "https://doi.org/10.1145/363516.363524",
+      "verified": {
+        "method": "scholar_metadata",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "Scholar verified; DOI did not resolve but metadata confirmed via citations in other papers",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-13",
+      "adoption_priority": "A",
+      "evidence_tier": "A",
+      "closest_relation": "closest IFC system to principal-sensitive authority; may contain prior art",
+      "stream": "Classical security",
+      "mechanism": "decentralized IFC with owner/reader labels and acts-for hierarchy",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "A",
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Decentralized label model with owner/reader labels; acts-for hierarchy; declassification by data owners; principal identities in labels",
+        "conflux_relation": "distinction",
+        "key_findings": [
+          "Decentralized IFC retains principal identities in labels and derives access from policy — this is the closest classical system to Conflux's principal-sensitive authority",
+          "Labels contain owners and readers; each principal controls its own policies; declassification requires owner authority",
+          "Acts-for hierarchy allows principal delegation; this is the most important prior-art comparison for Conflux's candidate distinction of 'principal identities + existing ACS'",
+          "The key question: does Jif's acts-for hierarchy + owner-controlled declassification anticipate Conflux's principal-identity + ACS-derived authority? This remains open",
+          "Implemented in Jif (Java + decentralized labels)"
+        ],
+        "limitations": [
+          "Labels encode confidentiality policies (owner/reader), not integrity or action-authority",
+          "No connection to an existing organisational ACS — labels are program-level, not enterprise-level",
+          "Declassification is owner-controlled, not derived from organisational authorisation",
+          "No treatment of LLM agents, prompt injection, or argument-level provenance"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A2",
+          "A11"
+        ],
+        "risk_level": "high",
+        "qualification_needed": "Decentralized IFC may contain prior art for principal-sensitive authority; the distinction 'deriving authority from existing ACS rather than introducing a new policy language' is a candidate but remains a hypothesis until targeted prior-art search is complete"
+      }
+    },
+    {
+      "key": "neuralexec",
+      "title": "Neural Exec: Learning (and Learning from) Execution Triggers for Prompt Injection Attacks",
+      "authors": [],
+      "year": 2024,
+      "venue": "attack method",
+      "source_url": "https://arxiv.org/abs/2403.03792",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "supports worst-case assumption",
+      "stream": "Attack",
+      "mechanism": "learned trigger attacks",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2403.03792"
+    },
+    {
+      "key": "neurotaint",
+      "title": "Ghost in the Agent: Redefining Information Flow Tracking for LLM Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "prototype",
+      "source_url": "https://arxiv.org/abs/2604.23374",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "supports richer influence relation than authorship union",
+      "stream": "Semantic taint",
+      "mechanism": "semantic/causal information-flow tracking for agent traces",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2604.23374"
+    },
+    {
+      "key": "nmifc",
+      "title": "Nonmalleable Information Flow Control",
+      "authors": [],
+      "year": 2017,
+      "venue": "paper",
+      "source_url": "https://www.cs.cornell.edu/andru/papers/nmifc.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "foundation for memory laundering and delegation",
+      "stream": "IFC/declassification",
+      "mechanism": "robust declassification and transparent endorsement",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "noninterference",
+      "title": "Noninterference and the Composability of Security Properties",
+      "authors": [],
+      "year": 1982,
+      "venue": "paper",
+      "source_url": "https://doi.org/10.1109/SP.1982.10017",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "needed for confidentiality claims",
+      "stream": "Formal security",
+      "mechanism": "outputs independent of secrets",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1109/SP.1982.10017"
+    },
+    {
+      "key": "nonmalleableifc",
+      "title": "Nonmalleable Information Flow Control",
+      "authors": [
+        "Cecchetti, E.",
+        "Myers, A. C.",
+        "Arden, O."
+      ],
+      "year": 2017,
+      "venue": "Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages (POPL), 257-270",
+      "doi": "10.1145/3009837.3009843",
+      "source_url": "https://arxiv.org/abs/1708.08596",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "Abstract and metadata read from arXiv:1708.08596v2 (technical report); HTML rendering failed but abstract provides the key definitions and contributions",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "A",
+      "evidence_tier": "A",
+      "closest_relation": "prevents exploitation of both confidentiality and integrity downgrading; relevant to delegation/disclosure safety",
+      "stream": "Classical security",
+      "mechanism": "nonmalleability condition for coordinated IFC exceptions",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "A",
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Nonmalleable information flow condition; transparent endorsement mechanism; restoration of confidentiality/integrity duality; static type system enforcement; Flame implementation in Glasgow Haskell Compiler",
+        "conflux_relation": "limitation",
+        "key_findings": [
+          "Nonmalleable information flow generalizes noninterference to permit controlled downgrading of BOTH confidentiality and integrity simultaneously",
+          "Robust declassification (prior work by Zdancewic-Myers) prevents attacker exploitation of confidentiality downgrading — appeared to break confidentiality/integrity duality by making confidentiality depend on integrity",
+          "Transparent endorsement = key innovation: mechanism for downgrading integrity while defending against adversarial exploitation; makes integrity depend on confidentiality, restoring duality",
+          "Nonmalleable information flow subsumes both robust declassification and transparent endorsement as a single security property",
+          "Enforced by a static security type system; implemented in Flame (flow-limited authorization plugin for the Glasgow Haskell Compiler)",
+          "Related DOI: 10.1145/3133956.3134054 (POPL 2017 conference version)"
+        ],
+        "limitations": [
+          "Program-level IFC, not agent-level security",
+          "No treatment of LLM agents or prompt injection",
+          "No connection to existing organisational ACS",
+          "Uses scalar security levels, not named principal identities",
+          "Conflux has not yet implemented nonmalleability checks for its exceptions"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A14"
+        ],
+        "risk_level": "low",
+        "qualification_needed": "The nonmalleability condition is applicable to Conflux's multiple exceptions to monotonicity (delegation, disclosure, consent, trusted transformations). Conflux should acknowledge this precedent but note that it has not yet implemented the corresponding mechanisms, so no novelty conflict exists at this stage."
+      },
+      "arxiv_id": "1708.08596"
+    },
+    {
+      "key": "opa",
+      "title": "Open Policy Agent / Rego",
+      "authors": [],
+      "year": 2016,
+      "venue": "official engine",
+      "source_url": "https://www.openpolicyagent.org/docs/latest/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "practical pluggable policy backend",
+      "stream": "Policy engine",
+      "mechanism": "general policy-as-code decision service",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "framework"
+    },
+    {
+      "key": "openaiagents",
+      "title": "OpenAI Agents SDK",
+      "authors": [],
+      "year": 2026,
+      "venue": "official SDK",
+      "source_url": "https://openai.github.io/openai-agents-python/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "important adapter target and effect inventory",
+      "stream": "Agent framework",
+      "mechanism": "tools, handoffs, guardrails, sessions, tracing",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "framework"
+    },
+    {
+      "key": "openfga",
+      "title": "OpenFGA",
+      "authors": [],
+      "year": 2026,
+      "venue": "official implementation",
+      "source_url": "https://openfga.dev/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "resource-graph adapter",
+      "stream": "ReBAC engine",
+      "mechanism": "relationship tuples and authorization models",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "framework"
+    },
+    {
+      "key": "pact",
+      "title": "The Granularity Mismatch in Agent Security: Argument-Level Provenance Solves Enforcement and Isolates the LLM Reasoning Bottleneck",
+      "authors": [],
+      "year": 2026,
+      "venue": "PACT monitor",
+      "source_url": "https://arxiv.org/abs/2605.11039",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; v1 (11 May 2026) confirmed",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "most important granularity challenge",
+      "stream": "Argument provenance",
+      "mechanism": "semantic roles + cross-step provenance + capability contracts",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.11039",
+      "novelty_impact": {
+        "affected_claims": [
+          "A6"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "PACT tracks argument-level provenance with semantic roles and cross-step provenance; Conflux should position its argument authority as a principal-native generalisation"
+      },
+      "relevance": {
+        "useful_parts": "Argument-level provenance with semantic roles; cross-step provenance tracking; role-specific trust contracts; provenance-aware capability contracts (PACT)",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "PACT assigns semantic roles to tool arguments and tracks value provenance across replanning steps; checks whether each argument's origin satisfies its role-specific trust contract",
+          "Key insight: prompt injection becomes dangerous when untrusted content determines an authority-bearing argument, not when it appears in context",
+          "Under oracle provenance: 100% utility and 100% security on mixed-trust diagnostic suites",
+          "Full AgentDojo: 100% security on 3 strongest models, 38.1-46.4% utility (8-16pp above CaMeL at same security level)",
+          "Ablations show both semantic roles and cross-step provenance are necessary",
+          "Reframes agent security as authority binding; isolates bottleneck to provenance inference and contract synthesis"
+        ],
+        "limitations": [
+          "Uses role-specific trust contracts, not principal-derived authority",
+          "No connection to existing organisational ACS",
+          "No verification of the security layer under arbitrary model proposals",
+          "Provenance inference is the deployment bottleneck, not yet solved"
+        ]
+      }
+    },
+    {
+      "key": "pass",
+      "title": "PASS: Provenance-Aware Storage System",
+      "authors": [],
+      "year": 2006,
+      "venue": "system",
+      "source_url": "https://www.usenix.org/legacy/event/usenix06/tech/full_papers/muniswamy-reddy/muniswamy-reddy.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "practical provenance capture precedent",
+      "stream": "Whole-system provenance",
+      "mechanism": "capture file/process lineage",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "pilandscape2026",
+      "title": "The Landscape of Prompt Injection Threats in LLM Agents: From Taxonomy to Analysis",
+      "authors": [],
+      "year": 2026,
+      "venue": "survey + benchmark",
+      "source_url": "https://arxiv.org/abs/2602.10453",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "supports context-dependent tasks and no-single-defence result",
+      "stream": "SoK/benchmark",
+      "mechanism": "attack/defence taxonomy plus context-dependent AgentPI",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "survey",
+      "arxiv_id": "2602.10453"
+    },
+    {
+      "key": "poisoningalign",
+      "title": "Enhancing Prompt Injection Attacks to LLMs via Poisoning Alignment",
+      "authors": [],
+      "year": 2025,
+      "venue": "attack method",
+      "source_url": "https://doi.org/10.1145/3733799.3762963",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "supports worst-case model compromise",
+      "stream": "Attack",
+      "mechanism": "training poisoning improves injection",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1145/3733799.3762963"
+    },
+    {
+      "key": "progent",
+      "title": "Progent: Programmable Privilege Control for LLM Agents",
+      "authors": [],
+      "year": 2025,
+      "venue": "proxy; framework integrations",
+      "source_url": "https://arxiv.org/abs/2504.11703",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; v3 (14 May 2026) confirmed",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "direct challenge; borrow argument policies and expansion lattice",
+      "stream": "Privilege control",
+      "mechanism": "DSL over tools/arguments; SMT expansion check; approval",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2504.11703",
+      "novelty_impact": {
+        "affected_claims": [
+          "A4",
+          "A6",
+          "A13"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "Progent mediates tool calls with symbolic policy and argument-sensitive controls; Conflux's argument-level authority should be positioned against this precedent"
+      },
+      "relevance": {
+        "useful_parts": "Privilege control via symbolic rules over tool names and arguments; SMT solver for monotonic confinement; deterministic policy checking",
+        "conflux_relation": "mechanism",
+        "key_findings": [
+          "Progent represents privilege as symbolic rules over tool names and arguments; every tool call is checked against the policy through a deterministic procedure",
+          "Monotonic confinement: policy updates are SMT-determined as narrowing (auto-applied) or expansion (requires explicit approval); effective action space can only shrink without approval",
+          "LLM generates initial policy from user task and updates during execution; prevents silent privilege escalation even with adversarial inputs",
+          "Evaluated on AgentDojo and ASB; demonstrated in LangChain and OpenAI Agents SDK",
+          "Argument-sensitive policy is directly comparable to Conflux's trusted argument roles"
+        ],
+        "limitations": [
+          "No principal identities or provenance for authority derivation",
+          "Policy is task-specific, not derived from existing organisational ACS",
+          "No verification of the security layer under arbitrary model proposals",
+          "No argument-level provenance tracking"
+        ]
+      }
+    },
+    {
+      "key": "provenanceguardaction",
+      "title": "Safeguarding LLM Agents from Misalignment through Provenance Analysis",
+      "authors": [],
+      "year": 2026,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2607.01236",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "complementary action-alignment layer",
+      "stream": "Action alignment",
+      "mechanism": "multi-stage provenance support checks for tool/argument/interpretation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2607.01236"
+    },
+    {
+      "key": "provsemirings",
+      "title": "Provenance Semirings",
+      "authors": [],
+      "year": 2007,
+      "venue": "paper",
+      "source_url": "https://doi.org/10.1145/1265530.1265535",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "potential algebra for influence composition",
+      "stream": "Database provenance",
+      "mechanism": "algebraic annotations for query derivations",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1145/1265530.1265535"
+    },
+    {
+      "key": "publiccomp",
+      "title": "How Vulnerable Are AI Agents to Indirect Prompt Injections? Insights from a Large-Scale Public Competition",
+      "authors": [],
+      "year": 2026,
+      "venue": "dataset/report",
+      "source_url": "https://arxiv.org/abs/2603.15714",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "attack diversity and prevalence",
+      "stream": "Real-world attack evidence",
+      "mechanism": "large public competition",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2603.15714"
+    },
+    {
+      "key": "rbac",
+      "title": "Role-Based Access Control Models",
+      "authors": [],
+      "year": 1996,
+      "venue": "standard/paper",
+      "source_url": "https://csrc.nist.gov/projects/role-based-access-control",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "possible enterprise adapter",
+      "stream": "Access control",
+      "mechanism": "roles, permissions, sessions, constraints",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "referencemonitor",
+      "title": "Computer Security Technology Planning Study / Reference Monitor Concept",
+      "authors": [],
+      "year": 1972,
+      "venue": "report",
+      "source_url": "https://csrc.nist.gov/publications/detail/report/1972/10/01/computer-security-technology-planning-study/final",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "defines trusted enforcement kernel",
+      "stream": "Security foundations",
+      "mechanism": "tamperproof, always-invoked, verifiable monitor",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "robustdeclassification",
+      "title": "Robust Declassification",
+      "authors": [
+        "Zdancewic, S.",
+        "Myers, A. C."
+      ],
+      "year": 2001,
+      "venue": "Proceedings of the 14th IEEE Computer Security Foundations Workshop, 15-23",
+      "source_url": "https://www.cs.cornell.edu/andru/papers/robust-dec.html",
+      "verified": {
+        "method": "scholar_metadata",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "Scholar verified; Cornell page confirmed; full text not inspected in this session",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-13",
+      "adoption_priority": "A",
+      "evidence_tier": "A",
+      "closest_relation": "attacker cannot manipulate declassification; directly relevant to prompt injection",
+      "stream": "Classical security",
+      "mechanism": "robust declassification condition",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "A",
+      "source_type": "primary_paper",
+      "relevance": {
+        "useful_parts": "Robust declassification condition: attacker cannot manipulate what/when trusted code declassifies; directly relevant to prompt injection",
+        "conflux_relation": "limitation",
+        "key_findings": [
+          "Robust declassification asks whether an attacker can influence the decision to declassify — directly relevant to prompt injection",
+          "A trusted user may be authorised to release information, but an attacker-authored document should not gain the ability to influence the LLM into exercising that authority",
+          "A future disclosure rule should ask both whether release is authorised and which principals may influence the decision to perform it",
+          "Provides stronger formal vocabulary for attacker-influence conditions than an entirely new Conflux-specific concept"
+        ],
+        "limitations": [
+          "Conflux does not yet implement a robustness condition for disclosure",
+          "No treatment of LLM agents specifically",
+          "No connection to existing ACS",
+          "Robust disclosure is listed as future work in SLED-V property hierarchy"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A10"
+        ],
+        "risk_level": "low",
+        "qualification_needed": "Concept is directly applicable; Conflux has not yet implemented the corresponding mechanism, so no novelty conflict exists"
+      }
+    },
+    {
+      "key": "rtbas",
+      "title": "RTBAS: Defending LLM Agents Against Prompt Injection and Privacy Leakage",
+      "authors": [],
+      "year": 2025,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2502.08966",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "useful hybrid of monitor and human confirmation",
+      "stream": "Runtime agent security",
+      "mechanism": "IFC, dependency screeners, selective confirmation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2502.08966"
+    },
+    {
+      "key": "sabelfeld2003",
+      "title": "Language-Based Information-Flow Security",
+      "authors": [
+        "Sabelfeld, A.",
+        "Myers, A. C."
+      ],
+      "year": 2003,
+      "venue": "IEEE Journal on Selected Areas in Communications, 21(1), 5-19",
+      "doi": "10.1109/JSAC.2002.806121",
+      "source_url": "https://doi.org/10.1109/JSAC.2002.806121",
+      "verified": {
+        "method": "scholar_metadata",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "DOI verified; metadata confirmed against IEEE Xplore",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-13",
+      "adoption_priority": "A",
+      "evidence_tier": "A",
+      "closest_relation": "vocabulary for explicit/implicit flows, overapproximation, and IFC enforcement",
+      "stream": "Classical security",
+      "mechanism": "language-based information-flow control survey",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "A",
+      "source_type": "survey",
+      "relevance": {
+        "useful_parts": "Vocabulary for explicit/implicit flows, static/dynamic enforcement, noninterference, precision vs soundness; three-way distinction between security provenance, exposure, and attribution",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Provides the standard vocabulary for language-based IFC: explicit vs implicit flows, termination/timing channels, overapproximation vs exact influence",
+          "Conflux's 'influence' is an intentional overapproximation in Sabelfeld-Myers terms: if information from a principal reaches an execution, that principal may influence its output",
+          "The three-way distinction (security provenance / exposure measurement / causal attribution) maps to IFC concepts of soundness, precision, and knowledge",
+          "Declassification is treated as a controlled exception to noninterference, with dimensions (what, who, where, when)"
+        ],
+        "limitations": [
+          "Language-based IFC, not agent-level security",
+          "No connection to existing organisational ACS",
+          "No treatment of LLM agents or prompt injection",
+          "Focuses on program-level enforcement, not system-level mediation"
+        ]
+      },
+      "novelty_impact": {
+        "affected_claims": [
+          "A8",
+          "A11"
+        ],
+        "risk_level": "medium",
+        "qualification_needed": "Conservative label/flow propagation is standard IFC practice; Conflux's overapproximation of influence should be acknowledged as consistent with IFC conventions"
+      }
+    },
+    {
+      "key": "saltzerschroeder",
+      "title": "The Protection of Information in Computer Systems",
+      "authors": [],
+      "year": 1975,
+      "venue": "paper",
+      "source_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "core TCB and adapter obligations",
+      "stream": "Security foundations",
+      "mechanism": "least privilege, complete mediation, fail-safe defaults, economy of mechanism",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "seagent",
+      "title": "Taming Various Privilege Escalation in LLM-Based Agent Systems: A Mandatory Access Control Framework",
+      "authors": [],
+      "year": 2026,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2601.11893",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "directly challenges PE-framing novelty",
+      "stream": "Privilege escalation",
+      "mechanism": "MAC/ABAC over information-flow graph",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2601.11893"
+    },
+    {
+      "key": "secalign",
+      "title": "SecAlign: Defending Against Prompt Injection with Preference Optimization",
+      "authors": [],
+      "year": 2025,
+      "venue": "trained model",
+      "source_url": "https://arxiv.org/abs/2410.05451",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; CCS 2025; preference optimization defence",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "complementary model hardening",
+      "stream": "Model-level defence",
+      "mechanism": "preference optimization for instruction/data hierarchy",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1145/3719027.3744836",
+      "arxiv_id": "2410.05451",
+      "relevance": {
+        "useful_parts": "Preference optimization defence; constructs preference dataset with prompt-injected inputs, secure and insecure outputs; fine-tunes LLM to prefer secure behaviour",
+        "conflux_relation": "background",
+        "key_findings": [
+          "SecAlign uses preference optimization: constructs dataset with prompt-injected inputs, secure outputs (respond to legitimate instruction), insecure outputs (respond to injection)",
+          "Reduces success rates of various prompt injections to <10%, even against sophisticated attacks",
+          "Generalizes well against unknown attacks not seen during training",
+          "Model-level defence; similar utility to undefended model",
+          "Published at ACM CCS 2025; open-source code available"
+        ],
+        "limitations": [
+          "Model-level defence, not system-level security mechanism",
+          "No complete mediation — only prevents instruction following from injected data",
+          "No principal provenance or ACS connection",
+          "White-box attacks (attention-based) can bypass with 85-95% success rate",
+          "Empirical robustness only, not formal guarantee"
+        ]
+      }
+    },
+    {
+      "key": "secureclaw",
+      "title": "SecureClaw: Clawing Back Control of LLM Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2606.09549",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "borrow dual boundary and canonical preview/commit",
+      "stream": "Dual-boundary confinement",
+      "mechanism": "opaque handles/bounded summaries + sink auth + preview/commit",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2606.09549"
+    },
+    {
+      "key": "securesurvey2026",
+      "title": "Toward Secure LLM Agents: Threat Surfaces, Attacks, Defenses, and Evaluation",
+      "authors": [],
+      "year": 2026,
+      "venue": "survey",
+      "source_url": "https://arxiv.org/abs/2606.10749",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "coverage map and gap triangulation",
+      "stream": "Survey",
+      "mechanism": "247-paper lifecycle/system taxonomy",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "survey",
+      "arxiv_id": "2606.10749"
+    },
+    {
+      "key": "securityautomata",
+      "title": "Enforceable Security Policies",
+      "authors": [],
+      "year": 2000,
+      "venue": "paper",
+      "source_url": "https://www.cs.cornell.edu/fbs/publications/EnfSecPols.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "clarifies what reference monitor can enforce",
+      "stream": "Runtime enforcement",
+      "mechanism": "security automata and enforceability",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "sel4",
+      "title": "seL4: Formal Verification of an OS Kernel",
+      "authors": [],
+      "year": 2009,
+      "venue": "verified kernel",
+      "source_url": "https://sel4.systems/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "model for small verified enforcement kernel",
+      "stream": "Capability OS/formal verification",
+      "mechanism": "capability kernel with machine-checked implementation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "silentegress",
+      "title": "Silent Egress",
+      "authors": [],
+      "year": 2026,
+      "venue": "paper/artifact",
+      "source_url": "https://arxiv.org/abs/2602.22450",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "forces explicit observer model and channel inventory",
+      "stream": "Covert/egress channels",
+      "mechanism": "analysis of indirect and silent data exfiltration",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2602.22450"
+    },
+    {
+      "key": "slsa",
+      "title": "Supply-chain Levels for Software Artifacts",
+      "authors": [],
+      "year": 2021,
+      "venue": "standard/tooling",
+      "source_url": "https://slsa.dev/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "release criteria for security kernel",
+      "stream": "Software supply chain",
+      "mechanism": "build provenance and assurance levels",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "standard"
+    },
+    {
+      "key": "spicedb",
+      "title": "SpiceDB",
+      "authors": [],
+      "year": 2026,
+      "venue": "official implementation",
+      "source_url": "https://authzed.com/spicedb",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "resource-graph adapter",
+      "stream": "ReBAC engine",
+      "mechanism": "Zanzibar-style relationship graph authorization",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "framework"
+    },
+    {
+      "key": "spin",
+      "title": "The SPIN Model Checker",
+      "authors": [],
+      "year": 1997,
+      "venue": "SPIN/Promela",
+      "source_url": "https://spinroot.com/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "algorithmic foundation for SLED reduction",
+      "stream": "Formal methods",
+      "mechanism": "explicit-state model checking and partial-order reduction",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "spotlighting",
+      "title": "Defending Against Indirect Prompt Injection Attacks with Spotlighting",
+      "authors": [],
+      "year": 2024,
+      "venue": "arXiv",
+      "source_url": "https://arxiv.org/abs/2403.14720",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; v1 confirmed",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "related defence approach",
+      "stream": "Defence",
+      "mechanism": "data marking for prompt injection defence",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2403.14720v1",
+      "novelty_impact": {
+        "affected_claims": [],
+        "risk_level": "none",
+        "qualification_needed": "Model-level defence; no novelty conflict with Conflux system-level claims"
+      },
+      "relevance": {
+        "useful_parts": "Prompt engineering techniques to help LLMs distinguish input sources; transformations provide reliable signal of provenance",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Spotlighting is a family of prompt engineering techniques that transform input to provide a reliable signal of its provenance",
+          "Reduces attack success rate from >50% to <2% with GPT-family models",
+          "Model-level defence technique, not a system-level security mechanism",
+          "Key insight: utilize transformations of input to provide continuous provenance signal"
+        ],
+        "limitations": [
+          "Empirical robustness only, not formal guarantee",
+          "No complete mediation",
+          "No principal provenance or ACS connection",
+          "Minimal detrimental impact on NLP tasks but not security-complete"
+        ]
+      }
+    },
+    {
+      "key": "struq",
+      "title": "StruQ: Defending Against Prompt Injection with Structured Queries",
+      "authors": [],
+      "year": 2024,
+      "venue": "arXiv",
+      "source_url": "https://arxiv.org/abs/2402.06363",
+      "verified": {
+        "method": "primary_source",
+        "depth": "abstract_and_key_sections",
+        "date": "2026-08-30",
+        "notes": "arXiv abstract read; v2 (25 Sep 2024) confirmed; USENIX Security 2025",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "B",
+      "evidence_tier": "B",
+      "closest_relation": "related benchmark and defence approach",
+      "stream": "Benchmark",
+      "mechanism": "structured query defence",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "done",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2402.06363v2",
+      "novelty_impact": {
+        "affected_claims": [],
+        "risk_level": "none",
+        "qualification_needed": "Model-level defence; no novelty conflict with Conflux system-level claims"
+      },
+      "relevance": {
+        "useful_parts": "Structured queries separating prompts and data into two channels; secure front-end + specially trained LLM; fine-tuning strategy",
+        "conflux_relation": "background",
+        "key_findings": [
+          "StruQ separates prompts and data into two channels: a secure front-end formats prompt and data into a special format; a trained LLM only follows instructions in the prompt portion",
+          "Fine-tuning strategy: augment instruction tuning datasets with instructions in the data portion, fine-tune model to ignore them",
+          "Model-level defence, not a system-level security mechanism",
+          "Can be composed below/above Conflux monitor without erasing provenance"
+        ],
+        "limitations": [
+          "Empirical robustness only, not formal security guarantee",
+          "No complete mediation — only prevents instruction/data confusion at the model level",
+          "No principal provenance or ACS connection",
+          "White-box attacks (attention-based) can bypass with 85-95% success rate"
+        ]
+      }
+    },
+    {
+      "key": "systemsproblem",
+      "title": "Agent Security is a Systems Problem",
+      "authors": [],
+      "year": 2026,
+      "venue": "paper",
+      "source_url": "https://arxiv.org/abs/2605.18991",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "C",
+      "closest_relation": "supports Conflux framing but reduces broad novelty",
+      "stream": "Systems perspective",
+      "mechanism": "model as untrusted component; system invariants",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2605.18991"
+    },
+    {
+      "key": "taint",
+      "title": "TaintCheck: Automatic Detection of Attacks by Tainted Data",
+      "authors": [],
+      "year": 2005,
+      "venue": "system",
+      "source_url": "https://www.usenix.org/legacy/events/sec05/tech/full_papers/newsome/newsome.pdf",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "precedent for influence propagation and implicit-flow limits",
+      "stream": "Dynamic taint analysis",
+      "mechanism": "track untrusted bytes through execution",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "tlaplus",
+      "title": "Specifying Systems / TLA+",
+      "authors": [],
+      "year": 2002,
+      "venue": "TLC/PlusCal",
+      "source_url": "https://lamport.azurewebsites.net/tla/tla.html",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "natural SLED 2 semantics",
+      "stream": "Formal methods",
+      "mechanism": "state-machine specification and temporal logic",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "tmanm",
+      "title": "Securing LLM-Agent Long-Term Memory Against Poisoning: Non-Malleable, Origin-Bound Authority with Machine-Checked Guarantees",
+      "authors": [],
+      "year": 2026,
+      "venue": "benchmark + TLA+ models",
+      "source_url": "https://arxiv.org/abs/2606.24322",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "critical extension for Conflux memory semantics",
+      "stream": "Persistent memory",
+      "mechanism": "write-time origin binding; non-malleable authority; corroboration-gated elevation",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2606.24322"
+    },
+    {
+      "key": "tuf",
+      "title": "The Update Framework",
+      "authors": [],
+      "year": 2010,
+      "venue": "standard/tooling",
+      "source_url": "https://theupdateframework.io/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "revocation/expiry for tool and policy registries",
+      "stream": "Software supply chain",
+      "mechanism": "threshold-signed, role-separated update metadata",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "standard"
+    },
+    {
+      "key": "ucon",
+      "title": "Usage Control: A New Approach to Access Control",
+      "authors": [],
+      "year": 2003,
+      "venue": "paper",
+      "source_url": "https://dl.acm.org/doi/10.1145/947380.947385",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "supports revocation and obligations during agent actions",
+      "stream": "Usage control",
+      "mechanism": "ongoing authorization, obligations, mutability",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
+    },
+    {
+      "key": "w3cprov",
+      "title": "W3C PROV",
+      "authors": [],
+      "year": 2013,
+      "venue": "W3C recommendation",
+      "source_url": "https://www.w3.org/TR/prov-overview/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "base vocabulary for decision certificates",
+      "stream": "Provenance standard",
+      "mechanism": "entities, activities, agents, derivation, attribution",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "standard"
+    },
+    {
+      "key": "whyprovenance",
+      "title": "Why and Where: A Characterization of Data Provenance",
+      "authors": [],
+      "year": 2001,
+      "venue": "paper",
+      "source_url": "https://doi.org/10.1007/3-540-44503-X_20",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "granularity and explanation foundations",
+      "stream": "Database provenance",
+      "mechanism": "why/where provenance",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "doi": "10.1007/3-540-44503-X_20"
+    },
+    {
+      "key": "zanzibar",
+      "title": "Zanzibar: Google’s Consistent, Global Authorization System",
+      "authors": [],
+      "year": 2019,
+      "venue": "production system paper",
+      "source_url": "https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/",
+      "verified": {
+        "method": "unverified",
+        "date": "2026-08-30",
+        "notes": "migrated from archived CSV; not yet primary-source verified"
+      },
+      "last_checked": "2026-08-30",
+      "adoption_priority": "D",
+      "evidence_tier": "A",
+      "closest_relation": "basis for OpenFGA/SpiceDB adapters",
+      "stream": "Relationship-based access control",
+      "mechanism": "relationship tuples and graph reachability",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "D",
+      "source_type": "primary_paper"
     }
   ]
 }
