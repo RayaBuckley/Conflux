@@ -47,11 +47,22 @@ structurally analogous to Biba's low-water-mark contamination; intersection
 over permission sets is a standard meet in the powerset lattice; authorised
 reads do not establish noninterference; and source-set taint and
 provenance-aware policy enforcement have extensive prior literature. See
-[ADR 012](../decisions/012-foundational-security-lineage.md) and the
+[ADR 012](../decisions/012-foundational-security-lineage.md), the
 [foundational security literature
-analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md)
-for the detailed comparison and candidate distinctions that may survive
-prior-art search.
+analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md),
+the [novelty audit](../../research/reports/analysis/2026-08-16-novelty-audit.md),
+and the [literature verification
+protocol](../research/LITERATURE_VERIFICATION_PROTOCOL.md) for the detailed
+comparison and candidate distinctions that may survive prior-art search.
+
+Structured per-source verification records, including key findings,
+limitations, and novelty-impact assessments for the nine Priority A
+foundational works and eight modern agent works, are recorded in
+[`research/reports/analysis/literature_corpus.json`](../../research/reports/analysis/literature_corpus.json)
+and validated by `tests/test_literature_corpus.py`. The corpus tracks 114
+sources; the nine Priority A classical works have been verified to
+`scholar_metadata` depth with abstract and key sections read. Full
+primary-source reading of the complete texts remains an operator action.
 
 The archived paper and report packages are historical evidence, not status
 sources of truth. `research/reports/analysis/` reconciles them without promoting their
