@@ -30,6 +30,7 @@ from conflux.verification.defence_models import (
     progent_ir,
     progent_native_property_ir,
 )
+from conflux.verification.reduction import reference_safety_check
 from conflux.verification.z3_backend import verify_with_z3
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,10 +40,13 @@ OUTPUT = ROOT / "research" / "output" / "runs" / "defence-models-v1"
 def _verify(ir_fn: Any) -> dict[str, Any]:
     ir = ir_fn()
     result = verify_with_z3(ir)
+    ref = reference_safety_check(ir)
     return {
         "verdict": result.verdict.value,
         "counterexample": result.counterexample is not None,
         "counterexample_length": len(result.counterexample) if result.counterexample else 0,
+        "reference_verdict": ref.verdict.value,
+        "reference_states": ref.states,
     }
 
 
