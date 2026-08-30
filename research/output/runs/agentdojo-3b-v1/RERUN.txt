@@ -1,0 +1,1 @@
+conflux benchmark agentdojo run --config research\output\runs\agentdojo-3b-v1\protocol.json --output research\output\runs\agentdojo-3b-v1 --execute-local
