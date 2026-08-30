@@ -171,9 +171,13 @@
     },
     {
       "ids": ["SLEDV-COMP-001"],
-      "status": "deferred",
-      "evidence": ["research/reports/archive/2026-08-27-sledv-comprehension-validation/"],
-      "gap": "Relabel comparative models in defence_models.py from 'faithfully encodes' to 'finite abstraction'; rename test docstrings from 'CaMeL violates PE' to 'candidate abstraction admits PE counterexample'; create docs/evidence/defence-model-fidelity.json"
+      "status": "implemented",
+      "evidence": [
+        "src/conflux/verification/defence_models.py",
+        "tests/test_defence_models.py",
+        "docs/evidence/defence-model-fidelity.json"
+      ],
+      "gap": null
     },
     {
       "ids": ["SLEDV-COMP-002"],
