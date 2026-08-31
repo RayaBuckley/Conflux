@@ -15,6 +15,9 @@ SCHEMA_PATH = Path(__file__).resolve().parents[1] / "schemas" / "literature-corp
 BIB_PATH = Path(__file__).resolve().parents[1] / "research" / "publications" / "manuscript" / "references.bib"
 REFS_MD_PATH = Path(__file__).resolve().parents[1] / "research" / "publications" / "manuscript" / "REFERENCES.md"
 NOVELTY_AUDIT_PATH = Path(__file__).resolve().parents[1] / "research" / "reports" / "analysis" / "2026-08-16-novelty-audit.md"
+MANIFEST_PATH = Path(__file__).resolve().parents[1] / "research" / "literature" / "manifest.json"
+MANIFEST_SCHEMA_PATH = Path(__file__).resolve().parents[1] / "schemas" / "literature-manifest.schema.json"
+PAPERS_DIR = Path(__file__).resolve().parents[1] / "research" / "literature" / "papers"
 
 VALID_CLAIM_IDS = {f"A{i}" for i in range(1, 16)}
 
@@ -167,3 +170,69 @@ class TestNoveltyAuditConsistency:
         unlinked = [cid for cid, srcs in claim_sources.items() if not srcs and cid in self.CLAIMS_REQUIRING_SOURCES]
         if unlinked:
             pytest.skip(f"claims requiring sources but without corpus entries (verification in progress): {unlinked}")
+
+
+class TestLocalLiteratureCopies:
+    """Verify local paper copies and fetch manifest consistency."""
+
+    def _load_corpus_keys(self) -> set[str]:
+        corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
+        return {str(e["key"]) for e in corpus["entries"]}
+
+    def _load_manifest(self) -> dict[str, Any]:
+        data: dict[str, Any] = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+        return data
+
+    def test_manifest_validates_against_schema(self) -> None:
+        if not MANIFEST_PATH.exists():
+            pytest.skip("manifest.json not found")
+        schema = json.loads(MANIFEST_SCHEMA_PATH.read_text(encoding="utf-8"))
+        manifest = self._load_manifest()
+        Draft202012Validator(schema).validate(manifest)
+
+    def test_manifest_keys_match_corpus_keys(self) -> None:
+        if not MANIFEST_PATH.exists():
+            pytest.skip("manifest.json not found")
+        manifest = self._load_manifest()
+        manifest_keys = {str(e["key"]) for e in manifest["entries"]}
+        corpus_keys = self._load_corpus_keys()
+        assert manifest_keys == corpus_keys, (
+            f"manifest/corpus key mismatch: "
+            f"missing from manifest: {corpus_keys - manifest_keys}; "
+            f"extra in manifest: {manifest_keys - corpus_keys}"
+        )
+
+    def test_arxiv_entries_have_local_copy_or_failure(self) -> None:
+        if not MANIFEST_PATH.exists():
+            pytest.skip("manifest.json not found")
+        manifest = self._load_manifest()
+        manifest_by_key = {str(e["key"]): e for e in manifest["entries"]}
+        corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
+        for entry in corpus["entries"]:
+            has_arxiv = bool(entry.get("arxiv_id")) or "arxiv.org/abs/" in str(entry.get("source_url", ""))
+            if not has_arxiv:
+                continue
+            key = str(entry["key"])
+            m_entry = manifest_by_key.get(key)
+            assert m_entry is not None, f"arXiv entry {key} missing from manifest"
+            has_file = bool(m_entry.get("local_files"))
+            status = str(m_entry["fetch_status"])
+            assert has_file or status in ("failed", "paywall"), (
+                f"arXiv entry {key} has no local file and is not marked failed/paywall (status={status})"
+            )
+
+    def test_fetch_status_json_files_valid(self) -> None:
+        if not PAPERS_DIR.exists():
+            pytest.skip("papers directory not found")
+        for paper_dir in sorted(PAPERS_DIR.iterdir()):
+            if not paper_dir.is_dir():
+                continue
+            status_path = paper_dir / "fetch_status.json"
+            if not status_path.exists():
+                continue
+            data = json.loads(status_path.read_text(encoding="utf-8"))
+            assert "key" in data, f"{status_path} missing 'key'"
+            assert "fetch_status" in data, f"{status_path} missing 'fetch_status'"
+            assert str(data["fetch_status"]) in ("fetched", "failed", "skipped", "paywall"), (
+                f"{status_path} has invalid fetch_status: {data['fetch_status']}"
+            )

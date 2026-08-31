@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conflux.example/schemas/literature-manifest-v1.json",
+  "title": "Conflux literature fetch manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "generated_date", "entries"],
+  "properties": {
+    "schema_version": {"const": "1"},
+    "generated_date": {"type": "string", "minLength": 1},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "source_category", "fetch_status"],
+        "properties": {
+          "key": {"type": "string", "minLength": 1},
+          "source_category": {
+            "enum": ["arxiv", "open_pdf", "open_html", "doi", "local", "repository"]
+          },
+          "fetch_status": {
+            "enum": ["fetched", "failed", "skipped", "paywall"]
+          },
+          "local_files": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "content_hash": {"type": "string"},
+          "fetched_date": {"type": "string"},
+          "source_url": {"type": "string"},
+          "error_message": {"type": "string"}
+        }
+      }
+    }
+  }
+}

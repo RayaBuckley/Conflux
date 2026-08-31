@@ -109,3 +109,7 @@ research/experiments/local-runs/
 *.bbl
 *.log
 *.pdf
+
+# Literature: ignore fetched paper content; track per-paper fetch metadata
+research/literature/papers/*/paper.html
+research/literature/papers/*/paper.pdf
