@@ -1,0 +1,12 @@
+{
+  "key": "pilandscape2026",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.10453",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "5ed0ad43745e5e15811972f8b7875e641e7f24926b48de739202c5b6da245ec3",
+  "fetched_date": "2026-08-30T21:20:07Z",
+  "error_message": ""
+}

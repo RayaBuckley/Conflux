@@ -1,0 +1,10 @@
+{
+  "key": "noninterference",
+  "source_category": "doi",
+  "source_url": "https://doi.org/10.1109/SP.1982.10017",
+  "fetch_status": "paywall",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:19:54Z",
+  "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+}

@@ -1,0 +1,12 @@
+{
+  "key": "systemsproblem",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.18991",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "3d19f856ed6e1c5ff410ad89379fe4f9c593a459e44dc692c6faefb24570d911",
+  "fetched_date": "2026-08-30T21:20:54Z",
+  "error_message": ""
+}

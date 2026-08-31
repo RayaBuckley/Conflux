@@ -1,0 +1,12 @@
+{
+  "key": "tlaplus",
+  "source_category": "open_html",
+  "source_url": "https://lamport.azurewebsites.net/tla/tla.html",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "a410ef399887c05ac183aa41ef6850cbd4bb779d7dd5e4019d46d57a17ddbf13",
+  "fetched_date": "2026-08-30T21:20:56Z",
+  "error_message": ""
+}

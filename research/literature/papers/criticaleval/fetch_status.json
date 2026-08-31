@@ -1,0 +1,12 @@
+{
+  "key": "criticaleval",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2505.18333",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "c2ef79c1de71df8c3f69dec787132c543d5bbd79599831b89a27779d91662fb6",
+  "fetched_date": "2026-08-30T21:18:59Z",
+  "error_message": ""
+}

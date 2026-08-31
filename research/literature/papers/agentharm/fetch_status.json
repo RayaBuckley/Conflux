@@ -1,0 +1,12 @@
+{
+  "key": "agentharm",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2410.09024",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "80c9f1d91be0ca40ec9d54f79e4b164ad5122f7016ddea97b9da6f56a67f414c",
+  "fetched_date": "2026-08-30T21:17:39Z",
+  "error_message": ""
+}

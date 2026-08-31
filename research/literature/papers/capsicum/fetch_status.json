@@ -1,0 +1,12 @@
+{
+  "key": "capsicum",
+  "source_category": "open_html",
+  "source_url": "https://www.cl.cam.ac.uk/research/security/capsicum/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "dd5fecb63cf7528e737e4831e2000c8131321d56671e41f32eca4991e2c50d5f",
+  "fetched_date": "2026-08-30T21:18:46Z",
+  "error_message": ""
+}

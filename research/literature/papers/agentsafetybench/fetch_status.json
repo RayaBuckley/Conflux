@@ -1,0 +1,12 @@
+{
+  "key": "agentsafetybench",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2412.14470",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "b78772a2c31ba2baf770244d890fe5b66190ef1ad8657e616ea208f23af0574c",
+  "fetched_date": "2026-08-30T21:17:55Z",
+  "error_message": ""
+}

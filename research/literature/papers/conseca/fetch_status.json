@@ -1,0 +1,12 @@
+{
+  "key": "conseca",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2501.17070",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "426b5888c177127eefcd0fe31329d1676ae1a364b186ed5d36652c66320f565c",
+  "fetched_date": "2026-08-30T21:18:56Z",
+  "error_message": ""
+}

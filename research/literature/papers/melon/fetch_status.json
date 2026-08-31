@@ -1,0 +1,12 @@
+{
+  "key": "melon",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2502.05174",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "0e916b42e34c2a35375ab41269434fbf366117303bb25a5479a7c627de1b9a13",
+  "fetched_date": "2026-08-30T21:19:43Z",
+  "error_message": ""
+}

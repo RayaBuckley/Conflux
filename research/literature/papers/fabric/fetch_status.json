@@ -1,0 +1,12 @@
+{
+  "key": "fabric",
+  "source_category": "open_html",
+  "source_url": "https://www.cs.cornell.edu/projects/fabric/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "36482ef7763f9df756d2538e8c2ee9cd9cf95b1d71e6ccb88298264f9d7cbec0",
+  "fetched_date": "2026-08-30T21:19:14Z",
+  "error_message": ""
+}

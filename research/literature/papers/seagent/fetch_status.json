@@ -1,0 +1,12 @@
+{
+  "key": "seagent",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2601.11893",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "dc95df8f4ac118f0a333805363d3caabc2b3bfac99b575f99b49f4b61b0d9123",
+  "fetched_date": "2026-08-30T21:20:25Z",
+  "error_message": ""
+}

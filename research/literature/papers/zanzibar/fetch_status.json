@@ -1,0 +1,12 @@
+{
+  "key": "zanzibar",
+  "source_category": "open_html",
+  "source_url": "https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "6ed4b67784c901563d6b420ca9b09806328fb567299f5ef3eb11746cd6476a60",
+  "fetched_date": "2026-08-30T21:21:00Z",
+  "error_message": ""
+}

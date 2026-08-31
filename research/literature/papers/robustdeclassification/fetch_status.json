@@ -1,0 +1,10 @@
+{
+  "key": "robustdeclassification",
+  "source_category": "open_html",
+  "source_url": "https://www.cs.cornell.edu/andru/papers/robust-dec.html",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:20:18Z",
+  "error_message": "HTTP 404 Not Found"
+}

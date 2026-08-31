@@ -1,0 +1,12 @@
+{
+  "key": "agentsentrybound",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2603.22868",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "e054400b6c0fd063fd54482edea78584a4e0c5e09299021bbf87b46514eafe58",
+  "fetched_date": "2026-08-30T21:18:01Z",
+  "error_message": ""
+}

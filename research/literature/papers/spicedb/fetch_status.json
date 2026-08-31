@@ -1,0 +1,12 @@
+{
+  "key": "spicedb",
+  "source_category": "open_html",
+  "source_url": "https://authzed.com/spicedb",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "c431d5d371b6ae5c82aa2f5d47591d471865d8ca15437e753b2581140a6bc8e6",
+  "fetched_date": "2026-08-30T21:20:42Z",
+  "error_message": ""
+}

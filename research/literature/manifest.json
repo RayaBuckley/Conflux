@@ -1,0 +1,1416 @@
+{
+  "schema_version": "1",
+  "generated_date": "2026-08-30T21:21:00Z",
+  "entries": [
+    {
+      "key": "abac",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:17:20Z",
+      "source_url": "https://csrc.nist.gov/publications/detail/special-publication/800-162/final",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "accessmatrix",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:17:20Z",
+      "source_url": "https://dl.acm.org/doi/10.1145/361011.361067",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "adaptiveeval",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "cf18d00fb4012f6caff6fe2c5c697bdd3619671164f2b85f40346d0c577af22e",
+      "fetched_date": "2026-08-30T21:17:23Z",
+      "source_url": "https://arxiv.org/abs/2606.26479",
+      "error_message": ""
+    },
+    {
+      "key": "agentarmor",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "e13670e518a2e2eb3ef61dcc721351dd4bd72703e0ac05fe8be20f931fb9efd9",
+      "fetched_date": "2026-08-30T21:17:27Z",
+      "source_url": "https://arxiv.org/abs/2508.01249",
+      "error_message": ""
+    },
+    {
+      "key": "agentdojo",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "7b6e97faaedcf0e1b5f3635b92a0da33afbe8529699d54a5c44ad58ce2fa8b02",
+      "fetched_date": "2026-08-30T21:17:30Z",
+      "source_url": "https://arxiv.org/abs/2406.13352",
+      "error_message": ""
+    },
+    {
+      "key": "agentdyn",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "ecb0972a0d2e0d1915c64c6625afb1d3172e4416b88aa21dd95c5b8c2bade360",
+      "fetched_date": "2026-08-30T21:17:33Z",
+      "source_url": "https://arxiv.org/abs/2602.03117",
+      "error_message": ""
+    },
+    {
+      "key": "agentguard",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "ae831e1a6bf504005cadb4b6e87783430807af808aa4d411b1586ff15d1a4a10",
+      "fetched_date": "2026-08-30T21:17:36Z",
+      "source_url": "https://arxiv.org/abs/2605.28071",
+      "error_message": ""
+    },
+    {
+      "key": "agentharm",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "80c9f1d91be0ca40ec9d54f79e4b164ad5122f7016ddea97b9da6f56a67f414c",
+      "fetched_date": "2026-08-30T21:17:39Z",
+      "source_url": "https://arxiv.org/abs/2410.09024",
+      "error_message": ""
+    },
+    {
+      "key": "agenthijack",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "0bd10531efb926a70335136c539f3363a88cd82b52dfe8a9458aad04f071326f",
+      "fetched_date": "2026-08-30T21:17:42Z",
+      "source_url": "https://arxiv.org/abs/2605.25707",
+      "error_message": ""
+    },
+    {
+      "key": "agentlab",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "ccc3a5e1ab7294d536f92ba2e3ab43369568328f2abb6e808d5250ee5a67d17b",
+      "fetched_date": "2026-08-30T21:17:45Z",
+      "source_url": "https://arxiv.org/abs/2602.16901",
+      "error_message": ""
+    },
+    {
+      "key": "agentleak",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "d2c08b255577d94487d06ecc7aec14df8555ae64acbc5761c21e3a4fa8f40319",
+      "fetched_date": "2026-08-30T21:17:48Z",
+      "source_url": "https://arxiv.org/abs/2602.11510",
+      "error_message": ""
+    },
+    {
+      "key": "agentpi",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "5ed0ad43745e5e15811972f8b7875e641e7f24926b48de739202c5b6da245ec3",
+      "fetched_date": "2026-08-30T21:17:52Z",
+      "source_url": "https://arxiv.org/abs/2602.10453",
+      "error_message": ""
+    },
+    {
+      "key": "agentsafetybench",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "b78772a2c31ba2baf770244d890fe5b66190ef1ad8657e616ea208f23af0574c",
+      "fetched_date": "2026-08-30T21:17:55Z",
+      "source_url": "https://arxiv.org/abs/2412.14470",
+      "error_message": ""
+    },
+    {
+      "key": "agentsecbench",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "cac7917d75865e097bf36196d7ae42ce5d83abb7b3d16e4801513b8cf9f9e930",
+      "fetched_date": "2026-08-30T21:17:58Z",
+      "source_url": "https://arxiv.org/abs/2605.26269",
+      "error_message": ""
+    },
+    {
+      "key": "agentsentrybound",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "e054400b6c0fd063fd54482edea78584a4e0c5e09299021bbf87b46514eafe58",
+      "fetched_date": "2026-08-30T21:18:01Z",
+      "source_url": "https://arxiv.org/abs/2603.22868",
+      "error_message": ""
+    },
+    {
+      "key": "agentsentrycausal",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "21950d87c62a9bf3218338f8795915023e068c1c200f78b8b5e1ff009c4751bc",
+      "fetched_date": "2026-08-30T21:18:05Z",
+      "source_url": "https://arxiv.org/abs/2602.22724",
+      "error_message": ""
+    },
+    {
+      "key": "agentspec",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "9924795e8af3803c65fe95d0d6f237e11b6f4b6e94920564668c3d19e36c6f1c",
+      "fetched_date": "2026-08-30T21:18:08Z",
+      "source_url": "https://arxiv.org/abs/2503.18666",
+      "error_message": ""
+    },
+    {
+      "key": "alloy",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "da2963a54127eb814dd7120f17c3311bb3bb23fc7ecacbc26357b40ac426393a",
+      "fetched_date": "2026-08-30T21:18:08Z",
+      "source_url": "https://alloytools.org/",
+      "error_message": ""
+    },
+    {
+      "key": "argus",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "371058c02f2fe90c0ee1ce5ece4966a312798f91190b8de887ee38349e957de3",
+      "fetched_date": "2026-08-30T21:18:11Z",
+      "source_url": "https://arxiv.org/abs/2605.03378",
+      "error_message": ""
+    },
+    {
+      "key": "artcomp",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "ca2a603885587449ca8c0d89d9c7c85ac74ee96f1006c2b17c49172a33707293",
+      "fetched_date": "2026-08-30T21:18:14Z",
+      "source_url": "https://arxiv.org/abs/2507.20526",
+      "error_message": ""
+    },
+    {
+      "key": "asb",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "85bab447cf5c3c692c7d3dae2785f0bcc6a9e4f8d8e15da9aac5cb6ec976054b",
+      "fetched_date": "2026-08-30T21:18:17Z",
+      "source_url": "https://arxiv.org/abs/2410.02644",
+      "error_message": ""
+    },
+    {
+      "key": "asbestos",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:17Z",
+      "source_url": "https://doi.org/10.1145/1095810.1095826",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "attackercontrol",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "4af8623822166987121160eaff842b4d4da180b21948a3eed16c8515d026e1d3",
+      "fetched_date": "2026-08-30T21:18:21Z",
+      "source_url": "https://arxiv.org/abs/1107.5594",
+      "error_message": ""
+    },
+    {
+      "key": "authgraph",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "2dc47facdd910631f50b5fbd93245e04a1dc7c5321c58a5459a985c246d44a0b",
+      "fetched_date": "2026-08-30T21:18:24Z",
+      "source_url": "https://arxiv.org/abs/2605.26497",
+      "error_message": ""
+    },
+    {
+      "key": "authworkflows",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "46efd6863a1420912259434c5457eb24815383184f695b7d7e1584a2eaca63aa",
+      "fetched_date": "2026-08-30T21:18:27Z",
+      "source_url": "https://arxiv.org/abs/2602.10465",
+      "error_message": ""
+    },
+    {
+      "key": "autodojo",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "916af6a59dd3384484889a64ec1d540191a9b7fcde1e01ad3244152971efd00f",
+      "fetched_date": "2026-08-30T21:18:30Z",
+      "source_url": "https://arxiv.org/abs/2606.15057",
+      "error_message": ""
+    },
+    {
+      "key": "automatedpi",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "2e4b2a94d4ae7a6d2f5d41634bd98baec1a759039aa5cfcae285e0181584b1b4",
+      "fetched_date": "2026-08-30T21:18:33Z",
+      "source_url": "https://arxiv.org/abs/2606.10525",
+      "error_message": ""
+    },
+    {
+      "key": "awsiam",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "c89f839064a26a0832b99613f691ef312edd02778f951ff24e577766cb822b2f",
+      "fetched_date": "2026-08-30T21:18:34Z",
+      "source_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+      "error_message": ""
+    },
+    {
+      "key": "badmemory",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "75233fe5482f9349daa6600fa6118f779bc8f02c280b4dcb84a52e666cdb2bdf",
+      "fetched_date": "2026-08-30T21:18:38Z",
+      "source_url": "https://arxiv.org/abs/2607.14611",
+      "error_message": ""
+    },
+    {
+      "key": "belllapadula",
+      "source_category": "open_pdf",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:39Z",
+      "source_url": "https://csrc.nist.gov/csrc/media/publications/conference-paper/1973/10/01/secure-computer-systems-mathematical-foundations/final/documents/bell76.pdf",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "biba1977",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:39Z",
+      "source_url": "https://apps.dtic.mil/sti/citations/ADA039324",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "biscuit",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "a579e5b53984d8b241999ec21b0a94b2ee1a891dd2555934fb2de7712861c0af",
+      "fetched_date": "2026-08-30T21:18:40Z",
+      "source_url": "https://www.biscuitsec.org/",
+      "error_message": ""
+    },
+    {
+      "key": "camel",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "b5cd7970e905f1504439c3eddb3855ab18d951d10bf806ec2f5f3baa02ca8a51",
+      "fetched_date": "2026-08-30T21:18:43Z",
+      "source_url": "https://arxiv.org/abs/2503.18813",
+      "error_message": ""
+    },
+    {
+      "key": "camflow",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "53e8f2ea584929f56908a7c471aea12480cae6080e9339e4cd1ee420141d8fdb",
+      "fetched_date": "2026-08-30T21:18:45Z",
+      "source_url": "https://www.repository.cam.ac.uk/handle/1810/247410",
+      "error_message": ""
+    },
+    {
+      "key": "camquery",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:46Z",
+      "source_url": "https://www.usenix.org/conference/usenixsecurity18/presentation/pasquier",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "capsicum",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "dd5fecb63cf7528e737e4831e2000c8131321d56671e41f32eca4991e2c50d5f",
+      "fetched_date": "2026-08-30T21:18:46Z",
+      "source_url": "https://www.cl.cam.ac.uk/research/security/capsicum/",
+      "error_message": ""
+    },
+    {
+      "key": "causalitylaundering",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "56fd2a69629d45c34bdea5677f2bfa5ff732a7ba9e5b76e344f162af1ae0e7e1",
+      "fetched_date": "2026-08-30T21:18:49Z",
+      "source_url": "https://arxiv.org/abs/2604.04035",
+      "error_message": ""
+    },
+    {
+      "key": "cedar",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "142e4f899413a5104f845527a505654153cbf015e18049bf31e770fc6314f3b1",
+      "fetched_date": "2026-08-30T21:18:49Z",
+      "source_url": "https://www.cedarpolicy.com/",
+      "error_message": ""
+    },
+    {
+      "key": "cegar",
+      "source_category": "doi",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "32ed63159c77e21ee19ca1b9aa3213ccf0218eb59539560b132a8e68ef0e18ea",
+      "fetched_date": "2026-08-30T21:18:49Z",
+      "source_url": "https://doi.org/10.1007/10722167_15",
+      "error_message": ""
+    },
+    {
+      "key": "checkpointgcg",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "1d2319b25742d73f1f78422414b175a9b79d32a9e12aa8da35648ab4314317e1",
+      "fetched_date": "2026-08-30T21:18:52Z",
+      "source_url": "https://arxiv.org/abs/2505.15738",
+      "error_message": ""
+    },
+    {
+      "key": "clarkwilson",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:53Z",
+      "source_url": "https://doi.org/10.1109/SP.1987.10001",
+      "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+    },
+    {
+      "key": "confluxpreprint",
+      "source_category": "local",
+      "fetch_status": "skipped",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:53Z",
+      "source_url": "local:Preprint.pdf",
+      "error_message": "local file \u2014 already in repository"
+    },
+    {
+      "key": "confluxrepo",
+      "source_category": "repository",
+      "fetch_status": "skipped",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:53Z",
+      "source_url": "https://github.com/RayaBuckley/Conflux/",
+      "error_message": "GitHub repository \u2014 no separate download"
+    },
+    {
+      "key": "confluxreport",
+      "source_category": "local",
+      "fetch_status": "skipped",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:53Z",
+      "source_url": "local:Raya_Project_Report.pdf",
+      "error_message": "local file \u2014 already in repository"
+    },
+    {
+      "key": "confuseddeputy",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:18:53Z",
+      "source_url": "https://doi.org/10.1.1.59.3612",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "conseca",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "426b5888c177127eefcd0fe31329d1676ae1a364b186ed5d36652c66320f565c",
+      "fetched_date": "2026-08-30T21:18:56Z",
+      "source_url": "https://arxiv.org/abs/2501.17070",
+      "error_message": ""
+    },
+    {
+      "key": "criticaleval",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "c2ef79c1de71df8c3f69dec787132c543d5bbd79599831b89a27779d91662fb6",
+      "fetched_date": "2026-08-30T21:18:59Z",
+      "source_url": "https://arxiv.org/abs/2505.18333",
+      "error_message": ""
+    },
+    {
+      "key": "datasentinel",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "0074ce2e7dc5887b8f156ca086bcb8a9c4d10ed0e5a3753fdc0e0eab53357372",
+      "fetched_date": "2026-08-30T21:19:03Z",
+      "source_url": "https://arxiv.org/abs/2504.11358",
+      "error_message": ""
+    },
+    {
+      "key": "declassificationsurvey",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:03Z",
+      "source_url": "https://doi.org/10.3233/JCS-2009-0357",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "defensivetokens",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "f89da951166f405015e93f5264539760695b4d62293111ad57abc0ae54af3517",
+      "fetched_date": "2026-08-30T21:19:06Z",
+      "source_url": "https://arxiv.org/abs/2507.07974",
+      "error_message": ""
+    },
+    {
+      "key": "denning1976",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:06Z",
+      "source_url": "https://doi.org/10.1145/360051.360056",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "designpatterns",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "d60f2c679cc82385eae43e2a60fbaada401d5360602d00647dc3eccd9c7a501d",
+      "fetched_date": "2026-08-30T21:19:09Z",
+      "source_url": "https://arxiv.org/abs/2506.08837",
+      "error_message": ""
+    },
+    {
+      "key": "difc",
+      "source_category": "open_pdf",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:10Z",
+      "source_url": "https://www.cs.cornell.edu/andru/papers/iflow-sosp97.pdf",
+      "error_message": "HTTP 300 Multiple Choices"
+    },
+    {
+      "key": "dstar",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:11Z",
+      "source_url": "https://www.usenix.org/legacy/events/sosp07/tech/zeldovich.html",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "evidencetracing",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "5ab95582b1a0c0579ac86b2a6028e0a6cb1d3eacd3dc1e1a0ec39e64ef18dfae",
+      "fetched_date": "2026-08-30T21:19:14Z",
+      "source_url": "https://arxiv.org/abs/2606.04990",
+      "error_message": ""
+    },
+    {
+      "key": "fabric",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "36482ef7763f9df756d2538e8c2ee9cd9cf95b1d71e6ccb88298264f9d7cbec0",
+      "fetched_date": "2026-08-30T21:19:14Z",
+      "source_url": "https://www.cs.cornell.edu/projects/fabric/",
+      "error_message": ""
+    },
+    {
+      "key": "fides",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "8e9667e82e373920f97a4f8ef1b23be6d07fcd6d7858273a177c3bfb813fe1ba",
+      "fetched_date": "2026-08-30T21:19:17Z",
+      "source_url": "https://arxiv.org/abs/2505.23643",
+      "error_message": ""
+    },
+    {
+      "key": "flume",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:18Z",
+      "source_url": "https://doi.org/10.1145/1294261.1294293",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "forge",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "4083c0c30e4e0ce28ff93d050a808af08b422656bae463fc41b81803599079fa",
+      "fetched_date": "2026-08-30T21:19:21Z",
+      "source_url": "https://arxiv.org/abs/2602.16708",
+      "error_message": ""
+    },
+    {
+      "key": "formalagentsec",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "dda7406994e2ab7ff6364f05d75fc8c0632359606566dea416cd11d2b5a04fa4",
+      "fetched_date": "2026-08-30T21:19:24Z",
+      "source_url": "https://arxiv.org/abs/2603.19469",
+      "error_message": ""
+    },
+    {
+      "key": "fsecure",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "f1d796131617b4e7afabc67185421aa2bc9d8c61b3b316ff3fcc853a54caf697",
+      "fetched_date": "2026-08-30T21:19:27Z",
+      "source_url": "https://arxiv.org/abs/2409.19091",
+      "error_message": ""
+    },
+    {
+      "key": "goguenmeseguer",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:27Z",
+      "source_url": "https://doi.org/10.1109/SP.1982.10014",
+      "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+    },
+    {
+      "key": "histar",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "a8ca5f04594d54eaedb07639707de2dcc5870d0774fa56938102d615925bfbaf",
+      "fetched_date": "2026-08-30T21:19:28Z",
+      "source_url": "https://www.usenix.org/legacy/events/osdi06/tech/zeldovich.html",
+      "error_message": ""
+    },
+    {
+      "key": "hru",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:28Z",
+      "source_url": "https://doi.org/10.1145/360303.360333",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "hyperproperties",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:28Z",
+      "source_url": "https://doi.org/10.1109/CSF.2008.7",
+      "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+    },
+    {
+      "key": "injecagent",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "3350d483880929b0f489196d1a97d1c38622625ae7b365d1cf419acf9a92d241",
+      "fetched_date": "2026-08-30T21:19:34Z",
+      "source_url": "https://arxiv.org/abs/2403.02691",
+      "error_message": ""
+    },
+    {
+      "key": "intoto",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "fe3ea3905923930ec71dc87a807d5e3cb4d7b4db8f9833bd617e10a77f98546c",
+      "fetched_date": "2026-08-30T21:19:34Z",
+      "source_url": "https://in-toto.io/",
+      "error_message": ""
+    },
+    {
+      "key": "jif",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "906ec3b54be412800a4062f0c6e9995de93a9a6225fc75d61229bbcf96dc1957",
+      "fetched_date": "2026-08-30T21:19:34Z",
+      "source_url": "https://www.cs.cornell.edu/jif/",
+      "error_message": ""
+    },
+    {
+      "key": "lampsoncapabilities",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:35Z",
+      "source_url": "https://doi.org/10.1109/T-S.1971.4309334",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "langgraph",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "ff822588695d3461b2846892740502a8284459e0937f4eaebd9d9c6d8a34bce3",
+      "fetched_date": "2026-08-30T21:19:35Z",
+      "source_url": "https://docs.langchain.com/oss/python/langgraph/",
+      "error_message": ""
+    },
+    {
+      "key": "lio",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "355a0eabc7c86cd62781efbbbd3b135e6fb7e287b36937a071f0959579b6e0f4",
+      "fetched_date": "2026-08-30T21:19:35Z",
+      "source_url": "https://hackage.haskell.org/package/lio",
+      "error_message": ""
+    },
+    {
+      "key": "livepi",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "a93ee59140d8fb90ce4dadff10a27ccd6d161efe7973ebb4d4cafcdf0f8a6e95",
+      "fetched_date": "2026-08-30T21:19:39Z",
+      "source_url": "https://arxiv.org/abs/2605.17986",
+      "error_message": ""
+    },
+    {
+      "key": "lomac",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:39Z",
+      "source_url": "https://ieeexplore.ieee.org/document/848460",
+      "error_message": "content too short or not HTML"
+    },
+    {
+      "key": "macaroons",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "bdb0778afd253eac79858f802358977f05da627725abecbb028c7e34f73bc1ca",
+      "fetched_date": "2026-08-30T21:19:39Z",
+      "source_url": "https://research.google/pubs/macaroons-cookies-with-contextual-caveats-for-decentralized-authorization-in-the-cloud/",
+      "error_message": ""
+    },
+    {
+      "key": "mcpauth",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "0e7cd4322eb5cc0cbc3e69e87aa424cc517663a8dc3fb5b5151f18a663a9432e",
+      "fetched_date": "2026-08-30T21:19:39Z",
+      "source_url": "https://modelcontextprotocol.io/specification/latest/basic/authorization",
+      "error_message": ""
+    },
+    {
+      "key": "mcpsec",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "22acc5f82792605c0b6df0934b77a83300d829c878045100241ba6b83e7975be",
+      "fetched_date": "2026-08-30T21:19:40Z",
+      "source_url": "https://modelcontextprotocol.io/specification/latest/basic/security_best_practices",
+      "error_message": ""
+    },
+    {
+      "key": "melon",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "0e916b42e34c2a35375ab41269434fbf366117303bb25a5479a7c627de1b9a13",
+      "fetched_date": "2026-08-30T21:19:43Z",
+      "source_url": "https://arxiv.org/abs/2502.05174",
+      "error_message": ""
+    },
+    {
+      "key": "memlineage",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "7d3a0af653d298cec6268e0043d2db72c253d540666d3d5fc3cc15faf218f9f8",
+      "fetched_date": "2026-08-30T21:19:46Z",
+      "source_url": "https://arxiv.org/abs/2605.14421",
+      "error_message": ""
+    },
+    {
+      "key": "myersliskov",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:46Z",
+      "source_url": "https://doi.org/10.1145/363516.363524",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "neuralexec",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "c2856ae2eb78593af187dd7bceca5343248d8964f8d6ee948c0e85c4cc2a32d5",
+      "fetched_date": "2026-08-30T21:19:50Z",
+      "source_url": "https://arxiv.org/abs/2403.03792",
+      "error_message": ""
+    },
+    {
+      "key": "neurotaint",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "a63ba4fc4c4e5a58cd9830aa31322064f08a5be7a781c6022cbfaedef2bda6ab",
+      "fetched_date": "2026-08-30T21:19:53Z",
+      "source_url": "https://arxiv.org/abs/2604.23374",
+      "error_message": ""
+    },
+    {
+      "key": "nmifc",
+      "source_category": "open_pdf",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:54Z",
+      "source_url": "https://www.cs.cornell.edu/andru/papers/nmifc.pdf",
+      "error_message": "HTTP 300 Multiple Choices"
+    },
+    {
+      "key": "noninterference",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:54Z",
+      "source_url": "https://doi.org/10.1109/SP.1982.10017",
+      "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+    },
+    {
+      "key": "nonmalleableifc",
+      "source_category": "arxiv",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:19:57Z",
+      "source_url": "https://arxiv.org/abs/1708.08596",
+      "error_message": "HTML: HTTP 404 Not Found"
+    },
+    {
+      "key": "opa",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "eb69eb42e8ffa64558b7e79df00a34cc5fdd2f411a247f24f3ecdceaefbf2cf5",
+      "fetched_date": "2026-08-30T21:19:58Z",
+      "source_url": "https://www.openpolicyagent.org/docs/latest/",
+      "error_message": ""
+    },
+    {
+      "key": "openaiagents",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "ecdd401d0e7cd614aa6f5cb44f359f612fe26b28b4abec902ae1c687f82b01eb",
+      "fetched_date": "2026-08-30T21:19:58Z",
+      "source_url": "https://openai.github.io/openai-agents-python/",
+      "error_message": ""
+    },
+    {
+      "key": "openfga",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "d622836cb8d6634388ce35e9f35fa6f531ec3e1b6d475c6a61d895ea559e80a0",
+      "fetched_date": "2026-08-30T21:19:59Z",
+      "source_url": "https://openfga.dev/",
+      "error_message": ""
+    },
+    {
+      "key": "pact",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "b1833b39309914568a2f7b79608672ff2f3d93dbe0a505d9602b0cdacbb66aec",
+      "fetched_date": "2026-08-30T21:20:02Z",
+      "source_url": "https://arxiv.org/abs/2605.11039",
+      "error_message": ""
+    },
+    {
+      "key": "pass",
+      "source_category": "open_pdf",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.pdf"
+      ],
+      "content_hash": "a393493bf6b7ff131bfec3a0d1a74c7a2083dbd450879284bd94a463de21c38d",
+      "fetched_date": "2026-08-30T21:20:04Z",
+      "source_url": "https://www.usenix.org/legacy/event/usenix06/tech/full_papers/muniswamy-reddy/muniswamy-reddy.pdf",
+      "error_message": ""
+    },
+    {
+      "key": "pilandscape2026",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "5ed0ad43745e5e15811972f8b7875e641e7f24926b48de739202c5b6da245ec3",
+      "fetched_date": "2026-08-30T21:20:07Z",
+      "source_url": "https://arxiv.org/abs/2602.10453",
+      "error_message": ""
+    },
+    {
+      "key": "poisoningalign",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:20:07Z",
+      "source_url": "https://doi.org/10.1145/3733799.3762963",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "progent",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "0cf3f66defbe6910837c6b3fc30022b3ee5ec3912ecffc1af0155232e7a7886d",
+      "fetched_date": "2026-08-30T21:20:10Z",
+      "source_url": "https://arxiv.org/abs/2504.11703",
+      "error_message": ""
+    },
+    {
+      "key": "provenanceguardaction",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "16cb40bc7afb27a08f7022e453eb84b422db98540182c376c8ee96c2075587af",
+      "fetched_date": "2026-08-30T21:20:13Z",
+      "source_url": "https://arxiv.org/abs/2607.01236",
+      "error_message": ""
+    },
+    {
+      "key": "provsemirings",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:20:13Z",
+      "source_url": "https://doi.org/10.1145/1265530.1265535",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "publiccomp",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "6e1ba9544ecdb61f79578fee500ed3a7ac045dd4a0223bb1aaad158a37af2ae5",
+      "fetched_date": "2026-08-30T21:20:17Z",
+      "source_url": "https://arxiv.org/abs/2603.15714",
+      "error_message": ""
+    },
+    {
+      "key": "rbac",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "bf730f233fdd1e6c99a4ccf33b4b3821c2993ccfb74130c96f0e143f849a74d4",
+      "fetched_date": "2026-08-30T21:20:17Z",
+      "source_url": "https://csrc.nist.gov/projects/role-based-access-control",
+      "error_message": ""
+    },
+    {
+      "key": "referencemonitor",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:20:17Z",
+      "source_url": "https://csrc.nist.gov/publications/detail/report/1972/10/01/computer-security-technology-planning-study/final",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "robustdeclassification",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:20:18Z",
+      "source_url": "https://www.cs.cornell.edu/andru/papers/robust-dec.html",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "rtbas",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "6b3d4b431a5ae36e10587b07a2901579e54d2cb911c5fafae20d1fab92d8db77",
+      "fetched_date": "2026-08-30T21:20:21Z",
+      "source_url": "https://arxiv.org/abs/2502.08966",
+      "error_message": ""
+    },
+    {
+      "key": "rushbynoninterference",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:20:22Z",
+      "source_url": "https://www.csl.sri.com/papers/csl-92-02/",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "sabelfeld2003",
+      "source_category": "doi",
+      "fetch_status": "paywall",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:20:22Z",
+      "source_url": "https://doi.org/10.1109/JSAC.2002.806121",
+      "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+    },
+    {
+      "key": "saltzerschroeder",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "dcb1a668370b1d6974688b6548fadc82c960c06830835afa0be26b4be08bc934",
+      "fetched_date": "2026-08-30T21:20:22Z",
+      "source_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
+      "error_message": ""
+    },
+    {
+      "key": "seagent",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "dc95df8f4ac118f0a333805363d3caabc2b3bfac99b575f99b49f4b61b0d9123",
+      "fetched_date": "2026-08-30T21:20:25Z",
+      "source_url": "https://arxiv.org/abs/2601.11893",
+      "error_message": ""
+    },
+    {
+      "key": "secalign",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "4c97328922c99f3e789d320730391042a3a57ca56fe9a70d6799d746991cebee",
+      "fetched_date": "2026-08-30T21:20:29Z",
+      "source_url": "https://arxiv.org/abs/2410.05451",
+      "error_message": ""
+    },
+    {
+      "key": "secureclaw",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "fb0a3ee26695ecc8477318c17f2a7f85d1fbe2b533b4ac59e0ced2a06f8b55b5",
+      "fetched_date": "2026-08-30T21:20:32Z",
+      "source_url": "https://arxiv.org/abs/2606.09549",
+      "error_message": ""
+    },
+    {
+      "key": "securesurvey2026",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "2cf1f44de0ab5e78573e4f8128dfc19b99a4a26d0b2c01ac7f433ede91325089",
+      "fetched_date": "2026-08-30T21:20:36Z",
+      "source_url": "https://arxiv.org/abs/2606.10749",
+      "error_message": ""
+    },
+    {
+      "key": "securityautomata",
+      "source_category": "open_pdf",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.pdf"
+      ],
+      "content_hash": "7a5bd25326742b239a2c117cc54518d69a84f7dd6499fc9a817ac110ce83d61f",
+      "fetched_date": "2026-08-30T21:20:37Z",
+      "source_url": "https://www.cs.cornell.edu/fbs/publications/EnfSecPols.pdf",
+      "error_message": ""
+    },
+    {
+      "key": "sel4",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "c1f528759ac51b3888ed705fc214e8fde730969064f8d843a850dd069298c38b",
+      "fetched_date": "2026-08-30T21:20:38Z",
+      "source_url": "https://sel4.systems/",
+      "error_message": ""
+    },
+    {
+      "key": "silentegress",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "2a7d712fb670438e844465453a6c21d1afc5f40e03434f8cd2ce5695dfbff72f",
+      "fetched_date": "2026-08-30T21:20:41Z",
+      "source_url": "https://arxiv.org/abs/2602.22450",
+      "error_message": ""
+    },
+    {
+      "key": "slsa",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "42a51e7a7b21ac59516103054e974e02e682273cad244f27f35202e21b696788",
+      "fetched_date": "2026-08-30T21:20:41Z",
+      "source_url": "https://slsa.dev/",
+      "error_message": ""
+    },
+    {
+      "key": "spicedb",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "c431d5d371b6ae5c82aa2f5d47591d471865d8ca15437e753b2581140a6bc8e6",
+      "fetched_date": "2026-08-30T21:20:42Z",
+      "source_url": "https://authzed.com/spicedb",
+      "error_message": ""
+    },
+    {
+      "key": "spin",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "f35e02ec60f0bd1501d6f1dbe7b83c0bddda9e281509916f9be7f70e1a0f6958",
+      "fetched_date": "2026-08-30T21:20:44Z",
+      "source_url": "https://spinroot.com/",
+      "error_message": ""
+    },
+    {
+      "key": "spotlighting",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "b456d2e91a39a94417774e32fd44a029bd9ff4ce40562381a9fecaa21a617a79",
+      "fetched_date": "2026-08-30T21:20:47Z",
+      "source_url": "https://arxiv.org/abs/2403.14720",
+      "error_message": ""
+    },
+    {
+      "key": "struq",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "5c2f529c7a43896ff5ed2be553fc31f7108ed5ac6bdd149c7ea79377f1d54858",
+      "fetched_date": "2026-08-30T21:20:51Z",
+      "source_url": "https://arxiv.org/abs/2402.06363",
+      "error_message": ""
+    },
+    {
+      "key": "systemsproblem",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "3d19f856ed6e1c5ff410ad89379fe4f9c593a459e44dc692c6faefb24570d911",
+      "fetched_date": "2026-08-30T21:20:54Z",
+      "source_url": "https://arxiv.org/abs/2605.18991",
+      "error_message": ""
+    },
+    {
+      "key": "taint",
+      "source_category": "open_pdf",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:20:55Z",
+      "source_url": "https://www.usenix.org/legacy/events/sec05/tech/full_papers/newsome/newsome.pdf",
+      "error_message": "HTTP 404 Not Found"
+    },
+    {
+      "key": "tlaplus",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "a410ef399887c05ac183aa41ef6850cbd4bb779d7dd5e4019d46d57a17ddbf13",
+      "fetched_date": "2026-08-30T21:20:56Z",
+      "source_url": "https://lamport.azurewebsites.net/tla/tla.html",
+      "error_message": ""
+    },
+    {
+      "key": "tmanm",
+      "source_category": "arxiv",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "8e019b014b75d6d42eb8c86d659b87d4ae1bae8dfb780a1e02ccf8d03e5775fe",
+      "fetched_date": "2026-08-30T21:20:59Z",
+      "source_url": "https://arxiv.org/abs/2606.24322",
+      "error_message": ""
+    },
+    {
+      "key": "tuf",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "c8f21b059f1bceef179a87fe78c29954d41b0c0017c90e50608644091fbf78c4",
+      "fetched_date": "2026-08-30T21:21:00Z",
+      "source_url": "https://theupdateframework.io/",
+      "error_message": ""
+    },
+    {
+      "key": "ucon",
+      "source_category": "open_html",
+      "fetch_status": "failed",
+      "local_files": [],
+      "content_hash": "",
+      "fetched_date": "2026-08-30T21:21:00Z",
+      "source_url": "https://dl.acm.org/doi/10.1145/947380.947385",
+      "error_message": "HTTP 403 Forbidden"
+    },
+    {
+      "key": "w3cprov",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "fc45beed479aef763da4dd6e11d1f92e0e7b91e9c19c30a0ed9ba279de36b556",
+      "fetched_date": "2026-08-30T21:21:00Z",
+      "source_url": "https://www.w3.org/TR/prov-overview/",
+      "error_message": ""
+    },
+    {
+      "key": "whyprovenance",
+      "source_category": "doi",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "32ed63159c77e21ee19ca1b9aa3213ccf0218eb59539560b132a8e68ef0e18ea",
+      "fetched_date": "2026-08-30T21:21:00Z",
+      "source_url": "https://doi.org/10.1007/3-540-44503-X_20",
+      "error_message": ""
+    },
+    {
+      "key": "zanzibar",
+      "source_category": "open_html",
+      "fetch_status": "fetched",
+      "local_files": [
+        "paper.html"
+      ],
+      "content_hash": "6ed4b67784c901563d6b420ca9b09806328fb567299f5ef3eb11746cd6476a60",
+      "fetched_date": "2026-08-30T21:21:00Z",
+      "source_url": "https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/",
+      "error_message": ""
+    }
+  ]
+}

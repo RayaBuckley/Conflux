@@ -1,0 +1,12 @@
+{
+  "key": "tmanm",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.24322",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "8e019b014b75d6d42eb8c86d659b87d4ae1bae8dfb780a1e02ccf8d03e5775fe",
+  "fetched_date": "2026-08-30T21:20:59Z",
+  "error_message": ""
+}

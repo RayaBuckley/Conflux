@@ -1,0 +1,12 @@
+{
+  "key": "awsiam",
+  "source_category": "open_html",
+  "source_url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "c89f839064a26a0832b99613f691ef312edd02778f951ff24e577766cb822b2f",
+  "fetched_date": "2026-08-30T21:18:34Z",
+  "error_message": ""
+}

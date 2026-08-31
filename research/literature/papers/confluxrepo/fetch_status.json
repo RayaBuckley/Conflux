@@ -1,0 +1,10 @@
+{
+  "key": "confluxrepo",
+  "source_category": "repository",
+  "source_url": "https://github.com/RayaBuckley/Conflux/",
+  "fetch_status": "skipped",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:18:53Z",
+  "error_message": "GitHub repository \u2014 no separate download"
+}

@@ -1,0 +1,12 @@
+{
+  "key": "secalign",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2410.05451",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "4c97328922c99f3e789d320730391042a3a57ca56fe9a70d6799d746991cebee",
+  "fetched_date": "2026-08-30T21:20:29Z",
+  "error_message": ""
+}

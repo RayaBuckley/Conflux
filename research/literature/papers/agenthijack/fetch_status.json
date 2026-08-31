@@ -1,0 +1,12 @@
+{
+  "key": "agenthijack",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.25707",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "0bd10531efb926a70335136c539f3363a88cd82b52dfe8a9458aad04f071326f",
+  "fetched_date": "2026-08-30T21:17:42Z",
+  "error_message": ""
+}

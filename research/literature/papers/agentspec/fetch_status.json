@@ -1,0 +1,12 @@
+{
+  "key": "agentspec",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2503.18666",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "9924795e8af3803c65fe95d0d6f237e11b6f4b6e94920564668c3d19e36c6f1c",
+  "fetched_date": "2026-08-30T21:18:08Z",
+  "error_message": ""
+}

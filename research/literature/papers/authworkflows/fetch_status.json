@@ -1,0 +1,12 @@
+{
+  "key": "authworkflows",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.10465",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "46efd6863a1420912259434c5457eb24815383184f695b7d7e1584a2eaca63aa",
+  "fetched_date": "2026-08-30T21:18:27Z",
+  "error_message": ""
+}

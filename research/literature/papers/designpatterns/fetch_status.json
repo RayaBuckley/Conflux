@@ -1,0 +1,12 @@
+{
+  "key": "designpatterns",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2506.08837",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "d60f2c679cc82385eae43e2a60fbaada401d5360602d00647dc3eccd9c7a501d",
+  "fetched_date": "2026-08-30T21:19:09Z",
+  "error_message": ""
+}

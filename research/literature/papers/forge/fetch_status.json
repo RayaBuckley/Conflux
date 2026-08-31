@@ -1,0 +1,12 @@
+{
+  "key": "forge",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.16708",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "4083c0c30e4e0ce28ff93d050a808af08b422656bae463fc41b81803599079fa",
+  "fetched_date": "2026-08-30T21:19:21Z",
+  "error_message": ""
+}

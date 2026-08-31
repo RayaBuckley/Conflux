@@ -1,0 +1,12 @@
+{
+  "key": "pact",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.11039",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "b1833b39309914568a2f7b79608672ff2f3d93dbe0a505d9602b0cdacbb66aec",
+  "fetched_date": "2026-08-30T21:20:02Z",
+  "error_message": ""
+}

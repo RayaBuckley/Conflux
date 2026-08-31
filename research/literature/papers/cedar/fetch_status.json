@@ -1,0 +1,12 @@
+{
+  "key": "cedar",
+  "source_category": "open_html",
+  "source_url": "https://www.cedarpolicy.com/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "142e4f899413a5104f845527a505654153cbf015e18049bf31e770fc6314f3b1",
+  "fetched_date": "2026-08-30T21:18:49Z",
+  "error_message": ""
+}

@@ -1,0 +1,12 @@
+{
+  "key": "secureclaw",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.09549",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "fb0a3ee26695ecc8477318c17f2a7f85d1fbe2b533b4ac59e0ced2a06f8b55b5",
+  "fetched_date": "2026-08-30T21:20:32Z",
+  "error_message": ""
+}

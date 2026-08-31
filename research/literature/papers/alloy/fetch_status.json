@@ -1,0 +1,12 @@
+{
+  "key": "alloy",
+  "source_category": "open_html",
+  "source_url": "https://alloytools.org/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "da2963a54127eb814dd7120f17c3311bb3bb23fc7ecacbc26357b40ac426393a",
+  "fetched_date": "2026-08-30T21:18:08Z",
+  "error_message": ""
+}

@@ -1,0 +1,10 @@
+{
+  "key": "belllapadula",
+  "source_category": "open_pdf",
+  "source_url": "https://csrc.nist.gov/csrc/media/publications/conference-paper/1973/10/01/secure-computer-systems-mathematical-foundations/final/documents/bell76.pdf",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:18:39Z",
+  "error_message": "HTTP 404 Not Found"
+}

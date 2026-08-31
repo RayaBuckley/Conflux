@@ -1,0 +1,12 @@
+{
+  "key": "agentdojo",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2406.13352",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "7b6e97faaedcf0e1b5f3635b92a0da33afbe8529699d54a5c44ad58ce2fa8b02",
+  "fetched_date": "2026-08-30T21:17:30Z",
+  "error_message": ""
+}

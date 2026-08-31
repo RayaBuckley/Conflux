@@ -1,0 +1,12 @@
+{
+  "key": "fides",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2505.23643",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "8e9667e82e373920f97a4f8ef1b23be6d07fcd6d7858273a177c3bfb813fe1ba",
+  "fetched_date": "2026-08-30T21:19:17Z",
+  "error_message": ""
+}

@@ -1,0 +1,10 @@
+{
+  "key": "nmifc",
+  "source_category": "open_pdf",
+  "source_url": "https://www.cs.cornell.edu/andru/papers/nmifc.pdf",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:19:54Z",
+  "error_message": "HTTP 300 Multiple Choices"
+}

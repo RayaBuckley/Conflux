@@ -1,0 +1,12 @@
+{
+  "key": "badmemory",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2607.14611",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "75233fe5482f9349daa6600fa6118f779bc8f02c280b4dcb84a52e666cdb2bdf",
+  "fetched_date": "2026-08-30T21:18:38Z",
+  "error_message": ""
+}

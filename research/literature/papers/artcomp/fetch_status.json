@@ -1,0 +1,12 @@
+{
+  "key": "artcomp",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2507.20526",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "ca2a603885587449ca8c0d89d9c7c85ac74ee96f1006c2b17c49172a33707293",
+  "fetched_date": "2026-08-30T21:18:14Z",
+  "error_message": ""
+}

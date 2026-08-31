@@ -1,0 +1,12 @@
+{
+  "key": "progent",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2504.11703",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "0cf3f66defbe6910837c6b3fc30022b3ee5ec3912ecffc1af0155232e7a7886d",
+  "fetched_date": "2026-08-30T21:20:10Z",
+  "error_message": ""
+}

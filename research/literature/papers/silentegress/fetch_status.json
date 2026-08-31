@@ -1,0 +1,12 @@
+{
+  "key": "silentegress",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.22450",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "2a7d712fb670438e844465453a6c21d1afc5f40e03434f8cd2ce5695dfbff72f",
+  "fetched_date": "2026-08-30T21:20:41Z",
+  "error_message": ""
+}

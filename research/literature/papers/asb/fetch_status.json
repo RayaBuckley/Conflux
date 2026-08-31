@@ -1,0 +1,12 @@
+{
+  "key": "asb",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2410.02644",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "85bab447cf5c3c692c7d3dae2785f0bcc6a9e4f8d8e15da9aac5cb6ec976054b",
+  "fetched_date": "2026-08-30T21:18:17Z",
+  "error_message": ""
+}

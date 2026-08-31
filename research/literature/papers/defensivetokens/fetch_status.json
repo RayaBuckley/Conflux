@@ -1,0 +1,12 @@
+{
+  "key": "defensivetokens",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2507.07974",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "f89da951166f405015e93f5264539760695b4d62293111ad57abc0ae54af3517",
+  "fetched_date": "2026-08-30T21:19:06Z",
+  "error_message": ""
+}

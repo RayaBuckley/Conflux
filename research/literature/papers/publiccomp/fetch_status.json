@@ -1,0 +1,12 @@
+{
+  "key": "publiccomp",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2603.15714",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "6e1ba9544ecdb61f79578fee500ed3a7ac045dd4a0223bb1aaad158a37af2ae5",
+  "fetched_date": "2026-08-30T21:20:17Z",
+  "error_message": ""
+}

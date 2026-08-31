@@ -1,0 +1,12 @@
+{
+  "key": "automatedpi",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.10525",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "2e4b2a94d4ae7a6d2f5d41634bd98baec1a759039aa5cfcae285e0181584b1b4",
+  "fetched_date": "2026-08-30T21:18:33Z",
+  "error_message": ""
+}

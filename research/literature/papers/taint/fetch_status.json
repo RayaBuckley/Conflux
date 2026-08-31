@@ -1,0 +1,10 @@
+{
+  "key": "taint",
+  "source_category": "open_pdf",
+  "source_url": "https://www.usenix.org/legacy/events/sec05/tech/full_papers/newsome/newsome.pdf",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:20:55Z",
+  "error_message": "HTTP 404 Not Found"
+}

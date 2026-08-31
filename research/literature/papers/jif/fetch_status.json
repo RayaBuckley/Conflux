@@ -1,0 +1,12 @@
+{
+  "key": "jif",
+  "source_category": "open_html",
+  "source_url": "https://www.cs.cornell.edu/jif/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "906ec3b54be412800a4062f0c6e9995de93a9a6225fc75d61229bbcf96dc1957",
+  "fetched_date": "2026-08-30T21:19:34Z",
+  "error_message": ""
+}

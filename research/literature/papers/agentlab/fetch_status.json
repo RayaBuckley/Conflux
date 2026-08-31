@@ -1,0 +1,12 @@
+{
+  "key": "agentlab",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.16901",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "ccc3a5e1ab7294d536f92ba2e3ab43369568328f2abb6e808d5250ee5a67d17b",
+  "fetched_date": "2026-08-30T21:17:45Z",
+  "error_message": ""
+}

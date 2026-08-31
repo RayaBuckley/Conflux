@@ -1,0 +1,12 @@
+{
+  "key": "adaptiveeval",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.26479",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "cf18d00fb4012f6caff6fe2c5c697bdd3619671164f2b85f40346d0c577af22e",
+  "fetched_date": "2026-08-30T21:17:23Z",
+  "error_message": ""
+}

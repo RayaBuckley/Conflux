@@ -1,0 +1,12 @@
+{
+  "key": "rtbas",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2502.08966",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "6b3d4b431a5ae36e10587b07a2901579e54d2cb911c5fafae20d1fab92d8db77",
+  "fetched_date": "2026-08-30T21:20:21Z",
+  "error_message": ""
+}

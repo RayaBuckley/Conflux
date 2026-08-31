@@ -1,0 +1,10 @@
+{
+  "key": "nonmalleableifc",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/1708.08596",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:19:57Z",
+  "error_message": "HTML: HTTP 404 Not Found"
+}

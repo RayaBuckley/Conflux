@@ -1,0 +1,12 @@
+{
+  "key": "pass",
+  "source_category": "open_pdf",
+  "source_url": "https://www.usenix.org/legacy/event/usenix06/tech/full_papers/muniswamy-reddy/muniswamy-reddy.pdf",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.pdf"
+  ],
+  "content_hash": "a393493bf6b7ff131bfec3a0d1a74c7a2083dbd450879284bd94a463de21c38d",
+  "fetched_date": "2026-08-30T21:20:04Z",
+  "error_message": ""
+}

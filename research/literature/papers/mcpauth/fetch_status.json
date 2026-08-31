@@ -1,0 +1,12 @@
+{
+  "key": "mcpauth",
+  "source_category": "open_html",
+  "source_url": "https://modelcontextprotocol.io/specification/latest/basic/authorization",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "0e7cd4322eb5cc0cbc3e69e87aa424cc517663a8dc3fb5b5151f18a663a9432e",
+  "fetched_date": "2026-08-30T21:19:39Z",
+  "error_message": ""
+}

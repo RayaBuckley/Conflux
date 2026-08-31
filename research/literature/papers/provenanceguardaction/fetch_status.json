@@ -1,0 +1,12 @@
+{
+  "key": "provenanceguardaction",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2607.01236",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "16cb40bc7afb27a08f7022e453eb84b422db98540182c376c8ee96c2075587af",
+  "fetched_date": "2026-08-30T21:20:13Z",
+  "error_message": ""
+}

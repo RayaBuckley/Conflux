@@ -1,0 +1,12 @@
+{
+  "key": "neuralexec",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2403.03792",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "c2856ae2eb78593af187dd7bceca5343248d8964f8d6ee948c0e85c4cc2a32d5",
+  "fetched_date": "2026-08-30T21:19:50Z",
+  "error_message": ""
+}

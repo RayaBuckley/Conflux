@@ -1,0 +1,12 @@
+{
+  "key": "camel",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2503.18813",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "b5cd7970e905f1504439c3eddb3855ab18d951d10bf806ec2f5f3baa02ca8a51",
+  "fetched_date": "2026-08-30T21:18:43Z",
+  "error_message": ""
+}

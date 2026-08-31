@@ -1,0 +1,12 @@
+{
+  "key": "fsecure",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2409.19091",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "f1d796131617b4e7afabc67185421aa2bc9d8c61b3b316ff3fcc853a54caf697",
+  "fetched_date": "2026-08-30T21:19:27Z",
+  "error_message": ""
+}

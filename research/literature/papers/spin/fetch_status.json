@@ -1,0 +1,12 @@
+{
+  "key": "spin",
+  "source_category": "open_html",
+  "source_url": "https://spinroot.com/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "f35e02ec60f0bd1501d6f1dbe7b83c0bddda9e281509916f9be7f70e1a0f6958",
+  "fetched_date": "2026-08-30T21:20:44Z",
+  "error_message": ""
+}

@@ -1,0 +1,10 @@
+{
+  "key": "hyperproperties",
+  "source_category": "doi",
+  "source_url": "https://doi.org/10.1109/CSF.2008.7",
+  "fetch_status": "paywall",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:19:28Z",
+  "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+}

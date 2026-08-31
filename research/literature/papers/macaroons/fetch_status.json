@@ -1,0 +1,12 @@
+{
+  "key": "macaroons",
+  "source_category": "open_html",
+  "source_url": "https://research.google/pubs/macaroons-cookies-with-contextual-caveats-for-decentralized-authorization-in-the-cloud/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "bdb0778afd253eac79858f802358977f05da627725abecbb028c7e34f73bc1ca",
+  "fetched_date": "2026-08-30T21:19:39Z",
+  "error_message": ""
+}

@@ -1,0 +1,12 @@
+{
+  "key": "attackercontrol",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/1107.5594",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "4af8623822166987121160eaff842b4d4da180b21948a3eed16c8515d026e1d3",
+  "fetched_date": "2026-08-30T21:18:21Z",
+  "error_message": ""
+}

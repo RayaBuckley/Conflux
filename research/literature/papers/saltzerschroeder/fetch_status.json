@@ -1,0 +1,12 @@
+{
+  "key": "saltzerschroeder",
+  "source_category": "open_html",
+  "source_url": "https://web.mit.edu/Saltzer/www/publications/protection/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "dcb1a668370b1d6974688b6548fadc82c960c06830835afa0be26b4be08bc934",
+  "fetched_date": "2026-08-30T21:20:22Z",
+  "error_message": ""
+}

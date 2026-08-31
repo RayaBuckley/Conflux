@@ -1,0 +1,12 @@
+{
+  "key": "mcpsec",
+  "source_category": "open_html",
+  "source_url": "https://modelcontextprotocol.io/specification/latest/basic/security_best_practices",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "22acc5f82792605c0b6df0934b77a83300d829c878045100241ba6b83e7975be",
+  "fetched_date": "2026-08-30T21:19:40Z",
+  "error_message": ""
+}

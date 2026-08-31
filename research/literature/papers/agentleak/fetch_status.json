@@ -1,0 +1,12 @@
+{
+  "key": "agentleak",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.11510",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "d2c08b255577d94487d06ecc7aec14df8555ae64acbc5761c21e3a4fa8f40319",
+  "fetched_date": "2026-08-30T21:17:48Z",
+  "error_message": ""
+}

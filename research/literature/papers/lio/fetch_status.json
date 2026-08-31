@@ -1,0 +1,12 @@
+{
+  "key": "lio",
+  "source_category": "open_html",
+  "source_url": "https://hackage.haskell.org/package/lio",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "355a0eabc7c86cd62781efbbbd3b135e6fb7e287b36937a071f0959579b6e0f4",
+  "fetched_date": "2026-08-30T21:19:35Z",
+  "error_message": ""
+}

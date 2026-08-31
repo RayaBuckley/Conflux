@@ -1,0 +1,12 @@
+{
+  "key": "checkpointgcg",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2505.15738",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "1d2319b25742d73f1f78422414b175a9b79d32a9e12aa8da35648ab4314317e1",
+  "fetched_date": "2026-08-30T21:18:52Z",
+  "error_message": ""
+}

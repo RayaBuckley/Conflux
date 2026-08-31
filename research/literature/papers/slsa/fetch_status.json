@@ -1,0 +1,12 @@
+{
+  "key": "slsa",
+  "source_category": "open_html",
+  "source_url": "https://slsa.dev/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "42a51e7a7b21ac59516103054e974e02e682273cad244f27f35202e21b696788",
+  "fetched_date": "2026-08-30T21:20:41Z",
+  "error_message": ""
+}

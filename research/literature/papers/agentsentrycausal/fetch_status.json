@@ -1,0 +1,12 @@
+{
+  "key": "agentsentrycausal",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.22724",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "21950d87c62a9bf3218338f8795915023e068c1c200f78b8b5e1ff009c4751bc",
+  "fetched_date": "2026-08-30T21:18:05Z",
+  "error_message": ""
+}

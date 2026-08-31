@@ -1,0 +1,12 @@
+{
+  "key": "langgraph",
+  "source_category": "open_html",
+  "source_url": "https://docs.langchain.com/oss/python/langgraph/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "ff822588695d3461b2846892740502a8284459e0937f4eaebd9d9c6d8a34bce3",
+  "fetched_date": "2026-08-30T21:19:35Z",
+  "error_message": ""
+}

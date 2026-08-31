@@ -1,0 +1,12 @@
+{
+  "key": "agentdyn",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2602.03117",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "ecb0972a0d2e0d1915c64c6625afb1d3172e4416b88aa21dd95c5b8c2bade360",
+  "fetched_date": "2026-08-30T21:17:33Z",
+  "error_message": ""
+}

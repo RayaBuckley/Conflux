@@ -1,0 +1,12 @@
+{
+  "key": "struq",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2402.06363",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "5c2f529c7a43896ff5ed2be553fc31f7108ed5ac6bdd149c7ea79377f1d54858",
+  "fetched_date": "2026-08-30T21:20:51Z",
+  "error_message": ""
+}

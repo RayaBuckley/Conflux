@@ -1,0 +1,12 @@
+{
+  "key": "formalagentsec",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2603.19469",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "dda7406994e2ab7ff6364f05d75fc8c0632359606566dea416cd11d2b5a04fa4",
+  "fetched_date": "2026-08-30T21:19:24Z",
+  "error_message": ""
+}

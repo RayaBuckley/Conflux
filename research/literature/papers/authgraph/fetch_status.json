@@ -1,0 +1,12 @@
+{
+  "key": "authgraph",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.26497",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "2dc47facdd910631f50b5fbd93245e04a1dc7c5321c58a5459a985c246d44a0b",
+  "fetched_date": "2026-08-30T21:18:24Z",
+  "error_message": ""
+}

@@ -1,0 +1,12 @@
+{
+  "key": "evidencetracing",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.04990",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "5ab95582b1a0c0579ac86b2a6028e0a6cb1d3eacd3dc1e1a0ec39e64ef18dfae",
+  "fetched_date": "2026-08-30T21:19:14Z",
+  "error_message": ""
+}

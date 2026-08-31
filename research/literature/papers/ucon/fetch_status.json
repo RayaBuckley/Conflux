@@ -1,0 +1,10 @@
+{
+  "key": "ucon",
+  "source_category": "open_html",
+  "source_url": "https://dl.acm.org/doi/10.1145/947380.947385",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:21:00Z",
+  "error_message": "HTTP 403 Forbidden"
+}

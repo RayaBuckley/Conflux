@@ -1,0 +1,12 @@
+{
+  "key": "livepi",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.17986",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "a93ee59140d8fb90ce4dadff10a27ccd6d161efe7973ebb4d4cafcdf0f8a6e95",
+  "fetched_date": "2026-08-30T21:19:39Z",
+  "error_message": ""
+}

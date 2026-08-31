@@ -1,0 +1,12 @@
+{
+  "key": "autodojo",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.15057",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "916af6a59dd3384484889a64ec1d540191a9b7fcde1e01ad3244152971efd00f",
+  "fetched_date": "2026-08-30T21:18:30Z",
+  "error_message": ""
+}

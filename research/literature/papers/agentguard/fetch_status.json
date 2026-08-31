@@ -1,0 +1,12 @@
+{
+  "key": "agentguard",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.28071",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "ae831e1a6bf504005cadb4b6e87783430807af808aa4d411b1586ff15d1a4a10",
+  "fetched_date": "2026-08-30T21:17:36Z",
+  "error_message": ""
+}

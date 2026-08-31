@@ -1,0 +1,12 @@
+{
+  "key": "whyprovenance",
+  "source_category": "doi",
+  "source_url": "https://doi.org/10.1007/3-540-44503-X_20",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "32ed63159c77e21ee19ca1b9aa3213ccf0218eb59539560b132a8e68ef0e18ea",
+  "fetched_date": "2026-08-30T21:21:00Z",
+  "error_message": ""
+}

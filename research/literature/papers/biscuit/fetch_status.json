@@ -1,0 +1,12 @@
+{
+  "key": "biscuit",
+  "source_category": "open_html",
+  "source_url": "https://www.biscuitsec.org/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "a579e5b53984d8b241999ec21b0a94b2ee1a891dd2555934fb2de7712861c0af",
+  "fetched_date": "2026-08-30T21:18:40Z",
+  "error_message": ""
+}

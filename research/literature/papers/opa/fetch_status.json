@@ -1,0 +1,12 @@
+{
+  "key": "opa",
+  "source_category": "open_html",
+  "source_url": "https://www.openpolicyagent.org/docs/latest/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "eb69eb42e8ffa64558b7e79df00a34cc5fdd2f411a247f24f3ecdceaefbf2cf5",
+  "fetched_date": "2026-08-30T21:19:58Z",
+  "error_message": ""
+}

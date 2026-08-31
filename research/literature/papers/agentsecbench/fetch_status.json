@@ -1,0 +1,12 @@
+{
+  "key": "agentsecbench",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.26269",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "cac7917d75865e097bf36196d7ae42ce5d83abb7b3d16e4801513b8cf9f9e930",
+  "fetched_date": "2026-08-30T21:17:58Z",
+  "error_message": ""
+}

@@ -1,0 +1,12 @@
+{
+  "key": "causalitylaundering",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2604.04035",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "56fd2a69629d45c34bdea5677f2bfa5ff732a7ba9e5b76e344f162af1ae0e7e1",
+  "fetched_date": "2026-08-30T21:18:49Z",
+  "error_message": ""
+}

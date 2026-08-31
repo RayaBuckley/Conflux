@@ -1,0 +1,12 @@
+{
+  "key": "tuf",
+  "source_category": "open_html",
+  "source_url": "https://theupdateframework.io/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "c8f21b059f1bceef179a87fe78c29954d41b0c0017c90e50608644091fbf78c4",
+  "fetched_date": "2026-08-30T21:21:00Z",
+  "error_message": ""
+}

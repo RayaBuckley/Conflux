@@ -1,0 +1,12 @@
+{
+  "key": "openaiagents",
+  "source_category": "open_html",
+  "source_url": "https://openai.github.io/openai-agents-python/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "ecdd401d0e7cd614aa6f5cb44f359f612fe26b28b4abec902ae1c687f82b01eb",
+  "fetched_date": "2026-08-30T21:19:58Z",
+  "error_message": ""
+}

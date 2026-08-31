@@ -1,0 +1,12 @@
+{
+  "key": "injecagent",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2403.02691",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "3350d483880929b0f489196d1a97d1c38622625ae7b365d1cf419acf9a92d241",
+  "fetched_date": "2026-08-30T21:19:34Z",
+  "error_message": ""
+}

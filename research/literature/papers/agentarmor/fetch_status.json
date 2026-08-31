@@ -1,0 +1,12 @@
+{
+  "key": "agentarmor",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2508.01249",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "e13670e518a2e2eb3ef61dcc721351dd4bd72703e0ac05fe8be20f931fb9efd9",
+  "fetched_date": "2026-08-30T21:17:27Z",
+  "error_message": ""
+}

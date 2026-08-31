@@ -1,0 +1,12 @@
+{
+  "key": "spotlighting",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2403.14720",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "b456d2e91a39a94417774e32fd44a029bd9ff4ce40562381a9fecaa21a617a79",
+  "fetched_date": "2026-08-30T21:20:47Z",
+  "error_message": ""
+}

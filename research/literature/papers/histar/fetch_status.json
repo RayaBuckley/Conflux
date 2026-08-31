@@ -1,0 +1,12 @@
+{
+  "key": "histar",
+  "source_category": "open_html",
+  "source_url": "https://www.usenix.org/legacy/events/osdi06/tech/zeldovich.html",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "a8ca5f04594d54eaedb07639707de2dcc5870d0774fa56938102d615925bfbaf",
+  "fetched_date": "2026-08-30T21:19:28Z",
+  "error_message": ""
+}

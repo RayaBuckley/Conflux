@@ -1,0 +1,12 @@
+{
+  "key": "datasentinel",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2504.11358",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "0074ce2e7dc5887b8f156ca086bcb8a9c4d10ed0e5a3753fdc0e0eab53357372",
+  "fetched_date": "2026-08-30T21:19:03Z",
+  "error_message": ""
+}

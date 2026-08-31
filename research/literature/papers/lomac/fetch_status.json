@@ -1,0 +1,10 @@
+{
+  "key": "lomac",
+  "source_category": "open_html",
+  "source_url": "https://ieeexplore.ieee.org/document/848460",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-08-30T21:19:39Z",
+  "error_message": "content too short or not HTML"
+}

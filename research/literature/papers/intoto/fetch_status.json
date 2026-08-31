@@ -1,0 +1,12 @@
+{
+  "key": "intoto",
+  "source_category": "open_html",
+  "source_url": "https://in-toto.io/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "fe3ea3905923930ec71dc87a807d5e3cb4d7b4db8f9833bd617e10a77f98546c",
+  "fetched_date": "2026-08-30T21:19:34Z",
+  "error_message": ""
+}

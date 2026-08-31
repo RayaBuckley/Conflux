@@ -1,0 +1,12 @@
+{
+  "key": "argus",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.03378",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "371058c02f2fe90c0ee1ce5ece4966a312798f91190b8de887ee38349e957de3",
+  "fetched_date": "2026-08-30T21:18:11Z",
+  "error_message": ""
+}
