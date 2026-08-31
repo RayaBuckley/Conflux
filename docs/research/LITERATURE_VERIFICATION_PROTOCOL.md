@@ -12,6 +12,14 @@ The machine-readable corpus lives at
 `research/reports/analysis/literature_corpus.json` and is validated
 against `schemas/literature-corpus.schema.json` (v2).
 
+Local copies of fetched papers (HTML preferred, PDF fallback) are stored
+under `research/literature/papers/<key>/`. The fetch manifest at
+`research/literature/manifest.json` (validated against
+`schemas/literature-manifest.schema.json`) records the status of each
+paper. Run `python scripts/fetch_literature.py` to download papers;
+use `--dry-run` to preview classification, `--key <key>` for a single
+paper, or `--force` to re-fetch.
+
 ## Purpose
 
 A novelty audit is only as strong as the primary-source verification behind
@@ -183,6 +191,10 @@ The test suite (`tests/test_literature_corpus.py`) enforces:
 - **Bibliography cross-reference**: every `references.bib` key must
   exist in the corpus; every `REFERENCES.md` key must exist in the
   corpus.
+- **Local copy consistency**: every arXiv entry has at least one local
+  file (HTML or PDF) or is marked `failed`/`paywall` in the manifest;
+  manifest keys match corpus keys; per-paper `fetch_status.json` files
+  are valid.
 
 ## Relationship to other documents
 
