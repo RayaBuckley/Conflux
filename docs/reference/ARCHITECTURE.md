@@ -25,7 +25,26 @@ flowchart LR
   through ITES at action time.
 - `conflux.evaluation` explores the operational kernel with native SLED.
 - `conflux.verification` owns callback-free solver IR and optional formal
-  backends; it does not replace native SLED.
+  backends; it does not replace native SLED. Sub-modules:
+  - `ir` — serialisable verification IR with expression kinds (IMPLIES,
+    GREATER_EQUAL, GREATER_THAN, LESS_THAN, DIFFERENCE).
+  - `interpreter` — reference interpreter for IR evaluation.
+  - `z3_backend` — optional Z3 bounded-model-checking backend.
+  - `nuxmv_backend` — optional nuXmv SMV backend (Boolean subset).
+  - `reduction` — COI reduction and reference safety checking.
+  - `self_composition` — product IR construction for observational
+    confidentiality.
+  - `symmetry_reduction` — principal symmetry breaking and read-policy
+    projection for self-composition optimisation.
+  - `plan_ir` — plan abstraction to verification IR with delegation,
+    monotonic confinement, revocation propagation, and bounded liveness.
+  - `delegation_ir` — delegation safety IR with 11 mutation variants
+    and multi-grant scenarios.
+  - `assume_guarantee` — assume/guarantee contracts and compositional
+    verification for IR-to-runtime conformance.
+  - `counterexample_refinement` — CEGAR loop with counterexample
+    classification (real vs. spurious).
+  - `refinement` — runtime-to-IR refinement checking.
 - `conflux.adapters` and `conflux.experiments` translate external systems and
   aggregate evidence without redefining security decisions.
 
