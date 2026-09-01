@@ -24,6 +24,9 @@ from conflux.evaluation.model_checking import (
     VerificationBounds,
 )
 from conflux.evaluation.planning import (
+    AbstractEffect,
+    AbstractPatchKind,
+    AbstractPlanPatch,
     CodeCapabilityPreserved,
     NoUnauthorisedPlanningEffect,
     PlanningContextMonotonicity,
@@ -36,6 +39,66 @@ PLANNING_PROPERTIES = (
     NoUnauthorisedPlanningEffect(),
     PlanningContextMonotonicity(),
     CodeCapabilityPreserved(),
+)
+
+_PLANNING_PATCHES: tuple[AbstractPlanPatch, ...] = (
+    AbstractPlanPatch(
+        id="auth_effect",
+        kind=AbstractPatchKind.APPEND_EFFECT,
+        control_principals=frozenset({"alice"}),
+        effect=AbstractEffect(
+            id="write_file",
+            permission="write",
+            resource="file",
+            influencing_principals=frozenset({"alice"}),
+            authorised=True,
+        ),
+    ),
+    AbstractPlanPatch(
+        id="unauth_effect",
+        kind=AbstractPatchKind.APPEND_EFFECT,
+        control_principals=frozenset({"bob"}),
+        effect=AbstractEffect(
+            id="unauth_write",
+            permission="write",
+            resource="file",
+            influencing_principals=frozenset({"bob"}),
+            authorised=False,
+        ),
+    ),
+    AbstractPlanPatch(
+        id="code_in_cap",
+        kind=AbstractPatchKind.APPEND_CODE_EFFECT,
+        control_principals=frozenset({"alice"}),
+        effect=AbstractEffect(
+            id="safe_code",
+            permission="execute_code",
+            resource="sandbox",
+            influencing_principals=frozenset({"alice"}),
+            authorised=True,
+            code_effect=True,
+            within_capability_envelope=True,
+        ),
+    ),
+    AbstractPlanPatch(
+        id="code_outside_cap",
+        kind=AbstractPatchKind.APPEND_CODE_EFFECT,
+        control_principals=frozenset({"carol"}),
+        effect=AbstractEffect(
+            id="unsafe_code",
+            permission="execute_code",
+            resource="sandbox",
+            influencing_principals=frozenset({"carol"}),
+            authorised=True,
+            code_effect=True,
+            within_capability_envelope=False,
+        ),
+    ),
+    AbstractPlanPatch(
+        id="terminate",
+        kind=AbstractPatchKind.TERMINATE,
+        control_principals=frozenset(),
+    ),
 )
 
 BOUND_CONFIGS = [
@@ -72,7 +135,11 @@ def main() -> int:
 
         planning_system: WorstCasePlanningSystem = WorstCasePlanningSystem(
             initial_context=frozenset({"alice", "bob"}),
-            patches=(),
+            patches=_PLANNING_PATCHES,
+            max_plan_nodes=4 + bound_idx * 4,
+            max_continuation_depth=2 + bound_idx * 2,
+            max_planner_calls=2 + bound_idx * 2,
+            max_effects=2 + bound_idx * 2,
         )
         planning_result = ExplicitStateChecker().verify(planning_system, PLANNING_PROPERTIES, bounds)
         results.append(
