@@ -8,6 +8,7 @@ from conflux.domain import fingerprint
 from conflux.planning import (
     ActionTemplateNode,
     ContinuePlanningNode,
+    DelegationNode,
     OperationCatalogue,
     Plan,
 )
@@ -70,11 +71,16 @@ def abstract_plan(
         step,
         Expression.constant(bound - 1),
     )
+    step_bound_reached = Expression.operator(
+        ExpressionKind.GREATER_EQUAL,
+        step,
+        Expression.constant(bound - 1),
+    )
     all_plans = (plan, *plan.subplans)
     for current in all_plans:
         for node in current.nodes:
             rule_id = f"{current.id}:{node.id}"
-            assignments = [
+            assignments: list[Assignment] = [
                 Assignment(
                     "step",
                     Expression.operator(
@@ -82,6 +88,10 @@ def abstract_plan(
                         step,
                         Expression.constant(1),
                     ),
+                ),
+                Assignment(
+                    "terminated",
+                    step_bound_reached,
                 ),
             ]
             if isinstance(node, ActionTemplateNode):
@@ -111,11 +121,22 @@ def abstract_plan(
                         ),
                     ),
                 )
+                if summary.executed and not summary.authorised:
+                    assignments.append(
+                        Assignment("revocation_received", Expression.constant(True)),
+                    )
             elif isinstance(node, ContinuePlanningNode):
                 assignments.append(
                     Assignment(
                         "continuation_seen",
                         Expression.constant(True),
+                    ),
+                )
+            elif isinstance(node, DelegationNode):
+                assignments.extend(
+                    (
+                        Assignment("delegation_consumed", Expression.constant(True)),
+                        Assignment("delegation_authority_gained", Expression.constant(True)),
                     ),
                 )
             transitions.append(TransitionRule(rule_id, step_guard, tuple(assignments)))
@@ -124,6 +145,10 @@ def abstract_plan(
         "every grounded effect is mediated at action time by the canonical kernel",
         "generated code is abstracted by its declared capability effect summary",
         "arbitrary source-code semantics are not analysed",
+        "context_narrowed models continuation patches that drop principals from context",
+        "authority_set models monotonic confinement per Progent arXiv:2504.11703",
+        "revocation_received models mid-plan revocation blocking downstream effects",
+        "terminated models bounded liveness per arXiv:2510.14133",
     )
     if unsupported:
         return PlanAbstraction(None, assumptions, tuple(sorted(unsupported)))
@@ -135,6 +160,11 @@ def abstract_plan(
             StateVariable("capability_violated", Sort.BOOLEAN, False),
             StateVariable("context_narrowed", Sort.BOOLEAN, False),
             StateVariable("continuation_seen", Sort.BOOLEAN, False),
+            StateVariable("delegation_consumed", Sort.BOOLEAN, False),
+            StateVariable("delegation_authority_gained", Sort.BOOLEAN, False),
+            StateVariable("authority_set", Sort.INTEGER, 0, 0, bound),
+            StateVariable("revocation_received", Sort.BOOLEAN, False),
+            StateVariable("terminated", Sort.BOOLEAN, False),
         ),
         tuple(transitions),
         (
@@ -157,6 +187,44 @@ def abstract_plan(
                 Expression.operator(
                     ExpressionKind.NOT,
                     Expression.variable("context_narrowed"),
+                ),
+            ),
+            SafetyInvariant(
+                "delegation-authority-requires-grant",
+                Expression.operator(
+                    ExpressionKind.IMPLIES,
+                    Expression.variable("delegation_authority_gained"),
+                    Expression.variable("delegation_consumed"),
+                ),
+            ),
+            SafetyInvariant(
+                "monotonic-confinement",
+                Expression.operator(
+                    ExpressionKind.NOT,
+                    Expression.variable("unauthorised_executed"),
+                ),
+            ),
+            SafetyInvariant(
+                "revocation-propagation",
+                Expression.operator(
+                    ExpressionKind.IMPLIES,
+                    Expression.variable("revocation_received"),
+                    Expression.operator(
+                        ExpressionKind.NOT,
+                        Expression.variable("unauthorised_executed"),
+                    ),
+                ),
+            ),
+            SafetyInvariant(
+                "bounded-liveness",
+                Expression.operator(
+                    ExpressionKind.IMPLIES,
+                    Expression.operator(
+                        ExpressionKind.GREATER_EQUAL,
+                        Expression.variable("step"),
+                        Expression.constant(bound),
+                    ),
+                    Expression.variable("terminated"),
                 ),
             ),
         ),
