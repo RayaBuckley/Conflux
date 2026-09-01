@@ -22,7 +22,7 @@
         "required": ["name", "sort", "initial", "minimum", "maximum"],
         "properties": {
           "name": {"type": "string", "minLength": 1},
-          "sort": {"enum": ["boolean", "integer"]},
+          "sort": {"enum": ["boolean", "integer", "set"]},
           "initial": {"type": ["boolean", "integer"]},
           "minimum": {"type": ["integer", "null"]},
           "maximum": {"type": ["integer", "null"]}

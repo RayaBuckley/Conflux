@@ -170,6 +170,14 @@ def _expression(
         return values[0] == values[1]
     if expression.kind == ExpressionKind.LESS_EQUAL:
         return values[0] <= values[1]
+    if expression.kind == ExpressionKind.IMPLIES:
+        return z3.Implies(values[0], values[1])
+    if expression.kind == ExpressionKind.GREATER_EQUAL:
+        return values[0] >= values[1]
+    if expression.kind == ExpressionKind.GREATER_THAN:
+        return values[0] > values[1]
+    if expression.kind == ExpressionKind.LESS_THAN:
+        return values[0] < values[1]
     return values[0] + values[1]
 
 

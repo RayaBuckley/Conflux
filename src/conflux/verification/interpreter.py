@@ -52,6 +52,16 @@ def evaluate(expression: Expression, state: dict[str, IRValue]) -> IRValue:
         for value in values[1:]:
             result_inter = result_inter & _to_set(value)
         return result_inter
+    if expression.kind == ExpressionKind.IMPLIES:
+        return (not _bool(values[0])) or _bool(values[1])
+    if expression.kind == ExpressionKind.GREATER_EQUAL:
+        return _int(values[0]) >= _int(values[1])
+    if expression.kind == ExpressionKind.GREATER_THAN:
+        return _int(values[0]) > _int(values[1])
+    if expression.kind == ExpressionKind.LESS_THAN:
+        return _int(values[0]) < _int(values[1])
+    if expression.kind == ExpressionKind.DIFFERENCE:
+        return _to_set(values[0]) - _to_set(values[1])
     raise ValueError(f"unsupported expression kind: {expression.kind}")
 
 

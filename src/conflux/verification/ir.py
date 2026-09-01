@@ -35,6 +35,11 @@ class ExpressionKind(StrEnum):
     SUBSET = "subset"
     UNION = "union"
     INTERSECT = "intersect"
+    IMPLIES = "implies"
+    GREATER_EQUAL = "greater_equal"
+    GREATER_THAN = "greater_than"
+    LESS_THAN = "less_than"
+    DIFFERENCE = "difference"
 
 
 Scalar: TypeAlias = bool | int
@@ -66,6 +71,11 @@ class Expression:
             ExpressionKind.SUBSET: 2,
             ExpressionKind.UNION: -1,
             ExpressionKind.INTERSECT: -1,
+            ExpressionKind.IMPLIES: 2,
+            ExpressionKind.GREATER_EQUAL: 2,
+            ExpressionKind.GREATER_THAN: 2,
+            ExpressionKind.LESS_THAN: 2,
+            ExpressionKind.DIFFERENCE: 2,
         }[self.kind]
         if arity >= 0 and len(self.arguments) != arity:
             raise ValueError(f"{self.kind.value} expression requires {arity} arguments")

@@ -308,6 +308,8 @@ def _render(expression: Expression) -> str:
         return "(" + " | ".join(values) + ")"
     if expression.kind == ExpressionKind.EQUAL:
         return f"({values[0]} = {values[1]})"
+    if expression.kind == ExpressionKind.IMPLIES:
+        return f"({values[0]} -> {values[1]})"
     raise ValueError(f"nuXmv subset does not support {expression.kind.value}")
 
 
