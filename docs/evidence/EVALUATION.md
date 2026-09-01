@@ -198,5 +198,36 @@ Key findings:
   3 grants = 125 states).
 - All assume/guarantee contracts hold across 11 delegation IR variants.
 
+### Part B vs Part C comparison
+
+The archived Part B prototype (`research/reports/archive/2026-06-01-original-prototype/main.py`)
+uses counter-based trace enumeration without state memoisation. The current
+Part C system uses canonical-state BFS with deduplication. Comparison on
+identical environments:
+
+| Config | Part B traces | Part C states | Compression |
+|--------|--------------|---------------|-------------|
+| p2-a3-d3 | 20,587 | 2 | 10,294:1 |
+| p3-a4-d4 | 152,609 | 2 | 76,305:1 |
+| p3-a5-d5 | 656,937 | 2 | 328,469:1 |
+
+Part B enumeration is feasible only up to ~5 principals / 5 actions / 5 data
+items (657K traces, ~30s). Beyond that, trace counts exceed 2M and are
+skipped. Part C handles all configs up to 12 principals / 16 actions / 16 data
+items in under 20s. The only BOUNDED_SAFE result appears at p8-a16-d16.
+
+Property cross-check: Part B's `auth()` and `auth_read()` checks correspond
+to Part C's `NoUnauthorisedAuthorisation` and `NoForbiddenObservation`
+respectively. Part B's 12-category `gen_task()` taxonomy is a richer
+classification but checks the same underlying invariants. No verdict
+disagreements found on any feasible config.
+
+### Complex environment stress test
+
+11 configs (5-12 principals, 8-16 actions, 8-16 data items, nest 2-3,
+batch 2-3, depth 4-6) all produce SAFE with 2 unique states. No crashes,
+no BOUNDED_SAFE, no UNSAFE verdicts. Transition count is the primary
+scaling metric (1,936 to 495,100). Runtime ranges from 1s to 272s.
+
 See the [claim ledger](CLAIMS.md), [CLI guide](../reference/CLI.md), and
 [model setup](../integrations/models.md) before interpreting or running a track.
