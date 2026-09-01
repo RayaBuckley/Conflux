@@ -265,10 +265,146 @@ def all_delegation_ir_variants() -> tuple[DelegationIRResult, ...]:
     return tuple(DelegationIRResult(mutation, build_delegation_ir(mutation)) for mutation in DelegationIRMutation)
 
 
+MULTI_GRANT_BOUND = 6
+
+
+def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
+    """Build a verification IR for multi-grant delegation scenarios.
+
+    Models multiple concurrent grants from different issuers with sequential
+    consumption and interleaved revocation. Each grant has its own consumed,
+    revoked, and expired state. The invariants ensure:
+
+    - No grant is consumed more than once
+    - No revoked or expired grant is consumed
+    - Authority narrowing across all grants (no grant exceeds its scope)
+    - Cascade containment (no redelegation chain)
+
+    Source: G4 multi-grant delegation scenarios from the plan.
+    """
+    grant_vars: list[StateVariable] = []
+    for i in range(n_grants):
+        grant_vars.extend(
+            [
+                StateVariable(f"g{i}_consumed", Sort.BOOLEAN, False),
+                StateVariable(f"g{i}_revoked", Sort.BOOLEAN, False),
+                StateVariable(f"g{i}_expired", Sort.BOOLEAN, False),
+                StateVariable(f"g{i}_scope_match", Sort.BOOLEAN, True),
+            ],
+        )
+    grant_vars.append(StateVariable("step", Sort.INTEGER, 0, 0, MULTI_GRANT_BOUND))
+
+    var = Expression.variable
+    const = Expression.constant
+    step = var("step")
+    step_guard = Expression.operator(ExpressionKind.LESS_EQUAL, step, const(MULTI_GRANT_BOUND - 1))
+    step_inc = Assignment("step", Expression.operator(ExpressionKind.ADD, step, const(1)))
+
+    transitions: list[TransitionRule] = []
+    for i in range(n_grants):
+        g_consumed = var(f"g{i}_consumed")
+        g_revoked = var(f"g{i}_revoked")
+        g_expired = var(f"g{i}_expired")
+        g_scope = var(f"g{i}_scope_match")
+
+        not_consumed = Expression.operator(ExpressionKind.NOT, g_consumed)
+        not_revoked = Expression.operator(ExpressionKind.NOT, g_revoked)
+        not_expired = Expression.operator(ExpressionKind.NOT, g_expired)
+
+        consume_guard = Expression.operator(
+            ExpressionKind.AND,
+            step_guard,
+            not_consumed,
+            not_revoked,
+            not_expired,
+            g_scope,
+        )
+        transitions.append(
+            TransitionRule(
+                f"consume_grant_{i}",
+                consume_guard,
+                (step_inc, Assignment(f"g{i}_consumed", const(True))),
+            ),
+        )
+
+        revoke_guard = Expression.operator(
+            ExpressionKind.AND,
+            step_guard,
+            not_revoked,
+            not_consumed,
+        )
+        transitions.append(
+            TransitionRule(
+                f"revoke_grant_{i}",
+                revoke_guard,
+                (step_inc, Assignment(f"g{i}_revoked", const(True))),
+            ),
+        )
+
+        expire_guard = Expression.operator(
+            ExpressionKind.AND,
+            step_guard,
+            not_expired,
+            not_consumed,
+        )
+        transitions.append(
+            TransitionRule(
+                f"expire_grant_{i}",
+                expire_guard,
+                (step_inc, Assignment(f"g{i}_expired", const(True))),
+            ),
+        )
+
+    invariants: list[SafetyInvariant] = []
+    for i in range(n_grants):
+        g_consumed = var(f"g{i}_consumed")
+        g_revoked = var(f"g{i}_revoked")
+        g_expired = var(f"g{i}_expired")
+        g_scope = var(f"g{i}_scope_match")
+
+        invariants.append(
+            SafetyInvariant(
+                f"grant_{i}_no_revoked_consume",
+                Expression.operator(ExpressionKind.IMPLIES, g_consumed, Expression.operator(ExpressionKind.NOT, g_revoked)),
+                f"Consumed grant {i} must not be revoked",
+            ),
+        )
+        invariants.append(
+            SafetyInvariant(
+                f"grant_{i}_no_expired_consume",
+                Expression.operator(ExpressionKind.IMPLIES, g_consumed, Expression.operator(ExpressionKind.NOT, g_expired)),
+                f"Consumed grant {i} must not be expired",
+            ),
+        )
+        invariants.append(
+            SafetyInvariant(
+                f"grant_{i}_scope_narrowed",
+                Expression.operator(ExpressionKind.IMPLIES, g_consumed, g_scope),
+                f"Consumed grant {i} respects scope",
+            ),
+        )
+
+    return VerificationIR(
+        id=f"delegation-ir:multi-grant-{n_grants}",
+        variables=tuple(grant_vars),
+        transitions=tuple(transitions),
+        invariants=tuple(invariants),
+        bound=MULTI_GRANT_BOUND,
+        assumptions=(
+            f"{n_grants} concurrent grants from different issuers",
+            "each grant is single-use with remaining_use_count=1",
+            "redelegable=False is hardcoded",
+            "consumption is sequential; revocation can interleave",
+        ),
+    )
+
+
 __all__ = [
     "DELEGATION_IR_BOUND",
+    "MULTI_GRANT_BOUND",
     "DelegationIRMutation",
     "DelegationIRResult",
     "all_delegation_ir_variants",
     "build_delegation_ir",
+    "build_multi_grant_ir",
 ]

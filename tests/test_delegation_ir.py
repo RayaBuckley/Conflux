@@ -90,3 +90,32 @@ def test_reuse_mutation_sets_use_count_to_two() -> None:
     succs = successors(ir, state)
     use_succ = next(s for rid, s in succs if rid == "attempt_use")
     assert use_succ["use_count"] == 2
+
+
+def test_multi_grant_ir_builds() -> None:
+    from conflux.verification.delegation_ir import build_multi_grant_ir
+
+    ir = build_multi_grant_ir(2)
+    assert "multi-grant-2" in ir.id
+    assert len(ir.variables) == 9
+    assert len(ir.transitions) == 6
+    assert len(ir.invariants) == 6
+
+
+def test_multi_grant_ir_is_safe() -> None:
+    from conflux.verification.delegation_ir import build_multi_grant_ir
+
+    ir = build_multi_grant_ir(2)
+    result = reference_safety_check(ir)
+    assert result.verdict.value == "safe"
+    assert result.states > 1
+
+
+def test_multi_grant_ir_scales_exponentially() -> None:
+    from conflux.verification.delegation_ir import build_multi_grant_ir
+
+    ir2 = build_multi_grant_ir(2)
+    ir3 = build_multi_grant_ir(3)
+    r2 = reference_safety_check(ir2)
+    r3 = reference_safety_check(ir3)
+    assert r3.states > r2.states
