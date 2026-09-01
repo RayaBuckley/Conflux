@@ -99,10 +99,20 @@ PC(parent) subseteq PC(child)
 
 Influence is never silently discarded.
 
-### Delegation safety (model only, runtime disabled)
+### Delegation safety (IR-encoded, bounded evidence)
 
 Any authority increase is explained by an independently authorised delegation
-transition.
+transition. The delegation `consume()` logic is encoded as `VerificationIR`
+transition rules with mutation variants, making it available to all backends
+(Z3, nuXmv, reference interpreter) and serialisable for reproducibility.
+
+Properties verified: attenuation, single-use, expiry, revocation, beneficiary
+binding, non-redelegation, pre-influence ordering, context preservation,
+cascade containment, authority narrowing, and TOCTOU drift detection.
+
+See `src/conflux/verification/delegation_ir.py`. The native SLED delegation
+model (`conflux.evaluation.delegation_verification`) coexists — it tests the
+actual implementation, while the IR encoding tests the abstract property.
 
 ### Read safety (supported)
 
@@ -131,10 +141,30 @@ permitted release policy. This connects to robust-declassification literature
 and is relevant to prompt-injection resistance for visibility/declassification
 decisions.
 
-### Liveness / utility (future work)
+### Liveness / utility (bounded evidence)
 
 Under an explicit competence/controller assumption, an authorised task reaches
-its goal or a defined safe abort.
+its goal or a defined safe abort. Encoded as a bounded liveness invariant
+`AG(step >= bound -> terminated)` in the plan IR, verified by Z3 BMC. See
+`src/conflux/verification/plan_ir.py`.
+
+### Monotonic confinement (IR-encoded, bounded evidence)
+
+Authority cannot widen across plan continuations: `A(P') ⊆ A(P)`. Encoded
+as an IR invariant over the `authority_set` variable. See
+`src/conflux/verification/plan_ir.py`.
+
+### Revocation propagation (IR-encoded, bounded evidence)
+
+After revocation is received, no downstream effects execute. Encoded as
+`AG(revocation_received -> not unauthorised_executed)`. See
+`src/conflux/verification/plan_ir.py`.
+
+### Self-composition optimization (bounded evidence)
+
+Principal symmetry reduction and read-policy projection reduce the
+product IR state space. Symmetry-breaking constraints eliminate equivalent
+state permutations. See `src/conflux/verification/symmetry_reduction.py`.
 
 ## Rationale
 
