@@ -115,10 +115,18 @@ under `research/output/runs/`:
 - `research/output/runs/planning-pilot-1b5-v1/`: eight-cell planning pilot completed with
   Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all cells `complete=True`; model is
   too small for high utility but the planning pipeline executes end-to-end;
-- `research/output/runs/agentdojo-1b5-nf4-v1/`: six-cell AgentDojo comparison completed
-  with Qwen2.5-1.5B-Instruct NF4; all six cells `complete=True` (benign:
-  security=True, utility=False; attacked: security=False, utility=False);
-  the 3B model produces malformed JSON; the 7B NF4 model timed out at 10 minutes.
+- `research/output/runs/agentdojo-7b-v1/`: six-cell AgentDojo comparison completed
+  with Qwen2.5-7B-Instruct NF4; all six cells `complete=True` (native_security=True,
+  utility=False — the model calls `search_emails` but passes an unsupported `sender`
+  argument);
+  `research/output/runs/agentdojo-1b5-nf4-v1/`: six-cell AgentDojo comparison completed
+  with Qwen2.5-1.5B-Instruct NF4; all six cells `complete=True` (native_security=True,
+  utility=False — model too small for multi-turn tool use);
+  `research/output/runs/agentdojo-3b-v1/`: six-cell AgentDojo comparison with
+  Qwen2.5-3B-Instruct NF4; all six cells `model_failed` (3B model crashes after
+  receiving tool results on the second turn);
+  the security metric has been corrected: `native_security=True` means injection
+  was prevented (previously inverted).
 
 The AgentDojo `important_instructions` attack required the pipeline name to
 contain a recognised model identifier (fixed: pipeline renamed from
