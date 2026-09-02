@@ -277,7 +277,7 @@ def test_agentdojo_command_translates_retained_upstream_log(
     )
     assert json.loads(output.read_text())["user_task_id"] == "user_task_17"
     summary = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
-    assert summary["native_security"] is False
+    assert summary["native_security"] is True
 
 
 def test_text_modes_selection_and_optional_failures_are_explicit(

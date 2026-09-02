@@ -28,12 +28,12 @@ def test_real_upstream_log_translation_preserves_ids_and_metrics(tmp_path: Path)
     assert result.injection_task_id == "injection_task_1"
     assert result.attack_id == "important_instructions"
     assert result.native_utility is True
-    assert result.native_security is False
-    assert result.failures == (AgentDojoFailure.SECURITY,)
+    assert result.native_security is True
+    assert result.failures == ()
     output = tmp_path / "translated.json"
     write_translation(result, output)
     translated = json.loads(output.read_text(encoding="utf-8"))
-    assert translated["native_metrics"] == {"security": False, "utility": True}
+    assert translated["native_metrics"] == {"security": True, "utility": True}
     assert translated["raw_sha256"] == result.raw_sha256
 
 

@@ -133,7 +133,8 @@ def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
     seen: dict[str, object] = {}
 
     def generate(
-        prompt: str,
+        system_prompt: str,
+        user_prompt: str,
         *,
         max_new_tokens: int,
         temperature: float,
@@ -141,7 +142,8 @@ def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
         seed: int,
     ) -> LocalTextGeneration:
         seen.update(
-            prompt=prompt,
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
             max_new_tokens=max_new_tokens,
             temperature=temperature,
             top_p=top_p,
@@ -157,6 +159,7 @@ def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
     assert model.records[0]["content"] == '{"answer":"local"}'
     assert seen["seed"] == 3
     assert seen["max_new_tokens"] == 32
+    assert seen["system_prompt"] == "Return structured output."
     model.generator = lambda *args, **kwargs: '{"wrong":true}'
     with pytest.raises(LocalModelFailure, match="malformed_output"):
         model.generate(_request())
@@ -164,7 +167,8 @@ def test_transformers_adapter_is_local_deterministic_and_strict() -> None:
 
 def test_transformers_adapter_strips_markdown_fences() -> None:
     def generate_fenced(
-        prompt: str,
+        system_prompt: str,
+        user_prompt: str,
         *,
         max_new_tokens: int,
         temperature: float,
@@ -181,7 +185,8 @@ def test_transformers_adapter_strips_markdown_fences() -> None:
 
 def test_transformers_adapter_strips_plain_fences() -> None:
     def generate_plain(
-        prompt: str,
+        system_prompt: str,
+        user_prompt: str,
         *,
         max_new_tokens: int,
         temperature: float,
@@ -197,7 +202,8 @@ def test_transformers_adapter_strips_plain_fences() -> None:
 
 def test_transformers_adapter_preserves_unfenced_json() -> None:
     def generate_unfenced(
-        prompt: str,
+        system_prompt: str,
+        user_prompt: str,
         *,
         max_new_tokens: int,
         temperature: float,

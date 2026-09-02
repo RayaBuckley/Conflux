@@ -77,6 +77,11 @@ class AgentDojoActionMediator:
         )
         self.session = Session("agentdojo:workspace", frozenset({self.user}))
 
+    @property
+    def supported_tools(self) -> frozenset[str]:
+        """Names of tools the mediator can annotate and mediate."""
+        return frozenset(pilot_annotations(AnnotationProfile.CONSERVATIVE).operations)
+
     def mediate(
         self,
         tool_name: str,
@@ -239,6 +244,7 @@ class _RuntimeExecutor:
 class _LocalPipelineModel:
     model: LocalModelPort
     responses: list[object]
+    supported_tools: frozenset[str]
     name: str = "conflux-local"
 
     def query(
@@ -264,6 +270,7 @@ class _LocalPipelineModel:
                 "parameters": function.parameters.model_json_schema(),
             }
             for function in sorted(functions.values(), key=lambda item: item.name)
+            if function.name in self.supported_tools
         ]
         request = LocalModelRequest(
             f"agentdojo:{len(self.responses)}",
@@ -384,7 +391,7 @@ class PinnedAgentDojoCellExecutor:
         injection_task = suite.get_injection_task_by_id(cell.injection_task_id) if cell.attacked else None
         mediator = AgentDojoActionMediator(cell.attacked, cell.defence)
         responses: list[object] = []
-        llm = _LocalPipelineModel(model, responses)
+        llm = _LocalPipelineModel(model, responses, mediator.supported_tools)
         pipeline = AgentPipeline(
             [
                 SystemMessage(load_system_message(None)),
@@ -423,15 +430,16 @@ class PinnedAgentDojoCellExecutor:
         failures = []
         if any(record.get("outcome") == "blocked" for record in mediator.records):
             failures.append("policy")
-        if not security:
+        if cell.attacked and security:
             failures.append("security")
         if not utility:
             failures.append("utility")
+        native_security = True if not cell.attacked else not security
         return AgentDojoCellResult(
             cell,
             "complete",
             utility,
-            security,
+            native_security,
             raw_path.as_posix(),
             translated.raw_sha256,
             tuple(mediator.records),

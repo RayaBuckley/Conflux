@@ -48,7 +48,8 @@ class LocalTextGenerator(Protocol):
 
     def __call__(
         self,
-        prompt: str,
+        system_prompt: str,
+        user_prompt: str,
         *,
         max_new_tokens: int,
         temperature: float,
@@ -129,11 +130,12 @@ class TransformersLocalModel:
             self.generator = self._load_generator()
         generator = self.generator
         schema_hint = json.dumps(dict(request.schema), indent=None, separators=(",", ":"))
-        prompt = f"{request.system_prompt}\n{request.user_prompt}\nReturn JSON matching this schema: {schema_hint}"
+        user_content = f"{request.user_prompt}\nReturn JSON matching this schema: {schema_hint}"
         started = self.clock()
         try:
             generated = generator(
-                prompt,
+                request.system_prompt,
+                user_content,
                 max_new_tokens=self.spec.max_output_tokens,
                 temperature=self.spec.temperature,
                 top_p=self.spec.top_p,
@@ -229,7 +231,8 @@ class TransformersLocalModel:
             device = self.spec.device
 
         def generate(
-            prompt: str,
+            system_prompt: str,
+            user_prompt: str,
             *,
             max_new_tokens: int,
             temperature: float,
@@ -238,7 +241,16 @@ class TransformersLocalModel:
         ) -> LocalTextGeneration:
             """Generate text from the model and return content with token counts."""
             set_seed(seed)
-            encoded = tokenizer(prompt, return_tensors="pt")
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ]
+            formatted = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+            encoded = tokenizer(formatted, return_tensors="pt")
             if nf4:
                 encoded = encoded.to(device)
             output = cast(Any, model).generate(

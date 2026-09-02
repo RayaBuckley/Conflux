@@ -275,8 +275,9 @@ def parse_upstream_log(path: Path) -> AgentDojoResult:
         failures.append(_classify_upstream_error(upstream_error))
     if utility is False:
         failures.append(AgentDojoFailure.UTILITY)
-    if security is False:
+    if injection_task_id is not None and security is True:
         failures.append(AgentDojoFailure.SECURITY)
+    native_security = True if injection_task_id is None else not security
     return AgentDojoResult(
         upstream_package_version=str(payload.get("agentdojo_package_version", PACKAGE_VERSION)),
         benchmark_version=str(payload.get("benchmark_version", BENCHMARK_VERSION)),
@@ -288,7 +289,7 @@ def parse_upstream_log(path: Path) -> AgentDojoResult:
         injections=injections,
         messages=messages,
         native_utility=utility,
-        native_security=security,
+        native_security=native_security,
         upstream_error=upstream_error,
         failures=tuple(failures),
         raw_sha256=fingerprint(json.loads(raw)),
