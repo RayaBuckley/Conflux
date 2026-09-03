@@ -30,6 +30,7 @@ from conflux.verification import (
     successors,
     verify_with_z3,
 )
+from conflux.verification.ir import IRValue
 
 pytestmark = pytest.mark.security
 
@@ -340,3 +341,71 @@ def test_ir_nested_parsers_reject_malformed_records() -> None:
         candidate[key] = value
         with pytest.raises((ValueError, TypeError)):
             VerificationIR.from_dict(candidate)
+
+
+def test_evaluate_implies_expression() -> None:
+    """IMPLIES: True→True=True, True→False=False, False→anything=True."""
+    from conflux.verification.interpreter import evaluate
+
+    state: dict[str, IRValue] = {}
+    tt = Expression.operator(ExpressionKind.IMPLIES, Expression.constant(True), Expression.constant(True))
+    tf = Expression.operator(ExpressionKind.IMPLIES, Expression.constant(True), Expression.constant(False))
+    ft = Expression.operator(ExpressionKind.IMPLIES, Expression.constant(False), Expression.constant(True))
+    assert evaluate(tt, state) is True
+    assert evaluate(tf, state) is False
+    assert evaluate(ft, state) is True
+
+
+def test_evaluate_comparison_expressions() -> None:
+    """GREATER_EQUAL, GREATER_THAN, LESS_THAN cover integer comparisons."""
+    from conflux.verification.interpreter import evaluate
+
+    state: dict[str, IRValue] = {}
+    ge_true = Expression.operator(ExpressionKind.GREATER_EQUAL, Expression.constant(5), Expression.constant(3))
+    ge_false = Expression.operator(ExpressionKind.GREATER_EQUAL, Expression.constant(2), Expression.constant(3))
+    gt_true = Expression.operator(ExpressionKind.GREATER_THAN, Expression.constant(5), Expression.constant(3))
+    gt_false = Expression.operator(ExpressionKind.GREATER_THAN, Expression.constant(3), Expression.constant(3))
+    lt_true = Expression.operator(ExpressionKind.LESS_THAN, Expression.constant(2), Expression.constant(3))
+    lt_false = Expression.operator(ExpressionKind.LESS_THAN, Expression.constant(3), Expression.constant(3))
+    assert evaluate(ge_true, state) is True
+    assert evaluate(ge_false, state) is False
+    assert evaluate(gt_true, state) is True
+    assert evaluate(gt_false, state) is False
+    assert evaluate(lt_true, state) is True
+    assert evaluate(lt_false, state) is False
+
+
+def test_evaluate_difference_expression() -> None:
+    """DIFFERENCE: set subtraction."""
+    from conflux.verification.interpreter import evaluate
+
+    expr = Expression.operator(
+        ExpressionKind.DIFFERENCE,
+        Expression.variable("pc"),
+        Expression.variable("revoked"),
+    )
+    state: dict[str, IRValue] = {
+        "pc": frozenset({"alice", "bob", "carol"}),
+        "revoked": frozenset({"bob"}),
+    }
+    result = evaluate(expr, state)
+    assert result == frozenset({"alice", "carol"})
+
+
+def test_evaluate_type_errors_for_invalid_constants_and_variables() -> None:
+    """Constant with wrong type and variable with wrong type raise TypeError."""
+    from conflux.verification.interpreter import evaluate
+
+    bad_constant = Expression.__new__(Expression)
+    object.__setattr__(bad_constant, "kind", ExpressionKind.CONSTANT)
+    object.__setattr__(bad_constant, "value", 3.14)
+    object.__setattr__(bad_constant, "arguments", ())
+    with pytest.raises(TypeError, match="expected bool/int/str constant"):
+        evaluate(bad_constant, {})
+
+    bad_variable = Expression.__new__(Expression)
+    object.__setattr__(bad_variable, "kind", ExpressionKind.VARIABLE)
+    object.__setattr__(bad_variable, "value", 42)
+    object.__setattr__(bad_variable, "arguments", ())
+    with pytest.raises(TypeError, match="expected str variable name"):
+        evaluate(bad_variable, {})
