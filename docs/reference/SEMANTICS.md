@@ -3,7 +3,8 @@
 This document specifies the algebraic structures and security properties
 implemented by the Conflux domain and ITES kernel. Each property carries a
 unique identifier (SEM-*), a formal statement, the code that enforces it, and
-the tests that verify it.
+the tests that verify it. Each property also links to the decision record (ADR)
+that motivated its design.
 
 ## Domain algebraic structures
 
@@ -25,6 +26,7 @@ Unknown absorbs: if a.unknown or b.unknown then a.merge(b).unknown
 | Definition | `src/conflux/domain/identity.py` `PrincipalContext.merge` |
 | Tests | `tests/test_domain.py::test_provenance_merge_never_drops_principals`, `test_unknown_precision_dominates_merge`, `test_combination_is_monotone` |
 | Algebraic tests | `tests/semantics/test_algebraic_laws.py::test_pc_merge_commutative` etc. |
+| ADR | [ADR-002](../decisions/002-principal-context-terminology.md) |
 
 ### SEM-002: is_authority_bearing guard
 
@@ -42,6 +44,7 @@ contexts deny all effectful actions.
 |---|---|
 | Definition | `src/conflux/domain/identity.py` `PrincipalContext.is_authority_bearing` |
 | Tests | `tests/test_domain.py::test_empty_principal_context_is_not_authority_bearing`, `test_policy_and_ites.py::test_empty_context_denies_effect` |
+| ADR | [ADR-002](../decisions/002-principal-context-terminology.md) |
 
 ### SEM-003: Provenance is a commutative monoid
 
@@ -60,6 +63,7 @@ Attestation conjunction: a.merge(b).attested == a.attested ∧ b.attested
 |---|---|
 | Definition | `src/conflux/domain/provenance.py` `Provenance.merge` |
 | Tests | `tests/test_domain.py::test_provenance_merge_never_drops_principals`, `test_unknown_precision_dominates_merge` |
+| ADR | [ADR-004](../decisions/004-immutable-state-and-provenance.md) |
 
 ### SEM-004: Provenance is not a read ACL
 
@@ -78,6 +82,7 @@ The mutant `ProvenanceAsReadPolicy` violates this and is killed by SLED.
 | Separation | `src/conflux/ports/policy.py` `ReadPolicyPort` vs `Provenance` |
 | Mutant | `tests/semantics/mutants.py` `ProvenanceAsReadPolicy` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_provenance_as_acl_mutant` |
+| ADR | [ADR-004](../decisions/004-immutable-state-and-provenance.md) |
 
 ## Decision composition
 
@@ -97,6 +102,7 @@ dimension can override a denial in another.
 |---|---|
 | Definition | `src/conflux/domain/decisions.py` `ActionDecision.allowed` |
 | Tests | `tests/test_policy_and_ites.py::test_mixed_context_requires_every_principal`, `test_missing_consent_denies_effect` |
+| ADR | [ADR-009](../decisions/009-branch-and-consent-semantics.md) |
 
 ### SEM-006: Consent never manufactures authority
 
@@ -114,6 +120,7 @@ denied one. The mutant `EmptyContextAllow` violates this and is killed by SLED.
 | Rule | `docs/reference/SECURITY_MODEL.md` normative rules |
 | Mutant | `tests/semantics/mutants.py` `EmptyContextAllow` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_empty_context_allow_mutant` |
+| ADR | [ADR-009](../decisions/009-branch-and-consent-semantics.md) |
 
 ### SEM-007: Authorisation requires pointwise Principal allow
 
@@ -131,6 +138,7 @@ violates this and is killed by SLED.
 | Rule | `docs/reference/SECURITY_MODEL.md` normative rules |
 | Mutant | `tests/semantics/mutants.py` `PermissionUnion` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_permission_union_mutant` |
+| ADR | [ADR-009](../decisions/009-branch-and-consent-semantics.md) |
 
 ## Transition kernel
 
@@ -148,8 +156,7 @@ No action bypasses mediation. The kernel is the sole authority path.
 |---|---|
 | Implementation | `src/conflux/ites/kernel.py` `TransitionKernel._transition` |
 | Tests | `tests/test_policy_and_ites.py::test_execution_requires_matching_certificate` |
-
-### SEM-009: Authority-intersection rule (Biba low-water-mark)
+| ADR | [ADR-006](../decisions/006-canonical-ites-contract.md), [ADR-008](../decisions/008-canonical-security-kernel.md) |
 
 Consuming information from an additional Principal can preserve or reduce
 effective authority but cannot increase it. The context is merged with
@@ -166,6 +173,7 @@ decrease (more Principals must each independently allow).
 |---|---|
 | Implementation | `src/conflux/ites/kernel.py:98` |
 | Tests | `tests/test_policy_and_ites.py::test_nested_execution_accumulates_provenance_and_hits_bound` |
+| ADR | [ADR-012](../decisions/012-foundational-security-lineage.md) |
 
 ### SEM-010: Branch isolation (alternative siblings)
 
@@ -183,6 +191,7 @@ The mutant `SiblingLeakKernel` violates this and is killed by SLED.
 | Implementation | `src/conflux/ites/kernel.py` `expand_batch` (alternatives path) |
 | Mutant | `tests/semantics/mutants.py` `SiblingLeakKernel` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_sibling_leak_mutant` |
+| ADR | [ADR-009](../decisions/009-branch-and-consent-semantics.md) |
 
 ### SEM-011: Ordered-plan sequential propagation
 
@@ -197,6 +206,7 @@ stop at first: status == BLOCKED  →  no further proposals processed
 |---|---|
 | Implementation | `src/conflux/ites/kernel.py` `expand_batch` (ordered path) |
 | Tests | `tests/test_policy_and_ites.py::test_ordered_plan_stops_at_first_denial`, `test_ordered_plan_execution_stops_on_provider_failure` |
+| ADR | [ADR-009](../decisions/009-branch-and-consent-semantics.md) |
 
 ### SEM-012: Certificate binding
 
@@ -216,8 +226,7 @@ A certificate from one branch cannot authorise an effect on another.
 |---|---|
 | Implementation | `src/conflux/ites/state.py` `DecisionCertificate.issue`, `src/conflux/application/mediate.py` re-authorisation |
 | Tests | `tests/test_policy_and_ites.py::test_execution_requires_matching_certificate` |
-
-### SEM-013: Stale context is rejected
+| ADR | [ADR-006](../decisions/006-canonical-ites-contract.md) |
 
 The context at execution time must match the context at decision time. If
 policy has changed (revocation), the certificate is invalid:
@@ -234,6 +243,7 @@ The mutant `StaleContextKernel` violates this and is killed by SLED.
 | Mutant | `tests/semantics/mutants.py` `StaleContextKernel` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_stale_context_mutant` |
 | Integration | `tests/test_policy_and_ites.py::test_execution_reauthorises_and_observes_policy_revocation` |
+| ADR | [ADR-006](../decisions/006-canonical-ites-contract.md) |
 
 ### SEM-014: Rejected proposals are diagnostics, not violations
 
@@ -251,6 +261,7 @@ The mutant test `ExecutedInvariantOnly` enforces this distinction.
 | Rule | `docs/reference/SECURITY_MODEL.md` normative rules |
 | Property | `tests/semantics/mutants.py` `ExecutedInvariantOnly` |
 | Kill test | `tests/semantics/test_mutation_killing.py::test_rejected_proposal_misclassification_mutant` |
+| ADR | [ADR-008](../decisions/008-canonical-security-kernel.md) |
 
 ## Policy ports
 
@@ -268,6 +279,7 @@ No dimension can override another:
 |---|---|
 | Definition | `src/conflux/ports/policy.py` independent port protocols |
 | Composition | `src/conflux/domain/decisions.py` `ActionDecision.allowed` (conjunction) |
+| ADR | [ADR-009](../decisions/009-branch-and-consent-semantics.md) |
 
 ### SEM-016: Fail-closed defaults
 
@@ -284,6 +296,7 @@ unavailable     →  denied
 | Aspect | Location |
 |---|---|
 | Tests | `tests/test_policy_and_ites.py::test_missing_consent_denies_effect`, `test_delegation_is_unsupported` |
+| ADR | [ADR-005](../decisions/005-testing-and-validation.md) |
 
 ## SLED property cross-reference
 

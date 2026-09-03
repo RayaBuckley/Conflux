@@ -8,10 +8,12 @@
 | Artifact | Immutable value paired with provenance | `domain.artifacts` |
 | Resource | Stable protected-object reference | `domain.resources` |
 | Action | Declarative proposal that performs no side effect itself | `domain.actions` |
+| Authority intersection | Effective permission is the intersection of all influencing Principals' permissions; additional influence can only reduce authority | `ites`, SEM-009 |
 | Authorisation | Pointwise organisational policy decision | policy ports |
 | Readability | Independent decision about observing an artifact | read policy port |
 | Visibility | Decision about an action's observation channel | visibility policy port |
 | Consent | Approval that can restrict but never grant authority | consent policy port |
+| Confused deputy | A privileged component tricked by untrusted input into misusing its authority; prompt injection is a modern instance | research vocabulary |
 | Decision certificate | Binding of action, context, branch, and policy versions | `ites.state` |
 | ITES | Sole provenance-aware mediation transition kernel | `ites` |
 | SLED | Bounded explicit-state security verifier | `evaluation` |
@@ -35,6 +37,15 @@
 | Verification IR | Serializable intermediate representation of a transition system for formal verification backends | `verification.ir` |
 | Differential conformance | Comparison of runtime transition behaviour against the verification IR to detect divergence | `verification.interpreter` |
 | Delegation grant | Scoped, time-bound authorisation transfer from one Principal to another that cannot manufacture authority | `domain.delegation` |
+| Defence model | A finite IR abstraction of a contemporary agent defence (e.g. CaMeL, Progent, PACT) used for comparative verification; not implementation-conformance evidence | `verification.defence_models` |
+| PARC (Cedar) | Pointwise Authorisation Request Corpus — the translated request format used by the Cedar adapter for differential testing | `adapters.benchmarks` |
+| Part B | The previous project phase that introduced ITES, Principal Context, SLED, and bounded experiments over ~1.5M traces; archived under `research/reports/archive/` and `research/publications/paper/` | research vocabulary |
+| Part C | The current fourth-year project extending Part B with formal verification (SLED-V), comparative defence analysis, planning, and finer-grained authority semantics | research vocabulary |
+| PE (Privilege Escalation) | Executed action where at least one influencing principal lacks organisational permission; the core security property ITES prevents | `ites`, research vocabulary |
+| PE-safe | A controller is PE-safe if no executed action violates PE under the stated threat model | research vocabulary |
+| Reference monitor | A small, analysable, tamper-resistant mechanism providing complete mediation of privileged effects; ITES is the reference monitor for Conflux | `ites` |
+| TCB (Trusted Computing Base) | Components whose correct operation is assumed by the security guarantee; listed in `SECURITY_MODEL.md` | `SECURITY_MODEL.md` |
+| Trusted transformation | An explicitly modelled operation that may conservatively reduce Principal Context influence; future work, not yet activated | `SECURITY_MODEL.md`, ADR-024 |
 
 Use "human user" only for an explicitly human interface actor. Otherwise, use
 Principal.

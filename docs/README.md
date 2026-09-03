@@ -12,6 +12,36 @@ If you're new to Conflux, read in this order:
 5. [Status](evidence/STATUS.md) — what's implemented and what's next.
 6. [Research overview](research/RESEARCH_OVERVIEW.md) — the research framing.
 
+## Reading paths by audience
+
+The general reading order above suits most readers. These tailored paths
+prioritise different entry points for specific audiences:
+
+- **Security researcher**: [Overview](OVERVIEW.md) →
+  [Security model](reference/SECURITY_MODEL.md) →
+  [Formal semantics](reference/SEMANTICS.md) →
+  [SLED](reference/SLED.md) →
+  [Claim ledger](evidence/CLAIMS.md) →
+  [Related work](research/RELATED_WORK.md)
+- **Developer**: [README quick start](../README.md#run-the-offline-system) →
+  [Architecture](reference/ARCHITECTURE.md) →
+  [Concept walkthrough](reference/CONCEPT_WALKTHROUGH.md) →
+  [Public API reference](reference/REFERENCE.md) →
+  [CLI](reference/CLI.md) →
+  [Development](DEVELOPMENT.md) →
+  [Runtime](reference/RUNTIME.md)
+- **Examiner/reviewer**: [Overview](OVERVIEW.md) →
+  [Research overview](research/RESEARCH_OVERVIEW.md) →
+  [Security model](reference/SECURITY_MODEL.md) →
+  [Status](evidence/STATUS.md) →
+  [Claim ledger](evidence/CLAIMS.md) →
+  [SLED](reference/SLED.md)
+- **AI agent**: [AGENTS.md](../AGENTS.md) →
+  [AI agent guide](AI_AGENT_GUIDE.md) →
+  [Development](DEVELOPMENT.md) →
+  [Formal semantics](reference/SEMANTICS.md) →
+  [Security model](reference/SECURITY_MODEL.md)
+
 ## Documentation by task
 
 Use this page to enter the documentation by task. Each fact has one canonical

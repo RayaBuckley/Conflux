@@ -32,3 +32,5 @@ documentation.
 | [020](020-maximal-permissiveness-and-synthesis.md) | specification | Maximal permissiveness and controller synthesis |
 | [021](021-human-reviewable-evidence-and-visualisation.md) | specification | Human-reviewable evidence and visualisation |
 | [022](022-ai-workflow-improvement.md) | specification | AI-assisted development workflow improvement |
+| [023](023-ir-encoded-verification.md) | specification | IR-encoded verification for delegation and planning |
+| [024](024-external-provenance-and-authority-bounds.md) | adr | External provenance non-escalation and authority bounds |

@@ -193,6 +193,22 @@ authorised action matches subjective intent. Complete mediation and correct
 authentication, provenance, policy, runtime, and provider isolation remain
 assumptions.
 
+## Common misconceptions
+
+The following table restates corrections for misconceptions that arise
+frequently. Each correction links to the normative section or formal property
+that establishes it.
+
+| Misconception | Correction | Reference |
+|---|---|---|
+| ITES prevents all harm | ITES prevents authority amplification, not harm within already-authorised actions | [Authority versus harm](#authority-versus-harm) |
+| Provenance is a read ACL | Provenance describes influence origin; read policy is a separate, independent decision | [SEM-004](SEMANTICS.md#sem-004-provenance-is-not-a-read-acl) |
+| Consent can grant authority | Consent is restricting only; it can deny but never permit | [SEM-006](SEMANTICS.md#sem-006-consent-never-manufactures-authority) |
+| A blocked proposal is a failure | A blocked proposal is a security success — the system prevented an unauthorised action | [SEM-014](SEMANTICS.md#sem-014-rejected-proposals-are-diagnostics-not-violations) |
+| SLED proves unbounded safety | SLED is bounded; `SAFE` means the finite state space was exhausted, not a proof of unbounded behaviour | [ADR-010](../decisions/010-sled-verdicts.md) |
+| Authentication removes principals from context | Authentication makes the decision accurate; it does not remove the source from Principal Context | [Authentication and utility](#authentication-and-utility) |
+| Delegation is active | Delegation is modelled but runtime-disabled pending activation evidence | [Normative rules](#normative-rules) |
+
 ## Operational boundary
 
 Conflux is pre-1.0 research software, not a production security product.

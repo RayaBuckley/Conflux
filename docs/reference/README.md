@@ -6,6 +6,7 @@ semantics.
 | Document | Description |
 |---|---|
 | [Architecture](ARCHITECTURE.md) | Packages, dependencies, and data flow. |
+| [Concept walkthrough](CONCEPT_WALKTHROUGH.md) | End-to-end trace of a single action through the pipeline. |
 | [Security model](SECURITY_MODEL.md) | Normative rules and trusted computing base. |
 | [Public API reference](REFERENCE.md) | Supported Python and CLI surfaces. |
 | [Glossary](GLOSSARY.md) | Canonical terminology. |

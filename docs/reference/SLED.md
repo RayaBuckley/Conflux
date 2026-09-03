@@ -11,6 +11,39 @@ discovered counterexample.
 | `UNSAFE` | A safety property failed with a counterexample |
 | `UNKNOWN` | Modelling, property, or adapter evaluation failed |
 
+## Verification concepts progression
+
+Conflux has six layers of verification, each adding power but also abstraction
+cost. The layers are connected by differential tests, not assumed equivalent.
+
+1. **Native SLED**: BFS exploration of the ITES transition kernel on finite
+   models. Closest to runtime semantics. Produces `SAFE`, `BOUNDED_SAFE`,
+   `UNSAFE`, or `UNKNOWN`.
+2. **Verification IR**: A serialisable abstraction of the transition system,
+   separate from runtime. Enables solver-based checking without coupling to
+   implementation. See [REFERENCE.md](REFERENCE.md).
+3. **Cone-of-influence reduction**: Property-scoped variable elimination before
+   model checking. Reduces state space without changing verdicts.
+4. **Optional solver backends**: Z3 (bounded model checking) and nuXmv
+   (symbolic). Missing or unsupported returns `UNKNOWN`. See
+   [verification backends](../integrations/verification.md).
+5. **Self-composition**: Doubles the IR into a product system for observational
+   confidentiality (relational property checking).
+6. **Differential conformance**: Runtime-vs-IR comparison to detect divergence.
+   A proof over the IR is not a runtime proof. See
+   [EVALUATION.md](../evidence/EVALUATION.md#ir-encoded-verification-evidence-tracks).
+
+```mermaid
+flowchart TD
+    native[Native SLED<br>closest to runtime] --> ir[Verification IR<br>serialisable abstraction]
+    ir --> coi[Cone-of-influence reduction<br>property-scoped]
+    ir --> self[Self-composition<br>relational confidentiality]
+    ir --> backends[Optional solver backends<br>Z3, nuXmv]
+    ir --> diff[Differential conformance<br>runtime vs IR]
+
+    style native fill:#e8f4e8,stroke:#2d7d2d,stroke-width:2px
+```
+
 ```mermaid
 flowchart TD
     start[start BFS exploration] --> expand[expand reachable states]
