@@ -46,18 +46,24 @@ objective itself. We introduce \emph{Influence Tracking with Extrapolated
 Security} (ITES), a provenance-based defence that derives the effective
 authority of each execution directly from an existing access-control system.
 ITES's authority-attenuation rule follows a low-water-mark intuition
-structurally analogous to classical Biba integrity. We prove that authority is
+structurally analogous to classical Biba integrity, enriched with authenticated
+principal provenance and organisational ACS authority. We show that authority is
 monotonically non-increasing as influence accumulates, implying that
 privilege escalation is impossible under the stated threat model.
+This conservatism intentionally reduces utility when genuine low-authority
+influence determines privileged actions; fine-grained provenance, planning,
+and explicit delegation can address distinct sources of utility loss without
+weakening the core invariant.
 
 To evaluate implementations of system-level defences, we introduce the
 \emph{System-Level Evaluator for Defences} (SLED), which models executions
 under worst-case language-model behaviour and exhaustively enumerates the
 execution traces admitted by each bounded experimental configuration.
-Across approximately 1.5 million explored execution traces, no successful
-privilege escalation or information-exfiltration violations were observed,
-while all tasks already authorised by the underlying access-control system
-remained achievable. We additionally report preliminary results from SLED-V,
+Across 1{,}462{,}607 explored execution traces under depth-three bounds
+across three historical environments, no successful
+privilege escalation or information-exfiltration violations were observed.
+These results establish reproduction/conformance under the stated bounds;
+they are not an unbounded security proof. We additionally report preliminary results from SLED-V,
 an exploratory verification extension using solver-backed bounded model
 checking (Appendix~\ref{app:sledv}).
 \end{abstract}
@@ -101,10 +107,10 @@ provenance of its inputs. We also introduce the \emph{System-Level Evaluator
 for Defences} (SLED), which evaluates system-level defences independently of
 language-model behaviour by exhaustively enumerating the execution state space
 admitted by each bounded experimental configuration.
-Across approximately 1.5 million explored execution traces, SLED observed no
-successful privilege escalation or information exfiltration while preserving
-utility for all tasks consistent with the underlying access-control
-system.
+Across 1{,}462{,}607 explored execution traces under depth-three bounds,
+SLED observed no successful
+privilege escalation or information exfiltration. These results establish
+bounded reproduction/conformance; they are not an unbounded security proof.
 
 The closest system-level defence is CaMeL
 \citep{debenedetti2025defeatingpromptinjectionsdesign}. CaMeL derives control
@@ -147,7 +153,7 @@ The principal contributions of this paper are:
 The remainder of the paper is organised as follows.
 Section~\ref{sec:related} discusses related work.
 Section~\ref{sec:threat-model} defines the threat model and security objective.
-Section~\ref{sec:ites} presents ITES and proves its security properties.
+Section~\ref{sec:ites} presents ITES and establishes its security properties.
 Section~\ref{sec:sled} introduces SLED. Section~\ref{sec:results} reports the
 evaluation results. Section~\ref{sec:future} discusses future work, and
 Section~\ref{sec:conclusion} concludes.
@@ -180,7 +186,14 @@ by employing a privileged planning model together with a quarantined parsing
 model. CaMeL \citep{debenedetti2025defeatingpromptinjectionsdesign} extends
 this with a control-flow/data-flow separation: a trusted planner derives the
 execution plan from the user's query, while untrusted data can influence only
-argument values, not control flow. CaMeL enforces developer-defined capability
+argument values, not control flow. CaMeL's policy interface is programmable:
+security policies are Python functions over the tool name and arguments, and
+capabilities carry provenance/source and reader information, including a
+STRICT dependency mode for control-flow tracking. An ITES-style PE predicate
+could in principle be expressed on this interface, but native CaMeL does not
+enforce the ITES whole-execution PE property without additional principal
+attribution, influence propagation, persistence, and ACS integration
+semantics. CaMeL enforces developer-defined capability
 policies when tools are called, achieving provable security on 77\% of
 AgentDojo tasks (compared to 84\% utility without defence). Its threat model
 relies on the planner's interpretation of the trusted query to establish the
@@ -190,7 +203,9 @@ policies. PACT \citep{pact2026} tracks argument-level provenance. FORGE
 \citep{forge2026} enforces history-sensitive Datalog policies. Each optimises
 for a different security objective; our preliminary comparative verification
 (Appendix~\ref{app:sledv}) suggests that satisfying a defence-native
-property does not imply PE safety.
+property does not imply PE safety. A counterexample demonstrates
+non-implication between security objectives, not a defect in the compared
+system.
 
 ITES differs from these approaches by deriving authority directly from the
 organisation's existing access-control system. CaMeL derives control flow from
@@ -215,6 +230,32 @@ verified here. Sabelfeld and Myers \citep{sabelfeld2003} and Myers and Liskov
 \citep{myers1997difc} provide vocabulary for explicit and implicit flows and
 decentralized IFC.
 
+HiStar \citep{zeldovich2006histar} demonstrates that strict information-flow
+control can be enforced by a small trusted kernel with explicit labels,
+directly informing the ITES reference-monitor boundary. Flume
+\citep{krohn2007flume} applies decentralized IFC at the process/OS
+abstraction with reference-monitor interposition, paralleling Conflux's
+separation of untrusted model proposals from trusted effect execution.
+Asbestos \citep{efstathopoulos2005asbestos} provides kernel-enforced labels
+and event-process isolation for systems acting on behalf of multiple
+principals, a setting structurally similar to multi-principal agent execution.
+Clark-Wilson \citep{clark1987comparison} provides a model of integrity through
+certified transformations and separation of duties, which frames the future
+trusted-transformation question of how conservative influence may be
+reduced without letting arbitrary untrusted input choose the transformation.
+
+Wu, Cecchetti, and Xiao \citep{wu2024systemleveldefenseindirectprompt}
+position indirect prompt injection as an information-flow-control problem
+with formal models, a context-aware pipeline, and a security monitor. Their
+approach prevents certain untrusted inputs from reaching the privileged
+planning component through a structured IFC pipeline. Conflux instead treats
+all model-visible information as potentially influential and derives the
+permitted externally visible authority by evaluating every influencer against
+the organisation's existing ACS. The security objective is therefore
+principal-sensitive privilege escalation rather than the integrity of a
+privileged planning channel. A counterexample demonstrates non-implication
+between these security objectives, not a defect in either system.
+
 \paragraph{Evaluation.}
 Most existing prompt-injection benchmarks evaluate a defence by measuring its
 robustness against a fixed collection of attacks. AgentDojo
@@ -234,17 +275,18 @@ Table~\ref{tab:comparison} compares representative approaches.
 \textbf{System} & \textbf{Security objective} & \textbf{Influence/control-flow assumption} &
 \textbf{Authority source} & \textbf{Security metadata} \\
 \midrule
-CaMeL & Policy/data-flow enforcement & Control flow from trusted user query; untrusted data constrained from modifying it & Developer-defined policies & Capabilities / data-flow provenance \\
-Progent & Privilege-policy enforcement & LLM generates initial privilege policy from user task; policy can only narrow without approval & Symbolic/custom policy & Argument/tool metadata \\
-PACT & Argument-sensitive enforcement & Argument-level provenance determines if untrusted content influences authority-bearing arguments & Contracts/policies & Argument provenance \\
-FORGE & History-sensitive policy enforcement & Observability service maintains execution-context predicates for Datalog enforcement & Datalog policies & Causal/history information \\
-ITES & PE prevention under arbitrary influence & Any principal's information may arbitrarily determine proposals & Existing organisational ACS & Influencing principals \\
+CaMeL & Policy/data-flow enforcement; native property $\not\Rightarrow$ PE & Control flow from trusted user query; untrusted data constrained from modifying it & Developer-defined policies & Capabilities / data-flow provenance \\
+Progent & Privilege-policy enforcement; native property $\not\Rightarrow$ PE & LLM generates initial privilege policy from user task; policy can only narrow without approval & Symbolic/custom policy & Argument/tool metadata \\
+PACT & Argument-sensitive enforcement; native property $\not\Rightarrow$ PE & Argument-level provenance determines if untrusted content influences authority-bearing arguments & Contracts/policies & Argument provenance \\
+FORGE & History-sensitive policy enforcement; native property $\not\Rightarrow$ PE & Observability service maintains execution-context predicates for Datalog enforcement & Datalog policies & Causal/history information \\
+ITES & PE prevention under arbitrary influence; PE is native & Any principal's information may arbitrarily determine proposals & Existing organisational ACS & Influencing principals \\
 \bottomrule
 \end{tabular}
-\caption{Comparison of approaches to securing LLM agents. ITES is
-distinguished by its broader threat model: any principal's information,
+\caption{Comparison of native influence and enforcement semantics.
+ITES is distinguished by its broader threat model: any principal's information,
 including the initiating user's, may arbitrarily determine proposals, and
-authority is constrained after influence occurs.}
+authority is constrained after influence occurs. A defence-native property
+that does not imply PE is a non-implication between objectives, not a defect.}
 \label{tab:comparison}
 \end{table}
 
@@ -268,7 +310,14 @@ interface---not malformed protocol behaviour, arbitrary code execution, or side
 channels.
 
 The enforcement mechanism, the access-control system (ACS), and the provenance
-mechanism are assumed correct and uncompromised. Our threat model does not
+mechanism are assumed correct and uncompromised. Authenticated provenance is
+part of the trusted computing base: it establishes that provenance labels
+correspond to the actual source of information. Authentication does not grant
+that source organisational authority; an authenticated external principal
+with no relevant permissions will still cause ITES to block actions not
+jointly authorised. External principals may have zero or partial permissions.
+If an external principal lacks permission for the proposed action, ITES blocks
+the action regardless of authentication. Our threat model does not
 consider denial-of-service, side-channel attacks, compromise of the enforcement
 mechanism, incorrect access-control policies, or incorrect provenance
 information.
@@ -367,12 +416,21 @@ The initial influence set of execution $e$ with inputs $ds \subseteq D$ is:
 \]
 Every object produced by an execution inherits the complete influence set of
 that execution. Objects include intermediate LLM outputs, files, database
-entries, and messages. Tool outputs are handled according to the
-access-control system: trusted tools may produce objects associated with a
-trusted system principal, whereas untrusted tools produce objects associated
-with the principal on whose behalf the tool was invoked. Influence accumulates
+entries, and messages. Tool outputs retain the authenticated provenance of
+their actual source(s): an externally fetched object does not inherit the
+requesting user's organisational authority merely because the request was
+made on the user's behalf. Trusted tools may produce objects associated with a
+trusted system principal, whereas untrusted tools produce objects retaining
+the authenticated provenance of their actual source(s). Influence accumulates
 monotonically throughout an execution chain; under the conservative provenance
 model, influence is never removed.
+
+For ordinary derived objects, $\mathrm{PC}(\text{output}) \supseteq
+\mathrm{PC}(\text{execution inputs})$. For scheduled executions,
+$\mathrm{PC}(\text{scheduled})$ includes $\mathrm{PC}(\text{scheduling
+context})$. Influence cannot be removed by writing to persistent storage,
+scheduling a fresh execution, or invoking a new assistant session. Only an
+explicitly trusted, separately modelled transformation may reduce influence.
 
 \subsection{Authorisation}
 
@@ -387,12 +445,15 @@ conservatively model an execution as reading every supplied input before
 producing output; an execution may access datum $d$ only if $\forall u \in I,\;
 R(d,u)$. This enforces the paper's access-safety confidentiality condition.
 
-\subsection{Maximal Secure Authorisation}
+\subsection{Maximal Permissive Authorisation}
 
 The authorisation rule used by ITES is maximally permissive while preserving
-the security objective of Section~\ref{sec:threat-model}.
+the security objective of Section~\ref{sec:threat-model}. This result is an
+optimality characterisation of the policy choice rather than a deep
+theoretical contribution; it establishes that the intersection is not merely
+arbitrary conservative policy.
 
-\begin{theorem}[Maximal Secure Authorisation]
+\begin{theorem}[Maximal Permissive Authorisation]
 \label{thm:maximal}
 ITES authorises the maximal set of actions that can be permitted without
 allowing privilege escalation.
@@ -434,6 +495,31 @@ Authority therefore decreases monotonically throughout an execution chain. Once
 a lower-authority principal influences a computation, no subsequent execution
 derived from that computation can regain permissions removed by that influence.
 
+\paragraph{No laundering.}
+Influence cannot be removed by writing to persistent storage, scheduling a
+fresh execution, or invoking a new assistant session. For ordinary derived
+objects, $\mathrm{PC}(\text{output}) \supseteq \mathrm{PC}(\text{execution
+inputs})$; for scheduled executions, $\mathrm{PC}(\text{scheduled})$ includes
+$\mathrm{PC}(\text{scheduling context})$. Only an explicitly trusted, separately
+modelled transformation may reduce influence. This prevents an attacker from
+using a tainted execution to schedule a ``fresh'' clean execution and thereby
+laundering influence.
+
+\paragraph{Authority versus harm.}
+ITES prevents authority amplification relative to the granularity of the ACS.
+It does not by itself guarantee that authorised actions are safe, intended, or
+optimally parameterised. If both influencing principals can perform
+\texttt{send\_email}, an attacker-controlled input may still influence which
+recipient, amount, or attachment is selected. That is harm within already
+authorised coarse authority. Fine-grained argument policies can reduce harm
+within authorised action classes without weakening the PE invariant. Three
+questions are therefore distinguished: (1)~authority safety---can influence
+cause execution outside the influencers' authority? (ITES addresses this);
+(2)~intent/safety within authority---can the model choose a harmful action
+that is already authorised? (core ITES does not address this);
+(3)~policy adequacy---did the ACS itself grant excessive authority? (this is
+an assumption, not a guarantee).
+
 \paragraph{Relationship to classical integrity.}
 ITES follows a \emph{low-water-mark} intuition: incorporating additional,
 potentially lower-authority influence cannot increase effective authority. This
@@ -452,7 +538,7 @@ described in Appendix~\ref{app:extensions}.
 
 \subsection{Security Guarantee}
 
-The maximal secure authorisation and authority monotonicity theorems
+The maximal permissive authorisation and authority monotonicity results
 immediately yield the principal security result.
 
 \begin{corollary}
@@ -547,9 +633,13 @@ data, agent workflows, and task specifications, while SLED exhaustively
 enumerated the execution traces admitted by each bounded experimental
 configuration consistent with the threat model of
 Section~\ref{sec:threat-model}. Exploration was limited to a maximum recursive
-execution depth of three. Across all environments, SLED explored approximately
-1.5 million execution traces. Approximately 15\% of traces reached the
-execution-depth bound and were excluded from subsequent analysis.
+execution depth of three. Across all environments, SLED explored
+1{,}462{,}607 execution traces. The current state-based reproduction maps
+these executions to 31 canonical states. Approximately 15\% of traces reached
+the execution-depth bound and were excluded from subsequent analysis. This is a
+reproduction/conformance exercise under bounded depth; it is not an evaluation
+of an independent implementation against unseen environments, and depth three
+is not a proof of arbitrary-depth behaviour.
 
 \begin{table}[t]
 \centering
@@ -586,7 +676,23 @@ Several workflows that appear desirable
 from a usability perspective are fundamentally incompatible with the underlying
 access-control system because they require authority to increase during
 execution. ITES exposes these as requiring explicit delegation or revised
-organisational policy. Preliminary SLED-V results, including defect
+organisational policy.
+
+Consider a workflow in which Alice asks the agent to read an incoming email
+from an authenticated external supplier and create the requested calendar
+event. The email sender is authenticated as an external principal
+\texttt{Supplier}. The email content influences the calendar action, so the
+Principal Context becomes $\{\text{Alice}, \text{Supplier}\}$. If
+\texttt{Supplier} lacks the ACS permission for the concrete calendar
+operation, ITES blocks it. This is the intended zero-trust cost: the ACS has
+not granted the external principal that authority. If the organisation wants
+the workflow, it needs an explicit delegation rule granting only the required
+calendar authority. If the email contained unrelated content from other
+sources, fine-grained chunk provenance can prevent those unrelated sources from
+unnecessarily contaminating the action context. Authentication makes the
+provenance accurate; it does not make the decision permissive.
+
+Preliminary SLED-V results, including defect
 detection, checker agreement, COI reduction, and comparative defence
 verification, are reported in Appendix~\ref{app:sledv}.
 
@@ -598,7 +704,13 @@ First, ITES deliberately separates execution planning from execution
 authorisation. The current formulation determines whether an execution is
 authorised given its inputs, but does not specify which execution should occur
 next. Extending ITES with planning strategies that maximise utility while
-preserving authority guarantees is an important direction.
+preserving authority guarantees is an important direction. Planning
+optimisation can reduce unnecessary authority loss by ordering and isolating
+subtasks so that sensitive or low-authority information is only observed by
+executions that actually require it. CaMeL-style protected planning can
+improve empirical utility under attack by constraining the model's
+control-flow choices. These are utility mechanisms, not relaxations of the PE
+rule.
 
 Second, SLED currently assumes that benign language-model behaviour is
 sufficient to identify the information required to complete a task. Extending
@@ -617,7 +729,11 @@ represent a first step toward formal verification, but the verified IR is a
 hand-written abstraction and formal equivalence to the runtime kernel is not
 claimed. Applying formal verification to implementations, including
 differential conformance testing between the runtime and the IR, would provide
-stronger deployment assurance.
+stronger deployment assurance. Furthermore, ITES prevents authority
+amplification but does not prevent misuse of already-authorised actions.
+Fine-grained argument policies and richer operation-specific effect semantics
+are needed where organisations treat parameters as independently
+security-relevant.
 
 %% ------------------------------------------------------------------
 \section{Conclusion}
@@ -632,13 +748,20 @@ We introduced ITES, a provenance-based defence that derives the effective
 authority of every execution directly from the organisation's existing
 access-control system. ITES guarantees that authority can only decrease as
 influence accumulates, preventing privilege escalation under the stated threat
-model while preserving utility for ACS-authorised tasks. SLED evaluates implementations under
-worst-case model behaviour; across approximately 1.5 million explored traces,
-SLED observed no successful privilege escalation. Preliminary SLED-V results
+model. This conservatism intentionally reduces utility when genuine
+low-authority influence determines privileged actions; fine-grained
+provenance, planning, and explicit delegation can address distinct sources of
+utility loss without weakening the core invariant. ITES confines authority;
+it does not prevent misuse of already-authorised actions. SLED evaluates implementations under
+worst-case model behaviour; across 1{,}462{,}607 explored traces under
+depth-three bounds,
+SLED observed no successful privilege escalation. These results establish
+bounded reproduction/conformance, not unbounded proof. Preliminary SLED-V results
 additionally demonstrate that solver-backed verification can detect defective
 monitors and reveal privilege-escalation counterexamples in preliminary
 finite abstractions of published defences that satisfy their own
-intended properties.
+intended properties. A counterexample demonstrates non-implication between
+security objectives, not a defect in the compared system.
 
 More broadly, this work demonstrates that existing access-control systems can
 provide a practical foundation for securing LLM agents. ITES ensures that no
@@ -663,7 +786,8 @@ tools, or arbitrary model behaviour---can increase the authority of an execution
 Adversarial & LLM proposals, prompt/document/tool content, principals without
 required permissions \\
 \addlinespace
-Trusted & Principal authentication, provenance attachment, policy decision
+Trusted & Principal authentication, provenance attachment (source-to-principal
+mapping), external-provenance non-escalation, policy decision
 point, reference monitor / transition semantics, effect mediation \\
 \addlinespace
 Not proved & Provenance correctness, ACS correctness, unbounded deployment

@@ -63,10 +63,79 @@ evaluates current policy state again.
   and policy evidence. Model explanations remain untrusted annotations.
 - Provenance and Principal Context accumulate monotonically through nesting;
   alternative siblings remain isolated.
+- For ordinary derived objects, `PC(output) ⊇ PC(execution inputs)`.
+  Scheduled executions and persistent artefacts inherit the scheduling or
+  deriving context's Principal Context. New assistant calls or sessions cannot
+  reset Principal Context. Only an explicitly trusted, separately modelled
+  transformation may reduce influence.
+- An externally fetched object retains the authenticated provenance of its
+  actual source(s). It does not inherit the requesting user's organisational
+  authority merely because the request was made on the user's behalf.
 
 The current argument layer protects authority-bearing selectors. Richer
 operation-specific effect semantics remain future work in the
 [change catalogue](../evidence/CHANGE_CATALOG.md).
+
+## External provenance and tool outputs
+
+The source of an output and the principal on whose behalf a tool executes are
+different concepts. Every object should distinguish at least:
+
+- **Producer/author principal(s):** who controlled the object's contents.
+- **Execution/agency principal(s):** on whose behalf the operation was
+  requested.
+- **Transport/tool identity:** which system retrieved or produced it.
+- **Provenance:** the principals whose information can conservatively influence
+  downstream computation.
+
+The second must not silently become the first. For a web page the default
+provenance should normally be the authenticated external source or an explicit
+`Internet` principal, not the user who requested the fetch. The same applies to
+inbound email, API responses, tool-generated objects, database results returned
+through a user's session, and LLM-generated persistent objects.
+
+## Authentication and utility
+
+Authentication is part of the trusted computing base. It establishes that
+provenance labels correspond to the actual source of information. It does not
+grant that source organisational authority, does not tell ITES whether the
+content is malicious, and does not remove the source from Principal Context.
+
+Two distinct problems must not be conflated:
+
+1. **Provenance uncertainty:** before authentication and fine-grained
+   attribution, conservative provenance may unnecessarily enlarge Principal
+   Context and reduce utility. Authenticated, appropriately chunked
+   object-level provenance reduces this unnecessary loss.
+2. **Genuine low-authority influence:** after authenticated provenance
+   establishes that an external principal authored relevant content, that
+   principal's low permissions legitimately constrain the execution. Better
+   authentication does not remove this restriction.
+
+> Authentication makes the security decision accurate; it does not make the
+> decision permissive.
+
+## Authority versus harm
+
+ITES prevents authority amplification relative to the granularity of the ACS.
+It does not by itself guarantee that authorised actions are safe, intended, or
+optimally parameterised. If both influencing principals can perform
+`send_email`, an attacker-controlled input may still influence which recipient,
+amount, or attachment is selected. Coarse action permission does not imply safe
+parameter values.
+
+Three separate questions must be distinguished:
+
+1. **Authority safety:** can influence cause execution outside the influencers'
+   authority? ITES addresses this.
+2. **Intent/safety within authority:** can the model choose a harmful action
+   that is already authorised? Core ITES does not address this.
+3. **Policy adequacy:** did the ACS itself grant excessive authority? This is
+   outside the core ITES guarantee.
+
+Authority-bearing argument checks reduce but do not eliminate the gap between
+authority confinement and harm prevention. Finer operation-specific effect
+semantics remain future work.
 
 ## Rationale
 
@@ -98,7 +167,24 @@ contamination from Biba's integrity models: consuming information from an
 additional principal can preserve or reduce effective authority but cannot
 increase it. Conflux enriches this classical pattern with authenticated
 principal provenance and authority derived from the organisation's existing
-authorisation relation. See [ADR 012](../decisions/012-foundational-security-lineage.md)
+authorisation relation.
+
+The classical lineage extends beyond Biba and LOMAC. HiStar demonstrates that
+strict information-flow control can be enforced by a small trusted kernel with
+explicit labels, directly informing the ITES reference-monitor boundary. Flume
+applies decentralized IFC at the process/OS abstraction with a reference
+monitor interposition architecture, paralleling Conflux's separation of
+untrusted model proposals from trusted effect execution. Asbestos provides
+kernel-enforced labels and event-process isolation for systems acting on behalf
+of multiple principals, a setting structurally similar to multi-principal agent
+execution. Clark-Wilson provides a model of integrity through certified
+transformations and separation of duties, which frames the future
+trusted-transformation question: under what explicitly modelled operation may
+conservative influence be reduced without letting arbitrary untrusted input
+choose the transformation?
+
+See [ADR 012](../decisions/012-foundational-security-lineage.md),
+[ADR 024](../decisions/024-external-provenance-and-authority-bounds.md),
 and the [foundational security literature
 analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md).
 

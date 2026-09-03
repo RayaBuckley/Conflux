@@ -45,7 +45,13 @@ For Principal Context $PC$ and action $a$, the restricted ITES rule is
 \]
 The explicit non-empty condition prevents vacuous authority. Provenance grows
 monotonically, while organisational authority is supplied by an independent
-policy decision point.
+policy decision point. An externally fetched object retains the authenticated
+provenance of its actual source(s); it does not inherit the requesting user's
+authority merely because the request was made on the user's behalf. For
+ordinary derived objects, $PC(\text{output}) \supseteq PC(\text{execution
+inputs})$; for scheduled executions, $PC(\text{scheduled})$ includes
+$PC(\text{scheduling context})$. Only an explicitly trusted, separately
+modelled transformation may reduce influence.
 
 \section{Previous-year contribution and archived evidence}
 The previous prototype accumulated authorship provenance and intersected
@@ -55,7 +61,23 @@ are not evidence for the refactored kernel. Current experiments use separately
 named legacy-reproduction and canonical suites.
 
 \section{Related work and positioning}
-CaMeL isolates control and data flows, while privilege-oriented systems such as
+ITES is structurally analogous to Biba low-water-mark contamination, enriched
+with authenticated principal provenance and authority derived from the
+organisation's existing access-control system. Classical IFC systems
+including HiStar~\citep{histar}, Flume~\citep{flume}, and
+Asbestos~\citep{asbestos} demonstrate that trusted reference-monitor
+boundaries, dynamic contamination, and multi-principal isolation are
+well-established systems problems. Clark-Wilson~\citep{clarkwilson} provides
+a model of integrity through certified transformations and separation of
+duties, framing the future trusted-transformation question.
+Wu, Cecchetti, and Xiao~\citep{fsecure} prevent untrusted inputs from
+reaching privileged planning through a structured IFC pipeline; Conflux
+instead treats all model-visible information as potentially influential and
+derives authority from the intersection of all influencers' ACS permissions.
+
+CaMeL isolates control and data flows with a programmable policy interface
+(Python functions over tool name and arguments, with capability/source
+tracking and a STRICT dependency mode), while privilege-oriented systems such as
 Progent mediate tool calls with symbolic policy \citep{camel,progent}. PACT
 tracks argument-level provenance and FORGE enforces history-sensitive Datalog
 policies \citep{pact,forge}. AgentDojo supplies realistic prompt-injection tasks
@@ -63,7 +85,9 @@ and metrics \citep{agentdojo}. Conflux therefore does not claim priority for
 system-level mediation, provenance or privilege control. Its narrower research
 focus is collective Principal Context derived from authenticated provenance,
 interpreted through organisational policy, and evaluated with a shared
-operational and verification transition model.
+operational and verification transition model. A defence-native property that
+does not imply PE is a non-implication between objectives, not a defect in the
+compared system.
 
 \section{Canonical architecture}
 Immutable domain values represent Principals, Principal Contexts, permissions,
@@ -216,9 +240,20 @@ conformance while keeping bounded and unbounded claims distinct.
 
 \section{Limitations}
 Conflux assumes sound authentication, provenance, policy state and complete
-mediation. It does not prevent actions already authorised for every influencing
-Principal and does not guarantee subjective intent alignment. Conservative
-contexts can over-approximate influence. Delegation has a bounded model and
+mediation. Authentication makes provenance accurate but does not grant
+organisational authority; an authenticated external principal with no
+relevant permissions will still cause ITES to block actions not jointly
+authorised. It does not prevent actions already authorised for every influencing
+Principal and does not guarantee subjective intent alignment. If both
+influencing principals can perform an operation such as
+\texttt{send\_email}, an attacker-controlled input may still influence which
+recipient or attachment is selected---ITES confines authority, not harm
+within authorised actions. Conservative
+contexts can over-approximate influence. Consider a workflow where Alice asks
+the agent to read an email from an authenticated external supplier and create
+a calendar event: the Principal Context becomes $\{\text{Alice},
+\text{Supplier}\}$, and if Supplier lacks calendar permission, ITES blocks the
+action. This is the intended zero-trust cost, not a bug. Delegation has a bounded model and
 lifecycle representation but remains unsupported by operational ITES. Cedar
 request translation has not been compared with a live Cedar binary.
 Authorised-read safety is not noninterference. Formal results are scoped to

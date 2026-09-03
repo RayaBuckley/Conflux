@@ -38,6 +38,10 @@ Empty-context semantics must be explicitly defined rather than inherited from va
 
 ## 3. Mathematical maximality
 
+This result is an optimality characterisation of the policy choice, not a
+technically difficult theorem. It establishes that the intersection is not
+merely arbitrary conservative policy.
+
 For fixed `PC`, ITES permits exactly the complement of PE actions.
 
 Suppose another authorisation rule permits a strict superset of `Allowed(PC)`.
@@ -156,6 +160,15 @@ This is preferable to weakening the intersection predicate.
 
 Maximality for PE alone does not establish maximality for confidentiality.
 A separate property is required for reads/observations.
+
+### Authority versus harm
+
+ITES prevents authority amplification relative to the granularity of the ACS.
+It does not by itself guarantee that authorised actions are safe, intended, or
+optimally parameterised. If both influencing principals can perform an
+operation, an attacker-controlled input may still influence which recipient,
+amount, or attachment is selected. Fine-grained argument policies can reduce
+harm within authorised action classes without weakening the PE invariant.
 
 ### Consent
 

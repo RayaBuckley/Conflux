@@ -155,10 +155,23 @@ Preferred wording:
 If the defence's own property holds:
 
     "This does not contradict D's published guarantee; it demonstrates that
-    D's property Q does not imply the Principal-Context PE property P."
+    D's property Q does not imply the Principal-Context PE property P.
+    This is a non-implication between security objectives, not a defect
+    in the compared system."
+
+For CaMeL specifically: CaMeL's policy interface is programmable (Python
+functions over tool name and arguments, with capability/source tracking and
+a STRICT dependency mode). An ITES-style PE predicate could in principle be
+expressed on this interface, but native CaMeL does not enforce the ITES
+whole-execution PE property without additional principal attribution,
+influence propagation, persistence, and ACS integration semantics. The
+correct comparison asks whether CaMeL's native dependency set and policy
+checks imply the ITES definition of principal influence for the particular
+witness.
 
 Avoid:
 - "CaMeL is insecure" from a mismatched property;
+- "CaMeL cannot encode PE";
 - claiming implementation vulnerabilities from specification-only models;
 - comparing systems without aligning task/tool/policy semantics.
 

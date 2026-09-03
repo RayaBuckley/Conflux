@@ -71,7 +71,7 @@ deployment claims remain future work.
 ## Related research
 
 - [Maximal security and synthesis](../../research/reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md): formalises the claim that ITES is the maximally permissive PE-safe controller and proposes a controller-synthesis experiment.
-- [Comparative defence verification](../../research/reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md): research design for verifying contemporary agent defences against the Conflux PE property.
+- [Comparative defence verification](../../research/reports/analysis/COMPARATIVE_DEFENCE_VERIFICATION.md): research design for verifying contemporary agent defences against the Conflux PE property. A counterexample demonstrates non-implication between security objectives, not a defect in the compared system.
 - [Foundational security literature](../../research/reports/analysis/2026-08-13-foundational-security-literature.md): classical integrity and IFC lineage underlying ITES and the property hierarchy below.
 
 ## SLED-V property hierarchy
@@ -87,7 +87,10 @@ targets for future verification work.
 AG(Execute(a) -> forall p in PrincipalContext: Authorised(p, a))
 ```
 
-No executed action violates Principal-Context authority.
+No executed action violates Principal-Context authority. This confines
+authority amplification; it does not prevent harm within already-authorised
+actions (e.g., an attacker influencing which recipient an authorised
+`send_email` targets).
 
 ### Provenance monotonicity (supported)
 

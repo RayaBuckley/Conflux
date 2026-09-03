@@ -28,6 +28,26 @@ Equivalently, effective authority is the intersection of the permissions of all 
 
 Additional influence can therefore preserve or reduce authority but cannot increase it.
 
+### External provenance and no laundering
+
+An externally fetched object retains the authenticated provenance of its
+actual source(s). It does not inherit the requesting user's organisational
+authority merely because the request was made on the user's behalf. For
+ordinary derived objects, `PC(output) ⊇ PC(execution inputs)`. Scheduled
+executions and persistent artefacts inherit the scheduling or deriving
+context's Principal Context. New assistant calls or sessions cannot reset
+Principal Context. Only an explicitly trusted, separately modelled
+transformation may reduce influence.
+
+### Authority versus harm
+
+ITES prevents authority amplification relative to the granularity of the
+ACS. It does not by itself guarantee that authorised actions are safe,
+intended, or optimally parameterised. If both influencing principals can
+perform `send_email`, an attacker-controlled input may still influence which
+recipient or attachment is selected. This is a deliberate limitation: ITES
+is an authority guarantee, not a complete safety guarantee.
+
 ### Trusted computing base
 
 The guarantee assumes:
@@ -247,7 +267,7 @@ Conflux can borrow mechanisms without adopting another system's security objecti
 
 Useful ideas include:
 
-- CaMeL: plan/execution separation, mediation and capability concepts;
+- CaMeL: plan/execution separation, mediation and capability concepts. CaMeL's policy interface is programmable (Python functions over tool name and arguments, with capability/source tracking and a STRICT dependency mode). An ITES-style PE predicate could in principle be expressed on this interface, but native CaMeL does not enforce the ITES whole-execution PE property without additional principal attribution, influence propagation, persistence, and ACS integration semantics. The correct comparison is **non-implication between security objectives**, not "CaMeL is insecure" or "CaMeL cannot encode PE";
 - PACT-like work: argument-level and cross-step provenance granularity;
 - policy systems such as Progent: parameter-sensitive policy representation;
 - classic IFC/Biba: monotonic labels, endorsement/declassification theory;

@@ -180,6 +180,32 @@ keeping those roles separate makes drift visible.
 
 ## Recent changes
 
+Unreleased — 3 September 2026:
+
+- Integrated supervisor feedback package (2026-09-02) into repository
+  documentation and papers:
+  - Added external-provenance non-escalation rule, no-laundering closure,
+    authority-vs-harm distinction, and authentication-utility note to
+    `docs/reference/SECURITY_MODEL.md` (ADR 024).
+  - Added HiStar, Flume, Asbestos, Clark-Wilson, and Wu et al. to related
+    work (`docs/research/RELATED_WORK.md`), research overview
+    (`docs/research/RESEARCH_OVERVIEW.md`), and both `.bib` files.
+  - Corrected CaMeL comparison wording: acknowledged policy programmability,
+    capability/source tracking, and STRICT dependency mode. Replaced
+    "violates PE" with "non-implication between objectives."
+  - Repaired FLMSec paper (`research/publications/flmsec_2026/main.tex`):
+    bounded/historical evidence language, external-provenance rule,
+    no-laundering paragraph, authority-vs-harm distinction, external-email
+    worked example, optimality characterisation label for Theorem 1, and
+    reframed comparative table caption.
+  - Updated manuscript (`research/publications/manuscript/conflux_fourth_year_2026.tex`)
+    with expanded related work, external-provenance rule, authority-vs-harm
+    in Limitations, and CaMeL correction.
+  - Updated claim ledger with new claim rows and corrected comparative
+    wording.
+- Archived feedback package to
+  `research/reports/archive/2026-09-02-supervisor-feedback-coder-package/`.
+
 Unreleased — 29 August 2026:
 
 - Archived FLMSec evening revision package and SLED-V comprehension validation

@@ -6,15 +6,9 @@ correct, deduplicate, or update them. Add interpretation under
 
 ## Package model
 
-The archive uses five dated packages:
-
-| Package | Historical role |
-|---|---|
-| `2026-07-27-engineering-and-sled` | Repository and SLED engineering diagnoses |
-| `2026-07-27-literature-review-v1` | Initial literature synthesis and action manifest |
-| `2026-07-27-research-landscape-v2` | Superseding research landscape and related-work materials |
-| `2026-07-29-implementation-programme` | Canonical-migration and research delivery proposal |
-| `2026-07-30-dynamic-planning-programme` | Progress assessment and dynamic-planning supplement |
+The archive contains dated packages listed in `MANIFEST.json`. Each package
+is a dated snapshot of historical inputs. See the manifest for the full list,
+roles, limitations, and successor documents.
 
 `MANIFEST.json` records each original path, archive path, package, role, media
 type, byte count, SHA-256 of the exact repository blob, and Git blob ID. It also

@@ -3,7 +3,7 @@
     "integrity_scope": "exact repository blob bytes",
     "hash_algorithm": "sha256",
     "git_object_format": "sha1",
-    "artifact_count": 62,
+    "artifact_count": 68,
     "packages": [
         {
             "id": "2026-07-27-engineering-and-sled",
@@ -287,6 +287,28 @@
             "limitations": [
                 "All revision brief items have been implemented in the submitted FLMSec paper.",
                 "The anonymous code artefact was built and tested in a fresh environment."
+            ]
+        },
+        {
+            "id": "2026-09-02-supervisor-feedback-coder-package",
+            "title": "Supervisor feedback coder package: assessment, revision plan, CaMeL corrigendum, master spec, and publication claims checklist",
+            "snapshot_date": "2026-09-02",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [],
+            "canonical_successors": [
+                "docs/reference/SECURITY_MODEL.md",
+                "docs/decisions/024-external-provenance-and-authority-bounds.md",
+                "docs/research/RELATED_WORK.md",
+                "docs/research/RESEARCH_OVERVIEW.md",
+                "docs/evidence/CLAIMS.md",
+                "research/publications/flmsec_2026/main.tex",
+                "research/publications/manuscript/conflux_fourth_year_2026.tex"
+            ],
+            "limitations": [
+                "Feedback package provides assessment and guidance; all implementation is in canonical successors.",
+                "Tests for external-provenance, laundering, and authority-vs-harm are planned as a separate phase."
             ]
         }
     ],
@@ -971,6 +993,72 @@
             "sha256_bytes": "fcc0cef8c3d3be259686a1642737d24bf947bdd56fdba4221ac278ae8d8389ef",
             "git_blob_oid": "a4b6a9a2052e4190fb7f71dd1302eb5c438e86e7",
             "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-02-supervisor-feedback-coder-package",
+            "original_path": "Conflux_Supervisor_Feedback_Coder_Package_2026-09-02/00_README.md",
+            "archive_path": "research/reports/archive/2026-09-02-supervisor-feedback-coder-package/00_README.md",
+            "media_type": "text/markdown",
+            "size_bytes": 1384,
+            "sha256_bytes": "169f73a9628cffe25e906f6a59eb23c5af05b6bed3a8876aba326b5e9077daf2",
+            "git_blob_oid": "4111a375de696f09bac7ba68245d11be54809bbb",
+            "role": "navigation",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-02-supervisor-feedback-coder-package",
+            "original_path": "Conflux_Supervisor_Feedback_Coder_Package_2026-09-02/01_feedback_assessment.md",
+            "archive_path": "research/reports/archive/2026-09-02-supervisor-feedback-coder-package/01_feedback_assessment.md",
+            "media_type": "text/markdown",
+            "size_bytes": 40420,
+            "sha256_bytes": "ca5e9d8ecde574bd9656951995a5b4d68a191855bf90286e01feb3689f53463b",
+            "git_blob_oid": "804d366fb1e195462b04e966c5d74b470d4b6980",
+            "role": "audit_report",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-02-supervisor-feedback-coder-package",
+            "original_path": "Conflux_Supervisor_Feedback_Coder_Package_2026-09-02/02_revision_plan.md",
+            "archive_path": "research/reports/archive/2026-09-02-supervisor-feedback-coder-package/02_revision_plan.md",
+            "media_type": "text/markdown",
+            "size_bytes": 38498,
+            "sha256_bytes": "5ee3b07ba16bc9e3989b716701c75ba51aa501e3b50d4b1f320088555d4488f2",
+            "git_blob_oid": "6f3a21693be38c6513fafdb7136f857b97dc84ff",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-02-supervisor-feedback-coder-package",
+            "original_path": "Conflux_Supervisor_Feedback_Coder_Package_2026-09-02/03_caMel_and_semantics_corrigendum.md",
+            "archive_path": "research/reports/archive/2026-09-02-supervisor-feedback-coder-package/03_caMel_and_semantics_corrigendum.md",
+            "media_type": "text/markdown",
+            "size_bytes": 9144,
+            "sha256_bytes": "fdc9537e33994f88abb37bcc04e3ce0b850bb844e01d847bf6aa5e2a161f1849",
+            "git_blob_oid": "2df523654a33e0df6aec227de0db352854f63760",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-02-supervisor-feedback-coder-package",
+            "original_path": "Conflux_Supervisor_Feedback_Coder_Package_2026-09-02/04_master_coder_spec.md",
+            "archive_path": "research/reports/archive/2026-09-02-supervisor-feedback-coder-package/04_master_coder_spec.md",
+            "media_type": "text/markdown",
+            "size_bytes": 11399,
+            "sha256_bytes": "0e7a471765c09d05b621ec2f8fc07bcf3b11395e0518c9f4065aecaa1f671472",
+            "git_blob_oid": "ad30c418db0309c2af06ca50523ce9b8d2ca9ff5",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-02-supervisor-feedback-coder-package",
+            "original_path": "Conflux_Supervisor_Feedback_Coder_Package_2026-09-02/05_publication_claims_checklist.md",
+            "archive_path": "research/reports/archive/2026-09-02-supervisor-feedback-coder-package/05_publication_claims_checklist.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2819,
+            "sha256_bytes": "f3cab426567411ad522cbaafd21933b94206c485b465558a8d2e3a941a044e16",
+            "git_blob_oid": "3eee796ef0fdeacce8a1ea65575424c40bc7ed8a",
+            "role": "audit_report",
             "duplicate_of": null
         }
     ]

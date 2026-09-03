@@ -90,6 +90,72 @@ than a simple high/low model. Decentralized IFC may contain prior art
 closer to "principal-sensitive authority" than Biba alone; novelty claims
 must be checked against it.
 
+### Systems-level IFC
+
+Three operating-system projects demonstrate that dynamic contamination,
+trusted reference-monitor boundaries, and multi-principal isolation are
+classical systems problems with direct structural relevance to ITES.
+
+HiStar (Zeldovich et al., 2006) is a strict information-flow operating
+system with explicit labels and a small trusted kernel. It demonstrates
+that a small TCB can enforce IFC properties system-wide, directly informing
+the ITES reference-monitor boundary. Unlike ITES, HiStar uses scalar security
+labels rather than principal identity sets and does not derive authority
+from an existing organisational ACS.
+
+Flume (Krohn et al., 2007) applies decentralized IFC at the process/OS
+abstraction level with a reference-monitor interposition architecture. Its
+demonstration that acting on behalf of multiple principals is a classical
+problem parallels Conflux's multi-principal agent execution. Flume's label
+management and utility tensions directly inform Conflux's planning research.
+
+Asbestos (Efstathopoulos et al., 2005) provides kernel-enforced labels and
+event-process isolation for systems acting on behalf of multiple users. Its
+utility/security tension and label management are longstanding problems that
+Conflux addresses through principal-sensitive provenance rather than scalar
+labels.
+
+### Certified transformations (Clark-Wilson)
+
+Clark and Wilson (1987) provide a model of integrity through well-formed and
+certified transformations and separation of duties. This maps onto a future
+Conflux question: under what trusted transformation may conservative
+influence be reduced or authority be changed without letting arbitrary
+untrusted input choose the transformation? That is precisely the conceptual
+problem behind endorsement/declassification and controlled delegation.
+ITES does not implement Clark-Wilson; it is used as a classical point of
+comparison for future trusted-transformation and delegation semantics.
+
+### Wu, Cecchetti, and Xiao comparison
+
+Wu, Cecchetti, and Xiao (2024) already positions indirect prompt injection as
+an information-flow-control problem, provides formal models, a
+context-aware pipeline, and a security monitor, and evaluates the resulting
+system. This paper is particularly close to Conflux's threat model because
+it treats malicious information as able to influence subsequent planning and
+puts a system-level reference monitor around the model.
+
+The differentiation is therefore not "we are system-level," "we use
+information flow," "we use a security monitor," or "we are independent of
+model robustness." Those are not sufficient.
+
+The defensible distinction is:
+
+> Wu et al. prevent certain untrusted inputs from reaching the privileged
+> planning component through a structured information-flow pipeline. Conflux
+> instead treats all model-visible information as potentially influential,
+> computes a conservative set of influencing principals, and derives the
+> permitted externally visible authority by evaluating every influencer
+> against the organisation's existing ACS. The security objective is
+> therefore principal-sensitive privilege escalation rather than the
+> integrity of a privileged planning channel.
+
+This distinction needs to be demonstrated in a side-by-side formal example
+showing a behaviour satisfying Wu et al.'s security property but violating
+Conflux PE, not asserted rhetorically. The result should be phrased as
+**non-implication between security objectives**, not as a claim that Wu et
+al. is insecure.
+
 ### Declassification, endorsement, and visibility
 
 Strict information-flow policies are too restrictive for practical systems.
@@ -157,6 +223,26 @@ finite/restricted verification fragment and Conflux's use of typed
 delegation transitions with bounded scope, expiry, and one-use constraints.
 
 ## Revised positioning
+
+### LLM-agent defences
+
+CaMeL (Debenedetti et al., 2025) is a system-level defence with
+capability/dependency-aware policies and a protected planning/control-flow
+architecture. Its policy interface is programmable: security policies are
+Python functions over the tool name and arguments, and capabilities carry
+provenance/source and reader information. CaMeL also has a STRICT dependency
+mode in which control-flow influence is tracked. An ITES-style PE predicate
+could in principle be expressed on top of this interface, but native CaMeL
+does not enforce the ITES whole-execution PE property without additional
+principal attribution, influence propagation, persistence, and ACS integration
+semantics. The correct comparison asks whether CaMeL's native dependency set
+and policy checks imply the ITES definition of principal influence for a
+particular witness. The result should be phrased as **non-implication between
+security objectives**, not as "CaMeL is insecure" or "CaMeL cannot encode PE."
+
+Progent mediates tool calls with symbolic privilege-control policies. PACT
+tracks argument-level provenance. Each optimises for a different security
+objective; satisfying a defence-native property does not imply PE safety.
 
 Tool-using LLM agents create a modern instance of an old systems-security
 problem: untrusted information is processed by a component capable of

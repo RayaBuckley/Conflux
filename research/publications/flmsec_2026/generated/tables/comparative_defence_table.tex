@@ -1,6 +1,6 @@
 % GENERATED FILE -- do not edit by hand.
 % Source: research\output\runs\defence-models-v1\result.json
-% SHA-256: cfbfe288cffdeb27b328d92664bb4650762c15d2c208a12ff22cf7520c6c3c46
+% SHA-256: 63d9708d776e675b5505e65e3028e568433577538b38bcdbddb3e66591bd7c28
 % Run: python scripts/generate_flmsec_tables.py
 \begin{table}[t]
 \centering
@@ -19,8 +19,10 @@ Requester-only & --- & Unsafe & 4-step PE witness \\
 \bottomrule
 \end{tabular}
 \caption{Comparative defence verification. Each defence
-abstraction satisfies its own intended property Q but admits a PE
-counterexample. ITES preserves PE. All results are preliminary
-finite-model comparisons, not implementation-level evaluations.}
+abstraction satisfies its own intended property Q; a PE counterexample
+demonstrates non-implication between the defence's native objective and the
+Conflux PE property, not a defect in the compared system. ITES preserves PE.
+All results are preliminary finite-model comparisons, not implementation-level
+evaluations.}
 \label{tab:comparative-defence}
 \end{table}
