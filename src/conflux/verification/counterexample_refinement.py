@@ -28,6 +28,7 @@ class CounterexampleClassification:
     fingerprint: str
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize the classification to a JSON-compatible dictionary."""
         return {
             "is_real": self.is_real,
             "reason": self.reason,

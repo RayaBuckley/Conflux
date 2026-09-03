@@ -36,13 +36,16 @@ class AssumeGuaranteeContract:
 
     @property
     def ir_id(self) -> str:
+        """Return the IR identifier."""
         return self.ir.id
 
     @property
     def ir_fingerprint(self) -> str:
+        """Return the IR fingerprint."""
         return self.ir.fingerprint
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize the contract to a JSON-compatible dictionary."""
         return {
             "ir_id": self.ir_id,
             "ir_fingerprint": self.ir_fingerprint,
@@ -64,6 +67,7 @@ class AssumeGuaranteeResult:
     fingerprint: str
 
     def to_dict(self) -> dict[str, object]:
+        """Serialize the result to a JSON-compatible dictionary."""
         return {
             "contract": self.contract.to_dict(),
             "sound_abstraction_holds": self.sound_abstraction_holds,
