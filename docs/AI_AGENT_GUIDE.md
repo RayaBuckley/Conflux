@@ -175,6 +175,59 @@ Answer:
 - If a finding affects a security invariant, mark it
   `confirmed_defect` or `design_hypothesis` as appropriate.
 
+## Research-to-coder workflow
+
+The project uses a two-phase daily cycle: external AI planning (day) and AI
+coder implementation (evenings/mornings). The following workflow standardises
+the handoff to reduce ambiguity and context loss.
+
+### 1. Planning session (external AI — e.g. ChatGPT)
+
+1. Paste the contents of
+   [`docs/templates/REPOSITORY_CONTEXT_BRIEF.md`](templates/REPOSITORY_CONTEXT_BRIEF.md)
+   into the session for repository context.
+2. Paste the output of `python scripts/query_tasks.py` for current gap status.
+3. Paste the
+   [`docs/templates/RESEARCH_PROMPT.md`](templates/RESEARCH_PROMPT.md)
+   instructions and add the day's supervisor notes or research question.
+4. The session should produce structured findings (using the finding
+   classification above) and a coder package or plan file.
+
+### 2. Archive
+
+Save the output under
+`research/reports/archive/YYYY-MM-DD-name/` using the
+[`docs/templates/CODER_PACKAGE.md`](templates/CODER_PACKAGE.md) format.
+Update `research/reports/archive/MANIFEST.json`.
+
+### 3. Plan conversion
+
+If the session produced a coder package, convert it to a `.ae3code/plans/`
+plan file (Goal, Decisions, Approach, Steps, Open Questions). If the session
+produced plan-format output directly, save it as-is.
+
+### 4. Implementation (AI coder — e.g. A3Code)
+
+The coder consumes the plan file via the PLAN → BUILD mode transition:
+
+1. Read the plan file fully.
+2. Restate as a todo list.
+3. Implement step by step, verifying each step (lint, types, tests).
+4. Run `python scripts/validate.py` before committing.
+5. Commit atomically with `Security impact:` line.
+
+### 5. Evidence and synchronisation
+
+1. Generate or update evidence in a separate commit after implementation.
+2. Update `docs/evidence/task-registry.json` and `docs/evidence/CLAIMS.md`
+   where the change alters status or claim strength.
+
+### Rationale
+
+Standardising the handoff eliminates the freeform-report-to-task conversion
+step, ensures every task has testable acceptance criteria, and makes the
+workflow reproducible across sessions.
+
 ## Stop conditions
 
 Stop and request direction if a change would broaden authority, weaken a fail-
