@@ -18,6 +18,7 @@ import json
 import sys
 import time
 from datetime import UTC, datetime
+from itertools import combinations
 from pathlib import Path
 from typing import Any
 
@@ -56,7 +57,8 @@ from conflux.ites import TransitionKernel
 from conflux.policy import (
     AllowInternalReadPolicy,
     ExplicitConsentPolicy,
-    OwnerAuthorisationPolicy,
+    InMemoryAuthorisationPolicy,
+    PolicyGrant,
     SessionVisibilityPolicy,
 )
 
@@ -108,14 +110,8 @@ def _run_partc(n_principals: int, n_actions: int, n_data: int) -> dict[str, Any]
     names = ("alice", "bob", "carol", "dave", "eve", "frank", "grace", "heidi", "ivan", "judy", "karl", "leo")
     principals = tuple(Principal(names[i], names[i].capitalize()) for i in range(n_principals))
     session = Session("cmp-session", frozenset(principals))
-    pipeline = DecisionPipeline(
-        OwnerAuthorisationPolicy(),
-        AllowInternalReadPolicy(),
-        SessionVisibilityPolicy(),
-        ExplicitConsentPolicy(),
-    )
-    kernel = TransitionKernel(pipeline)
     resource = ResourceRef(provider="fs", resource_id="file1", resource_type="file")
+    grants = frozenset(PolicyGrant(principals[i].id, "read", resource.resource_id) for i in range(n_principals))
 
     actions: tuple[DomainPrimitiveAction, ...] = tuple(
         DomainPrimitiveAction(
@@ -128,13 +124,34 @@ def _run_partc(n_principals: int, n_actions: int, n_data: int) -> dict[str, Any]
     )
 
     data_items = tuple(
-        DataItem(id=f"item-{i}", value=f"data-{i}", authors=frozenset({principals[i % n_principals]})) for i in range(n_data)
+        DataItem(
+            id=f"item-{i}",
+            value=f"data-{i}",
+            authors=frozenset({principals[i % n_principals]}),
+            readers=frozenset(principals),
+        )
+        for i in range(n_data)
     )
     env_snapshot = EnvironmentSnapshot(
         id=f"cmp-p{n_principals}-a{n_actions}-d{n_data}",
         data=data_items,
         resources=(resource,),
     )
+
+    artifacts = env_snapshot.artifacts()
+    nested_ids: set[str] = set()
+    for r in range(1, min(3, len(artifacts)) + 1):
+        for combo in combinations(artifacts, r):
+            nested_ids.add(f"nested-{r}-{'-'.join(a.id for a in combo)}")
+    all_action_ids = frozenset(a.id for a in actions) | frozenset(nested_ids)
+
+    pipeline = DecisionPipeline(
+        InMemoryAuthorisationPolicy(grants),
+        AllowInternalReadPolicy(),
+        SessionVisibilityPolicy(),
+        ExplicitConsentPolicy(all_action_ids),
+    )
+    kernel = TransitionKernel(pipeline)
     system = CombinatorialVerificationSystem.from_environment(
         environment=env_snapshot,
         primitive_actions=actions,

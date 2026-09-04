@@ -1,0 +1,156 @@
+........................................................................ [  6%]
+........................................................................ [ 12%]
+........................................................................ [ 18%]
+........................................................................ [ 24%]
+........................................................................ [ 30%]
+........................................................................ [ 36%]
+........................................................................ [ 42%]
+........................................................................ [ 48%]
+........................................................................ [ 54%]
+........................................................................ [ 60%]
+........................................................................ [ 66%]
+........................................................................ [ 72%]
+......................................................F................. [ 78%]
+........................................................................ [ 84%]
+........................................................................ [ 90%]
+........................................................................ [ 96%]
+..............................................                           [100%]
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.12.10-final-0 _______________
+
+Name                                                       Stmts   Miss Branch BrPart  Cover   Missing
+------------------------------------------------------------------------------------------------------
+src\conflux\__init__.py                                        1      0      0      0   100%
+src\conflux\adapters\__init__.py                               0      0      0      0   100%
+src\conflux\adapters\benchmarks\__init__.py                    3      0      0      0   100%
+src\conflux\adapters\benchmarks\agentdojo_annotations.py      30      1      0      0    97%   81
+src\conflux\adapters\benchmarks\experimental.py               20      0      6      0   100%
+src\conflux\adapters\benchmarks\native.py                     11      1      0      0    91%   20
+src\conflux\adapters\models\__init__.py                        8      0      0      0   100%
+src\conflux\adapters\models\artifacts.py                     122     13     36     10    85%   46, 48, 50, 52, 87, 89, 94, 118, 125, 128-129, 183, 196
+src\conflux\adapters\models\local_openai.py                   88     10     22      7    85%   43, 46, 89-90, 93-94, 102, 105, 127, 144
+src\conflux\adapters\models\scripted.py                       24      0      6      0   100%
+src\conflux\adapters\models\scripted_planner.py               57      2      6      2    94%   66, 69
+src\conflux\adapters\policy\__init__.py                        3      0      0      0   100%
+src\conflux\adapters\policy\aws.py                            26      1      8      1    94%   31
+src\conflux\adapters\policy\cedar.py                         226     22     54     14    87%   84, 91, 127, 162, 165, 186, 192-193, 195, 252-253, 293, 295, 334, 346, 379-380, 413, 418, 437, 443, 470
+src\conflux\adapters\providers\__init__.py                     6      0      0      0   100%
+src\conflux\adapters\providers\base.py                        19      0      2      0   100%
+src\conflux\adapters\providers\docker.py                      11      0      0      0   100%
+src\conflux\adapters\providers\filesystem.py                  19      1      4      1    91%   26
+src\conflux\adapters\providers\runtime.py                    107     10     36      5    90%   74, 77, 80, 133-137, 147, 150
+src\conflux\adapters\scenarios.py                            118      9     26      5    90%   77, 87-88, 91, 125, 203, 211-212, 238
+src\conflux\application\__init__.py                            5      0      0      0   100%
+src\conflux\application\chat.py                               49      6     10      2    83%   67-76, 88-89
+src\conflux\application\doctor.py                             28      0      0      0   100%
+src\conflux\application\mediate.py                            60      6     16      3    88%   86, 150, 172-182
+src\conflux\application\planning_demo.py                      28      0      0      0   100%
+src\conflux\application\policy.py                             83      9     24      1    91%   109-110, 154-155, 193-194, 238-239, 248
+src\conflux\cli.py                                           890     89    266     49    85%   266, 273-275, 281, 370, 409, 516, 533, 561->564, 566->604, 574, 591-592, 594->604, 632->643, 634->633, 644, 676-677, 691->702, 700, 702->713, 711, 713->721, 740->745, 758-759, 777->807, 845-847, 858->868, 906->908, 918->920, 923->925, 925->930, 931->933, 1057, 1137, 1245, 1284, 1288-1289, 1321, 1390, 1411->1416, 1453, 1511-1521, 1620, 1662-1664, 1679->1691, 1692->1697, 1703-1731, 1736-1759, 1772->1774, 1799, 1807, 1815-1822, 1831, 1832->1834, 1846
+src\conflux\domain\__init__.py                                13      0      0      0   100%
+src\conflux\domain\actions.py                                192     14     44     14    88%   68, 70, 118, 120, 137, 165, 170, 173, 187, 203, 219, 237, 252, 330
+src\conflux\domain\actions_base.py                             9      0      0      0   100%
+src\conflux\domain\artifacts.py                               30      2      2      1    91%   26, 52
+src\conflux\domain\decisions.py                               39      1      2      1    95%   44
+src\conflux\domain\delegation.py                             221     29     72     23    82%   26, 48, 72, 74, 82, 84, 156, 184, 189, 195, 214, 235, 321, 337, 345, 348, 351, 369, 387-388, 409, 417-418, 433, 447, 460-461, 463, 469
+src\conflux\domain\disclosure.py                              91      7     20      6    88%   47, 85, 115, 117, 174, 176, 182
+src\conflux\domain\environment.py                             56      3      8      2    92%   30, 63, 76
+src\conflux\domain\identity.py                                37      4      2      1    87%   28, 32, 57, 71
+src\conflux\domain\permissions.py                             18      2      2      1    85%   16, 19
+src\conflux\domain\provenance.py                              55      1      6      1    97%   95
+src\conflux\domain\resources.py                               21      1      2      1    91%   22
+src\conflux\domain\serialization.py                           29      1     14      1    95%   18
+src\conflux\domain\session.py                                 12      1      2      1    86%   19
+src\conflux\evaluation\__init__.py                            10      0      0      0   100%
+src\conflux\evaluation\combinatorial.py                       56      0     12      0   100%
+src\conflux\evaluation\defences\__init__.py                    2      0      0      0   100%
+src\conflux\evaluation\defences\controls.py                   73      5     12      3    91%   107-108, 138, 166, 205
+src\conflux\evaluation\delegation_records.py                  65      6     16      4    85%   48, 56, 146-149, 172
+src\conflux\evaluation\delegation_verification.py             87      1      2      1    98%   58
+src\conflux\evaluation\diagnostics.py                        152      5     42      5    95%   174, 215, 222, 366, 431
+src\conflux\evaluation\disclosure_verification.py             78      2     10      2    95%   54, 142
+src\conflux\evaluation\evaluator.py                           24      3      0      0    88%   32, 51, 75
+src\conflux\evaluation\model_checking.py                     124      4     28      2    96%   80, 226-228
+src\conflux\evaluation\planning.py                           153     10     34     10    89%   45, 78, 92, 94, 180, 200, 210, 217, 250, 341
+src\conflux\evaluation\properties.py                          74     10     18      8    78%   76, 89->92, 91, 104, 106, 120-123, 138, 142
+src\conflux\evaluation\records.py                            138      3     40      5    94%   145-146, 196, 363->365, 371->373, 374->360
+src\conflux\execution\__init__.py                              2      0      0      0   100%
+src\conflux\execution\operations.py                           17      1      2      1    89%   24
+src\conflux\experiments\__init__.py                           15      0      0      0   100%
+src\conflux\experiments\agentdojo.py                          70      1     12      1    98%   132
+src\conflux\experiments\cedar_evidence.py                     61      2      6      2    94%   106, 112
+src\conflux\experiments\cedar_preflight.py                   100      7     14      5    89%   60, 95, 98, 177, 242-243, 245
+src\conflux\experiments\coi_evidence.py                      124      8     26      3    91%   95, 171, 206-216
+src\conflux\experiments\direction_evidence.py                 87      0      2      0   100%
+src\conflux\experiments\manifest.py                           60      4      4      1    92%   94-95, 97, 123
+src\conflux\experiments\native_evidence.py                   102      7     32      7    90%   99, 168, 171, 174, 186, 189, 206
+src\conflux\experiments\native_sled.py                       122      2     20      3    96%   142->141, 144, 154
+src\conflux\experiments\planning_comparison.py                64      2     14      2    95%   69, 111
+src\conflux\experiments\protocol.py                           97      1      6      1    98%   176
+src\conflux\experiments\resume.py                             89      6     26      2    93%   60, 62, 81-84
+src\conflux\experiments\sled_comparison.py                    26      1     10      1    94%   22
+src\conflux\experiments\smoke.py                              64      1      4      1    97%   140
+src\conflux\ites\__init__.py                                   4      0      0      0   100%
+src\conflux\ites\kernel.py                                    50      0     12      0   100%
+src\conflux\ites\mediator.py                                  57      3     10      2    93%   39, 47-48
+src\conflux\ites\state.py                                    181     10     22      5    92%   320-323, 348, 353-354, 356, 358, 380
+src\conflux\planning\__init__.py                              12      0      0      0   100%
+src\conflux\planning\actions.py                              208     17     42     10    89%   45, 85, 90, 116, 139, 190, 194, 207, 230, 249, 253, 268, 365-366, 369-370, 399
+src\conflux\planning\code_execution.py                       117      9     26      9    87%   33, 80, 96, 127, 129, 235, 241, 247, 253
+src\conflux\planning\contamination_optimisation.py            50      0      0      0   100%
+src\conflux\planning\continuation.py                         130     11     40     11    87%   55, 60, 62, 64, 66, 94, 96, 100, 137, 173, 208
+src\conflux\planning\executor.py                             266     50    102     21    77%   120-121, 124-125, 127-128, 187, 207, 209-210, 223, 267, 320, 346-347, 353, 377, 418-424, 445, 448, 482, 484, 536-537, 552, 570-598, 638, 686, 690-705, 797->796, 799->796, 801
+src\conflux\planning\model.py                                237     22     74     21    86%   52, 71, 89, 108, 110, 128, 144, 160, 176, 193, 222, 224, 238-239, 264, 266, 268, 274, 277, 281, 290, 364, 365->367
+src\conflux\planning\modeled_program.py                       68      9     28      9    81%   21, 26, 51, 81, 84, 88, 98, 101, 104
+src\conflux\planning\optimise.py                              57      2      4      1    95%   46, 70
+src\conflux\planning\parsing.py                              122      2     42      2    98%   326, 332
+src\conflux\planning\records.py                               29      2      4      2    88%   29, 32
+src\conflux\planning\requests.py                              67      4      8      4    89%   40, 69, 105, 110
+src\conflux\planning\state.py                                165      9     26      5    92%   188-189, 230, 242, 259-261, 281->283, 312, 356
+src\conflux\policy\__init__.py                                 5      0      0      0   100%
+src\conflux\policy\adapters.py                                62      2     10      1    96%   130-131
+src\conflux\policy\argument_policy.py                         29      3      6      3    83%   31, 35, 59
+src\conflux\policy\base.py                                    21      1      2      1    91%   43
+src\conflux\policy\owner_policy.py                            13      0      0      0   100%
+src\conflux\ports\__init__.py                                  7      0      0      0   100%
+src\conflux\ports\environment.py                               6      0      0      0   100%
+src\conflux\ports\model.py                                    83      7     14      7    86%   45, 57, 59, 61, 63, 65, 102
+src\conflux\ports\planner.py                                  27      0      0      0   100%
+src\conflux\ports\policy.py                                   40      0      0      0   100%
+src\conflux\ports\resources.py                                12      0      0      0   100%
+src\conflux\ports\tracing.py                                   6      0      0      0   100%
+src\conflux\verification\__init__.py                          15      0      0      0   100%
+src\conflux\verification\assume_guarantee.py                  51      4      2      1    91%   43, 46, 67, 144
+src\conflux\verification\counterexample_refinement.py         44      7     10      3    81%   31, 94-104, 137-139
+src\conflux\verification\defence_models.py                    37      2      0      0    95%   40, 44
+src\conflux\verification\delegation_ir.py                    112      0     26      0   100%
+src\conflux\verification\endorsement.py                       37      0      0      0   100%
+src\conflux\verification\interpreter.py                      128     16     78     12    84%   22, 26, 61-65, 86->80, 119, 151, 166, 168, 174, 180, 186, 192, 201
+src\conflux\verification\ir.py                               241     16     96     14    91%   85, 89, 126, 129-130, 133, 136, 229, 233, 255, 281, 283, 394, 412, 421, 437
+src\conflux\verification\plan_ir.py                           69      5     24      3    91%   64, 103-105, 135->142, 273
+src\conflux\verification\provenance_distinction.py            43      0      0      0   100%
+src\conflux\verification\reduction.py                        177      9     48      7    93%   151, 233, 241-242, 294-295, 379, 384, 388
+src\conflux\verification\refinement.py                        56      1     10      1    97%   207
+src\conflux\verification\results.py                           24      0      0      0   100%
+src\conflux\verification\robust_disclosure.py                 39      1      0      0    97%   65
+src\conflux\verification\self_composition.py                 123     10     56      7    89%   87, 96, 103, 106, 109, 120, 133-135, 301
+src\conflux\verification\symmetry_reduction.py                43      3     16      4    88%   75->80, 86, 89, 137
+src\conflux\verification\synthesis.py                        195      8     54      6    94%   76, 78, 80, 82, 126, 195, 414, 443
+src\conflux\visualisation\__init__.py                          0      0      0      0   100%
+src\conflux\visualisation\diff.py                             67      0      6      0   100%
+src\conflux\visualisation\graph\__init__.py                    0      0      0      0   100%
+src\conflux\visualisation\graph\graphviz.py                   67      0     18      0   100%
+src\conflux\visualisation\graph\model.py                      17      0      0      0   100%
+src\conflux\visualisation\html.py                             93      0     26      0   100%
+src\conflux\visualisation\ites.py                             43      2     22      6    88%   60, 62, 83->85, 85->87, 87->90, 166->156
+src\conflux\visualisation\model.py                           135      1     24      1    99%   226
+src\conflux\visualisation\normalise.py                        14      1      2      0    94%   25
+src\conflux\visualisation\planning.py                         48      6     20      6    79%   50, 86->92, 90, 107, 125, 141-142
+src\conflux\visualisation\provenance.py                       70      3     42      7    91%   53->55, 80->78, 90->89, 154->153, 208, 210, 214
+src\conflux\visualisation\sled.py                             34      5      6      1    85%   77-95
+src\conflux\visualisation\verification.py                     62      2     30      4    93%   91->93, 143->145, 148, 226
+------------------------------------------------------------------------------------------------------
+TOTAL                                                       9216    603   2178    420    90%
+=========================== short test summary info ===========================
+FAILED tests/test_repository_audit.py::test_docstring_check_passes_on_current_codebase
+1 failed, 1197 passed in 83.77s (0:01:23)

@@ -149,3 +149,26 @@ def test_mixed_and_revoked_authority_are_blocked_at_action_time() -> None:
     selected = [item for item in observations if item["task_id"] in {"mixed-principal-input", "action-time-revocation"}]
     assert all(item["legitimate_blocks"] >= 1 for item in selected)
     assert all(item["security_violations"] == 0 for item in selected)
+
+
+@dataclass
+class _FailingModel:
+    call_count: int = 0
+
+    def preflight(self) -> LocalModelPreflight:
+        return LocalModelPreflight("transformers", "local/test", True, "none", None)
+
+    def generate(self, request: LocalModelRequest) -> LocalModelResponse:
+        self.call_count += 1
+        raise RuntimeError("simulated_model_crash")
+
+
+def test_model_failed_preserves_call_count_and_error_detail() -> None:
+    model = _FailingModel()
+    result = run_planning_comparison(_protocol(), model)
+    observations = result["observations"]
+    assert isinstance(observations, list)
+    assert all(item["status"] == "model_failed" for item in observations)
+    assert all(item["model_calls"] == 1 for item in observations)
+    assert all(item["error_detail"] is not None for item in observations)
+    assert all("RuntimeError" in str(item["error_detail"]) for item in observations)

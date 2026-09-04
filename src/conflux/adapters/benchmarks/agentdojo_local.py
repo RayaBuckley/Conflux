@@ -97,9 +97,12 @@ class AgentDojoActionMediator:
             return ProviderResult(False, error="unsupported_tool")
         inputs = self.environment.artifacts()
         provenance = provenance_union(*(artifact.provenance for artifact in inputs))
+        filtered: dict[str, object] = {name: value for name, value in arguments.items() if value is not None or name in schema.roles}
+        for role_name in schema.roles:
+            filtered.setdefault(role_name, None)
         try:
             action_arguments = schema.bind(
-                {name: (value, provenance) for name, value in arguments.items()},
+                {name: (value, provenance) for name, value in filtered.items()},
             )
         except ValueError as error:
             self.records.append(
@@ -111,7 +114,7 @@ class AgentDojoActionMediator:
                     "annotations_sha256": annotations.fingerprint,
                 },
             )
-            return ProviderResult(False, error="unsupported_arguments")
+            return ProviderResult(False, outcome=str(error), error="unsupported_arguments")
         permission = Permission("read" if tool_name == "search_emails" else "delete")
         action = PrimitiveAction(
             tool_name,
@@ -364,13 +367,39 @@ class PinnedAgentDojoCellExecutor:
             return _failed(cell, "setup_failed", "setup")
         if installed != PACKAGE_VERSION:
             return _failed(cell, "setup_failed", "setup")
+        responses: list[object] = []
+        records: list[dict[str, object]] = []
         try:
-            return self._execute(cell, model, max_model_calls)
+            return self._execute(cell, model, max_model_calls, responses, records)
         except Exception as error:
             category = _failure_category(error)
-            return _failed(cell, f"{category}_failed" if category in {"model", "parser", "setup"} else "incomplete", category)
+            status = f"{category}_failed" if category in {"model", "parser", "setup"} else "incomplete"
+            prompt_tokens = sum(cast(Any, item).prompt_tokens or 0 for item in responses) or None
+            output_tokens = sum(cast(Any, item).output_tokens or 0 for item in responses) or None
+            latency = sum(cast(Any, item).latency_ms for item in responses)
+            return AgentDojoCellResult(
+                cell,
+                status,
+                None,
+                None,
+                None,
+                None,
+                tuple(records),
+                (category,),
+                len(responses),
+                prompt_tokens,
+                output_tokens,
+                latency,
+            )
 
-    def _execute(self, cell: AgentDojoCell, model: LocalModelPort, max_model_calls: int) -> AgentDojoCellResult:
+    def _execute(
+        self,
+        cell: AgentDojoCell,
+        model: LocalModelPort,
+        max_model_calls: int,
+        responses: list[object],
+        records: list[dict[str, object]],
+    ) -> AgentDojoCellResult:
         from agentdojo.agent_pipeline.agent_pipeline import (
             AgentPipeline,
             load_system_message,
@@ -390,7 +419,6 @@ class PinnedAgentDojoCellExecutor:
         user_task = suite.get_user_task_by_id(cell.user_task_id)
         injection_task = suite.get_injection_task_by_id(cell.injection_task_id) if cell.attacked else None
         mediator = AgentDojoActionMediator(cell.attacked, cell.defence)
-        responses: list[object] = []
         llm = _LocalPipelineModel(model, responses, mediator.supported_tools)
         pipeline = AgentPipeline(
             [
@@ -417,10 +445,13 @@ class PinnedAgentDojoCellExecutor:
             pipeline_name=pipeline.name,
             benchmark_version=BENCHMARK_VERSION,
         )
-        with logger:
-            utility, security = suite.run_task_with_pipeline(pipeline, user_task, injection_task, injections)
-            logger.set_contextarg("utility", utility)
-            logger.set_contextarg("security", security)
+        try:
+            with logger:
+                utility, security = suite.run_task_with_pipeline(pipeline, user_task, injection_task, injections)
+                logger.set_contextarg("utility", utility)
+                logger.set_contextarg("security", security)
+        finally:
+            records.extend(mediator.records)
         raw_name = f"{cell.injection_task_id if cell.attacked else 'none'}.json"
         raw_path = self.log_directory / pipeline.name / cell.suite_id / cell.user_task_id / attack_name / raw_name
         translated = parse_upstream_log(raw_path)

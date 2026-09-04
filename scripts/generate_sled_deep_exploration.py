@@ -1,10 +1,11 @@
-"""Generate SLED depth-bound sweep evidence.
+"""Generate SLED deep-exploration convergence evidence.
 
-Runs native SLED across a matrix of increased bounds to surface
-verdict changes and state-space growth patterns.
+Runs the planning system and combinatorial system (with permissive policies)
+at very large depths to find convergence points where the state space is
+exhausted (truncated=False).
 
 Usage:
-    python scripts/generate_sled_depth_sweep.py
+    python scripts/generate_sled_deep_exploration.py
 """
 
 from __future__ import annotations
@@ -27,11 +28,6 @@ from conflux.domain import (
     Session,
 )
 from conflux.evaluation.combinatorial import CombinatorialVerificationSystem
-from conflux.evaluation.delegation_verification import (
-    DELEGATION_PROPERTIES,
-    DelegationMutation,
-    DelegationVerificationSystem,
-)
 from conflux.evaluation.model_checking import (
     ExplicitStateChecker,
     VerificationBounds,
@@ -60,7 +56,7 @@ from conflux.policy import (
     SessionVisibilityPolicy,
 )
 
-OUTPUT_DIR = Path("research/output/runs/sled_depth_sweep")
+OUTPUT_DIR = Path("research/output/runs/sled_deep_exploration")
 
 PLANNING_PROPERTIES = (
     NoUnauthorisedPlanningEffect(),
@@ -74,6 +70,8 @@ ITES_PROPERTIES = (
     PrincipalContextMonotonicity(),
     ProvenancePreserved(),
 )
+
+DEPTHS = (16, 24, 32, 48, 64, 96, 128)
 
 _PLANNING_PATCHES: tuple[AbstractPlanPatch, ...] = (
     AbstractPlanPatch(
@@ -135,69 +133,52 @@ _PLANNING_PATCHES: tuple[AbstractPlanPatch, ...] = (
     ),
 )
 
-BOUND_CONFIGS = [
-    VerificationBounds(max_depth=8, max_states=10_000, max_transitions=50_000, max_model_calls=8),
-    VerificationBounds(max_depth=12, max_states=50_000, max_transitions=250_000, max_model_calls=12),
-    VerificationBounds(max_depth=16, max_states=100_000, max_transitions=500_000, max_model_calls=16),
-    VerificationBounds(max_depth=24, max_states=500_000, max_transitions=1_000_000, max_model_calls=16),
-    VerificationBounds(max_depth=32, max_states=1_000_000, max_transitions=2_000_000, max_model_calls=24),
-    VerificationBounds(max_depth=48, max_states=2_000_000, max_transitions=5_000_000, max_model_calls=32),
-    VerificationBounds(max_depth=64, max_states=5_000_000, max_transitions=10_000_000, max_model_calls=48),
-]
-
-
-_DEPTH_SWEEP_PRINCIPALS = (
+_PRINCIPALS = (
     Principal("alice", "Alice"),
     Principal("bob", "Bob"),
     Principal("carol", "Carol"),
 )
-_DEPTH_SWEEP_RESOURCE = ResourceRef(provider="fs", resource_id="file1", resource_type="file")
-_DEPTH_SWEEP_ACTIONS = tuple(
-    PrimitiveAction(id=f"act_{i}", operation="read", permission=READ, resource=_DEPTH_SWEEP_RESOURCE) for i in range(4)
-)
-_DEPTH_SWEEP_DATA = tuple(
+_RESOURCE = ResourceRef(provider="fs", resource_id="file1", resource_type="file")
+_ACTIONS = tuple(PrimitiveAction(id=f"act_{i}", operation="read", permission=READ, resource=_RESOURCE) for i in range(4))
+_DATA = tuple(
     DataItem(
         id=f"item-{i}",
         value=f"data-{i}",
-        authors=frozenset({_DEPTH_SWEEP_PRINCIPALS[i % 3]}),
-        readers=frozenset(_DEPTH_SWEEP_PRINCIPALS),
+        authors=frozenset({_PRINCIPALS[i % 3]}),
+        readers=frozenset(_PRINCIPALS),
     )
     for i in range(5)
 )
-_DEPTH_SWEEP_ENV = EnvironmentSnapshot(
-    id="depth-sweep-combinatorial",
-    data=_DEPTH_SWEEP_DATA,
-    resources=(_DEPTH_SWEEP_RESOURCE,),
-)
+_ENV = EnvironmentSnapshot(id="deep-exploration", data=_DATA, resources=(_RESOURCE,))
 
 
-def _combinatorial_all_action_ids() -> frozenset[str]:
-    artifacts = _DEPTH_SWEEP_ENV.artifacts()
+def _all_action_ids() -> frozenset[str]:
+    artifacts = _ENV.artifacts()
     nested_ids: set[str] = set()
     for r in range(1, min(3, len(artifacts)) + 1):
         for combo in combinations(artifacts, r):
             nested_ids.add(f"nested-{r}-{'-'.join(a.id for a in combo)}")
-    return frozenset(a.id for a in _DEPTH_SWEEP_ACTIONS) | frozenset(nested_ids)
+    return frozenset(a.id for a in _ACTIONS) | frozenset(nested_ids)
 
 
-def _combinatorial_system(max_model_calls: int) -> CombinatorialVerificationSystem:
-    grants = frozenset(PolicyGrant(p.id, "read", _DEPTH_SWEEP_RESOURCE.resource_id) for p in _DEPTH_SWEEP_PRINCIPALS)
+def _combinatorial_system(depth: int) -> CombinatorialVerificationSystem:
+    grants = frozenset(PolicyGrant(p.id, "read", _RESOURCE.resource_id) for p in _PRINCIPALS)
     pipeline = DecisionPipeline(
         InMemoryAuthorisationPolicy(grants),
         AllowInternalReadPolicy(),
         SessionVisibilityPolicy(),
-        ExplicitConsentPolicy(_combinatorial_all_action_ids()),
+        ExplicitConsentPolicy(_all_action_ids()),
     )
     kernel = TransitionKernel(pipeline)
-    session = Session("depth-sweep", frozenset(_DEPTH_SWEEP_PRINCIPALS))
+    session = Session("deep-exploration", frozenset(_PRINCIPALS))
     return CombinatorialVerificationSystem.from_environment(
-        environment=_DEPTH_SWEEP_ENV,
-        primitive_actions=_DEPTH_SWEEP_ACTIONS,
+        environment=_ENV,
+        primitive_actions=_ACTIONS,
         kernel=kernel,
         session=session,
         max_batch_size=2,
         max_nested_inputs=3,
-        max_model_calls=max_model_calls,
+        max_model_calls=depth,
     )
 
 
@@ -205,36 +186,21 @@ def main() -> int:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     results: list[dict[str, object]] = []
 
-    for bound_idx, bounds in enumerate(BOUND_CONFIGS):
-        for mutation in DelegationMutation:
-            system = DelegationVerificationSystem(mutation)
-            start = time.perf_counter()
-            result = ExplicitStateChecker().verify(system, DELEGATION_PROPERTIES, bounds)
-            elapsed = time.perf_counter() - start
-            results.append(
-                {
-                    "system": "delegation",
-                    "variant": mutation.value,
-                    "bound_config": bound_idx,
-                    "max_depth": bounds.max_depth,
-                    "max_states": bounds.max_states,
-                    "verdict": result.verdict.value,
-                    "unique_states": result.unique_states,
-                    "duplicate_states": result.duplicate_states,
-                    "transitions_explored": result.transitions,
-                    "truncated": result.truncated,
-                    "counterexample_length": result.counterexample.length if result.counterexample else 0,
-                    "runtime_seconds": round(elapsed, 3),
-                },
-            )
+    for depth in DEPTHS:
+        bounds = VerificationBounds(
+            max_depth=depth,
+            max_states=5_000_000,
+            max_transitions=10_000_000,
+            max_model_calls=depth,
+        )
 
-        planning_system: WorstCasePlanningSystem = WorstCasePlanningSystem(
+        planning_system = WorstCasePlanningSystem(
             initial_context=frozenset({"alice", "bob"}),
             patches=_PLANNING_PATCHES,
-            max_plan_nodes=4 + bound_idx * 4,
-            max_continuation_depth=2 + bound_idx * 2,
-            max_planner_calls=2 + bound_idx * 2,
-            max_effects=2 + bound_idx * 2,
+            max_plan_nodes=depth + 2,
+            max_continuation_depth=depth + 2,
+            max_planner_calls=depth + 2,
+            max_effects=depth + 2,
         )
         start = time.perf_counter()
         planning_result = ExplicitStateChecker().verify(planning_system, PLANNING_PROPERTIES, bounds)
@@ -242,10 +208,7 @@ def main() -> int:
         results.append(
             {
                 "system": "planning",
-                "variant": "worst_case",
-                "bound_config": bound_idx,
-                "max_depth": bounds.max_depth,
-                "max_states": bounds.max_states,
+                "depth": depth,
                 "verdict": planning_result.verdict.value,
                 "unique_states": planning_result.unique_states,
                 "duplicate_states": planning_result.duplicate_states,
@@ -255,13 +218,20 @@ def main() -> int:
                 "runtime_seconds": round(elapsed, 3),
             },
         )
+        print(
+            f"  planning depth={depth}: verdict={planning_result.verdict.value} "
+            f"states={planning_result.unique_states} "
+            f"transitions={planning_result.transitions} "
+            f"truncated={planning_result.truncated} "
+            f"runtime={elapsed:.3f}s",
+        )
 
-        combo_system = _combinatorial_system(bounds.max_model_calls)
+        combo_system = _combinatorial_system(depth)
         combo_bounds = VerificationBounds(
-            max_depth=bounds.max_depth,
-            max_states=min(bounds.max_states, 50_000),
-            max_transitions=min(bounds.max_transitions, 200_000),
-            max_model_calls=bounds.max_model_calls,
+            max_depth=depth,
+            max_states=50_000,
+            max_transitions=200_000,
+            max_model_calls=depth,
         )
         start = time.perf_counter()
         combo_result = ExplicitStateChecker().verify(combo_system, ITES_PROPERTIES, combo_bounds)  # type: ignore[misc]
@@ -269,10 +239,7 @@ def main() -> int:
         results.append(
             {
                 "system": "combinatorial",
-                "variant": "worst_case",
-                "bound_config": bound_idx,
-                "max_depth": bounds.max_depth,
-                "max_states": bounds.max_states,
+                "depth": depth,
                 "verdict": combo_result.verdict.value,
                 "unique_states": combo_result.unique_states,
                 "duplicate_states": combo_result.duplicate_states,
@@ -282,19 +249,41 @@ def main() -> int:
                 "runtime_seconds": round(elapsed, 3),
             },
         )
+        print(
+            f"  combinatorial depth={depth}: verdict={combo_result.verdict.value} "
+            f"states={combo_result.unique_states} "
+            f"transitions={combo_result.transitions} "
+            f"truncated={combo_result.truncated} "
+            f"runtime={elapsed:.3f}s",
+        )
 
+    planning_convergence = next(
+        (r for r in results if r["system"] == "planning" and not r["truncated"]),
+        None,
+    )
+    combinatorial_convergence = next(
+        (r for r in results if r["system"] == "combinatorial" and not r["truncated"]),
+        None,
+    )
     evidence = {
         "generated_at": datetime.now(UTC).isoformat(),
         "module": "conflux.evaluation.model_checking",
-        "bound_configs": len(BOUND_CONFIGS),
+        "depths": list(DEPTHS),
         "total_runs": len(results),
+        "planning_convergence_depth": planning_convergence["depth"] if planning_convergence else None,
+        "combinatorial_convergence_depth": combinatorial_convergence["depth"] if combinatorial_convergence else None,
         "results": results,
     }
     output_path = OUTPUT_DIR / "evidence.json"
     output_path.write_text(json.dumps(evidence, indent=2), encoding="utf-8")
-    print(f"Generated SLED depth sweep evidence: {output_path}")
-    print(f"  Bound configs: {len(BOUND_CONFIGS)}")
+    print(f"\nGenerated SLED deep exploration evidence: {output_path}")
     print(f"  Total runs: {len(results)}")
+    print(
+        f"  Planning convergence: {planning_convergence['depth'] if planning_convergence else 'not converged'}",
+    )
+    print(
+        f"  Combinatorial convergence: {combinatorial_convergence['depth'] if combinatorial_convergence else 'not converged'}",
+    )
     return 0
 
 

@@ -75,13 +75,35 @@ def test_benign_oracle_uses_ground_truth_and_annotations_are_frozen() -> None:
     assert conservative.operations["delete_file"].roles["file_id"].value == "resource"
 
 
-def test_missing_unknown_and_unreviewed_selector_arguments_deny() -> None:
+def test_unknown_and_unreviewed_selector_arguments_deny() -> None:
     mediator = AgentDojoActionMediator(attacked=False, defence="ites_oracle")
     executor = _Executor([])
-    assert mediator.mediate("search_emails", {}, executor).error == "unsupported_arguments"
     assert mediator.mediate("search_emails", {"query": "x", "recipient": "y"}, executor).error == "unsupported_arguments"
     assert mediator.mediate("delete_file", {"file_id": "999"}, executor).error == "policy_blocked"
     assert not executor.calls
+
+
+def test_null_sender_succeeds_and_non_null_sender_binds_as_content() -> None:
+    mediator = AgentDojoActionMediator(attacked=False, defence="ites_oracle")
+    null_result = mediator.mediate("search_emails", {"query": "hiking", "sender": None}, _Executor([]))
+    assert null_result.success
+    non_null_result = mediator.mediate("search_emails", {"query": "hiking", "sender": "mark@example.com"}, _Executor([]))
+    assert non_null_result.success
+
+
+def test_omitted_sender_succeeds() -> None:
+    mediator = AgentDojoActionMediator(attacked=False, defence="ites_oracle")
+    result = mediator.mediate("search_emails", {"query": "hiking"}, _Executor([]))
+    assert result.success
+
+
+def test_descriptive_error_feedback_includes_argument_names() -> None:
+    mediator = AgentDojoActionMediator(attacked=False, defence="ites_oracle")
+    result = mediator.mediate("search_emails", {"query": "x", "recipient": "y"}, _Executor([]))
+    assert not result.success
+    assert result.error == "unsupported_arguments"
+    assert result.outcome is not None
+    assert "recipient" in str(result.outcome)
 
 
 def test_reviewed_annotations_match_checked_experiment_inputs() -> None:

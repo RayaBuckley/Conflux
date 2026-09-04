@@ -78,7 +78,7 @@
     "device": "cuda",
     "dtype": "nf4",
     "endpoint": null,
-    "max_output_tokens": 256,
+    "max_output_tokens": 512,
     "model_id": "Qwen/Qwen2.5-3B-Instruct",
     "prompt_template_version": "agentdojo_turn_v1",
     "revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",

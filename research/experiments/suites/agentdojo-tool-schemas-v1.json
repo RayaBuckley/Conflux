@@ -14,7 +14,8 @@
     },
     "search_emails": {
       "arguments": {
-        "query": "content"
+        "query": "content",
+        "sender": "content"
       },
       "version": "agentdojo-0.1.35"
     }

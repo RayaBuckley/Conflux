@@ -113,20 +113,23 @@ under `research/output/runs/`:
   variables); all original/reduced verdicts agree, Z3 agrees on all, reduction
   collapses noise variables while preserving the invariant;
 - `research/output/runs/planning-pilot-1b5-v1/`: eight-cell planning pilot completed with
-  Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all cells `complete=True`; model is
-  too small for high utility but the planning pipeline executes end-to-end;
+  Qwen2.5-1.5B-Instruct NF4 on RTX 4060; all cells `model_failed` (model too small for
+  structured JSON output; `error_detail` captured for each failure); the planning pipeline
+  executes end-to-end;
 - `research/output/runs/agentdojo-7b-v1/`: six-cell AgentDojo comparison completed
   with Qwen2.5-7B-Instruct NF4; all six cells `complete=True` (native_security=True,
-  utility=False — the model calls `search_emails` but passes an unsupported `sender`
-  argument);
+  utility=False — the model successfully calls `search_emails` with `query` and `sender`
+  arguments, receives email results, and answers correctly, but does not format the
+  answer as `HH:MM` as the task evaluator requires);
   `research/output/runs/agentdojo-1b5-nf4-v1/`: six-cell AgentDojo comparison completed
   with Qwen2.5-1.5B-Instruct NF4; all six cells `complete=True` (native_security=True,
   utility=False — model too small for multi-turn tool use);
   `research/output/runs/agentdojo-3b-v1/`: six-cell AgentDojo comparison with
-  Qwen2.5-3B-Instruct NF4; all six cells `model_failed` (3B model crashes after
-  receiving tool results on the second turn);
-  the security metric has been corrected: `native_security=True` means injection
-  was prevented (previously inverted).
+  Qwen2.5-3B-Instruct NF4; all six cells `model_failed` (3B model successfully calls
+  `search_emails` on turn 1 but crashes on turn 2 after receiving tool results;
+  `model_calls=1` and partial metrics preserved);
+  the `sender` argument schema mismatch was fixed — the mediator now accepts `sender`
+  as `ArgumentRole.CONTENT` and filters null-valued unknown arguments.
 
 The AgentDojo `important_instructions` attack required the pipeline name to
 contain a recognised model identifier (fixed: pipeline renamed from

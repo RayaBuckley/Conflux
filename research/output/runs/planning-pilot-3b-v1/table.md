@@ -3,10 +3,10 @@
 | Measure | Value |
 |---|---:|
 | Cells | 8 |
-| Model calls | 8 |
-| Prompt tokens | 1043 |
-| Output tokens | 315 |
-| Latency (ms) | 65250 |
+| Model calls | 10 |
+| Prompt tokens | 1147 |
+| Output tokens | 70 |
+| Latency (ms) | 14938 |
 
 ## Cell outcomes
 

@@ -12,7 +12,9 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from datetime import UTC, datetime
+from itertools import combinations
 from pathlib import Path
 
 from conflux.application import DecisionPipeline
@@ -40,7 +42,8 @@ from conflux.ites import TransitionKernel
 from conflux.policy import (
     AllowInternalReadPolicy,
     ExplicitConsentPolicy,
-    OwnerAuthorisationPolicy,
+    InMemoryAuthorisationPolicy,
+    PolicyGrant,
     SessionVisibilityPolicy,
 )
 
@@ -57,10 +60,10 @@ PRINCIPAL_COUNTS = (1, 2, 3, 5, 8)
 ACTION_COUNTS = (1, 3, 8)
 DATA_ITEM_COUNTS = (1, 3, 5)
 BOUNDS = VerificationBounds(
-    max_depth=6,
-    max_states=5_000,
-    max_transitions=25_000,
-    max_model_calls=6,
+    max_depth=12,
+    max_states=50_000,
+    max_transitions=250_000,
+    max_model_calls=12,
 )
 
 
@@ -82,12 +85,33 @@ def _make_actions(n: int, resource: ResourceRef) -> tuple[PrimitiveAction, ...]:
 
 
 def _make_data_items(n: int, principals: tuple[Principal, ...]) -> tuple[DataItem, ...]:
-    owner = principals[0]
-    return tuple(DataItem(id=f"item-{i}", value=f"data-{i}", authors=frozenset({owner})) for i in range(n))
+    return tuple(
+        DataItem(
+            id=f"item-{i}",
+            value=f"data-{i}",
+            authors=frozenset({principals[i % len(principals)]}),
+            readers=frozenset(principals),
+        )
+        for i in range(n)
+    )
 
 
 def _make_resource() -> ResourceRef:
     return ResourceRef(provider="fs", resource_id="file1", resource_type="file")
+
+
+def _all_action_ids(
+    actions: tuple[PrimitiveAction, ...],
+    env: EnvironmentSnapshot,
+    max_nested: int,
+) -> frozenset[str]:
+    primitive_ids = frozenset(a.id for a in actions)
+    artifacts = env.artifacts()
+    nested_ids: set[str] = set()
+    for r in range(1, min(max_nested, len(artifacts)) + 1):
+        for combo in combinations(artifacts, r):
+            nested_ids.add(f"nested-{r}-{'-'.join(a.id for a in combo)}")
+    return primitive_ids | frozenset(nested_ids)
 
 
 def main() -> int:
@@ -97,14 +121,8 @@ def main() -> int:
     for n_principals in PRINCIPAL_COUNTS:
         principals = _make_principals(n_principals)
         session = Session("sweep-session", frozenset(principals))
-        pipeline = DecisionPipeline(
-            OwnerAuthorisationPolicy(),
-            AllowInternalReadPolicy(),
-            SessionVisibilityPolicy(),
-            ExplicitConsentPolicy(),
-        )
-        kernel = TransitionKernel(pipeline)
         resource = _make_resource()
+        grants = frozenset(PolicyGrant(principal.id, "read", resource.resource_id) for principal in principals)
 
         for n_actions in ACTION_COUNTS:
             actions = _make_actions(n_actions, resource)
@@ -116,6 +134,14 @@ def main() -> int:
                     data=data,
                     resources=(resource,),
                 )
+                all_action_ids = _all_action_ids(actions, env, max_nested=2)
+                pipeline = DecisionPipeline(
+                    InMemoryAuthorisationPolicy(grants),
+                    AllowInternalReadPolicy(),
+                    SessionVisibilityPolicy(),
+                    ExplicitConsentPolicy(all_action_ids),
+                )
+                kernel = TransitionKernel(pipeline)
                 system = CombinatorialVerificationSystem.from_environment(
                     environment=env,
                     primitive_actions=actions,
@@ -125,7 +151,9 @@ def main() -> int:
                     max_nested_inputs=2,
                     max_model_calls=4,
                 )
+                start = time.perf_counter()
                 result = ExplicitStateChecker().verify(system, ITES_PROPERTIES, BOUNDS)  # type: ignore[misc]
+                elapsed = time.perf_counter() - start
                 results.append(
                     {
                         "principals": n_principals,
@@ -134,8 +162,10 @@ def main() -> int:
                         "verdict": result.verdict.value,
                         "unique_states": result.unique_states,
                         "transitions": result.transitions,
+                        "duplicates": result.duplicate_states,
                         "truncated": result.truncated,
                         "counterexample_length": result.counterexample.length if result.counterexample else 0,
+                        "runtime_seconds": round(elapsed, 3),
                     },
                 )
 
@@ -158,7 +188,8 @@ def main() -> int:
     print(f"Generated SLED environment sweep evidence: {output_path}")
     print(f"  Total runs: {len(results)}")
     print(
-        f"  SAFE: {evidence['safe_count']}, BOUNDED_SAFE: {evidence['bounded_safe_count']}, UNSAFE: {evidence['unsafe_count']}, UNKNOWN: {evidence['unknown_count']}",
+        f"  SAFE: {evidence['safe_count']}, BOUNDED_SAFE: {evidence['bounded_safe_count']}, "
+        f"UNSAFE: {evidence['unsafe_count']}, UNKNOWN: {evidence['unknown_count']}",
     )
     return 0
 

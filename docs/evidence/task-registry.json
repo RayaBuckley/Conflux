@@ -56,7 +56,7 @@
       "ids": ["AGENTDOJO-003"],
       "status": "bounded_evidence",
       "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "research/experiments/suites/agentdojo-tool-schemas-v1.json", "research/experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py", "research/output/runs/agentdojo-1b5-nf4-v1/result.json", "research/output/runs/agentdojo-3b-v1/result.json"],
-      "gap": "1.5B and 3B models are too small for AgentDojo tool-calling format; 7B on RunPod H100 needed"
+      "gap": "1.5B too small for AgentDojo tool-calling; 3B crashes on turn 2 after receiving tool results; 7B calls search_emails correctly and answers but does not format as HH:MM"
     },
     {
       "ids": ["SLEDV-001", "SLEDV-002", "SLEDV-003"],
@@ -106,7 +106,7 @@
       "ids": ["PLAN-DYN-016"],
       "status": "bounded_evidence",
       "evidence": ["research/experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "research/output/runs/direction-readiness-v1/planning-preflight.json", "research/output/runs/planning-pilot-1b5-v1/result.json", "research/output/runs/planning-pilot-3b-v1/result.json"],
-      "gap": "3B model: 5/8 cells utility=True, 0 parse failures; dynamic_code failed (model too small for code gen); 7B on RunPod H100 needed for full utility"
+      "gap": "3B model: 5/8 cells utility=True; dynamic_code failed (model too small for code gen); 7B model: 7/8 cells utility=True (only blocked-action-recovery:dynamic_code failed)"
     },
     {
       "ids": ["DIR-PLAN-001"],

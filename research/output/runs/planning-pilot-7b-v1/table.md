@@ -6,7 +6,7 @@
 | Model calls | 8 |
 | Prompt tokens | 1538 |
 | Output tokens | 252 |
-| Latency (ms) | 18782 |
+| Latency (ms) | 97484 |
 
 ## Cell outcomes
 

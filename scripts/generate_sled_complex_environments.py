@@ -16,6 +16,7 @@ import json
 import sys
 import time
 from datetime import UTC, datetime
+from itertools import combinations
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +45,8 @@ from conflux.ites import TransitionKernel
 from conflux.policy import (
     AllowInternalReadPolicy,
     ExplicitConsentPolicy,
-    OwnerAuthorisationPolicy,
+    InMemoryAuthorisationPolicy,
+    PolicyGrant,
     SessionVisibilityPolicy,
 )
 
@@ -70,18 +72,35 @@ def _run_config(
 ) -> dict[str, Any]:
     principals = tuple(Principal(_NAMES[i], _NAMES[i].capitalize()) for i in range(n_principals))
     session = Session("stress-session", frozenset(principals))
-    pipeline = DecisionPipeline(
-        OwnerAuthorisationPolicy(),
-        AllowInternalReadPolicy(),
-        SessionVisibilityPolicy(),
-        ExplicitConsentPolicy(),
-    )
-    kernel = TransitionKernel(pipeline)
     resource = ResourceRef(provider="fs", resource_id="file1", resource_type="file")
+    grants = frozenset(PolicyGrant(principals[i].id, "read", resource.resource_id) for i in range(n_principals))
 
     actions = tuple(PrimitiveAction(id=f"act_{i}", operation="read", permission=READ, resource=resource) for i in range(n_actions))
-    data = tuple(DataItem(id=f"item-{i}", value=f"val-{i}", authors=frozenset({principals[i % n_principals]})) for i in range(n_data))
+    data = tuple(
+        DataItem(
+            id=f"item-{i}",
+            value=f"val-{i}",
+            authors=frozenset({principals[i % n_principals]}),
+            readers=frozenset(principals),
+        )
+        for i in range(n_data)
+    )
     env = EnvironmentSnapshot(id=f"env-p{n_principals}-a{n_actions}-d{n_data}", data=data, resources=(resource,))
+
+    artifacts = env.artifacts()
+    nested_ids: set[str] = set()
+    for r in range(1, min(max_nested, len(artifacts)) + 1):
+        for combo in combinations(artifacts, r):
+            nested_ids.add(f"nested-{r}-{'-'.join(a.id for a in combo)}")
+    all_action_ids = frozenset(a.id for a in actions) | frozenset(nested_ids)
+
+    pipeline = DecisionPipeline(
+        InMemoryAuthorisationPolicy(grants),
+        AllowInternalReadPolicy(),
+        SessionVisibilityPolicy(),
+        ExplicitConsentPolicy(all_action_ids),
+    )
+    kernel = TransitionKernel(pipeline)
     system = CombinatorialVerificationSystem.from_environment(
         environment=env,
         primitive_actions=actions,
@@ -93,8 +112,8 @@ def _run_config(
     )
     bounds = VerificationBounds(
         max_depth=depth,
-        max_states=100_000,
-        max_transitions=500_000,
+        max_states=50_000,
+        max_transitions=200_000,
         max_model_calls=depth,
     )
     start = time.perf_counter()
@@ -122,6 +141,9 @@ CONFIGS: list[tuple[int, int, int, int, int, int]] = [
     (8, 16, 16, 2, 2, 4),
     (12, 8, 8, 2, 2, 4),
     (12, 12, 12, 2, 2, 4),
+    (5, 8, 8, 2, 2, 8),
+    (8, 8, 8, 2, 2, 8),
+    (5, 12, 12, 2, 2, 8),
 ]
 
 

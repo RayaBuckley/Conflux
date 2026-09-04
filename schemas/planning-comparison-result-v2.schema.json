@@ -22,7 +22,7 @@
           "sensitive_reads", "max_context_size", "cumulative_authority_footprint",
           "model_calls", "prompt_tokens", "output_tokens", "latency_ms",
           "replans", "plan_nodes", "modeled_effects", "bound_reached",
-          "parse_failures", "modeled_program_failures"
+          "parse_failures", "modeled_program_failures", "error_detail"
         ],
         "properties": {
           "case_id": {"type": "string"},
@@ -46,7 +46,8 @@
           "modeled_effects": {"type": "integer", "minimum": 0},
           "bound_reached": {"type": "boolean"},
           "parse_failures": {"type": "integer", "minimum": 0},
-          "modeled_program_failures": {"type": "integer", "minimum": 0}
+          "modeled_program_failures": {"type": "integer", "minimum": 0},
+          "error_detail": {"type": ["string", "null"]}
         }
       }
     }

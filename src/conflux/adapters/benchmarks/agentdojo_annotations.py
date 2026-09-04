@@ -62,7 +62,7 @@ def pilot_annotations(profile: AnnotationProfile) -> AgentDojoAnnotations:
         "search_emails": OperationArgumentSchema(
             "search_emails",
             "agentdojo-0.1.35",
-            {"query": ArgumentRole.CONTENT},
+            {"query": ArgumentRole.CONTENT, "sender": ArgumentRole.CONTENT},
         ),
         "delete_file": OperationArgumentSchema(
             "delete_file",

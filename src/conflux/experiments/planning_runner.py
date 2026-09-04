@@ -219,6 +219,7 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
     max_calls = _integer_bound(protocol, "max_model_calls", 8)
     max_steps = min(cell.scenario.max_steps, _integer_bound(protocol, "max_steps", cell.scenario.max_steps))
     status = "securely_impossible" if cell.scenario.id == "securely-impossible" else "bound_reached"
+    error_detail: str | None = None
     pending: tuple[str, ...] = ()
     while metrics.model_calls < max_calls and metrics.modeled_effects + metrics.legitimate_blocks < max_steps:
         needs_model = not pending
@@ -239,8 +240,10 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
                     metrics.parse_failures += 1
                     status = "parser_failed"
                 break
-            except Exception:
+            except Exception as error:
+                metrics.model_calls += 1
                 status = "model_failed"
+                error_detail = f"{type(error).__name__}:{error}"
                 break
             metrics.plan_nodes += len(pending)
         if not pending:
@@ -310,6 +313,7 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
         "bound_reached": bound_reached,
         "parse_failures": metrics.parse_failures,
         "modeled_program_failures": metrics.modeled_program_failures,
+        "error_detail": error_detail,
     }
 
 
