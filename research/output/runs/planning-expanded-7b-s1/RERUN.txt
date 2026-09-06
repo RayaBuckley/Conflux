@@ -1,0 +1,1 @@
+conflux plan pilot --model-config research\output\runs\agentdojo-7b-v1\transformers.json --output research\output\runs\planning-expanded-7b-s1 --execute-local

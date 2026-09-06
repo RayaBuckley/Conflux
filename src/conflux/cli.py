@@ -166,6 +166,7 @@ def _parser() -> argparse.ArgumentParser:
     plan_pilot.add_argument("--source-commit")
     plan_pilot.add_argument("--output", type=Path, required=True)
     plan_pilot.add_argument("--execute-local", action="store_true")
+    plan_pilot.add_argument("--seed", type=int, default=0, help="Random seed for model generation")
     laptop_smoke = plan_commands.add_parser(
         "laptop-smoke",
         help="preflight or run the fixed dual-backend laptop matrix",
@@ -1136,9 +1137,9 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
             "research/experiments/suites/planning-diagnostic-v1.yaml": _text_sha256(suite_path),
             "local-artifact-manifest": resolved.manifest.fingerprint,
         },
-        model=resolved.spec,
+        model=replace(resolved.spec, seed=int(arguments.seed)),
         prompts={"planner": "planning-diagnostic-v1"},
-        seeds=(0,),
+        seeds=(int(arguments.seed),),
         repetitions=1,
         bounds={"max_model_calls": 4, "max_steps": 3},
         environment={
