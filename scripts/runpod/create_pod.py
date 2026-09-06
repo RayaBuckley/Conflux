@@ -18,9 +18,9 @@ import sys
 from pathlib import Path
 
 GPU_TYPES = {
-    "H100": "NVIDIA H100 80GB HBM3",
-    "A100": "NVIDIA A100 80GB PCIe",
-    "L40S": "NVIDIA L40S",
+    "H100": ("NVIDIA H100 80GB HBM3", 2.69),
+    "A100": ("NVIDIA A100 80GB PCIe", 1.19),
+    "L40S": ("NVIDIA L40S", 0.79),
 }
 
 DEFAULT_IMAGE = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
@@ -36,14 +36,21 @@ def create_pod(
     model_id: str = "Qwen/Qwen2.5-7B-Instruct",
     volume_size: int = 50,
     container_disk: int = 50,
+    max_runtime_minutes: int = 30,
 ) -> dict[str, str]:
-    ssh_key = Path.home() / ".ssh" / "id_ed25519.pub"
-    if not ssh_key.exists():
-        print(f"Error: SSH public key not found at {ssh_key}", file=sys.stderr)
-        sys.exit(1)
-    public_key = ssh_key.read_text().strip()
-    gpu_type = GPU_TYPES.get(gpu, gpu)
+    gpu_type, price_per_hr = GPU_TYPES.get(gpu, (gpu, 0.0))
+    max_cost = price_per_hr * max_runtime_minutes / 60
     name = f"conflux-{model_id.rsplit('/', maxsplit=1)[-1].lower()}"
+    print(f"Pod: {name} ({gpu_type})")
+    print(f"Rate: ${price_per_hr:.2f}/hr  Max runtime: {max_runtime_minutes} min  Max cost: ${max_cost:.2f}")
+    runpod_key = Path.home() / ".runpod" / "ssh" / "runpodctl-ssh-key.pub"
+    ssh_key = Path.home() / ".ssh" / "id_ed25519.pub"
+    key_path = runpod_key if runpod_key.exists() else ssh_key
+    if not key_path.exists():
+        print(f"Error: SSH public key not found at {key_path}", file=sys.stderr)
+        print("Run 'runpodctl config --apiKey YOUR_KEY' to generate one.", file=sys.stderr)
+        sys.exit(1)
+    public_key = key_path.read_text().strip()
     cmd = [
         "runpodctl",
         "pod",
@@ -105,12 +112,14 @@ def main() -> None:
     parser.add_argument("--model", default="Qwen/Qwen2.5-7B-Instruct", help="Model ID for naming")
     parser.add_argument("--volume-size", type=int, default=50, help="Volume size in GB")
     parser.add_argument("--container-disk", type=int, default=50, help="Container disk size in GB")
+    parser.add_argument("--max-runtime-minutes", type=int, default=30, help="Hard stop limit")
     args = parser.parse_args()
     create_pod(
         gpu=args.gpu,
         model_id=args.model,
         volume_size=args.volume_size,
         container_disk=args.container_disk,
+        max_runtime_minutes=args.max_runtime_minutes,
     )
 
 
