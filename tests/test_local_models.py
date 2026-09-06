@@ -124,7 +124,7 @@ def test_local_endpoint_scope_and_malformed_output_fail_closed() -> None:
         public = _spec(endpoint="https://8.8.8.8/v1")
         object.__setattr__(public, "allow_private_remote", True)
         SelfHostedOpenAIModel(public)
-    malformed = SelfHostedOpenAIModel(_spec(), transport=Transport(Response(200, _body(content="not-json"))))
+    malformed = SelfHostedOpenAIModel(_spec(), transport=Transport(Response(200, _body(content="{broken"))))
     with pytest.raises(LocalModelFailure, match="malformed_output"):
         malformed.generate(_request())
 
