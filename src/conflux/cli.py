@@ -1118,7 +1118,14 @@ def _cpu_pilot(arguments: argparse.Namespace) -> int:
         suite={
             "id": "planning-diagnostic-v1",
             "version": "1",
-            "case_ids": ["direct-authorised-effect", "blocked-action-recovery"],
+            "case_ids": [
+                "direct-authorised-effect",
+                "blocked-action-recovery",
+                "multi-step-dependency-chain",
+                "required-sensitive-read",
+                "concurrent-goal-selection",
+                "provider-failure-no-fallback",
+            ],
         },
         source_commit=source_commit,
         inputs={

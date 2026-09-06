@@ -303,7 +303,7 @@ def test_cpu_pilot_preflights_eight_cells_and_retains_fake_bundle(
         str(output),
     ]
     assert main(arguments) == 0
-    assert len(json.loads((output / "preflight.json").read_text())["matrix"]) == 8
+    assert len(json.loads((output / "preflight.json").read_text())["matrix"]) == 24
     assert main([*arguments, "--execute-local"]) == 0
     assert len((output / "raw-model.jsonl").read_text().splitlines()) == 1
     assert (output / "manifest.json").is_file()

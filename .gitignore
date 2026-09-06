@@ -161,6 +161,26 @@ data/
 !research/output/runs/llama-3b-v1/**
 !research/output/runs/qwen3-4b-v1/
 !research/output/runs/qwen3-4b-v1/**
+!research/output/runs/planning-expanded-*/
+!research/output/runs/planning-expanded-*/**
+!research/output/runs/planning-pilot-7b-v5/
+!research/output/runs/planning-pilot-7b-v5/**
+!research/output/runs/planning-pilot-7b-v6/
+!research/output/runs/planning-pilot-7b-v6/**
+!research/output/runs/planning-pilot-7b-v7/
+!research/output/runs/planning-pilot-7b-v7/**
+!research/output/runs/planning-pilot-3b-v5/
+!research/output/runs/planning-pilot-3b-v5/**
+!research/output/runs/planning-pilot-3b-v6/
+!research/output/runs/planning-pilot-3b-v6/**
+!research/output/runs/planning-pilot-granite-2b-v3/
+!research/output/runs/planning-pilot-granite-2b-v3/**
+!research/output/runs/planning-pilot-qwen3-4b-v3/
+!research/output/runs/planning-pilot-qwen3-4b-v3/**
+!research/output/runs/planning-pilot-qwen3-4b-v4/
+!research/output/runs/planning-pilot-qwen3-4b-v4/**
+!research/output/runs/planning-pilot-llama-3b-v3/
+!research/output/runs/planning-pilot-llama-3b-v3/**
 dist/
 build/
 
