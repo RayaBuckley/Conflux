@@ -115,6 +115,22 @@ def _parser() -> argparse.ArgumentParser:
     resolve_transformers.add_argument("--runtime-version", required=True)
     resolve_transformers.add_argument("--output", type=Path, required=True)
 
+    resolve_openai = resolve_commands.add_parser("openai-compatible")
+    resolve_openai.add_argument("--model-id", required=True)
+    resolve_openai.add_argument("--revision", required=True)
+    resolve_openai.add_argument("--endpoint", required=True)
+    resolve_openai.add_argument("--snapshot", type=Path, required=True)
+    resolve_openai.add_argument("--tokenizer-id")
+    resolve_openai.add_argument("--tokenizer-revision")
+    resolve_openai.add_argument("--prompt-template", default="planning-diagnostic-v1")
+    resolve_openai.add_argument("--runtime-version", required=True)
+    resolve_openai.add_argument("--max-output-tokens", type=int, default=256)
+    resolve_openai.add_argument("--context-limit", type=int, default=32768)
+    resolve_openai.add_argument("--device", default="cuda")
+    resolve_openai.add_argument("--dtype", default="float16")
+    resolve_openai.add_argument("--allow-private-remote", action="store_true")
+    resolve_openai.add_argument("--output", type=Path, required=True)
+
     demo = commands.add_parser("demo", help="run a deterministic scripted scenario")
     demo.add_argument("--scenario", type=Path, default=Path("examples/basic.yaml"))
     demo.add_argument("--model", choices=("scripted",), default="scripted")
@@ -276,8 +292,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _model_artifacts(arguments: argparse.Namespace) -> int:
-    """Resolve operator-owned local-transformers model snapshots into manifest files."""
-    if str(arguments.model_command) != "resolve" or str(arguments.resolve_command) != "transformers":
+    """Resolve operator-owned local model snapshots into manifest files."""
+    if str(arguments.model_command) != "resolve":
+        return _unavailable("unsupported_model_artifact_command")
+    resolve_command = str(arguments.resolve_command)
+    if resolve_command not in {"transformers", "openai-compatible"}:
         return _unavailable("unsupported_model_artifact_command")
     model_id = str(arguments.model_id)
     revision = str(arguments.revision)
@@ -290,31 +309,53 @@ def _model_artifacts(arguments: argparse.Namespace) -> int:
         tokenizer_id=tokenizer_id,
         tokenizer_revision=tokenizer_revision,
     )
-    spec = LocalModelSpec(
-        backend="transformers",
-        model_id=model_id,
-        revision=revision,
-        weight_manifest_sha256=manifest.fingerprint,
-        tokenizer_id=tokenizer_id,
-        tokenizer_revision=tokenizer_revision,
-        prompt_template_version=str(arguments.prompt_template),
-        seed=0,
-        temperature=0.0,
-        top_p=1.0,
-        max_output_tokens=256,
-        context_limit=4096,
-        device="cpu",
-        dtype="float32",
-        runtime_version=str(arguments.runtime_version),
-    )
+    output = cast(Path, arguments.output)
+    if resolve_command == "transformers":
+        spec = LocalModelSpec(
+            backend="transformers",
+            model_id=model_id,
+            revision=revision,
+            weight_manifest_sha256=manifest.fingerprint,
+            tokenizer_id=tokenizer_id,
+            tokenizer_revision=tokenizer_revision,
+            prompt_template_version=str(arguments.prompt_template),
+            seed=0,
+            temperature=0.0,
+            top_p=1.0,
+            max_output_tokens=256,
+            context_limit=4096,
+            device="cpu",
+            dtype="float32",
+            runtime_version=str(arguments.runtime_version),
+        )
+    else:
+        spec = LocalModelSpec(
+            backend="openai_compatible",
+            model_id=model_id,
+            revision=revision,
+            weight_manifest_sha256=manifest.fingerprint,
+            tokenizer_id=tokenizer_id,
+            tokenizer_revision=tokenizer_revision,
+            prompt_template_version=str(arguments.prompt_template),
+            seed=0,
+            temperature=0.0,
+            top_p=1.0,
+            max_output_tokens=int(arguments.max_output_tokens),
+            context_limit=int(arguments.context_limit),
+            device=str(arguments.device),
+            dtype=str(arguments.dtype),
+            runtime_version=str(arguments.runtime_version),
+            endpoint=str(arguments.endpoint),
+            allow_private_remote=bool(arguments.allow_private_remote),
+        )
+    config_name = "transformers.json" if resolve_command == "transformers" else "openai-compatible.json"
     resolved = ResolvedLocalModel(
         spec,
         cast(Path, arguments.snapshot),
         manifest,
         warnings,
     )
-    output = cast(Path, arguments.output)
-    write_resolved_local_model(resolved, output / "transformers.json")
+    write_resolved_local_model(resolved, output / config_name)
     (output / "artifact-manifest.json").write_text(
         canonical_json(manifest.to_dict()) + "\n",
         encoding="utf-8",
@@ -324,7 +365,7 @@ def _model_artifacts(arguments: argparse.Namespace) -> int:
         canonical_json(
             {
                 "available": True,
-                "configuration": str(output / "transformers.json"),
+                "configuration": str(output / config_name),
                 "files": len(manifest.files),
                 "manifest_sha256": manifest.fingerprint,
                 "model_id": model_id,
