@@ -113,6 +113,10 @@ def _parser() -> argparse.ArgumentParser:
     resolve_transformers.add_argument("--tokenizer-revision")
     resolve_transformers.add_argument("--prompt-template", default="planning-diagnostic-v1")
     resolve_transformers.add_argument("--runtime-version", required=True)
+    resolve_transformers.add_argument("--device", default="cpu", help="Device: cpu or cuda")
+    resolve_transformers.add_argument("--dtype", default="float32", help="Dtype: float32, float16, or nf4")
+    resolve_transformers.add_argument("--max-output-tokens", type=int, default=256)
+    resolve_transformers.add_argument("--context-limit", type=int, default=4096)
     resolve_transformers.add_argument("--output", type=Path, required=True)
 
     resolve_openai = resolve_commands.add_parser("openai-compatible")
@@ -322,10 +326,10 @@ def _model_artifacts(arguments: argparse.Namespace) -> int:
             seed=0,
             temperature=0.0,
             top_p=1.0,
-            max_output_tokens=256,
-            context_limit=4096,
-            device="cpu",
-            dtype="float32",
+            max_output_tokens=int(arguments.max_output_tokens),
+            context_limit=int(arguments.context_limit),
+            device=str(arguments.device),
+            dtype=str(arguments.dtype),
             runtime_version=str(arguments.runtime_version),
         )
     else:

@@ -275,8 +275,11 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
                 break
             metrics.plan_nodes += len(pending)
         if not pending:
-            status = "parser_failed"
-            metrics.parse_failures += 1
+            if attempted:
+                status = "provider_failed"
+            else:
+                status = "parser_failed"
+                metrics.parse_failures += 1
             break
         sequence = pending[:1] if cell.mode == PlanningMode.REACTIVE else pending
         failure = False
@@ -352,7 +355,9 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
 def _planning_request(cell: PlanningCell, call: int, attempted: set[str]) -> LocalModelRequest:
     code = cell.mode == PlanningMode.DYNAMIC_CODE
     replan_hint = (
-        f" Previously attempted actions were blocked by ITES: {sorted(attempted)}. Do not re-select blocked actions." if attempted else ""
+        f" Previously executed or attempted actions: {sorted(attempted)}. Do not re-select actions that have already been executed."
+        if attempted
+        else ""
     )
     return LocalModelRequest(
         f"planning:{cell.id}:call-{call}",
