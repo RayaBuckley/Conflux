@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -18,29 +17,7 @@ from conflux.domain import canonical_json
 from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResponse, LocalModelSpec
 
 from .artifacts import LocalArtifactManifest, verify_transformers_snapshot
-from .local_openai import LocalModelFailure
-
-_FENCE_RE = re.compile(
-    r"^\s*```(?:json)?\s*\n(.*?)\n```\s*$",
-    re.DOTALL,
-)
-
-
-def _strip_markdown_fences(text: str) -> str:
-    stripped = _FENCE_RE.sub(r"\1", text)
-    return stripped.strip() if stripped != text.strip() else text.strip()
-
-
-def _extract_first_json(text: str) -> dict[str, object]:
-    cleaned = _strip_markdown_fences(text)
-    start = cleaned.find("{")
-    if start == -1:
-        raise ValueError("no_json_object_found")
-    decoder = json.JSONDecoder()
-    obj, _ = decoder.raw_decode(cleaned, start)
-    if not isinstance(obj, dict):
-        raise TypeError("structured_root_not_object")
-    return obj
+from .local_openai import LocalModelFailure, _extract_structured
 
 
 class LocalTextGenerator(Protocol):
@@ -155,8 +132,8 @@ class TransformersLocalModel:
                 },
             )
             try:
-                decoded = _extract_first_json(content)
-            except (json.JSONDecodeError, ValueError) as parse_error:
+                decoded = _extract_structured(content, request.schema)
+            except (json.JSONDecodeError, ValueError, TypeError, SyntaxError) as parse_error:
                 raise LocalModelFailure(
                     "malformed_output",
                     str(parse_error),

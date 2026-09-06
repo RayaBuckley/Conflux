@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import ipaddress
 import json
+import re
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from importlib.util import find_spec
 from typing import Any, cast
@@ -18,6 +20,92 @@ from conflux.domain import canonical_json
 from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResponse, LocalModelSpec
 
 from .openai_compatible import HTTPTransport, _HttpxTransport
+
+_FENCE_RE = re.compile(
+    r"^\s*```(?:json)?\s*\n(.*?)\n```\s*$",
+    re.DOTALL,
+)
+
+
+def _strip_markdown_fences(text: str) -> str:
+    stripped = _FENCE_RE.sub(r"\1", text)
+    return stripped.strip() if stripped != text.strip() else text.strip()
+
+
+def _extract_first_json(text: str) -> dict[str, object]:
+    cleaned = _strip_markdown_fences(text)
+    start = cleaned.find("{")
+    if start == -1:
+        raise ValueError("no_json_object_found")
+    decoder = json.JSONDecoder()
+    obj, _ = decoder.raw_decode(cleaned, start)
+    if not isinstance(obj, dict):
+        raise TypeError("structured_root_not_object")
+    return obj
+
+
+def _extract_python_dict(text: str) -> dict[str, object]:
+    cleaned = _strip_markdown_fences(text)
+    start = cleaned.find("{")
+    if start == -1:
+        raise ValueError("no_python_dict_found")
+    end = cleaned.rfind("}")
+    if end == -1 or end <= start:
+        raise ValueError("no_python_dict_found")
+    candidate = cleaned[start : end + 1]
+    obj = ast.literal_eval(candidate)
+    if not isinstance(obj, dict):
+        raise TypeError("structured_root_not_object")
+    return obj
+
+
+def _extract_bare_array(text: str, schema: Mapping[str, object]) -> dict[str, object]:
+    cleaned = _strip_markdown_fences(text).strip()
+    start = cleaned.find("[")
+    if start == -1:
+        raise ValueError("no_bare_array_found")
+    decoder = json.JSONDecoder()
+    arr, _ = decoder.raw_decode(cleaned, start)
+    if not isinstance(arr, list):
+        raise TypeError("structured_root_not_array")
+    required = schema.get("required", [])
+    if not isinstance(required, list):
+        raise ValueError("schema_required_not_list")
+    if "action_ids" in required:
+        return {"action_ids": arr}
+    if "effects" in required:
+        return {"effects": arr}
+    raise ValueError("bare_array_no_matching_schema_field")
+
+
+def _extract_bare_string(text: str, schema: Mapping[str, object]) -> dict[str, object]:
+    cleaned = _strip_markdown_fences(text).strip()
+    if not cleaned or cleaned.startswith(("{", "[")):
+        raise ValueError("no_bare_string_found")
+    required = schema.get("required", [])
+    if not isinstance(required, list):
+        raise ValueError("schema_required_not_list")
+    if "final" in required:
+        return {"final": cleaned, "tool_call": None}
+    if "answer" in required:
+        return {"answer": cleaned}
+    raise ValueError("bare_string_no_matching_schema_field")
+
+
+def _extract_structured(text: str, schema: Mapping[str, object]) -> dict[str, object]:
+    try:
+        return _extract_first_json(text)
+    except (ValueError, TypeError, json.JSONDecodeError):
+        pass
+    try:
+        return _extract_python_dict(text)
+    except (ValueError, TypeError, SyntaxError):
+        pass
+    try:
+        return _extract_bare_array(text, schema)
+    except (ValueError, TypeError, json.JSONDecodeError):
+        pass
+    return _extract_bare_string(text, schema)
 
 
 class LocalModelFailure(RuntimeError):
@@ -100,20 +188,20 @@ class SelfHostedOpenAIModel:
             content = raw["choices"][0]["message"]["content"]
             if not isinstance(content, str):
                 raise TypeError("content_not_string")
-            decoded = json.loads(content)
+            decoded = _extract_structured(content, request.schema)
             if not isinstance(decoded, dict):
                 raise TypeError("structured_root_not_object")
             Draft202012Validator(dict(request.schema)).validate(decoded)
             prompt_tokens, output_tokens = _usage(raw)
         except LocalModelFailure:
             raise
-        except (KeyError, IndexError, TypeError, json.JSONDecodeError, ValidationError) as error:
+        except (KeyError, IndexError, TypeError, ValueError, json.JSONDecodeError, ValidationError) as error:
             raise LocalModelFailure("malformed_output", str(error)) from error
         raw_hash = hashlib.sha256(canonical_json(raw).encode("utf-8")).hexdigest()
         return LocalModelResponse(
             request.request_id,
             self.spec.model_id,
-            cast(dict[str, object], decoded),
+            decoded,
             prompt_tokens,
             output_tokens,
             latency,
@@ -150,4 +238,13 @@ def _usage(body: dict[str, Any]) -> tuple[int | None, int | None]:
     )
 
 
-__all__ = ["LocalModelFailure", "SelfHostedOpenAIModel"]
+__all__ = [
+    "LocalModelFailure",
+    "SelfHostedOpenAIModel",
+    "_extract_bare_array",
+    "_extract_bare_string",
+    "_extract_first_json",
+    "_extract_python_dict",
+    "_extract_structured",
+    "_strip_markdown_fences",
+]

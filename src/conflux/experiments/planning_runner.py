@@ -11,6 +11,7 @@ import yaml
 from jsonschema import Draft202012Validator, ValidationError
 from yaml import YAMLError
 
+from conflux.adapters.models.local_openai import LocalModelFailure
 from conflux.adapters.scenarios import load_schema
 from conflux.application import DecisionPipeline
 from conflux.domain import (
@@ -227,7 +228,20 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
             if metrics.model_calls > 0:
                 metrics.replans += 1
             try:
-                response = model.generate(_planning_request(cell, metrics.model_calls, attempted))
+                request = _planning_request(cell, metrics.model_calls, attempted)
+                try:
+                    response = model.generate(request)
+                except LocalModelFailure as model_failure:
+                    if model_failure.category != "malformed_output":
+                        raise
+                    repair = LocalModelRequest(
+                        f"{request.request_id}:repair",
+                        f"{request.system_prompt} The previous response was rejected: {model_failure.detail}. Return a valid JSON object only.",
+                        request.user_prompt,
+                        request.schema_name,
+                        request.schema,
+                    )
+                    response = model.generate(repair)
                 _record_response(metrics, response)
                 pending, program = _proposal_actions(cell, response)
                 if program is not None:
@@ -323,7 +337,10 @@ def _planning_request(cell: PlanningCell, call: int, attempted: set[str]) -> Loc
         f"planning:{cell.id}:call-{call}",
         (
             "Choose only scenario action IDs. Effects are modeled in memory and mediated by ITES at action time. "
-            "Do not emit source code or claim that an effect executed."
+            "Do not emit source code or claim that an effect executed. "
+            "Some actions may be blocked by ITES based on Principal Context authority. "
+            "Order effects so that goal-achieving actions do not depend on potentially-blocked actions. "
+            "Create an instance of the schema with your values. Do not copy or echo the schema itself."
         ),
         canonical_json(
             {
@@ -334,8 +351,13 @@ def _planning_request(cell: PlanningCell, call: int, attempted: set[str]) -> Loc
                 "actions": [
                     {
                         "id": action.id,
+                        "permission": action.permission,
+                        "resource_id": action.resource_id,
+                        "context": list(action.context),
+                        "allowed_principals": list(action.allowed_principals),
                         "declared_reads": list(action.declared_reads),
                         "declared_writes": list(action.declared_writes),
+                        "goal": action.goal,
                     }
                     for action in cell.scenario.actions
                 ],
