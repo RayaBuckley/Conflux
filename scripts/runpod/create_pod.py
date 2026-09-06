@@ -18,16 +18,22 @@ import sys
 from pathlib import Path
 
 GPU_TYPES = {
-    "H100": ("NVIDIA H100 80GB HBM3", 2.69),
-    "A100": ("NVIDIA A100 80GB PCIe", 1.19),
-    "L40S": ("NVIDIA L40S", 0.79),
+    "H100": ("NVIDIA H100 80GB HBM3", 3.49),
+    "A100": ("NVIDIA A100 80GB PCIe", 1.59),
+    "L40S": ("NVIDIA L40S", 1.09),
 }
 
 DEFAULT_IMAGE = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
 
 
 def _run(cmd: list[str]) -> str:
-    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    except subprocess.CalledProcessError as exc:
+        print(f"runpodctl failed (exit {exc.returncode})", file=sys.stderr)
+        print(f"stderr: {exc.stderr}", file=sys.stderr)
+        print(f"stdout: {exc.stdout}", file=sys.stderr)
+        raise
     return result.stdout.strip()
 
 
@@ -63,16 +69,16 @@ def create_pod(
         gpu_type,
         "--gpu-count",
         "1",
-        "--volume-size",
+        "--volume-in-gb",
         str(volume_size),
-        "--container-disk-size",
+        "--container-disk-in-gb",
         str(container_disk),
         "--cloud-type",
-        "COMMUNITY",
+        "SECURE",
         "--ports",
         "22/tcp",
         "--env",
-        f"PUBLIC_KEY={public_key}",
+        json.dumps({"PUBLIC_KEY": public_key}),
         "--wait",
         "--wait-timeout",
         "10m",
@@ -98,8 +104,13 @@ def create_pod(
     }
     if ssh_command:
         parts = ssh_command.split()
-        result["ssh_ip"] = parts[-2] if len(parts) >= 2 else ""
-        result["ssh_port"] = parts[-1] if len(parts) >= 1 else "22"
+        result["ssh_ip"] = ""
+        result["ssh_port"] = "22"
+        for i, part in enumerate(parts):
+            if part.startswith("root@"):
+                result["ssh_ip"] = part[5:]
+            if part == "-p" and i + 1 < len(parts):
+                result["ssh_port"] = parts[i + 1]
     print(json.dumps(result, indent=2))
     return result
 

@@ -55,7 +55,11 @@ def _ssh(key: Path, ip: str, port: str, cmd: str, timeout: int = 600) -> str:
         f"root@{ip}",
         cmd,
     ]
-    result = subprocess.run(ssh_cmd, capture_output=True, text=True, check=True, timeout=timeout)
+    try:
+        result = subprocess.run(ssh_cmd, capture_output=True, text=True, check=True, timeout=timeout)
+    except subprocess.CalledProcessError as exc:
+        print(f"SSH failed (exit {exc.returncode}): {exc.stderr}", file=sys.stderr)
+        raise
     return result.stdout
 
 
@@ -74,7 +78,11 @@ def _scp(key: Path, ip: str, port: str, src: str, dst: str, timeout: int = 120) 
         src,
         dst,
     ]
-    subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=timeout)
+    try:
+        subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=timeout)
+    except subprocess.CalledProcessError as exc:
+        print(f"SCP failed (exit {exc.returncode}): {exc.stderr}", file=sys.stderr)
+        raise
 
 
 def _start_auto_stop_timer(pod_id: str, max_minutes: int) -> threading.Timer:
@@ -132,6 +140,8 @@ def run_all(
     try:
         # Phase 2: Setup
         print("\n=== Phase 2: Setting up environment ===")
+        print("Waiting 10s for container to fully initialize...")
+        time.sleep(10)
         setup_script = Path(__file__).parent / "setup_pod.sh"
         _scp(key, ip, port, str(setup_script), f"root@{ip}:/workspace/setup_pod.sh")
         env_prefix = f"HF_TOKEN={os.environ['HF_TOKEN']} " if os.environ.get("HF_TOKEN") else ""
@@ -189,7 +199,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run complete RunPod evaluation")
     parser.add_argument("--model", default="Qwen/Qwen2.5-7B-Instruct", help="HuggingFace model ID")
     parser.add_argument("--gpu", default="H100", choices=list(GPU_TYPES))
-    parser.add_argument("--repo", default="https://github.com/Conflux-Research/Conflux.git")
+    parser.add_argument("--repo", default="https://github.com/RayaBuckley/Conflux.git")
     parser.add_argument("--output", type=Path, default=Path("research/output/runs/runpod-results"))
     parser.add_argument("--keep-pod", action="store_true", help="Keep pod running after evaluation")
     parser.add_argument("--max-runtime-minutes", type=int, default=30, help="Hard stop limit (default 30)")

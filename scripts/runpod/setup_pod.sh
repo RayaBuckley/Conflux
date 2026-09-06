@@ -9,7 +9,7 @@
 set -euo pipefail
 
 MODEL_ID="${1:-Qwen/Qwen2.5-7B-Instruct}"
-GIT_REPO="${2:-https://github.com/Conflux-Research/Conflux.git}"
+GIT_REPO="${2:-https://github.com/RayaBuckley/Conflux.git}"
 WORKDIR="/workspace/conflux"
 
 echo "=== Conflux RunPod Setup ==="
@@ -24,8 +24,10 @@ fi
 cd "$WORKDIR"
 
 echo "--- Installing Python 3.12 ---"
-apt-get update -qq && apt-get install -y -qq software-properties-common
-add-apt-repository -y ppa:deadsnakes/ppa
+apt-get update -qq
+echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu jammy main" > /etc/apt/sources.list.d/deadsnakes.list
+apt-get install -y -qq gnupg
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A03 2>/dev/null || true
 apt-get update -qq && apt-get install -y -qq python3.12 python3.12-venv python3.12-dev
 python3.12 --version
 
