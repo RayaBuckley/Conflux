@@ -1,0 +1,1 @@
+conflux plan pilot --model-config research\output\runs\qwen3-4b-v1\transformers.json --output research\output\runs\planning-pilot-qwen3-4b-v2 --execute-local

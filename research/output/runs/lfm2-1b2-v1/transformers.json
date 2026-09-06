@@ -1,0 +1,91 @@
+{
+  "manifest": {
+    "files": [
+      {
+        "path": ".eval_results/gpqa.yaml",
+        "sha256": "ba7226797c81fa7c59ab67d0da02491ccd312fafa9673b9fd95d14233c51e9e4",
+        "size": 206
+      },
+      {
+        "path": ".gitattributes",
+        "sha256": "11ad7efa24975ee4b0c3c3a38ed18737f0658a5f75a0a96787b576a78a023361",
+        "size": 1519
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "61d7e939a05911c765b7e98ffaa1ab5ca6c0174a65350766c25cb10197d19fc8",
+        "size": 10644
+      },
+      {
+        "path": "README.md",
+        "sha256": "682de876c2d172eaeffff775ad8422b5fd7ada701543916e62129e3be8eab077",
+        "size": 16291
+      },
+      {
+        "path": "chat_template.jinja",
+        "sha256": "ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6",
+        "size": 5487
+      },
+      {
+        "path": "config.json",
+        "sha256": "15d6157fb6df3f8272e2fe90e18f57727ccf02a125c94469198b0f3281510185",
+        "size": 1224
+      },
+      {
+        "path": "generation_config.json",
+        "sha256": "5ffd97da1dec4308543894569662d96e923ed01f7a9d8c7ff5aea7f800738cbd",
+        "size": 132
+      },
+      {
+        "path": "model.safetensors",
+        "sha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+        "size": 2340697936
+      },
+      {
+        "path": "special_tokens_map.json",
+        "sha256": "742aefe2b7dec496e8caffdba03a75d0c1a9925d53bd3f3e0d388c96b591b6f4",
+        "size": 434
+      },
+      {
+        "path": "tokenizer.json",
+        "sha256": "df1d8d5ec5d091b460562ffd545e4a5e91d17d4a0db7ebe733be34ed374377bd",
+        "size": 4733389
+      },
+      {
+        "path": "tokenizer_config.json",
+        "sha256": "2a52ec012d3df831ba434b081bef3726a6ee22501f062ad8353c557a0cfa0d01",
+        "size": 92225
+      }
+    ],
+    "model_id": "LiquidAI/LFM2.5-1.2B-Instruct",
+    "revision": "0f604ada3f766f9f257460c4c9f0b5d6f69d431b",
+    "schema_version": "1",
+    "tokenizer_id": "LiquidAI/LFM2.5-1.2B-Instruct",
+    "tokenizer_revision": "0f604ada3f766f9f257460c4c9f0b5d6f69d431b",
+    "total_size": 2345559487
+  },
+  "schema_version": "1",
+  "snapshot_path": "C:\\Users\\rbuck\\.cache\\huggingface\\hub\\models--LiquidAI--LFM2.5-1.2B-Instruct\\snapshots\\0f604ada3f766f9f257460c4c9f0b5d6f69d431b",
+  "spec": {
+    "allow_private_remote": false,
+    "backend": "transformers",
+    "context_limit": 4096,
+    "device": "cuda",
+    "dtype": "nf4",
+    "endpoint": null,
+    "max_output_tokens": 512,
+    "model_id": "LiquidAI/LFM2.5-1.2B-Instruct",
+    "prompt_template_version": "agentdojo_turn_v1",
+    "revision": "0f604ada3f766f9f257460c4c9f0b5d6f69d431b",
+    "runtime_version": "torch-2.5.1-transformers-4.55.0",
+    "seed": 0,
+    "temperature": 0.0,
+    "tokenizer_id": "LiquidAI/LFM2.5-1.2B-Instruct",
+    "tokenizer_revision": "0f604ada3f766f9f257460c4c9f0b5d6f69d431b",
+    "top_p": 1.0,
+    "weight_manifest_sha256": "73d946b2cc6511a3431e9866d6144da22b526e32ca9bd3bed23dce5e2db2111e"
+  },
+  "warnings": [
+    "unreferenced_incomplete_cache_entries:2"
+  ]
+}

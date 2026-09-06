@@ -1,0 +1,1 @@
+conflux plan pilot --model-config research\output\runs\lfm2-1b2-v1\transformers.json --output research\output\runs\planning-pilot-lfm2-1b2-v1 --execute-local
