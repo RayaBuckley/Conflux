@@ -63,3 +63,35 @@ scenarios:
       - {id: impossible-delete, permission: delete, resource_id: protected, context: [alice, bob], allowed_principals: [alice], declared_reads: [], declared_writes: [protected], sensitive_read: false, provider_failure: false, goal: true}
     revocations: []
     max_steps: 2
+  - id: multi-step-dependency-chain
+    distinguishes: A three-step read-transform-write chain must preserve provenance across multiple hops.
+    principals: [alice]
+    actions:
+      - {id: read-config, permission: read, resource_id: config, context: [alice], allowed_principals: [alice], declared_reads: [config], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: transform, permission: write, resource_id: intermediate, context: [alice], allowed_principals: [alice], declared_reads: [config], declared_writes: [intermediate], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: write-output, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [intermediate], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 4
+  - id: required-sensitive-read
+    distinguishes: The only goal path requires a sensitive read that must be planned and executed.
+    principals: [alice]
+    actions:
+      - {id: read-secret, permission: read, resource_id: secret, context: [alice], allowed_principals: [alice], declared_reads: [secret], declared_writes: [], sensitive_read: true, provider_failure: false, goal: false}
+      - {id: write-derived, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [secret], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: concurrent-goal-selection
+    distinguishes: Two independent goal paths exist; the planner must choose the safer one based on authority.
+    principals: [alice, bob]
+    actions:
+      - {id: risky-write, permission: delete, resource_id: protected, context: [alice, bob], allowed_principals: [alice], declared_reads: [], declared_writes: [protected], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: safe-write, permission: write, resource_id: output, context: [alice, bob], allowed_principals: [alice, bob], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: provider-failure-no-fallback
+    distinguishes: Provider failure with no fallback must report provider_failed status rather than loop.
+    principals: [alice]
+    actions:
+      - {id: flaky-only, permission: write, resource_id: primary, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [primary], sensitive_read: false, provider_failure: true, goal: true}
+    revocations: []
+    max_steps: 2

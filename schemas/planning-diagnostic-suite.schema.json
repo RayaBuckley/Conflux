@@ -10,7 +10,7 @@
     "scenarios": {
       "type": "array",
       "minItems": 8,
-      "maxItems": 8,
+      "maxItems": 16,
       "items": {
         "type": "object",
         "additionalProperties": false,

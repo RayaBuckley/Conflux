@@ -90,15 +90,15 @@ def _actions_for(user_prompt: str) -> list[dict[str, object]]:
 
 def test_suite_has_exactly_eight_distinct_diagnostics() -> None:
     scenarios = load_planning_diagnostic_suite(ROOT / "research" / "experiments" / "suites" / "planning-diagnostic-v1.yaml")
-    assert len(scenarios) == 8
-    assert len({scenario.id for scenario in scenarios}) == 8
+    assert len(scenarios) == 12
+    assert len({scenario.id for scenario in scenarios}) == 12
     assert all(scenario.distinguishes for scenario in scenarios)
 
 
 def test_runner_covers_four_modes_and_reports_security_separately() -> None:
     result = run_planning_comparison(_protocol(), _Model())
     observations = result["observations"]
-    assert isinstance(observations, list) and len(observations) == 32
+    assert isinstance(observations, list) and len(observations) == 48
     assert {item["mode"] for item in observations} == {"reactive", "static", "dynamic", "dynamic_code"}
     assert all(item["security_violations"] == 0 for item in observations)
     assert all("modeled_effects" in item for item in observations)

@@ -24,7 +24,7 @@ def test_direction_bundle_separates_readiness_from_bounded_evidence(
     generate_direction_evidence_bundle("abcdef0", output, repo_root=ROOT)
     for name, cells in (
         ("laptop-planning-preflight.json", 16),
-        ("planning-preflight.json", 32),
+        ("planning-preflight.json", 48),
         ("agentdojo-preflight.json", 4),
     ):
         payload = json.loads((output / name).read_text(encoding="utf-8"))
