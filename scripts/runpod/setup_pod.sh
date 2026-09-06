@@ -23,17 +23,10 @@ if [ ! -d "$WORKDIR" ]; then
 fi
 cd "$WORKDIR"
 
-echo "--- Installing Python 3.12 ---"
-apt-get update -qq
-echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu jammy main" > /etc/apt/sources.list.d/deadsnakes.list
-apt-get install -y -qq gnupg
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A03 2>/dev/null || true
-apt-get update -qq && apt-get install -y -qq python3.12 python3.12-venv python3.12-dev
-python3.12 --version
-
 echo "--- Creating virtual environment ---"
-python3.12 -m venv /workspace/venv
+python3 -m venv /workspace/venv
 source /workspace/venv/bin/activate
+python --version
 pip install --upgrade pip
 
 echo "--- Installing Conflux with all extras ---"
