@@ -121,6 +121,9 @@ def _schema_to_example(schema: Mapping[str, object]) -> dict[str, object]:
     for key, prop in properties.items():
         if not isinstance(prop, Mapping):
             continue
+        if "const" in prop:
+            result[key] = prop["const"]
+            continue
         prop_type = prop.get("type")
         if prop_type == "string":
             result[key] = "<string>"
@@ -129,7 +132,11 @@ def _schema_to_example(schema: Mapping[str, object]) -> dict[str, object]:
         elif prop_type == "boolean":
             result[key] = False
         elif prop_type == "array":
-            result[key] = []
+            items = prop.get("items", {})
+            if isinstance(items, Mapping) and items.get("type") == "object":
+                result[key] = [_schema_to_example(items)]
+            else:
+                result[key] = []
         elif prop_type == "object":
             result[key] = _schema_to_example(prop)
         elif isinstance(prop.get("oneOf"), list):

@@ -17,7 +17,7 @@ from conflux.domain import canonical_json
 from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResponse, LocalModelSpec
 
 from .artifacts import LocalArtifactManifest, verify_transformers_snapshot
-from .local_openai import LocalModelFailure, _extract_structured
+from .local_openai import LocalModelFailure, _extract_structured, _schema_to_example
 
 
 class LocalTextGenerator(Protocol):
@@ -107,7 +107,8 @@ class TransformersLocalModel:
             self.generator = self._load_generator()
         generator = self.generator
         schema_hint = json.dumps(dict(request.schema), indent=None, separators=(",", ":"))
-        user_content = f"{request.user_prompt}\nReturn JSON matching this schema: {schema_hint}"
+        schema_example = json.dumps(_schema_to_example(request.schema), separators=(",", ":"))
+        user_content = f"{request.user_prompt}\nReturn JSON matching this schema: {schema_hint}\nExample structure (fill in your values): {schema_example}"
         started = self.clock()
         try:
             generated = generator(
