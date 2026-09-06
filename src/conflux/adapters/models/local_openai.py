@@ -108,6 +108,42 @@ def _extract_structured(text: str, schema: Mapping[str, object]) -> dict[str, ob
     return _extract_bare_string(text, schema)
 
 
+def _schema_to_example(schema: Mapping[str, object]) -> dict[str, object]:
+    """Produce a minimal instance from a JSON Schema for prompt hints."""
+    if not isinstance(schema, Mapping):
+        return {}
+    if schema.get("type") != "object":
+        return {}
+    properties = schema.get("properties", {})
+    if not isinstance(properties, dict):
+        return {}
+    result: dict[str, object] = {}
+    for key, prop in properties.items():
+        if not isinstance(prop, Mapping):
+            continue
+        prop_type = prop.get("type")
+        if prop_type == "string":
+            result[key] = "<string>"
+        elif prop_type == "integer":
+            result[key] = 1
+        elif prop_type == "boolean":
+            result[key] = False
+        elif prop_type == "array":
+            result[key] = []
+        elif prop_type == "object":
+            result[key] = _schema_to_example(prop)
+        elif isinstance(prop.get("oneOf"), list):
+            for option in prop["oneOf"]:
+                if isinstance(option, Mapping) and option.get("type") == "null":
+                    result[key] = None
+                    break
+            else:
+                result[key] = None
+        else:
+            result[key] = None
+    return result
+
+
 class LocalModelFailure(RuntimeError):
     """A categorized local inference boundary failure."""
 
@@ -246,5 +282,6 @@ __all__ = [
     "_extract_first_json",
     "_extract_python_dict",
     "_extract_structured",
+    "_schema_to_example",
     "_strip_markdown_fences",
 ]

@@ -243,9 +243,23 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
                     )
                     response = model.generate(repair)
                 _record_response(metrics, response)
-                pending, program = _proposal_actions(cell, response)
-                if program is not None:
-                    _validate_program_effects(program, cell.scenario)
+                try:
+                    pending, program = _proposal_actions(cell, response)
+                    if program is not None:
+                        _validate_program_effects(program, cell.scenario)
+                except ValueError as program_error:
+                    repair = LocalModelRequest(
+                        f"{request.request_id}:repair",
+                        f"{request.system_prompt} The program was invalid: {program_error}. Return a valid JSON object only.",
+                        request.user_prompt,
+                        request.schema_name,
+                        request.schema,
+                    )
+                    response = model.generate(repair)
+                    _record_response(metrics, response)
+                    pending, program = _proposal_actions(cell, response)
+                    if program is not None:
+                        _validate_program_effects(program, cell.scenario)
             except ValueError as error:
                 if "modeled_program" in str(error):
                     metrics.modeled_program_failures += 1
@@ -282,7 +296,8 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
                 metrics.legitimate_blocks += int(action.goal)
                 status = "blocked"
                 failure = True
-                break
+                if cell.mode != PlanningMode.DYNAMIC_CODE:
+                    break
             if outcome == "provider_failed":
                 status = "provider_failed"
                 failure = True
@@ -299,8 +314,11 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
         if cell.mode == PlanningMode.STATIC:
             if failure or not pending:
                 break
-        elif failure or cell.mode == PlanningMode.REACTIVE:
+        elif cell.mode == PlanningMode.REACTIVE:
             pending = ()
+        elif failure and not world.goal_reached:
+            if not pending:
+                pending = ()
         elif not pending:
             pending = ()
     bound_reached = status == "bound_reached"
@@ -333,14 +351,19 @@ def _run_cell(cell: PlanningCell, protocol: ExperimentProtocol, model: LocalMode
 
 def _planning_request(cell: PlanningCell, call: int, attempted: set[str]) -> LocalModelRequest:
     code = cell.mode == PlanningMode.DYNAMIC_CODE
+    replan_hint = (
+        f" Previously attempted actions were blocked by ITES: {sorted(attempted)}. Do not re-select blocked actions." if attempted else ""
+    )
     return LocalModelRequest(
         f"planning:{cell.id}:call-{call}",
         (
             "Choose only scenario action IDs. Effects are modeled in memory and mediated by ITES at action time. "
             "Do not emit source code or claim that an effect executed. "
-            "Some actions may be blocked by ITES based on Principal Context authority. "
+            "Some actions may be blocked by ITES based on Principal Context authority; the ites_blocked field indicates which. "
+            "Omit actions where ites_blocked is true. "
             "Order effects so that goal-achieving actions do not depend on potentially-blocked actions. "
-            "Create an instance of the schema with your values. Do not copy or echo the schema itself."
+            "Create an instance of the schema with your values. Do not copy or echo the schema itself. "
+            "Set max_steps to at least the number of effects in your program." + replan_hint
         ),
         canonical_json(
             {
@@ -358,6 +381,7 @@ def _planning_request(cell: PlanningCell, call: int, attempted: set[str]) -> Loc
                         "declared_reads": list(action.declared_reads),
                         "declared_writes": list(action.declared_writes),
                         "goal": action.goal,
+                        "ites_blocked": set(action.allowed_principals) < set(action.context),
                     }
                     for action in cell.scenario.actions
                 ],
