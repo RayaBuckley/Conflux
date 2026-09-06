@@ -85,6 +85,27 @@ data/
 !research/output/runs/planning-pilot-7b-v1/*.jsonl
 !research/output/runs/agentdojo-3b-v1/*.jsonl
 !research/output/runs/planning-pilot-3b-v1/*.jsonl
+!research/output/runs/agentdojo-7b-v3/
+!research/output/runs/agentdojo-7b-v3/**
+!research/output/runs/agentdojo-7b-v3/*.jsonl
+!research/output/runs/agentdojo-7b-v4/
+!research/output/runs/agentdojo-7b-v4/**
+!research/output/runs/agentdojo-7b-v4/*.jsonl
+!research/output/runs/planning-pilot-7b-v2/
+!research/output/runs/planning-pilot-7b-v2/**
+!research/output/runs/planning-pilot-7b-v2/*.jsonl
+!research/output/runs/planning-pilot-7b-v3/
+!research/output/runs/planning-pilot-7b-v3/**
+!research/output/runs/planning-pilot-7b-v3/*.jsonl
+!research/output/runs/agentdojo-3b-v2/
+!research/output/runs/agentdojo-3b-v2/**
+!research/output/runs/agentdojo-3b-v2/*.jsonl
+!research/output/runs/planning-pilot-3b-v2/
+!research/output/runs/planning-pilot-3b-v2/**
+!research/output/runs/planning-pilot-3b-v2/*.jsonl
+!research/output/runs/planning-pilot-3b-v3/
+!research/output/runs/planning-pilot-3b-v3/**
+!research/output/runs/planning-pilot-3b-v3/*.jsonl
 dist/
 build/
 
