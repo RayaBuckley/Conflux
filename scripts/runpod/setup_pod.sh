@@ -87,21 +87,10 @@ python -m conflux.cli model resolve transformers \
     --snapshot "$SNAPSHOT_PATH" \
     --runtime-version "$RUNTIME_VERSION" \
     --prompt-template agentdojo_turn_v1 \
+    --device cuda \
+    --dtype nf4 \
+    --max-output-tokens 512 \
     --output "$OUTPUT_DIR"
-
-# 4. Patch config for GPU
-echo "--- Patching config for GPU (cuda/nf4) ---"
-python -c "
-import json
-config_path = '$OUTPUT_DIR/transformers.json'
-config = json.load(open(config_path))
-config['spec']['device'] = 'cuda'
-config['spec']['dtype'] = 'nf4'
-config['spec']['max_output_tokens'] = 512
-json.dump(config, open(config_path, 'w'), indent=2)
-print(f'Config patched: {config_path}')
-print(f'  device={config[\"spec\"][\"device\"]}  dtype={config[\"spec\"][\"dtype\"]}')
-"
 
 echo "=== Setup complete ==="
 echo "Model config: $OUTPUT_DIR/transformers.json"

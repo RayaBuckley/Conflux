@@ -13,10 +13,10 @@ import subprocess
 
 def stop_pod(pod_id: str, remove: bool = False) -> None:
     if remove:
-        cmd = ["runpodctl", "remove", "pod", pod_id]
+        cmd = ["runpodctl", "pod", "delete", pod_id]
         print(f"Removing pod {pod_id}...")
     else:
-        cmd = ["runpodctl", "stop", "pod", pod_id]
+        cmd = ["runpodctl", "pod", "stop", pod_id]
         print(f"Stopping pod {pod_id}...")
     subprocess.run(cmd, check=True)
     print(f"Pod {pod_id} {'removed' if remove else 'stopped'}.")

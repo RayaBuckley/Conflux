@@ -6,7 +6,7 @@ Usage:
 
 Requires:
     - RUNPOD_API_KEY environment variable
-    - runpodctl installed (pip install runpodctl)
+    - runpodctl installed
     - SSH key pair (~/.ssh/id_ed25519.pub)
 """
 
@@ -46,62 +46,55 @@ def create_pod(
     name = f"conflux-{model_id.rsplit('/', maxsplit=1)[-1].lower()}"
     cmd = [
         "runpodctl",
-        "create",
         "pod",
+        "create",
         "--name",
         name,
-        "--imageName",
+        "--image",
         DEFAULT_IMAGE,
-        "--gpuType",
+        "--gpu-id",
         gpu_type,
-        "--gpuCount",
+        "--gpu-count",
         "1",
-        "--volumeSize",
+        "--volume-size",
         str(volume_size),
-        "--containerDiskSize",
+        "--container-disk-size",
         str(container_disk),
-        "--communityCloud",
+        "--cloud-type",
+        "COMMUNITY",
         "--ports",
         "22/tcp",
         "--env",
         f"PUBLIC_KEY={public_key}",
+        "--wait",
+        "--wait-timeout",
+        "10m",
     ]
     print(f"Creating pod: {name} ({gpu_type})...")
     output = _run(cmd)
-    pod_id = output.strip()
-    if not pod_id:
-        print(f"Error: Failed to create pod. Output: {output}", file=sys.stderr)
+    try:
+        data = json.loads(output)
+    except json.JSONDecodeError:
+        print(f"Error: Unexpected output from runpodctl: {output}", file=sys.stderr)
         sys.exit(1)
-    print(f"Pod created: {pod_id}")
-    print("Waiting for pod to start...")
-    import time
-
-    for _ in range(60):
-        info = _run(["runpodctl", "get", "pod", pod_id])
-        try:
-            data = json.loads(info)
-            if isinstance(data, dict) and data.get("desiredStatus") == "RUNNING":
-                ports = data.get("runtime", {}).get("ports", [])
-                ssh_port = None
-                ssh_ip = None
-                for port in ports:
-                    if port.get("privatePort") == 22:
-                        ssh_port = port.get("publicPort")
-                        ssh_ip = port.get("ip")
-                if ssh_port and ssh_ip:
-                    result = {
-                        "pod_id": pod_id,
-                        "ssh_ip": ssh_ip,
-                        "ssh_port": ssh_port,
-                        "name": name,
-                    }
-                    print(json.dumps(result, indent=2))
-                    return result
-        except (json.JSONDecodeError, KeyError):
-            pass
-        time.sleep(5)
-    print(f"Error: Pod {pod_id} did not reach RUNNING state in 5 minutes", file=sys.stderr)
-    sys.exit(1)
+    pod_id = data.get("id", "")
+    if not pod_id:
+        print(f"Error: No pod ID in response: {output}", file=sys.stderr)
+        sys.exit(1)
+    print(f"Pod created and SSH-ready: {pod_id}")
+    ssh_info = data.get("ssh", {}) or {}
+    ssh_command = ssh_info.get("ssh_command", "")
+    result: dict[str, str] = {
+        "pod_id": pod_id,
+        "ssh_command": ssh_command,
+        "name": name,
+    }
+    if ssh_command:
+        parts = ssh_command.split()
+        result["ssh_ip"] = parts[-2] if len(parts) >= 2 else ""
+        result["ssh_port"] = parts[-1] if len(parts) >= 1 else "22"
+    print(json.dumps(result, indent=2))
+    return result
 
 
 def main() -> None:

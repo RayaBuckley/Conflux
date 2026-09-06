@@ -88,12 +88,17 @@ def run_all(
 
     # Phase 1: Create pod
     print("\n=== Phase 1: Creating pod ===")
+    sys.path.insert(0, str(Path(__file__).parent))
     from create_pod import create_pod
 
     pod = create_pod(gpu=gpu, model_id=model_id)
     pod_id = pod["pod_id"]
-    ip = pod["ssh_ip"]
-    port = pod["ssh_port"]
+    ssh_command = pod.get("ssh_command", "")
+    if not ssh_command:
+        print("Error: No SSH command returned from pod creation", file=sys.stderr)
+        sys.exit(1)
+    ip = pod.get("ssh_ip", "")
+    port = pod.get("ssh_port", "22")
 
     try:
         # Phase 2: Setup environment on pod
