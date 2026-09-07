@@ -1,0 +1,1 @@
+conflux plan pilot --model-config research/output/runs/runpod-Qwen-Qwen3-4B-Instruct-2507/transformers.json --output research/output/runs/runpod-eval/planning --execute-local

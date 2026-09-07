@@ -163,6 +163,8 @@ data/
 !research/output/runs/qwen3-4b-v1/**
 !research/output/runs/planning-expanded-*/
 !research/output/runs/planning-expanded-*/**
+!research/output/runs/runpod-results/
+!research/output/runs/runpod-results/**
 !research/output/runs/planning-pilot-7b-v5/
 !research/output/runs/planning-pilot-7b-v5/**
 !research/output/runs/planning-pilot-7b-v6/
