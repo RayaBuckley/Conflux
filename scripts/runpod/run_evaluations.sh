@@ -7,7 +7,6 @@ set -euo pipefail
 
 OUTPUT_DIR="${1:-research/output/runs/runpod-eval}"
 MODEL_CONFIG="${2:-research/output/runs/runpod-Qwen-Qwen2.5-7B-Instruct/transformers.json}"
-COMMIT="$(git rev-parse HEAD)"
 
 # Activate venv if available
 if [ -f /workspace/venv/bin/activate ]; then
@@ -15,6 +14,7 @@ if [ -f /workspace/venv/bin/activate ]; then
 fi
 
 cd /workspace/conflux
+COMMIT="$(git rev-parse HEAD)"
 
 echo "=== Running AgentDojo Preflight ==="
 python -m conflux.cli benchmark agentdojo preflight \
