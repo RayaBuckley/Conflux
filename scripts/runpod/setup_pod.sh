@@ -35,7 +35,7 @@ pip install bitsandbytes
 
 echo "--- Configuring HuggingFace token ---"
 if [ -n "${HF_TOKEN:-}" ]; then
-    huggingface-cli login --token "$HF_TOKEN"
+    hf auth login --token "$HF_TOKEN" 2>/dev/null || huggingface-cli login --token "$HF_TOKEN"
     echo "HF token configured."
 else
     echo "Warning: HF_TOKEN not set. Gated models will fail to download."
@@ -43,7 +43,7 @@ fi
 
 # 2. Download model weights
 echo "--- Downloading model weights: $MODEL_ID ---"
-huggingface-cli download "$MODEL_ID"
+hf download "$MODEL_ID" 2>/dev/null || huggingface-cli download "$MODEL_ID"
 
 # 3. Resolve model config
 echo "--- Resolving model configuration ---"
@@ -89,8 +89,5 @@ python -m conflux.cli model resolve transformers \
 
 echo "=== Setup complete ==="
 echo "Model config: $OUTPUT_DIR/transformers.json"
-echo ""
-echo "Next steps:"
-echo "  conflux benchmark agentdojo preflight --model-config $OUTPUT_DIR/transformers.json --output $OUTPUT_DIR --source-commit \$(git rev-parse HEAD)"
-echo "  conflux benchmark agentdojo run --config $OUTPUT_DIR/protocol.json --output $OUTPUT_DIR --execute-local"
-echo "  conflux plan pilot --model-config $OUTPUT_DIR/transformers.json --output $OUTPUT_DIR/planning --source-commit \$(git rev-parse HEAD) --execute-local"
+touch /workspace/setup_done
+echo "SETUP_DONE"

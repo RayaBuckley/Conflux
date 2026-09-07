@@ -56,7 +56,7 @@ def _ssh(key: Path, ip: str, port: str, cmd: str, timeout: int = 600) -> str:
         cmd,
     ]
     try:
-        result = subprocess.run(ssh_cmd, capture_output=True, text=True, check=True, timeout=timeout)
+        result = subprocess.run(ssh_cmd, capture_output=True, check=True, timeout=timeout, encoding="utf-8", errors="replace")
     except subprocess.CalledProcessError as exc:
         print(f"SSH failed (exit {exc.returncode}): {exc.stderr}", file=sys.stderr)
         raise
@@ -138,7 +138,7 @@ def run_all(
     timer = _start_auto_stop_timer(pod_id, max_runtime_minutes)
 
     try:
-        # Phase 2: Setup
+        # Phase 2: Setup (run in background, poll for completion)
         print("\n=== Phase 2: Setting up environment ===")
         print("Waiting 10s for container to fully initialize...")
         time.sleep(10)
@@ -146,15 +146,35 @@ def run_all(
         _scp(key, ip, port, str(setup_script), f"root@{ip}:/workspace/setup_pod.sh")
         env_prefix = f"HF_TOKEN={os.environ['HF_TOKEN']} " if os.environ.get("HF_TOKEN") else ""
         setup_cmd = f"{env_prefix}bash /workspace/setup_pod.sh {model_id} {git_repo}"
-        print("Running setup (this takes ~5-10 minutes)...")
-        _ssh(key, ip, port, setup_cmd, timeout=900)
+        print("Starting setup in background (this takes ~5-10 minutes)...")
+        _ssh(key, ip, port, f"nohup bash -c '{setup_cmd}' > /workspace/setup.log 2>&1 &", timeout=30)
+        # Poll for completion
+        for i in range(60):
+            time.sleep(30)
+            try:
+                done = _ssh(key, ip, port, "test -f /workspace/setup_done && echo DONE || echo RUNNING", timeout=15)
+                if "DONE" in done:
+                    print("Setup completed successfully!")
+                    break
+                log = _ssh(key, ip, port, "tail -1 /workspace/setup.log 2>/dev/null || echo 'waiting'", timeout=15)
+                print(f"  [{i * 30 + 30}s] {log.strip()[:100]}")
+                if "Error" in log or "error" in log.lower():
+                    if "SETUP_DONE" in log:
+                        print("Setup completed successfully!")
+                        break
+            except subprocess.TimeoutExpired:
+                print(f"  [{i * 30 + 30}s] (still running...)")
+        else:
+            print("Setup timed out after 30 minutes!", file=sys.stderr)
+            raise RuntimeError("setup_timeout")
 
         # Phase 3: Evaluate
         print("\n=== Phase 3: Running evaluations ===")
         eval_script = Path(__file__).parent / "run_evaluations.sh"
         _scp(key, ip, port, str(eval_script), f"root@{ip}:/workspace/run_evaluations.sh")
         config_path = f"research/output/runs/runpod-{model_id.replace('/', '-')}/transformers.json"
-        _ssh(key, ip, port, f"bash /workspace/run_evaluations.sh research/output/runs/runpod-eval {config_path}", timeout=1800)
+        print("Running evaluations (this takes ~3-5 minutes)...")
+        _ssh(key, ip, port, f"bash /workspace/run_evaluations.sh research/output/runs/runpod-eval {config_path}", timeout=600)
 
         # Phase 4: Retrieve
         print("\n=== Phase 4: Retrieving results ===")
