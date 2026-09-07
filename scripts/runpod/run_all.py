@@ -41,7 +41,7 @@ def _resolve_ssh_key() -> Path:
     sys.exit(1)
 
 
-def _ssh(key: Path, ip: str, port: str, cmd: str, timeout: int = 600) -> str:
+def _ssh(key: Path, ip: str, port: str, cmd: str, timeout: int = 600, allow_exit: tuple[int, ...] = ()) -> str:
     ssh_cmd = [
         "ssh",
         "-o",
@@ -56,10 +56,13 @@ def _ssh(key: Path, ip: str, port: str, cmd: str, timeout: int = 600) -> str:
         cmd,
     ]
     try:
-        result = subprocess.run(ssh_cmd, capture_output=True, check=True, timeout=timeout, encoding="utf-8", errors="replace")
-    except subprocess.CalledProcessError as exc:
-        print(f"SSH failed (exit {exc.returncode}): {exc.stderr}", file=sys.stderr)
+        result = subprocess.run(ssh_cmd, capture_output=True, check=False, timeout=timeout, encoding="utf-8", errors="replace")
+    except subprocess.TimeoutExpired:
+        print(f"SSH timed out after {timeout}s", file=sys.stderr)
         raise
+    if result.returncode != 0 and result.returncode not in allow_exit:
+        print(f"SSH failed (exit {result.returncode}): {result.stderr}", file=sys.stderr)
+        raise subprocess.CalledProcessError(result.returncode, ssh_cmd, result.stdout, result.stderr)
     return result.stdout
 
 
@@ -174,7 +177,14 @@ def run_all(
         _scp(key, ip, port, str(eval_script), f"root@{ip}:/workspace/run_evaluations.sh")
         config_path = f"research/output/runs/runpod-{model_id.replace('/', '-')}/transformers.json"
         print("Running evaluations (this takes ~3-5 minutes)...")
-        _ssh(key, ip, port, f"bash /workspace/run_evaluations.sh research/output/runs/runpod-eval {config_path}", timeout=600)
+        _ssh(
+            key,
+            ip,
+            port,
+            f"bash /workspace/run_evaluations.sh research/output/runs/runpod-eval {config_path}",
+            timeout=600,
+            allow_exit=(0, 3, 4),
+        )
 
         # Phase 4: Retrieve
         print("\n=== Phase 4: Retrieving results ===")
