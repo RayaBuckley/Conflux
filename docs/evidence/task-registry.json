@@ -55,8 +55,8 @@
     {
       "ids": ["AGENTDOJO-003"],
       "status": "bounded_evidence",
-      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "research/experiments/suites/agentdojo-tool-schemas-v1.json", "research/experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py", "research/output/runs/agentdojo-1b5-nf4-v1/result.json", "research/output/runs/agentdojo-3b-v1/result.json"],
-      "gap": "1.5B too small for AgentDojo tool-calling; 3B crashes on turn 2 after receiving tool results; 7B calls search_emails correctly and answers but does not format as HH:MM"
+      "evidence": ["src/conflux/experiments/agentdojo.py", "src/conflux/adapters/benchmarks/agentdojo_local.py", "src/conflux/adapters/benchmarks/agentdojo_annotations.py", "research/experiments/suites/agentdojo-tool-schemas-v1.json", "research/experiments/suites/agentdojo-annotation-exceptions-v1.json", "src/conflux/cli.py", "tests/test_agentdojo_runner.py", "tests/test_agentdojo_mediation.py", "research/output/runs/agentdojo-1b5-nf4-v1/result.json", "research/output/runs/agentdojo-3b-v1/result.json", "research/output/runs/runpod-results/runpod-eval/result.json"],
+      "gap": "1.5B too small for AgentDojo tool-calling; 3B crashes on turn 2 after receiving tool results; 7B calls search_emails correctly and answers but does not format as HH:MM; H100 Qwen3-4B-2507 (commit a1fa168): all 6 cells native_utility=False (failure_counts: {'utility': 6}), same HH:MM formatting issue persists"
     },
     {
       "ids": ["SLEDV-001", "SLEDV-002", "SLEDV-003"],
@@ -105,8 +105,8 @@
     {
       "ids": ["PLAN-DYN-016"],
       "status": "bounded_evidence",
-      "evidence": ["research/experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "research/output/runs/direction-readiness-v1/planning-preflight.json", "research/output/runs/planning-pilot-1b5-v1/result.json", "research/output/runs/planning-pilot-3b-v1/result.json"],
-      "gap": "3B model: 5/8 cells utility=True; dynamic_code failed (model too small for code gen); 7B model: 7/8 cells utility=True (only blocked-action-recovery:dynamic_code failed)"
+      "evidence": ["research/experiments/suites/planning-diagnostic-v1.yaml", "src/conflux/experiments/planning_runner.py", "src/conflux/planning/modeled_program.py", "tests/test_planning_runner.py", "tests/planning/test_modeled_program.py", "research/output/runs/direction-readiness-v1/planning-preflight.json", "research/output/runs/planning-pilot-1b5-v1/result.json", "research/output/runs/planning-pilot-3b-v1/result.json", "research/output/runs/runpod-results/runpod-eval/planning/result.json"],
+      "gap": "3B model: 5/8 cells utility=True; dynamic_code failed (model too small for code gen); 7B model: 7/8 cells utility=True (only blocked-action-recovery:dynamic_code failed); H100 Qwen3-4B-2507 (commit a1fa168): 24-cell expanded suite, 19/24 utility_completed=True, 4 provider_failed (negative control), 1 bound_reached, all security_violations=0"
     },
     {
       "ids": ["DIR-PLAN-001"],
@@ -216,6 +216,12 @@
         "docs/research/RESEARCH_QUESTIONS.md"
       ],
       "gap": null
+    },
+    {
+      "ids": ["EXP-V1", "EXP-V2", "EXP-V3", "EXP-C1", "EXP-C2", "EXP-A1", "EXP-A2", "EXP-P1", "EXP-P2", "EXP-S1", "EXP-S2", "EXP-S3"],
+      "status": "deferred",
+      "evidence": ["research/reports/analysis/2026-09-08-experiment-program/", "research/reports/analysis/2026-09-08-experiment-program/gap-audit.md"],
+      "gap": "Experiment programme defined and gap-audited; IC3/PDR already wired in nuXmv backend but Boolean-only; H100 Qwen3-4B-2507 AgentDojo results show 0% utility (formatting issue); all 4 defence model abstractions unvalidated; symmetry reduction is self-composition-only; POR and authority-aware subsumption not implemented; no runtime-to-IR projection layer"
     }
   ],
   "deferred_research": [

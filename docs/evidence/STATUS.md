@@ -183,6 +183,38 @@ keeping those roles separate makes drift visible.
 
 ## Recent changes
 
+Unreleased — 8 September 2026:
+
+- Reviewed experiment programme package at
+  `research/reports/analysis/2026-09-08-experiment-program/` and produced
+  Phase 0 gap audit at
+  `research/reports/analysis/2026-09-08-experiment-program/gap-audit.md`.
+- Recorded H100 evaluation results from commit `a1fa168`
+  (Qwen3-4B-2507, `research/output/runs/runpod-results/runpod-eval/`):
+  - AgentDojo: six cells completed, all `native_utility=False`
+    (`failure_counts: {'utility': 6}`); the model calls `search_emails`
+    correctly (9 model calls per cell) but does not format the answer as
+    `HH:MM` as the benchmark evaluator requires; this is the same
+    formatting issue seen with the 7B model; these results do not meet
+    the A1 qualification threshold (>=70% native utility).
+  - Planning: 24-cell expanded suite; 19/24 `utility_completed=True`,
+    4 `provider_failed` (negative-control `provider-failure-no-fallback`
+    task), 1 `bound_reached` (`multi-step-dependency-chain:reactive`);
+    all `security_violations=0`; structured JSON output including
+    `dynamic_code` mode succeeds.
+- Key findings from gap audit:
+  - IC3/PDR is already wired in the nuXmv backend
+    (`src/conflux/verification/nuxmv_backend.py:197`) but the backend
+    supports Boolean-only IR variables and a limited expression subset.
+  - All four external defence model abstractions (Dual-LLM, CaMeL,
+    Progent, PACT) remain unvalidated in
+    `docs/evidence/defence-model-fidelity.json`.
+  - Symmetry reduction (`src/conflux/verification/symmetry_reduction.py`)
+    applies to self-composition product IRs only; partial-order reduction
+    and authority-aware subsumption are not implemented.
+  - `scripts/gen_ir_fixtures.py` produces 2 simple fixtures only; V1
+    requires a parameterised fixture generator.
+
 Unreleased — 7 September 2026:
 
 - Semantic framing migration (ADR-025):

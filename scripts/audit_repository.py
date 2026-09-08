@@ -87,6 +87,18 @@ ADDITIONAL_TASK_IDS = {
     "SLEDV-COMP-004",
     "SLEDV-COMP-005",
     "SEC-009",
+    "EXP-V1",
+    "EXP-V2",
+    "EXP-V3",
+    "EXP-C1",
+    "EXP-C2",
+    "EXP-A1",
+    "EXP-A2",
+    "EXP-P1",
+    "EXP-P2",
+    "EXP-S1",
+    "EXP-S2",
+    "EXP-S3",
 }
 APPROVED_TOP_LEVEL_DIRECTORIES = {
     ".github",

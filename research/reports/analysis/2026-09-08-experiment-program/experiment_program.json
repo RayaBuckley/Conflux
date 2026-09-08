@@ -1,0 +1,93 @@
+{
+  "programme_version": "2026-09-08-v1",
+  "intended_unpack_root": "repository root",
+  "gap_audit_path": "research/reports/analysis/2026-09-08-experiment-program/gap-audit.md",
+  "priority_order": [
+    "V1_reduction_scaling",
+    "V2_unbounded_authority_proof",
+    "C2_runtime_ir_conformance",
+    "C1_comparative_property_matrix",
+    "A1_model_qualification",
+    "A2_agentdojo_comparison",
+    "P1_planning_mode_comparison",
+    "P2_error_recovery_planning",
+    "S1_persistent_memory",
+    "S2_argument_effects",
+    "S3_delegation_activation_gate"
+  ],
+  "experiments": [
+    {
+      "id": "V1",
+      "title": "SLED-V reduction scaling and preservation",
+      "priority": "P0",
+      "primary_metrics": ["states", "transitions", "runtime", "memory", "verdict", "counterexample_length"],
+      "hard_acceptance": ["zero verdict mismatches", "unsafe witnesses lift and replay", "seeded mutants detected"]
+    },
+    {
+      "id": "V2",
+      "title": "Unbounded finite-model authority-confinement proof",
+      "priority": "P0",
+      "primary_metrics": ["verdict", "algorithm", "solver_time", "proof_metadata", "counterexamples"],
+      "hard_acceptance": ["no execution-depth bound in SAFE claim", "finite-domain assumptions retained", "security mutants become UNSAFE"]
+    },
+    {
+      "id": "C2",
+      "title": "ITES runtime-to-IR conformance",
+      "priority": "P0",
+      "primary_metrics": ["states_compared", "transitions_compared", "mismatches", "mutants_detected"],
+      "hard_acceptance": ["no unexplained mismatch", "projection subset documented", "seeded mismatches detected"]
+    },
+    {
+      "id": "C1",
+      "title": "Comparative defence property matrix",
+      "priority": "P1",
+      "systems": ["ITES", "Dual-LLM", "CaMeL", "Progent", "PACT"],
+      "hard_acceptance": ["native properties separated from PE", "source validation notes present", "finite abstraction labels explicit"]
+    },
+    {
+      "id": "A1",
+      "title": "Real-model capability qualification",
+      "priority": "P0",
+      "qualification": {"tool_parse_rate_min": 0.8, "native_utility_min": 0.7},
+      "hard_acceptance": ["multi-turn tool use stable", "benchmark evaluator unmodified"]
+    },
+    {
+      "id": "A2",
+      "title": "AgentDojo defence comparison",
+      "priority": "P0",
+      "arms": ["no_defence", "ITES", "optional_model_defence", "optional_model_defence_plus_ITES", "diagnostic_oracle"],
+      "hard_acceptance": ["model failures not counted as secure", "native security and utility preserved", "raw failed rows retained"]
+    },
+    {
+      "id": "P1",
+      "title": "Planning utility and authority-footprint comparison",
+      "priority": "P0",
+      "primary_metrics": ["task_success", "blocked_goals", "max_pc", "mean_effect_pc", "observations", "tokens", "latency"],
+      "hard_acceptance": ["all runtime actions reauthorised", "adversarial plan controls fail closed", "unrecoverable-task negative controls included"]
+    },
+    {
+      "id": "P2",
+      "title": "Verified error-recovery planning",
+      "priority": "P1",
+      "hard_acceptance": ["permission-denied cannot trigger authority seeking", "retry bounds explicit", "safe abort/approval paths explicit"]
+    },
+    {
+      "id": "S1",
+      "title": "Persistent-memory authority",
+      "priority": "P1",
+      "hard_acceptance": ["activation adds provenance", "new sessions do not reset influence", "revocation semantics tested"]
+    },
+    {
+      "id": "S2",
+      "title": "Richer argument/effect authority semantics",
+      "priority": "P1",
+      "hard_acceptance": ["trusted schemas own roles", "coarse-action counterexample demonstrated", "utility impact measured"]
+    },
+    {
+      "id": "S3",
+      "title": "Delegation activation gate",
+      "priority": "P2",
+      "hard_acceptance": ["delegation remains disabled until verification passes", "CreateDelegation independently authorised", "scope expiry revocation replay certificate controls verified"]
+    }
+  ]
+}
