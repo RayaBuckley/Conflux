@@ -3,7 +3,7 @@
     "integrity_scope": "exact repository blob bytes",
     "hash_algorithm": "sha256",
     "git_object_format": "sha1",
-    "artifact_count": 68,
+    "artifact_count": 81,
     "packages": [
         {
             "id": "2026-07-27-engineering-and-sled",
@@ -309,6 +309,27 @@
             "limitations": [
                 "Feedback package provides assessment and guidance; all implementation is in canonical successors.",
                 "Tests for external-provenance, laundering, and authority-vs-harm are planned as a separate phase."
+            ]
+        },
+        {
+            "id": "2026-09-07-semantics-coder-package",
+            "title": "Authority-confinement and semantic-judgement documentation migration coder package",
+            "snapshot_date": "2026-09-07",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [],
+            "canonical_successors": [
+                "docs/decisions/025-authority-confinement-semantic-judgement-delegation.md",
+                "docs/reference/SECURITY_MODEL.md",
+                "docs/reference/GLOSSARY.md",
+                "docs/OVERVIEW.md",
+                "docs/research/RESEARCH_OVERVIEW.md",
+                "docs/research/RELATED_WORK.md"
+            ],
+            "limitations": [
+                "Package was prepared from public main snapshot on 2026-09-07; local checkout is authoritative.",
+                "All implementation is in canonical successors; the package itself is historical input."
             ]
         }
     ],
@@ -1059,6 +1080,149 @@
             "sha256_bytes": "f3cab426567411ad522cbaafd21933b94206c485b465558a8d2e3a941a044e16",
             "git_blob_oid": "3eee796ef0fdeacce8a1ea65575424c40bc7ed8a",
             "role": "audit_report",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/00_README_FOR_CODER.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/00_README_FOR_CODER.md",
+            "media_type": "text/markdown",
+            "size_bytes": 6708,
+            "sha256_bytes": "10229134050e8ff3b304afd5e52da8bd16b482eaecce451ec2df508223106823",
+            "git_blob_oid": "fccad498d802d3944ef85fdd2404b3e8150c5853",
+            "role": "navigation",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/01_CANONICAL_SEMANTICS.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/01_CANONICAL_SEMANTICS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 12020,
+            "sha256_bytes": "cb9d8a21e0bd1a0533319d222ce86eae47b11cc3c40b1767b59318ad1a750d3a",
+            "git_blob_oid": "476e761a326a5a6bf3fe90f06c3d40953e0fca43",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/02_CURRENT_REPO_AUDIT.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/02_CURRENT_REPO_AUDIT.md",
+            "media_type": "text/markdown",
+            "size_bytes": 11403,
+            "sha256_bytes": "b0f43e9845f023ac5631efc5f38a057f43e92767bc38735062cb31578d0c9369",
+            "git_blob_oid": "43fb1c91b59fd6a05071f72e2ff33b90f9749ab4",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/03_FILE_BY_FILE_MIGRATION.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/03_FILE_BY_FILE_MIGRATION.md",
+            "media_type": "text/markdown",
+            "size_bytes": 11334,
+            "sha256_bytes": "71d6ecf1766257d3b12c3910638b6071528aa3d006f0fb9e40d4afbfcdb7c99f",
+            "git_blob_oid": "65414bb714f292aaa04925eca396be16d3833150",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/04_DELEGATION_AND_PLANNING.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/04_DELEGATION_AND_PLANNING.md",
+            "media_type": "text/markdown",
+            "size_bytes": 5625,
+            "sha256_bytes": "b56e3b9c8ae3001d65451d0cf2d7fd57d944227725a1fd8eeb39d78806854d2e",
+            "git_blob_oid": "b564b01da173505b5655053d619c0e05a56491d3",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/05_MODEL_SECURITY_AND_HUMAN_ANALOGY.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/05_MODEL_SECURITY_AND_HUMAN_ANALOGY.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4488,
+            "sha256_bytes": "5d50b2eab475f75d8467b333a21c3123f3d3d2179ea2f1cada0ab169a7582c8f",
+            "git_blob_oid": "d088ae37c4c0f4f09b1370e4e87e4eb28ec3213b",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/06_EVALUATION_CLAIMS_AND_PUBLICATIONS.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/06_EVALUATION_CLAIMS_AND_PUBLICATIONS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 5400,
+            "sha256_bytes": "d83cafd87d4d9ab96b7eb067b8f8efefc3d374988777af528010af245f610d72",
+            "git_blob_oid": "e59246a0f6c0ee042dc2bae6dd3ff2ebe59d2ed3",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/07_SEARCH_AND_DRIFT_AUDIT.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/07_SEARCH_AND_DRIFT_AUDIT.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4381,
+            "sha256_bytes": "837d8c276e27ff411717350db72aeda26f9babeb79b57822609e1f07e9f52f58",
+            "git_blob_oid": "38b6ee82a16c2b759faeb53b92061e89206bbff7",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/08_ACCEPTANCE_CHECKLIST.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/08_ACCEPTANCE_CHECKLIST.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3706,
+            "sha256_bytes": "15eb138204180e59e87c50c49bd0c0a466bb007a44787658d8352d63219dcd82",
+            "git_blob_oid": "b3d0912715cd969ee800414b22e60b5e412b04e8",
+            "role": "audit_report",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/09_SUGGESTED_PROSE_SNIPPETS.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/09_SUGGESTED_PROSE_SNIPPETS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4356,
+            "sha256_bytes": "3daff45ebd6de74958699332752f233b50747dd35a33b7efd9e9b4aa911b0686",
+            "git_blob_oid": "6768babd12898c300cec6c3b6772a17391aeb525",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/SOURCES_AND_SNAPSHOT.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/SOURCES_AND_SNAPSHOT.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2797,
+            "sha256_bytes": "1487358f1744eb1fcf472f0d51fb640b4ff5781c1a671d39e5b580a7e9134878",
+            "git_blob_oid": "fd751c016a3a3925eb62f2b42acbab8020ebc583",
+            "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/coder_task_manifest.json",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/coder_task_manifest.json",
+            "media_type": "application/json",
+            "size_bytes": 4621,
+            "sha256_bytes": "ddd404087c1c0c465674ca7c18019e4d7f0f69b3f424496aa7fd9704a3ea5449",
+            "git_blob_oid": "5aa9fa20b0b7ed7566617ccfab4d7e891287fbbe",
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-07-semantics-coder-package",
+            "original_path": "conflux_semantics_coder_package_2026-09-07/drafts/025-authority-confinement-semantic-judgement-delegation.md",
+            "archive_path": "research/reports/archive/2026-09-07-semantics-coder-package/drafts/025-authority-confinement-semantic-judgement-delegation.md",
+            "media_type": "text/markdown",
+            "size_bytes": 7551,
+            "sha256_bytes": "27b956588255e9373247020716168ac6e591636ae87630a3e0ac1f102350971e",
+            "git_blob_oid": "544bb65ffe3f1d17eec3e4716eeaa79bc506f664",
+            "role": "implementation_specification",
             "duplicate_of": null
         }
     ]
