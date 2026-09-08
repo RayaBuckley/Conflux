@@ -36,3 +36,15 @@ parity prevents successful request translation—or a plausible expected
 answer—from being mislabeled as evidence that the real PDP agrees. A local,
 pinned binary also avoids turning a hosted service or mutable release into an
 unrecorded part of the trusted computing base.
+
+## ACS role
+
+Cedar is a PDP for `ACS_explicit` decisions — the persistent
+machine-readable authority relation. If/when Conflux scoped delegation is
+activated, Conflux may compose explicit policy with delegation to construct
+`ACS_effective(e)` for a particular execution. This does not mean the
+underlying Cedar policy was globally rewritten; the execution-effective
+relation is scoped to the applicable delegation. Current runtime status
+remains unchanged.
+
+See [ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md).

@@ -67,7 +67,9 @@ Compare:
 
 ### RQ6 — Delegation
 
-Which explicit delegation semantics preserve a clear security theorem while recovering legitimate workflows?
+Which explicit, scoped delegation semantics allow an authorised principal to
+delegate a precisely bounded choice set to an execution while preserving a
+clear confinement theorem over the resulting `ACS_effective`?
 
 ### RQ7 — Confidentiality
 
@@ -75,11 +77,20 @@ Can Conflux verify observational confidentiality/noninterference in addition to 
 
 ### RQ8 — Planning
 
-Can secure controller synthesis or verified planning complete more tasks while minimising authority exposure and unnecessary observations?
+Can planning represent and minimise an explicitly authorised delegated choice
+set and unnecessary observations without treating planner output or task
+necessity as an authority source?
 
 ### RQ9 — Implementation conformance
 
 How can executable Conflux and external-defence implementations be shown to refine or conform to their verified models?
+
+### RQ10 — Authority and semantic judgement
+
+How should deterministic authority guarantees compose with empirically
+secured human/model semantic decision-making? (Complementary question; not
+thesis-core. SLED-V remains focused on system-level properties; empirical
+model-security evidence is a separate evidence class.)
 
 ## Scope discipline
 

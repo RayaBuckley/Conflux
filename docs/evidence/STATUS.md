@@ -183,6 +183,22 @@ keeping those roles separate makes drift visible.
 
 ## Recent changes
 
+Unreleased — 7 September 2026:
+
+- Semantic framing migration (ADR-025):
+  - Clarified authority confinement vs semantic judgement across normative
+    docs, research framing, and narrative.
+  - Model-level defences recognised as complementary empirical security
+    controls, not merely utility.
+  - Distinguished `ACS_explicit` from `ACS_effective(e)` and defined
+    authority envelope.
+  - Scoped delegation defined as explicit authority transfer, not
+    provenance removal; planner output is not an authority source.
+  - Endorsement/trusted transformation removed from current planned
+    mechanism set; ADR-024's forward-looking direction superseded.
+  - Runtime delegation remains disabled; this is documentation/semantics
+    only.
+
 Unreleased — 3 September 2026:
 
 - Integrated supervisor feedback package (2026-09-02) into repository

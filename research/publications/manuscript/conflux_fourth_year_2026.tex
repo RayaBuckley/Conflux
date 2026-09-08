@@ -37,6 +37,10 @@ initiating Principal's permissions merely by influencing a model context.
 Model-level prompt-injection defences improve instruction following, while
 system-level approaches constrain effects externally
 \citep{camel,designpatterns,struq,spotlighting}.
+Model-level defences are genuine empirical security controls that reduce the
+probability of inappropriate decisions; Conflux provides a complementary
+worst-case authority-confinement layer whose property holds under arbitrary
+model proposals.
 
 For Principal Context $PC$ and action $a$, the restricted ITES rule is
 \[
@@ -50,8 +54,9 @@ provenance of its actual source(s); it does not inherit the requesting user's
 authority merely because the request was made on the user's behalf. For
 ordinary derived objects, $PC(\text{output}) \supseteq PC(\text{execution
 inputs})$; for scheduled executions, $PC(\text{scheduled})$ includes
-$PC(\text{scheduling context})$. Only an explicitly trusted, separately
-modelled transformation may reduce influence.
+$PC(\text{scheduling context})$. Current Conflux execution does not reduce
+Principal Context; any future exception requires a separately accepted
+semantics and proof obligation.
 
 \section{Previous-year contribution and archived evidence}
 The previous prototype accumulated authorship provenance and intersected
@@ -69,7 +74,9 @@ Asbestos~\citep{asbestos} demonstrate that trusted reference-monitor
 boundaries, dynamic contamination, and multi-principal isolation are
 well-established systems problems. Clark-Wilson~\citep{clarkwilson} provides
 a model of integrity through certified transformations and separation of
-duties, framing the future trusted-transformation question.
+duties, framing the question of under what explicitly modelled operation
+conservative influence may be reduced. Conflux does not currently
+implement an endorsement or trusted-transformation mechanism.
 Wu, Cecchetti, and Xiao~\citep{fsecure} prevent untrusted inputs from
 reaching privileged planning through a structured IFC pipeline; Conflux
 instead treats all model-visible information as potentially influential and
@@ -248,7 +255,12 @@ Principal and does not guarantee subjective intent alignment. If both
 influencing principals can perform an operation such as
 \texttt{send\_email}, an attacker-controlled input may still influence which
 recipient or attachment is selected---ITES confines authority, not harm
-within authorised actions. Conservative
+within authorised actions. Model-level defences and human judgement remain
+relevant for deciding which already-authorised action is appropriate; ITES
+does not guarantee semantic correctness of choices within the authority
+envelope. Organisations may rely on human/model semantic judgement with
+residual risk, use explicit delegation where intended, or disallow the
+workflow. Conservative
 contexts can over-approximate influence. Consider a workflow where Alice asks
 the agent to read an email from an authenticated external supplier and create
 a calendar event: the Principal Context becomes $\{\text{Alice},

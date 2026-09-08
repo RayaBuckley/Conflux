@@ -55,6 +55,12 @@ The feedback also identified three related gaps:
    provenance, output provenance, policy justification, and transformation
    certificate. Ordinary model-generated plans and object creation cannot
    perform this operation. Runtime endorsement remains unactivated.
+   **Superseded in part by [ADR-025](025-authority-confinement-semantic-judgement-delegation.md):**
+   the endorsement/trusted-transformation direction is not part of the current
+   planned Conflux semantics. Any future mechanism that reduces conservative
+   provenance/Principal Context requires a separately accepted design and proof
+   obligation. The external-provenance, no-laundering, authority-vs-harm, and
+   authentication decisions above remain active.
 
 ## Consequences
 
@@ -65,6 +71,9 @@ The feedback also identified three related gaps:
   documentation, not just an implicit property.
 - Future trusted-transformation work must specify and verify the transformation
   semantics before activation.
+- The trusted-transformation/endorsement direction is superseded by
+  [ADR-025](025-authority-confinement-semantic-judgement-delegation.md).
+  Current Conflux execution does not narrow Principal Context.
 - The FLMSec paper, fourth-year manuscript, security model, related work,
   evidence ledger, and analysis documents must be updated to reflect these
   rules.

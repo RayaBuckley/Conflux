@@ -194,6 +194,24 @@ The serialisable verification IR contains no hidden callbacks. A backend must
 record the model, query, solver, assumptions, and result hashes. Unsupported
 operations, unbounded domains, and absent tools return `UNKNOWN`.
 
+## Future delegation semantics
+
+When a natural-language user request explicitly delegates a bounded decision,
+planning may parse it into a proposed `DelegationGrant` / delegated choice
+set. This parse is untrusted until a future activation protocol authenticates
+the exact scope, issuer, and beneficiary and, where required, obtains explicit
+confirmation. No automatic "permission request because task failed" is
+equivalent to delegation. `RequiredAuthority(plan)` is diagnostic/planning
+metadata, not authority. When active in future, execution is still mediated
+under `ACS_effective(e)` and exact certificate/argument constraints.
+
+The planner can minimise authority exposure within an explicitly delegated
+choice set, but cannot manufacture authority merely because a task or
+candidate plan requires it. `DelegationNode` remains runtime-disabled until
+activation work is separately completed.
+
+See [ADR-025](025-authority-confinement-semantic-judgement-delegation.md).
+
 ## Failure categories
 
 Invalid schema, unknown operation, unresolved binding, unknown provenance,

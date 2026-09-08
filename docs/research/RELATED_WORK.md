@@ -118,13 +118,13 @@ labels.
 ### Certified transformations (Clark-Wilson)
 
 Clark and Wilson (1987) provide a model of integrity through well-formed and
-certified transformations and separation of duties. This maps onto a future
-Conflux question: under what trusted transformation may conservative
-influence be reduced or authority be changed without letting arbitrary
-untrusted input choose the transformation? That is precisely the conceptual
-problem behind endorsement/declassification and controlled delegation.
-ITES does not implement Clark-Wilson; it is used as a classical point of
-comparison for future trusted-transformation and delegation semantics.
+certified transformations and separation of duties. Conflux does not
+currently implement an endorsement or trusted-transformation mechanism; any
+future mechanism that reduces conservative provenance requires a separately
+accepted design and proof obligation
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
+ITES is used as a classical point of comparison for delegation semantics, not
+an implementation of Clark-Wilson.
 
 ### Wu, Cecchetti, and Xiao comparison
 
@@ -170,10 +170,10 @@ disclosure/declassification** (policy explicitly permits selected release
 beyond strict confinement). They are not the same mechanism.
 
 Endorsement is the integrity-side counterpart: untrusted information is
-deliberately accepted as sufficiently trustworthy. This is relevant to
-trusted transformations that can remove or reduce conservative influence.
-Delegation should not be called endorsement; delegation changes authority,
-endorsement changes the integrity status of information.
+deliberately accepted as sufficiently trustworthy. This is a classical IFC
+concept, not a planned Conflux mechanism. Delegation should not be called
+endorsement; delegation changes authority, endorsement changes the integrity
+status of information.
 
 ### Robust declassification and attacker influence
 
@@ -224,6 +224,18 @@ delegation transitions with bounded scope, expiry, and one-use constraints.
 
 ## Revised positioning
 
+### Defence in depth: model behaviour and authority confinement
+
+Model-level prompt-injection defences reduce attack success probabilistically.
+System-level Conflux bounds authority independently of those defences.
+Neither subsumes the other for all security questions: a model-level defence
+cannot prevent authority amplification if the system permits it, and
+authority confinement cannot prevent an inappropriate choice within the
+authorised envelope. Human semantic decision-making is a useful systems
+analogy, but not itself a guarantee. Conflux can be combined with
+model-level defences for defence in depth
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
+
 ### LLM-agent defences
 
 CaMeL (Debenedetti et al., 2025) is a system-level defence with
@@ -240,6 +252,11 @@ and policy checks imply the ITES definition of principal influence for a
 particular witness. The result should be phrased as **non-implication between
 security objectives**, not as "CaMeL is insecure" or "CaMeL cannot encode PE."
 
+The precise Conflux distinction for delegation and planning is that planner
+output is not an authority source; explicit authorised delegation is
+required for `D_e`
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
+
 Progent mediates tool calls with symbolic privilege-control policies. PACT
 tracks argument-level provenance. Each optimises for a different security
 objective; satisfying a defence-native property does not imply PE safety.
@@ -250,7 +267,8 @@ privileged effects. Classical integrity models, particularly Biba's
 low-water-mark policies and systems such as LOMAC, address analogous
 contamination. Information-flow-control research subsequently developed
 richer lattice, noninterference, decentralized-policy, declassification,
-and endorsement mechanisms.
+and endorsement mechanisms (classical IFC concepts; endorsement is not a
+planned Conflux mechanism, [ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
 
 Conflux applies this lineage to AI agents but represents contamination as
 authenticated principal provenance and derives effective action authority

@@ -202,6 +202,20 @@
       "status": "deferred",
       "evidence": ["research/reports/archive/2026-08-27-sledv-comprehension-validation/"],
       "gap": "CaMeL deep validation: source spec, discrepancy analysis, supported-fragment definition, published-example conformance, reference-implementation differential, human counterexample review"
+    },
+    {
+      "ids": ["SEC-009"],
+      "status": "implemented",
+      "evidence": [
+        "docs/decisions/025-authority-confinement-semantic-judgement-delegation.md",
+        "docs/reference/SECURITY_MODEL.md",
+        "docs/reference/GLOSSARY.md",
+        "docs/OVERVIEW.md",
+        "docs/research/RESEARCH_OVERVIEW.md",
+        "docs/research/RELATED_WORK.md",
+        "docs/research/RESEARCH_QUESTIONS.md"
+      ],
+      "gap": null
     }
   ],
   "deferred_research": [

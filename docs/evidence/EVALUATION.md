@@ -55,6 +55,25 @@ original and reduced models under the independent reference interpreter. An
 unavailable optional solver is recorded as unavailable and contributes no
 equivalence evidence.
 
+## Evidence taxonomy
+
+Conflux distinguishes three evidence classes:
+
+1. **System-level formal/bounded evidence** — theorem, model checking, bounded
+   /unbounded formal verification. SLED/SLED-V is the primary tool.
+2. **Empirical model-security evidence** — whether a model resists prompt
+   injection or correctly decides semantic legitimacy. Measured through
+   AgentDojo and real-model experiments. Does not upgrade a formal claim.
+3. **Empirical task utility** — whether a task completes. Measured through
+   planning and AgentDojo utility metrics.
+
+These classes must not be combined into a single metric. A formal "no PE
+under arbitrary model behaviour" result does not imply "model resists
+attack," and empirical model robustness does not imply authority
+confinement.
+
+See [ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md).
+
 ## Version-two experiment protocol
 
 `experiment-protocol-v2.schema.json` fixes the track, suite and schema

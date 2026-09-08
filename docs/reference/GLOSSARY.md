@@ -23,7 +23,7 @@
 | Low-water-mark integrity | Biba integrity policy where a subject's effective integrity is lowered after observing less-trusted information | research vocabulary |
 | Noninterference | Varying secret information does not alter unauthorised observations; stronger than read-access safety | research vocabulary |
 | Declassification | Controlled release of information beyond strict confidentiality confinement | research vocabulary |
-| Endorsement | Accepting untrusted information as sufficiently trustworthy; integrity analogue of declassification | research vocabulary |
+| Endorsement | Classical IFC concept: accepting untrusted information as sufficiently trustworthy; integrity analogue of declassification. Not a current Conflux mechanism | research vocabulary, ADR-025 |
 | Robust declassification | An attacker cannot control what trusted code declassifies | research vocabulary |
 | Observational confidentiality | Relational property: executions differing only in secrets produce equivalent observations for unauthorised principals | research vocabulary |
 | Modeled program | Inert graph of declared effects with no execution boundary; used for static analysis and verification IR abstraction | `planning.modeled_program` |
@@ -37,6 +37,12 @@
 | Verification IR | Serializable intermediate representation of a transition system for formal verification backends | `verification.ir` |
 | Differential conformance | Comparison of runtime transition behaviour against the verification IR to detect divergence | `verification.interpreter` |
 | Delegation grant | Scoped, time-bound authorisation transfer from one Principal to another that cannot manufacture authority | `domain.delegation` |
+| Explicit ACS (`ACS_explicit`) | Persistent machine-readable authority relation/PDP state before execution-scoped delegation | `SECURITY_MODEL.md`, ADR-025 |
+| Effective ACS (`ACS_effective(e)`) | Authority relation used for execution `e` after applying all valid scoped delegations to the explicit ACS | `SECURITY_MODEL.md`, ADR-025 |
+| Authority envelope | Machine-enforceable effect set an execution can perform under its Principal Context and effective ACS, plus argument authority constraints | `SECURITY_MODEL.md`, ADR-025 |
+| Semantic judgement | Deciding whether an effect within available authority is appropriate given task meaning/context; may be performed by humans or models with empirical rather than worst-case assurance | ADR-025 |
+| Delegated choice set | Exact finite or predicate-defined effects/parameters an authorised principal explicitly makes available to a beneficiary/execution | ADR-025 |
+| Model-level defence | Control that changes model behaviour to reduce inappropriate decisions; security-relevant but empirically evidenced, not trusted to grant Conflux authority | ADR-025 |
 | Defence model | A finite IR abstraction of a contemporary agent defence (e.g. CaMeL, Progent, PACT) used for comparative verification; not implementation-conformance evidence | `verification.defence_models` |
 | PARC (Cedar) | Pointwise Authorisation Request Corpus — the translated request format used by the Cedar adapter for differential testing | `adapters.benchmarks` |
 | Part B | The previous project phase that introduced ITES, Principal Context, SLED, and bounded experiments over ~1.5M traces; archived under `research/reports/archive/` and `research/publications/paper/` | research vocabulary |
@@ -45,7 +51,7 @@
 | PE-safe | A controller is PE-safe if no executed action violates PE under the stated threat model | research vocabulary |
 | Reference monitor | A small, analysable, tamper-resistant mechanism providing complete mediation of privileged effects; ITES is the reference monitor for Conflux | `ites` |
 | TCB (Trusted Computing Base) | Components whose correct operation is assumed by the security guarantee; listed in `SECURITY_MODEL.md` | `SECURITY_MODEL.md` |
-| Trusted transformation | An explicitly modelled operation that may conservatively reduce Principal Context influence; future work, not yet activated | `SECURITY_MODEL.md`, ADR-024 |
+| Trusted transformation | An explicitly modelled operation that may conservatively reduce Principal Context influence. Not a current Conflux mechanism; any future exception requires a separately accepted design and proof obligation | ADR-025 |
 
 Use "human user" only for an explicitly human interface actor. Otherwise, use
 Principal.

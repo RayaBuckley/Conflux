@@ -54,6 +54,15 @@ Source: `research/reports/analysis/2026-08-13-foundational-security-literature.m
 | Novelty audit | Deferred | Search repository for claims made unsafe by classical precedent |
 | Manuscript migration | Deferred | Report §31 proposes manuscript structural changes; requires operator gate after primary-source reading |
 
+## Semantic framing migration (ADR-025)
+
+| IDs | Change | Evidence |
+|---|---|---|
+| SEC-009 | Authority confinement vs semantic judgement; explicit/effective ACS; scoped delegation semantics; endorsement superseded | ADR-025, SECURITY_MODEL.md, GLOSSARY.md, OVERVIEW.md, RESEARCH_OVERVIEW.md, RELATED_WORK.md, RESEARCH_QUESTIONS.md |
+
+This is primarily semantic/documentation work. No runtime delegation
+activation or code behavior change is implied.
+
 The complete, per-task disposition and evidence paths are in
 `docs/evidence/task-registry.json`. No gated item is promoted to a live claim merely
 because its adapter, manifest, or report source exists.

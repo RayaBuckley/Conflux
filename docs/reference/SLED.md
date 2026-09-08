@@ -101,6 +101,17 @@ Missing or unsupported backends return `UNKNOWN`. Partial-order reduction,
 Principal symmetry, hyperproperties, arbitrary-program proofs, and unbounded
 deployment claims remain future work.
 
+## Scope
+
+SLED-V evaluates system-level properties under arbitrary well-typed model
+proposals. It can check whether authority, provenance, delegation, or
+disclosure constraints hold in the represented transition system. It does
+not estimate whether a particular model recognises prompt injection or
+correctly judges a request's semantic legitimacy. Those questions require
+empirical model/agent benchmarks and should be reported separately from
+formal authority evidence
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
+
 ## Related research
 
 - [Maximal security and synthesis](../../research/reports/analysis/MAXIMAL_SECURITY_AND_SYNTHESIS.md): formalises the claim that ITES is the maximally permissive PE-safe controller and proposes a controller-synthesis experiment.
@@ -127,7 +138,10 @@ actions (e.g., an attacker influencing which recipient an authorised
 
 ### Provenance monotonicity (supported)
 
-Absent an explicit trusted transformation:
+Current Conflux execution does not reduce Principal Context. Any future
+exception requires a separately accepted design and proof obligation
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
+Therefore:
 
 ```text
 PC(parent) subseteq PC(child)

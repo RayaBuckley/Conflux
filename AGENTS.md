@@ -36,6 +36,11 @@ current Principal Context and provenance, not static prompt trust labels.
 - Principal Context is evaluated at action time.
 - Authorisation, visibility, and consent are separate decisions.
 - Consent never manufactures authority.
+- Authority confinement does not guarantee semantic appropriateness of
+  choices within the authority envelope.
+- Model-level defences are genuine empirical security controls but cannot
+  grant authority or narrow Principal Context.
+- Endorsement/trusted transformation is not a current Conflux mechanism.
 - Domain and ITES do not import benchmark-specific behavior.
 - Evaluation code measures defences and does not encode benchmark shortcuts.
 

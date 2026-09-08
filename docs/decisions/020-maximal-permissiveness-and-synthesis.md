@@ -64,6 +64,20 @@ the non-vacuity condition. Hence `C(a, PC)` implies `ITESAllow(a, PC)`.
   cannot alter ACS, provenance, or environment facts.
 - Empty Principal Context denies all effectful actions (non-vacuity).
 
+### Scope relative to ADR-025
+
+The theorem applies to a fixed represented authority relation. The base
+proof uses `ACS_explicit` when no delegation applies. An extension can
+instantiate the same theorem at a fixed valid `ACS_effective(e)` snapshot
+when delegation semantics are valid and activated. The theorem does not
+solve semantic appropriateness or claim maximal organisational automation
+utility. Human/model semantic trust and explicit delegation can make
+additional workflows acceptable to an organisation; this does not
+contradict the theorem because the authority relation or claim being
+evaluated has changed.
+
+See [ADR-025](025-authority-confinement-semantic-judgement-delegation.md).
+
 ## Controller-synthesis experiment
 
 ### Approach

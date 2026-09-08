@@ -22,7 +22,9 @@ it may execute.
 
 Effective authority is the intersection of all influencing Principals'
 permissions. Additional influence can only reduce authority, never increase it.
-The LLM itself is not trusted for security.
+The LLM is not trusted to establish or expand authority or narrow Principal
+Context; deployments may rely on it probabilistically for semantic judgement
+within already available authority.
 
 **Canonical:** [OVERVIEW.md](../OVERVIEW.md),
 [RESEARCH_OVERVIEW.md](../research/RESEARCH_OVERVIEW.md)

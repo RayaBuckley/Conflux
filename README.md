@@ -38,6 +38,14 @@ uses a conservative **Principal Context**: every influencing Principal must be
 authorised, while consent, visibility, and read access remain independent
 restrictions.
 
+## Authority boundary
+
+Conflux provides a hard authority-confinement layer; model-level defences and
+human/model judgement remain relevant for deciding which already-authorised
+action is appropriate. See
+[ADR-025](docs/decisions/025-authority-confinement-semantic-judgement-delegation.md)
+for the canonical decision.
+
 ## Run the offline system
 
 Requirements: Python 3.12 or newer. No credentials, model endpoint, container,

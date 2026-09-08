@@ -41,6 +41,9 @@
 | ITES preserves PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: ITES reference PE property is bounded\_safe; finite IR model |
 | ITES defective requester-only controller violates PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: requester-only PE property unsafe with Z3 counterexample; finite IR model |
 | Part B 1.46M trace reproduction | Bounded historical reproduction | `research/output/runs/native-sled-partb-reproduction-v1/result.json`: all three historical environments reproduce exact trace counts (422,535 + 996,451 + 43,621 = 1,462,607) under depth-three bounds; source: archived prototype `research/reports/archive/2026-06-01-original-prototype/main.py`; canonical-state compression: 1,462,607 raw traces → 31 unique canonical states; incomplete count differs from preprint due to simplified criterion; this is reproduction/conformance, not an unbounded security proof |
+| Authority confinement does not guarantee semantic appropriateness of authorised choices | Documented semantics | ADR-025; security model distinguishes authority confinement from semantic judgement |
+| Model-level defences are genuine empirical security but outside the authority TCB | Documented semantics | ADR-025; model/planner/classifier output cannot grant authority or narrow PC |
+| Effective ACS includes only explicit valid delegation; runtime delegation remains disabled | Specified, runtime disabled | ADR-025; scoped delegation model exists but operational delegation is denied |
 
 ## Novelty qualification
 

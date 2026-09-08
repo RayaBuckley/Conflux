@@ -13,6 +13,79 @@
 
 Models, planners, optional classifiers, and benchmark data are not trusted to
 grant authority, assert decision provenance, or narrow Principal Context.
+A model may nevertheless be relied upon probabilistically for semantic judgement
+within already available authority; this does not grant it the power to
+establish, expand, or narrow authority. See
+[ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md).
+
+## Security assurance layers
+
+Conflux distinguishes three security questions:
+
+1. **Authority confinement:** can an execution exercise machine-enforceable
+   authority outside the envelope available to every influencing principal?
+   ITES addresses this under its stated assumptions.
+2. **Semantic judgement:** given authority to choose among several permitted
+   effects, does the decision-maker choose an appropriate effect for the real
+   task and context? This is not guaranteed by ITES. Humans and models both
+   perform this role with empirical, not worst-case, assurance.
+3. **Policy adequacy:** does the machine-readable authority policy represent
+   all of the organisation's intended restrictions? Usually not perfectly;
+   human/model semantic judgement resolves conditions not encoded in the
+   explicit ACS.
+
+Model-level prompt-injection defences are genuine security controls that
+reduce the probability of inappropriate decisions. Their assurance is
+empirical/probabilistic and can degrade under distribution shift or adaptive
+attacks. Conflux provides a complementary system-level authority-confinement
+layer whose core property holds under arbitrary model proposals. The two
+layers defend different failure modes and should normally be combined.
+
+## Explicit and effective authority policy
+
+Conflux distinguishes the organisation's persistent machine-readable authority
+relation from the execution-effective relation used by ITES:
+
+- **`ACS_explicit`**: the persistent machine-readable authorisation state
+  supplied by the organisation/PDP (e.g. RBAC, ABAC, ReBAC, IAM, or
+  Cedar-style decisions). It is an external trust assumption and input to the
+  core theorem.
+- **`D_e`**: the set of valid, explicit, scoped delegation grants applicable
+  to execution `e`. A grant must be independently authorised; permission to
+  perform an action does not automatically imply permission to delegate it.
+- **`ACS_effective(e)`**: the authority relation ITES evaluates for `e` after
+  combining `ACS_explicit` with `D_e`:
+
+  ```text
+  ACS_effective(e, p, a) = ACS_explicit(p, a) OR DelegatedAllow(D_e, p, a)
+  ```
+
+  where `DelegatedAllow` includes beneficiary, issuer, resource, argument,
+  lifetime, use-count, revocation, and other configured scope checks.
+
+Delegation does not overwrite the explicit ACS globally. It creates a scoped
+effective authority relation for the applicable execution. Runtime delegation
+remains disabled; these semantics are specification-level.
+
+See [ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md).
+
+## Authority envelope
+
+The **authority envelope** of execution `e` is the set of machine-enforceable
+effects that pass the Principal-Context authority checks under
+`ACS_effective(e)` and the trusted operation/argument authority schema:
+
+```text
+AuthorityEnvelope(e) = {
+    a | PC(e) known/non-empty
+        and forall p in PC(e): ACS_effective(e, p, a)
+        and action/argument authority checks pass
+}
+```
+
+Conflux guarantees confinement to this represented envelope under its
+assumptions. It does not guarantee that a human or model chooses the
+semantically best member of the envelope.
 
 ## Decision pipeline
 
@@ -66,8 +139,10 @@ evaluates current policy state again.
 - For ordinary derived objects, `PC(output) ⊇ PC(execution inputs)`.
   Scheduled executions and persistent artefacts inherit the scheduling or
   deriving context's Principal Context. New assistant calls or sessions cannot
-  reset Principal Context. Only an explicitly trusted, separately modelled
-  transformation may reduce influence.
+  reset Principal Context. Current Conflux execution does not reduce Principal
+  Context. Any future exception requires a separately accepted semantics and
+  proof obligation
+  ([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
 - An externally fetched object retains the authenticated provenance of its
   actual source(s). It does not inherit the requesting user's organisational
   authority merely because the request was made on the user's behalf.
@@ -137,6 +212,47 @@ Authority-bearing argument checks reduce but do not eliminate the gap between
 authority confinement and harm prevention. Finer operation-specific effect
 semantics remain future work.
 
+## Semantic judgement within authority
+
+Given authority to choose among several permitted effects, whether the
+decision-maker chooses an appropriate effect for the real task and context is
+a semantic judgement. Examples include whether a customer request is
+legitimate, whether an email is social engineering, or which of several
+already-delegated actions is appropriate.
+
+These predicates can depend on natural language, incomplete evidence,
+context, and organisational norms. They may not be fully captured by the
+explicit machine-readable ACS. Human employees routinely resolve such
+conditions; AI agents may serve the same role. Neither role carries a formal
+correctness guarantee.
+
+ITES bounds the authority available to a semantic decision but does not
+prove that the decision is appropriate. Model-level defences, training, and
+human oversight can reduce the probability of inappropriate choices, but
+this is empirical rather than worst-case assurance.
+
+## Humans, models, and model-level defences
+
+Model-level prompt-injection defences — instruction hierarchy, fine-tuning,
+classifiers, and similar techniques — are genuine security controls that
+reduce the probability of malicious or inappropriate decisions. Their
+evidence is empirical/probabilistic and can degrade under distribution shift
+or adaptive attacks. Conflux provides a complementary system-level
+authority-confinement layer whose core property is defined under arbitrary
+model proposals.
+
+A privileged employee may read arbitrary external email and then exercise
+privileged actions. The machine ACS often grants the employee broad action
+authority and relies on the employee to determine whether a particular
+email/request legitimately warrants using it. Phishing training improves
+security but does not prove that every decision is correct. Replacing the
+human with an AI agent does not make the semantic decision problem
+disappear.
+
+A model can be untrusted for authority establishment while still being
+relied upon, probabilistically, for semantic judgement within already
+granted authority.
+
 ## Rationale
 
 | Rule | Why |
@@ -153,6 +269,7 @@ semantics remain future work.
 | Model delegation before activation | Authority transfer adds attenuation, ordering, expiry, revocation, and atomic-use obligations that must be evidenced before runtime use |
 | Require live differential evidence before Cedar-backed activation | Successful translation and an oracle expectation do not demonstrate that an unavailable PDP agrees |
 | Fail closed on errors | Infrastructure uncertainty is not evidence of permission |
+| Distinguish authority confinement from semantic judgement | ITES bounds authority; it does not prove appropriateness of choices within authority | [ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md) |
 
 ### Classical foundations
 
@@ -160,7 +277,9 @@ The ITES mediation boundary is a reference monitor for tool-using AI agents:
 it provides complete mediation of privileged effects by a small, analysable,
 tamper-resistant mechanism, separating untrusted proposal generation from
 trusted effect execution. The LLM is untrusted code requesting privileged
-operations, not a trusted security decision-maker.
+operations, not a trusted authority-establishment decision-maker. A deployment
+may nevertheless rely on it probabilistically for semantic judgement within
+already available authority.
 
 The authority-intersection rule is structurally analogous to low-water-mark
 contamination from Biba's integrity models: consuming information from an
@@ -178,10 +297,11 @@ untrusted model proposals from trusted effect execution. Asbestos provides
 kernel-enforced labels and event-process isolation for systems acting on behalf
 of multiple principals, a setting structurally similar to multi-principal agent
 execution. Clark-Wilson provides a model of integrity through certified
-transformations and separation of duties, which frames the future
-trusted-transformation question: under what explicitly modelled operation may
-conservative influence be reduced without letting arbitrary untrusted input
-choose the transformation?
+transformations and separation of duties. Conflux does not currently
+implement an endorsement or trusted-transformation mechanism; any future
+mechanism that reduces conservative provenance requires a separately
+accepted design and proof obligation
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
 
 See [ADR 012](../decisions/012-foundational-security-lineage.md),
 [ADR 024](../decisions/024-external-provenance-and-authority-bounds.md),
@@ -208,6 +328,8 @@ that establishes it.
 | SLED proves unbounded safety | SLED is bounded; `SAFE` means the finite state space was exhausted, not a proof of unbounded behaviour | [ADR-010](../decisions/010-sled-verdicts.md) |
 | Authentication removes principals from context | Authentication makes the decision accurate; it does not remove the source from Principal Context | [Authentication and utility](#authentication-and-utility) |
 | Delegation is active | Delegation is modelled but runtime-disabled pending activation evidence | [Normative rules](#normative-rules) |
+| No formal guarantee means no security value | Model-level/human mitigations can reduce risk empirically, while ITES provides a different assurance class | [Humans, models, and model-level defences](#humans-models-and-model-level-defences) |
+| If ITES blocks a task, the ACS must be wrong | Some tasks depend on semantic judgement not represented in the machine-readable policy | [Semantic judgement within authority](#semantic-judgement-within-authority) |
 
 ## Operational boundary
 

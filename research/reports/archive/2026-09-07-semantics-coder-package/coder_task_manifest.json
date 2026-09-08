@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "title": "Conflux authority-confinement and semantic-security documentation migration",
+  "date": "2026-09-07",
+  "priority": "P0-documentation-semantics",
+  "constraints": [
+    "Do not activate runtime delegation",
+    "Do not let model/classifier output narrow Principal Context or grant authority",
+    "Do not introduce endorsement as a Conflux mechanism",
+    "Do not edit historical archives or retained evidence",
+    "Preserve theorem/evidence scope and boundedness",
+    "Planner output is not an authority source"
+  ],
+  "canonical_terms": {
+    "ACS_explicit": "Persistent machine-readable organisational authority relation/PDP state",
+    "D_e": "Valid explicit scoped delegations applicable to execution e",
+    "ACS_effective(e)": "Authority relation evaluated for execution e after composing ACS_explicit with D_e",
+    "AuthorityEnvelope(e)": "Machine-enforceable effect set admitted by PC(e), ACS_effective(e), and authority-bearing operation/argument constraints",
+    "SemanticJudgement": "Human/model decision about appropriateness inside available authority; empirical rather than ITES-guaranteed"
+  },
+  "phases": [
+    {
+      "id": "SEM-025-A",
+      "name": "Canonical ADR",
+      "required": true,
+      "actions": [
+        "Create next ADR from drafts/025-authority-confinement-semantic-judgement-delegation.md",
+        "Update decision index",
+        "Record supersession of ADR-024 endorsement/trusted-transformation direction"
+      ]
+    },
+    {
+      "id": "SEM-025-B",
+      "name": "Normative semantics",
+      "required": true,
+      "targets": [
+        "docs/reference/SECURITY_MODEL.md",
+        "docs/reference/GLOSSARY.md"
+      ],
+      "acceptance": [
+        "Defines explicit/effective ACS",
+        "Defines semantic judgement and authority envelope",
+        "Recognises model-level security as empirical security",
+        "No model-based provenance removal",
+        "No current endorsement mechanism"
+      ]
+    },
+    {
+      "id": "SEM-025-C",
+      "name": "Narrative and research framing",
+      "required": true,
+      "targets": [
+        "README.md",
+        "docs/OVERVIEW.md",
+        "docs/research/RESEARCH_OVERVIEW.md",
+        "docs/research/RELATED_WORK.md",
+        "docs/research/RESEARCH_QUESTIONS.md"
+      ]
+    },
+    {
+      "id": "SEM-025-D",
+      "name": "Planning and delegation reconciliation",
+      "required": true,
+      "targets": [
+        "docs/decisions/015-open-ended-dynamic-planning.md",
+        "docs/decisions/020-maximal-permissiveness-and-synthesis.md",
+        "docs/decisions/024-external-provenance-and-authority-bounds.md"
+      ],
+      "acceptance": [
+        "Planner remains untrusted for authority",
+        "Delegation requires explicit authorised principal action",
+        "RequiredAuthority(plan) is not a grant",
+        "Runtime delegation remains disabled",
+        "Maximality remains scoped to fixed represented authority"
+      ]
+    },
+    {
+      "id": "SEM-025-E",
+      "name": "Evidence and integration framing",
+      "required": true,
+      "targets": [
+        "docs/evidence/CLAIMS.md",
+        "docs/evidence/STATUS.md",
+        "docs/evidence/CHANGE_CATALOG.md",
+        "docs/evidence/task-registry.json",
+        "docs/integrations/cedar.md",
+        "SLED/evaluation documentation discovered by grep"
+      ]
+    },
+    {
+      "id": "SEM-025-F",
+      "name": "Current publication sweep",
+      "required": true,
+      "targets": [
+        "research/publications/manuscript/conflux_fourth_year_2026.tex",
+        "research/publications/flmsec_2026/main.tex if still current/editable"
+      ],
+      "exclude": [
+        "research/reports/archive/**",
+        "archived Part B/paper sources",
+        "retained evidence outputs"
+      ]
+    },
+    {
+      "id": "SEM-025-G",
+      "name": "Drift audit and validation",
+      "required": true,
+      "actions": [
+        "Run all grep patterns in 07_SEARCH_AND_DRIFT_AUDIT.md",
+        "Classify every remaining risky hit",
+        "Run repository validation",
+        "Run git diff --check",
+        "Produce final migration report"
+      ]
+    }
+  ],
+  "stop_conditions": [
+    "A code/runtime change appears necessary to make documentation truthful: report it instead of silently broadening this task",
+    "An ambiguity arises about whether a user statement counts as explicit delegation: do not invent a rule; request clarification",
+    "Repository conventions prohibit editing an accepted ADR: create a superseding ADR and link it",
+    "A publication file is marked immutable/archived: do not edit it"
+  ]
+}

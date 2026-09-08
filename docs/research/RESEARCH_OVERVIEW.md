@@ -36,8 +36,10 @@ authority merely because the request was made on the user's behalf. For
 ordinary derived objects, `PC(output) ⊇ PC(execution inputs)`. Scheduled
 executions and persistent artefacts inherit the scheduling or deriving
 context's Principal Context. New assistant calls or sessions cannot reset
-Principal Context. Only an explicitly trusted, separately modelled
-transformation may reduce influence.
+Principal Context. Current Conflux execution does not reduce Principal
+Context. Any future exception requires a separately accepted semantics and
+proof obligation
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
 
 ### Authority versus harm
 
@@ -57,7 +59,11 @@ The guarantee assumes:
 - complete mediation of relevant effects;
 - correct enforcement code.
 
-The LLM itself is not trusted for security.
+The LLM is not trusted to establish or expand authority or narrow Principal
+Context. Deployments may still rely on it probabilistically for semantic
+judgement within already available authority; this is an empirical security
+control, not a worst-case guarantee
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
 
 ## 3. Why the rule is interesting
 
@@ -134,13 +140,41 @@ Several extensions should remain subordinate to the core invariant.
 
 ### Delegation
 
-Delegation should be an explicit authorised authority-changing transition, e.g.:
+Delegation is an explicit authorised authority-changing transition, not a
+provenance transition. Conflux distinguishes the organisation's persistent
+machine-readable policy (`ACS_explicit`) from the execution-effective
+relation (`ACS_effective(e)`) obtained after applying valid scoped
+delegation `D_e`:
 
-    ACS_t -- authorised delegation --> ACS_(t+1)
+```text
+ACS_effective(e, p, a) = ACS_explicit(p, a) OR DelegatedAllow(D_e, p, a)
+```
 
-The subsequent action is checked normally under the updated authority state.
+A scoped execution delegation may be ephemeral without globally mutating the
+persistent ACS. The preferred unit is a constrained choice set or predicate
+over effects, not broad ambient role transfer. Delegation itself requires
+authority; permission to perform `a` should not automatically imply
+permission to delegate `a`.
 
-Delegation itself requires authority; permission to perform `a` should not automatically imply permission to delegate `a`.
+### Authority confinement versus semantic judgement
+
+ITES provides authority confinement: no execution can exceed the authority
+available to every influencing principal under the effective ACS. It does
+not guarantee that a choice *within* the authority envelope is appropriate.
+
+Real organisational policy is often richer than the explicit machine-readable
+ACS. A support employee may have a machine-level `refund` permission while
+organisational rules require them to decide whether a particular request is
+legitimate. The employee resolves that semantic condition; the
+access-control system has not necessarily encoded it. An AI agent may be
+asked to perform the same role with empirical model-level defences.
+
+Model-level prompt-injection defences are genuine security controls with
+empirical, not worst-case, assurance. Conflux provides a complementary
+system-level authority-confinement layer. The two defend different failure
+modes and should normally be combined.
+
+See [ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md).
 
 ### Consent
 
@@ -219,6 +253,10 @@ This is not a single direct inheritance chain. These literatures solve
 different problems. The point is to prevent the dissertation from discussing
 Conflux only against work published after LLM agents appeared.
 
+Endorsement and declassification appear in this lineage as classical IFC
+concepts. Endorsement is not a planned Conflux mechanism
+([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)).
+
 ### Structural similarity to low-water-mark integrity
 
 Biba's low-water-mark policy reduces a subject's effective integrity after it
@@ -270,7 +308,8 @@ Useful ideas include:
 - CaMeL: plan/execution separation, mediation and capability concepts. CaMeL's policy interface is programmable (Python functions over tool name and arguments, with capability/source tracking and a STRICT dependency mode). An ITES-style PE predicate could in principle be expressed on this interface, but native CaMeL does not enforce the ITES whole-execution PE property without additional principal attribution, influence propagation, persistence, and ACS integration semantics. The correct comparison is **non-implication between security objectives**, not "CaMeL is insecure" or "CaMeL cannot encode PE";
 - PACT-like work: argument-level and cross-step provenance granularity;
 - policy systems such as Progent: parameter-sensitive policy representation;
-- classic IFC/Biba: monotonic labels, endorsement/declassification theory;
+- classic IFC/Biba: monotonic labels, endorsement/declassification theory
+  (literature only; endorsement is not a planned Conflux mechanism);
 - capability systems: scoped delegation;
 - causal provenance systems: dependency graphs and explanation;
 - reference monitors: complete mediation;

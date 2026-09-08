@@ -12,9 +12,18 @@ asked for. This is **prompt injection**, and it is a modern instance of the
 **confused deputy problem**: a privileged component (the agent) is tricked by
 untrusted input into misusing its authority.
 
-The core question is not whether the model can *detect* malicious
-instructions — it cannot, reliably — but whether the security mechanism
-prevents unauthorised actions *even when the model is fully compromised*.
+Model-level prompt-injection defences — instruction hierarchy, fine-tuning,
+classifiers — can materially reduce the probability of such manipulation.
+Like security training for employees who read untrusted email, these defences
+are genuine security controls with empirical, not worst-case, assurance.
+
+Conflux provides a complementary **hard authority boundary**. The core
+question is not whether the model can *detect* malicious instructions, but
+whether the security mechanism prevents unauthorised actions *even when the
+model is fully compromised*. If a task genuinely requires semantic judgement
+over untrusted content to determine a privileged choice, Conflux cannot prove
+that the decision is appropriate; it can bound the authority exposed to that
+decision.
 
 ## The approach
 
@@ -73,6 +82,20 @@ prevented from performing an unauthorised action.
 Live model-backed evidence (planning and AgentDojo efficacy), delegation
 activation (currently modelled but runtime-disabled), richer argument-level
 provenance, and observational confidentiality properties.
+
+## Authority and judgement
+
+A blocked proposal is a **security success**, not a failure. The agent was
+prevented from performing an unauthorised action. However, authority
+confinement does not guarantee that every *authorised* action is appropriate.
+A privileged employee may have machine-level permission to issue refunds
+while relying on judgement to decide whether a particular request is
+legitimate. An AI agent in the same role faces the same structural issue.
+Model-level defences and human oversight reduce the risk of inappropriate
+choices within the authority envelope; Conflux bounds the envelope itself.
+
+See [ADR-025](decisions/025-authority-confinement-semantic-judgement-delegation.md)
+for the canonical decision.
 
 ## Where to go deeper
 
