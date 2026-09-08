@@ -1,12 +1,12 @@
 {
   "key": "rbac",
-  "source_category": "open_html",
-  "source_url": "https://csrc.nist.gov/projects/role-based-access-control",
+  "source_category": "doi",
+  "source_url": "https://doi.org/10.1109/2.485845",
   "fetch_status": "fetched",
   "local_files": [
     "paper.html"
   ],
   "content_hash": "bf730f233fdd1e6c99a4ccf33b4b3821c2993ccfb74130c96f0e143f849a74d4",
-  "fetched_date": "2026-08-30T21:20:17Z",
+  "fetched_date": "2026-09-08T06:22:39Z",
   "error_message": ""
 }

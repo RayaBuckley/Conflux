@@ -1,10 +1,12 @@
 {
   "key": "nmifc",
-  "source_category": "open_pdf",
-  "source_url": "https://www.cs.cornell.edu/andru/papers/nmifc.pdf",
-  "fetch_status": "failed",
-  "local_files": [],
-  "content_hash": "",
-  "fetched_date": "2026-08-30T21:19:54Z",
-  "error_message": "HTTP 300 Multiple Choices"
+  "source_category": "open_html",
+  "source_url": "https://www.cs.cornell.edu/andru/papers/nmifc/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "f2ccc34050cc0103a1bb18e40e6f025baedfc9d4e4aa467decb1f5e1565b19cd",
+  "fetched_date": "2026-09-08T06:22:23Z",
+  "error_message": ""
 }

@@ -1,0 +1,12 @@
+{
+  "key": "policymachine",
+  "source_category": "open_html",
+  "source_url": "https://www.nist.gov/publications/policy-machine-security-policy-management",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "0d6e62a8d951f94980f0e13bd374e9ee0e6762cb01386c9263358739be89c790",
+  "fetched_date": "2026-09-08T06:22:36Z",
+  "error_message": ""
+}

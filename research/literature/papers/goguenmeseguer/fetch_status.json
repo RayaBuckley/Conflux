@@ -1,10 +1,10 @@
 {
   "key": "goguenmeseguer",
-  "source_category": "doi",
-  "source_url": "https://doi.org/10.1109/SP.1982.10014",
-  "fetch_status": "paywall",
+  "source_category": "open_pdf",
+  "source_url": "https://www.cs.cornell.edu/courses/cs5430/2012sp/noninterference.pdf",
+  "fetch_status": "failed",
   "local_files": [],
   "content_hash": "",
-  "fetched_date": "2026-08-30T21:19:27Z",
-  "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+  "fetched_date": "2026-09-08T06:22:14Z",
+  "error_message": "HTTP 404 Not Found"
 }

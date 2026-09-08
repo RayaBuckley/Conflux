@@ -1,0 +1,12 @@
+{
+  "key": "contextualmanipulation",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2605.17634",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "71347236fce66c517e092f58be579863d57e1a14cc2f0a2a3d175de8b3670f69",
+  "fetched_date": "2026-09-08T06:21:38Z",
+  "error_message": ""
+}

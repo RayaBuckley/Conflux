@@ -1,0 +1,12 @@
+{
+  "key": "agentrfc",
+  "source_category": "open_html",
+  "source_url": "https://www.alphaxiv.org/abs/2603.23801",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "820d2f870a4cb78c8204c1b72a238e3848384bd88e27bac3b74d7fea17ab88d1",
+  "fetched_date": "2026-09-08T06:21:08Z",
+  "error_message": ""
+}

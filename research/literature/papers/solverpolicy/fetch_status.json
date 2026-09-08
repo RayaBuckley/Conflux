@@ -1,0 +1,12 @@
+{
+  "key": "solverpolicy",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2603.20449",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "7b47f4d68c41993bb97a2d9f2f74153c1a897fb938e431aa7296ab4a6e9adb0b",
+  "fetched_date": "2026-09-08T06:22:47Z",
+  "error_message": ""
+}

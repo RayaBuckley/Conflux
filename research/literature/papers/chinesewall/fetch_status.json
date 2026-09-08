@@ -1,0 +1,10 @@
+{
+  "key": "chinesewall",
+  "source_category": "open_html",
+  "source_url": "https://dblp.dagstuhl.de/rec/conf/sp/BrewerN89.html",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-09-08T06:21:28Z",
+  "error_message": "URL error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)"
+}

@@ -1,0 +1,12 @@
+{
+  "key": "hyperltl",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/1401.4492",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "3c3a64ffaaccc015848a314c46c9df78953b35ede53d9d0e134a2cdb73867479",
+  "fetched_date": "2026-09-08T06:22:18Z",
+  "error_message": ""
+}

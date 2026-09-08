@@ -1,10 +1,10 @@
 {
   "key": "myersliskov",
-  "source_category": "doi",
-  "source_url": "https://doi.org/10.1145/363516.363524",
-  "fetch_status": "paywall",
+  "source_category": "open_html",
+  "source_url": "https://dblp.org/rec/journals/tosem/MyersL00.html",
+  "fetch_status": "failed",
   "local_files": [],
   "content_hash": "",
-  "fetched_date": "2026-08-30T21:19:46Z",
-  "error_message": "HTTP 404 Not Found"
+  "fetched_date": "2026-09-08T06:22:22Z",
+  "error_message": "URL error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)"
 }

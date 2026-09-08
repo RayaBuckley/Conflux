@@ -1,0 +1,10 @@
+{
+  "key": "flac",
+  "source_category": "open_html",
+  "source_url": "https://privacytools.seas.harvard.edu/publications/calculus-flow-limited-authorization",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-09-08T06:22:10Z",
+  "error_message": "HTTP 403 Forbidden"
+}

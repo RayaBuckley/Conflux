@@ -1,0 +1,12 @@
+{
+  "key": "privilegeescalation",
+  "source_category": "open_html",
+  "source_url": "https://www.usenix.org/conference/12th-usenix-security-symposium/preventing-privilege-escalation",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "9e46a5e943f1158d710914835eaf64cce3f21f7a295be7a0dbce71c9f1071c52",
+  "fetched_date": "2026-09-08T06:22:39Z",
+  "error_message": ""
+}

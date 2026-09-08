@@ -1,0 +1,12 @@
+{
+  "key": "binder",
+  "source_category": "open_html",
+  "source_url": "https://www.microsoft.com/en-us/research/publication/binder-a-logic-based-security-language/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "0869f9bd354228a5613c7fa52bab55affa65fa797082cdf561386ebff648780f",
+  "fetched_date": "2026-09-08T06:21:20Z",
+  "error_message": ""
+}

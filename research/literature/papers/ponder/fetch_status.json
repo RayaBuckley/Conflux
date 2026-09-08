@@ -1,0 +1,12 @@
+{
+  "key": "ponder",
+  "source_category": "open_html",
+  "source_url": "https://link.springer.com/chapter/10.1007/3-540-44569-2_2",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "32ed63159c77e21ee19ca1b9aa3213ccf0218eb59539560b132a8e68ef0e18ea",
+  "fetched_date": "2026-09-08T06:22:38Z",
+  "error_message": ""
+}

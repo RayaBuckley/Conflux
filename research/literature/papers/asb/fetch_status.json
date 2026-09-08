@@ -1,12 +1,12 @@
 {
   "key": "asb",
   "source_category": "arxiv",
-  "source_url": "https://arxiv.org/abs/2410.02644",
+  "source_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/5750f91d8fb9d5c02bd8ad2c3b44456b-Abstract-Conference.html",
   "fetch_status": "fetched",
   "local_files": [
     "paper.html"
   ],
   "content_hash": "85bab447cf5c3c692c7d3dae2785f0bcc6a9e4f8d8e15da9aac5cb6ec976054b",
-  "fetched_date": "2026-08-30T21:18:17Z",
+  "fetched_date": "2026-09-08T06:21:11Z",
   "error_message": ""
 }

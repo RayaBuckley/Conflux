@@ -1,0 +1,12 @@
+{
+  "key": "boundedmodelchecking",
+  "source_category": "open_pdf",
+  "source_url": "https://www.cs.cmu.edu/~emc/papers/Books%20and%20Edited%20Volumes/Bounded%20Model%20Checking.pdf",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.pdf"
+  ],
+  "content_hash": "d2365d6c54819962cd6b2aff28898007e41e7acfda01c76933f9d8017a64e9a9",
+  "fetched_date": "2026-09-08T06:21:22Z",
+  "error_message": ""
+}

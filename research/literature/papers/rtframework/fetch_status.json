@@ -1,0 +1,12 @@
+{
+  "key": "rtframework",
+  "source_category": "open_html",
+  "source_url": "https://www.cs.purdue.edu/homes/ninghui/abstracts/rt_oakland02.html",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "f07c71f6b18e2d29dc33ac4aeb4f1f3e0583a4cbda811816224f11b5200a708d",
+  "fetched_date": "2026-09-08T06:22:40Z",
+  "error_message": ""
+}

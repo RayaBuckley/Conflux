@@ -1,0 +1,12 @@
+{
+  "key": "executionhistory",
+  "source_category": "open_html",
+  "source_url": "https://www.microsoft.com/en-us/research/publication/access-control-based-execution-history/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "56ee3d24934ebd4903b4d17151a98c179421ab6f8201832edc18191734ad63b8",
+  "fetched_date": "2026-09-08T06:22:10Z",
+  "error_message": ""
+}

@@ -1,10 +1,10 @@
 {
   "key": "robustdeclassification",
   "source_category": "open_html",
-  "source_url": "https://www.cs.cornell.edu/andru/papers/robust-dec.html",
+  "source_url": "https://dblp.org/rec/conf/csfw/ZdancewicM01.html",
   "fetch_status": "failed",
   "local_files": [],
   "content_hash": "",
-  "fetched_date": "2026-08-30T21:20:18Z",
-  "error_message": "HTTP 404 Not Found"
+  "fetched_date": "2026-09-08T06:22:40Z",
+  "error_message": "URL error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)"
 }

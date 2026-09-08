@@ -1,0 +1,13 @@
+{
+  "key": "fret",
+  "source_category": "open_pdf",
+  "source_url": "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20200001989.pdf",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html",
+    "paper.html"
+  ],
+  "content_hash": "9edcd2dc0661a36cc132f7a555d3239f1df13cfb6cdde8d8696b654e6dc8097c",
+  "fetched_date": "2026-09-08T06:22:13Z",
+  "error_message": ""
+}

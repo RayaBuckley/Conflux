@@ -1,0 +1,10 @@
+{
+  "key": "lasco",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/cs/9809124",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-09-08T06:22:20Z",
+  "error_message": "unexpected error: could not extract arXiv ID from https://arxiv.org/abs/cs/9809124"
+}

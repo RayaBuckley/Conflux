@@ -1,0 +1,12 @@
+{
+  "key": "policybank",
+  "source_category": "open_html",
+  "source_url": "https://scholar.google.com/scholar?q=PolicyBank+Somesh+Jha",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "1a9a7b694c75c4c24d3445d0c5abbb144d3b1fa6519389833fb679f0e06c183a",
+  "fetched_date": "2026-09-08T06:22:31Z",
+  "error_message": ""
+}

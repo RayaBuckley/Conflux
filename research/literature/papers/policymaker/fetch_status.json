@@ -1,0 +1,12 @@
+{
+  "key": "policymaker",
+  "source_category": "open_html",
+  "source_url": "https://archive.dimacs.rutgers.edu/TechnicalReports/abstracts/1996/96-17.html",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "8d41f4557dca839349219d8c98f64b328fb055ae4d2835cfa777df7f6d56c4df",
+  "fetched_date": "2026-09-08T06:22:37Z",
+  "error_message": ""
+}

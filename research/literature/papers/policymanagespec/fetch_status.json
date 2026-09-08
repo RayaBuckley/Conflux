@@ -1,0 +1,10 @@
+{
+  "key": "policymanagespec",
+  "source_category": "doi",
+  "source_url": "https://doi.org/10.1109/65.993218",
+  "fetch_status": "paywall",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-09-08T06:22:37Z",
+  "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+}

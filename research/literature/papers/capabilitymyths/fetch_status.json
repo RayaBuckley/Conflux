@@ -1,0 +1,10 @@
+{
+  "key": "capabilitymyths",
+  "source_category": "open_pdf",
+  "source_url": "http://srl.cs.jhu.edu/pubs/SRL2003-02.pdf",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-09-08T06:21:23Z",
+  "error_message": "URL error: [Errno 11001] getaddrinfo failed"
+}

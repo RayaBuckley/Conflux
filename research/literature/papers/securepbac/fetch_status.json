@@ -1,0 +1,12 @@
+{
+  "key": "securepbac",
+  "source_category": "open_pdf",
+  "source_url": "https://adambates.org/documents/Bates_Codaspy13.pdf",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.pdf"
+  ],
+  "content_hash": "b6dce3441e4d332779579c022af5a794a84911acf46a0bd3f1d9d97845aa1868",
+  "fetched_date": "2026-09-08T06:22:43Z",
+  "error_message": ""
+}

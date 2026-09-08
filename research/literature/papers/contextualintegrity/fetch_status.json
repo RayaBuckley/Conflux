@@ -1,0 +1,12 @@
+{
+  "key": "contextualintegrity",
+  "source_category": "open_html",
+  "source_url": "https://digitalcommons.law.uw.edu/wlr/vol79/iss1/10/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "e714513b8c6f93d36ca5dc05c5432205d22726a98a46db990a3cc9f312e53ecd",
+  "fetched_date": "2026-09-08T06:21:35Z",
+  "error_message": ""
+}

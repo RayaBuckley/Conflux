@@ -1,0 +1,12 @@
+{
+  "key": "text2policy",
+  "source_category": "open_html",
+  "source_url": "https://www.microsoft.com/en-us/research/publication/automated-extraction-of-security-policies-from-natural-language-software-documents/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "b8d9805e6cf93d4e00bef34dcd9fb59c08b31bfb2224e96e1d9b93f24f75469c",
+  "fetched_date": "2026-09-08T06:22:53Z",
+  "error_message": ""
+}

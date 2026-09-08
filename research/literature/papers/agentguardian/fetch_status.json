@@ -1,0 +1,12 @@
+{
+  "key": "agentguardian",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2601.10440",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "c7b4c4019d30b3395b4142d1deb7a6f71e6be5a9d73ed17b8d1a662b5b43e4da",
+  "fetched_date": "2026-09-08T06:21:07Z",
+  "error_message": ""
+}

@@ -1,0 +1,12 @@
+{
+  "key": "policybyexample",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/1707.03967",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "b71d7c353e954eb57fd78bbcf92ff3f049e2d100b2516bc30555b35bd756a7df",
+  "fetched_date": "2026-09-08T06:22:35Z",
+  "error_message": ""
+}

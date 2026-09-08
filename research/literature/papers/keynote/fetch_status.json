@@ -1,0 +1,12 @@
+{
+  "key": "keynote",
+  "source_category": "open_html",
+  "source_url": "https://www.rfc-editor.org/info/rfc2704/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "4981c90b15024fd56c1266c7270ea8ef2f1b5c09d7aff541f88bb73cabeef10d",
+  "fetched_date": "2026-09-08T06:22:19Z",
+  "error_message": ""
+}

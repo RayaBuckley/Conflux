@@ -1,0 +1,12 @@
+{
+  "key": "accesscalculus",
+  "source_category": "open_html",
+  "source_url": "https://era.ed.ac.uk/handle/1842/207",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "f19fc88d884aae226f2a240eb3cfa5213f1c2cf199cad9b6a4602d8a6771adbb",
+  "fetched_date": "2026-09-08T06:21:04Z",
+  "error_message": ""
+}

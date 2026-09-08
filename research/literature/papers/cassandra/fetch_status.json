@@ -1,0 +1,12 @@
+{
+  "key": "cassandra",
+  "source_category": "open_html",
+  "source_url": "https://www.microsoft.com/en-us/research/publication/cassandra-distributed-access-control-policies-with-tunable-expressiveness/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "e971e5a86f58a1d2257029aa723b59a8b79d2fa779e1ef8d163067fe8baa2071",
+  "fetched_date": "2026-09-08T06:21:24Z",
+  "error_message": ""
+}

@@ -1,10 +1,10 @@
 {
   "key": "hyperproperties",
-  "source_category": "doi",
-  "source_url": "https://doi.org/10.1109/CSF.2008.7",
-  "fetch_status": "paywall",
+  "source_category": "open_html",
+  "source_url": "https://dblp.org/rec/journals/jcs/ClarksonS10.html",
+  "fetch_status": "failed",
   "local_files": [],
   "content_hash": "",
-  "fetched_date": "2026-08-30T21:19:28Z",
-  "error_message": "DOI resolved to non-open-access content (Content-Type: text/html; charset=UTF-8)"
+  "fetched_date": "2026-09-08T06:22:18Z",
+  "error_message": "URL error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)"
 }

@@ -1,0 +1,12 @@
+{
+  "key": "policyrefinement",
+  "source_category": "open_html",
+  "source_url": "https://research.ibm.com/publications/security-policy-refinement-using-data-integration-a-position-paper",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "4769c9119e78d48289f56ed248acfc720a11c5f5b3ba7613619b521dbb42e01d",
+  "fetched_date": "2026-09-08T06:22:37Z",
+  "error_message": ""
+}

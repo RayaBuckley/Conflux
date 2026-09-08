@@ -1,0 +1,12 @@
+{
+  "key": "flam",
+  "source_category": "open_html",
+  "source_url": "https://www.cs.cornell.edu/andru/papers/flam/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "67ddc3f86b69b78dabb501a22a44528081bec3f2c1dfdfeba88bc97a11c61e3f",
+  "fetched_date": "2026-09-08T06:22:11Z",
+  "error_message": ""
+}

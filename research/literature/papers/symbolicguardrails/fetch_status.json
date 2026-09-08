@@ -1,0 +1,12 @@
+{
+  "key": "symbolicguardrails",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2604.15579",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "ba0327cc76dd9e36a29eb370b62d716330960a1ff484041ab1b86191358c2e48",
+  "fetched_date": "2026-09-08T06:22:51Z",
+  "error_message": ""
+}

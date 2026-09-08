@@ -1,0 +1,12 @@
+{
+  "key": "xacml",
+  "source_category": "open_html",
+  "source_url": "https://www.oasis-open.org/standard/xacmlv3-0/",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "24134fc67458674b1d77f220594b71a1961db0e40dbd72a6a50b5889b50417de",
+  "fetched_date": "2026-09-08T06:22:54Z",
+  "error_message": ""
+}

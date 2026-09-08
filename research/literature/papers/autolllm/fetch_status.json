@@ -1,0 +1,12 @@
+{
+  "key": "autolllm",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2205.12615",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "99f7ad5bb38657aa72d6af05d7abc45666e478459759a4525f389c5e15f00766",
+  "fetched_date": "2026-09-08T06:21:18Z",
+  "error_message": ""
+}

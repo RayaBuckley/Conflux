@@ -1,0 +1,12 @@
+{
+  "key": "ciframework",
+  "source_category": "open_pdf",
+  "source_url": "https://theory.stanford.edu/~jcm/papers/barth-datta-mitchell-nissenbaum-2006.pdf",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.pdf"
+  ],
+  "content_hash": "65aca0a87b78454303cc29e8f97ef395ec13b68bd76eb52bf1fea7a7fd5a24f5",
+  "fetched_date": "2026-09-08T06:21:31Z",
+  "error_message": ""
+}

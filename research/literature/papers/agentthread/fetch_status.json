@@ -1,0 +1,12 @@
+{
+  "key": "agentthread",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.28690",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "1abdbee5f3bdd81af52df047230e99416509abbe58f0a436e652759c79413cfd",
+  "fetched_date": "2026-09-08T06:21:11Z",
+  "error_message": ""
+}

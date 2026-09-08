@@ -1,0 +1,12 @@
+{
+  "key": "stackinspection",
+  "source_category": "open_html",
+  "source_url": "https://www.cs.princeton.edu/research/techreps/536",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "771b19b58e2705add76703f18091ed09d07ac0812917e7f6c239aca2d02e9c34",
+  "fetched_date": "2026-09-08T06:22:48Z",
+  "error_message": ""
+}

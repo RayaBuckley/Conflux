@@ -1,0 +1,12 @@
+{
+  "key": "autoformpolicy",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2606.26649",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "fb0c08fa4bbc79e340d7d241a8e270c35cd62e85b7e89074d58ebaa0c08c9cb5",
+  "fetched_date": "2026-09-08T06:21:15Z",
+  "error_message": ""
+}

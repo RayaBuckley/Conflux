@@ -1,0 +1,12 @@
+{
+  "key": "pinjectiondetect",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2507.05630",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "8eb2f83941550f401bb09d65e143ced17889552b163101806afafa8b49dc003e",
+  "fetched_date": "2026-09-08T06:22:30Z",
+  "error_message": ""
+}

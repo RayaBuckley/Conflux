@@ -1,0 +1,12 @@
+{
+  "key": "cillm",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2506.04245",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "b62f9d6e9ba2244fddab0eb364a7ce1d5f53e62b99322a1fedb71358e792b840",
+  "fetched_date": "2026-09-08T06:21:34Z",
+  "error_message": ""
+}

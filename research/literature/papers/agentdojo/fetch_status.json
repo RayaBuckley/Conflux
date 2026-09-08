@@ -1,12 +1,12 @@
 {
   "key": "agentdojo",
   "source_category": "arxiv",
-  "source_url": "https://arxiv.org/abs/2406.13352",
+  "source_url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/97091a5177d8dc64b1da8bf3e1f6fb54-Paper-Datasets_and_Benchmarks_Track.pdf",
   "fetch_status": "fetched",
   "local_files": [
     "paper.html"
   ],
   "content_hash": "7b6e97faaedcf0e1b5f3635b92a0da33afbe8529699d54a5c44ad58ce2fa8b02",
-  "fetched_date": "2026-08-30T21:17:30Z",
+  "fetched_date": "2026-09-08T06:21:04Z",
   "error_message": ""
 }

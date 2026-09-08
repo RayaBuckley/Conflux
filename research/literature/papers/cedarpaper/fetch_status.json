@@ -1,0 +1,12 @@
+{
+  "key": "cedarpaper",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2403.04651",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html"
+  ],
+  "content_hash": "af2154f59b901694ea74890052a7c5f4c29f97022bcad3cb5ef61d379c52728b",
+  "fetched_date": "2026-09-08T06:21:28Z",
+  "error_message": ""
+}

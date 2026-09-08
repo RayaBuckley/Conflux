@@ -1,0 +1,10 @@
+{
+  "key": "nl2actl",
+  "source_category": "open_html",
+  "source_url": "https://dblp.dagstuhl.de/rec/journals/fmsd/FantechiGRCVM94.html",
+  "fetch_status": "failed",
+  "local_files": [],
+  "content_hash": "",
+  "fetched_date": "2026-09-08T06:22:22Z",
+  "error_message": "URL error: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)"
+}
