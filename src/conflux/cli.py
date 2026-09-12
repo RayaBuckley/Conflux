@@ -1424,7 +1424,7 @@ def _agentdojo_pilot_protocol(
             "local-artifact-manifest": resolved.manifest.fingerprint,
         },
         model=resolved.spec,
-        prompts={"agent": "agentdojo_turn_v1"},
+        prompts={"agent": "agentdojo_turn_v2"},
         seeds=(0,),
         repetitions=1,
         bounds={"max_model_calls": 8, "max_steps": 16},

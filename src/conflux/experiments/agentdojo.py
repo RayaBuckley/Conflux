@@ -66,10 +66,12 @@ class AgentDojoCellResult:
     prompt_tokens: int | None
     output_tokens: int | None
     latency_ms: int
+    output_summary: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         """Freeze augmentations and validate failure categories."""
         object.__setattr__(self, "augmentation", tuple(MappingProxyType(dict(item)) for item in self.augmentation))
+        object.__setattr__(self, "output_summary", tuple(self.output_summary))
         unknown = set(self.failures) - set(FAILURE_CATEGORIES)
         if unknown:
             raise ValueError(f"unknown_agentdojo_failure:{sorted(unknown)[0]}")
@@ -93,6 +95,7 @@ class AgentDojoCellResult:
             "prompt_tokens": self.prompt_tokens,
             "output_tokens": self.output_tokens,
             "latency_ms": self.latency_ms,
+            "output_summary": list(self.output_summary),
         }
 
 
