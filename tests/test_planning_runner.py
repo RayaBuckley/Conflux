@@ -10,6 +10,7 @@ import pytest
 
 from conflux.domain import canonical_json, fingerprint
 from conflux.experiments import ExperimentProtocol, LocalModelSpec, load_planning_diagnostic_suite, run_planning_comparison
+from conflux.experiments.planning_runner import load_default_planning_diagnostic_suite
 from conflux.ports import LocalModelPreflight, LocalModelRequest, LocalModelResponse
 
 pytestmark = pytest.mark.integration
@@ -88,17 +89,19 @@ def _actions_for(user_prompt: str) -> list[dict[str, object]]:
     return available or actions
 
 
-def test_suite_has_exactly_eight_distinct_diagnostics() -> None:
+def test_suite_has_distinct_diagnostics() -> None:
     scenarios = load_planning_diagnostic_suite(ROOT / "research" / "experiments" / "suites" / "planning-diagnostic-v1.yaml")
-    assert len(scenarios) == 12
-    assert len({scenario.id for scenario in scenarios}) == 12
+    assert len(scenarios) >= 20
+    assert len({scenario.id for scenario in scenarios}) == len(scenarios)
     assert all(scenario.distinguishes for scenario in scenarios)
 
 
 def test_runner_covers_four_modes_and_reports_security_separately() -> None:
     result = run_planning_comparison(_protocol(), _Model())
     observations = result["observations"]
-    assert isinstance(observations, list) and len(observations) == 48
+    scenarios = load_default_planning_diagnostic_suite()
+    expected_obs = len(scenarios) * 4
+    assert isinstance(observations, list) and len(observations) == expected_obs
     assert {item["mode"] for item in observations} == {"reactive", "static", "dynamic", "dynamic_code"}
     assert all(item["security_violations"] == 0 for item in observations)
     assert all("modeled_effects" in item for item in observations)

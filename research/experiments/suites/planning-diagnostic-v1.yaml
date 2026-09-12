@@ -95,3 +95,79 @@ scenarios:
       - {id: flaky-only, permission: write, resource_id: primary, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [primary], sensitive_read: false, provider_failure: true, goal: true}
     revocations: []
     max_steps: 2
+  - id: order-sensitive-reads
+    distinguishes: Reading config before data produces different output than the reverse; planner must respect dependency order.
+    principals: [alice]
+    actions:
+      - {id: read-config, permission: read, resource_id: config, context: [alice], allowed_principals: [alice], declared_reads: [config], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: read-data, permission: read, resource_id: data, context: [alice], allowed_principals: [alice], declared_reads: [data], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: write-output, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [config, data], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 4
+  - id: parallelisable-subtasks
+    distinguishes: Two independent write tasks can be planned in a single batch without ordering constraints.
+    principals: [alice]
+    actions:
+      - {id: write-a, permission: write, resource_id: output-a, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [output-a], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: write-b, permission: write, resource_id: output-b, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [output-b], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: irrelevant-data-observation
+    distinguishes: An available but irrelevant read should not be included in the plan; plans observing it waste authority exposure.
+    principals: [alice]
+    actions:
+      - {id: read-irrelevant, permission: read, resource_id: unrelated, context: [alice], allowed_principals: [alice], declared_reads: [unrelated], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: write-goal, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: transient-failure-retry
+    distinguishes: A transient provider failure should allow bounded retry in dynamic modes without aborting the task.
+    principals: [alice]
+    actions:
+      - {id: flaky-write, permission: write, resource_id: primary, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [primary], sensitive_read: false, provider_failure: true, goal: true}
+      - {id: retry-write, permission: write, resource_id: primary, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [primary], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 4
+  - id: stale-plan-after-revocation
+    distinguishes: A plan created before revocation must not execute the revoked action even if the plan was valid at creation time.
+    principals: [alice, bob]
+    actions:
+      - {id: revoked-delete, permission: delete, resource_id: protected, context: [alice, bob], allowed_principals: [alice, bob], declared_reads: [], declared_writes: [protected], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: safe-write, permission: write, resource_id: output, context: [alice, bob], allowed_principals: [alice, bob], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: [{action_id: revoked-delete, principal_id: alice}]
+    max_steps: 3
+  - id: changed-argument-after-certificate
+    distinguishes: If the action argument is changed after plan certificate creation, the certificate must be invalidated.
+    principals: [alice]
+    actions:
+      - {id: read-origin, permission: read, resource_id: origin, context: [alice], allowed_principals: [alice], declared_reads: [origin], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: write-certified, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [origin], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: write-altered, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 4
+  - id: mixed-privilege-sources
+    distinguishes: A plan combining high-privilege and low-privilege sources must narrow authority to the intersection.
+    principals: [alice, bob]
+    actions:
+      - {id: read-high, permission: read, resource_id: high-secret, context: [alice], allowed_principals: [alice], declared_reads: [high-secret], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: read-low, permission: read, resource_id: low-public, context: [bob], allowed_principals: [bob], declared_reads: [low-public], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: write-merged, permission: write, resource_id: output, context: [alice, bob], allowed_principals: [alice, bob], declared_reads: [high-secret, low-public], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 4
+  - id: lower-privilege-alternative
+    distinguishes: When a blocked action exists, a lower-privilege alternative should be chosen by dynamic modes.
+    principals: [alice, bob]
+    actions:
+      - {id: blocked-delete, permission: delete, resource_id: protected, context: [alice, bob], allowed_principals: [alice], declared_reads: [], declared_writes: [protected], sensitive_read: false, provider_failure: false, goal: true}
+      - {id: alternative-write, permission: write, resource_id: output, context: [alice, bob], allowed_principals: [alice, bob], declared_reads: [], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 3
+  - id: over-broad-planning
+    distinguishes: An over-broad plan that includes unnecessary actions increases authority exposure without utility gain.
+    principals: [alice, bob]
+    actions:
+      - {id: unnecessary-read-bob, permission: read, resource_id: bob-data, context: [bob], allowed_principals: [bob], declared_reads: [bob-data], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: necessary-read-alice, permission: read, resource_id: alice-data, context: [alice], allowed_principals: [alice], declared_reads: [alice-data], declared_writes: [], sensitive_read: false, provider_failure: false, goal: false}
+      - {id: write-output, permission: write, resource_id: output, context: [alice], allowed_principals: [alice], declared_reads: [alice-data], declared_writes: [output], sensitive_read: false, provider_failure: false, goal: true}
+    revocations: []
+    max_steps: 4
