@@ -185,6 +185,8 @@ data/
 !research/output/runs/provenance-precision-v1/**
 !research/output/runs/sledv-scaling-v1/
 !research/output/runs/sledv-scaling-v1/**
+!research/output/runs/mutation-benchmark-v1/
+!research/output/runs/mutation-benchmark-v1/**
 !research/output/runs/planning-pilot-llama-3b-v3/
 !research/output/runs/planning-pilot-llama-3b-v3/**
 dist/

@@ -18,10 +18,13 @@
     "mutants": {
       "type": "object",
       "required": ["disclosure", "delegation"],
-      "additionalProperties": false,
+      "additionalProperties": {
+        "type": "array",
+        "items": {"type": "object"}
+      },
       "properties": {
-        "disclosure": {"type": "array", "minItems": 4, "maxItems": 4},
-        "delegation": {"type": "array", "minItems": 7, "maxItems": 7}
+        "disclosure": {"type": "array", "minItems": 4},
+        "delegation": {"type": "array", "minItems": 7}
       }
     }
   },
