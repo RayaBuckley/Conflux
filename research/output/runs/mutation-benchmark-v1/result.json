@@ -1,0 +1,431 @@
+{
+  "bounds": {
+    "max_depth": 1,
+    "max_model_calls": 1,
+    "max_states": 4,
+    "max_transitions": 4
+  },
+  "canonical": {
+    "delegation": {
+      "bounds": {
+        "max_depth": 1,
+        "max_model_calls": 1,
+        "max_states": 4,
+        "max_transitions": 4
+      },
+      "counterexample": null,
+      "error": null,
+      "schema_version": "1",
+      "statistics": {
+        "duplicate_states": 0,
+        "transitions": 1,
+        "truncated": false,
+        "unique_states": 2
+      },
+      "verdict": "safe"
+    },
+    "disclosure": {
+      "bounds": {
+        "max_depth": 1,
+        "max_model_calls": 1,
+        "max_states": 4,
+        "max_transitions": 4
+      },
+      "counterexample": null,
+      "error": null,
+      "schema_version": "1",
+      "statistics": {
+        "duplicate_states": 0,
+        "transitions": 1,
+        "truncated": false,
+        "unique_states": 2
+      },
+      "verdict": "safe"
+    }
+  },
+  "claim_boundary": "All seeded security mutants are killed by at least one verification backend within the tested bound. Not allowed: this proves all possible mutants are detectable.",
+  "classification": "bounded_evidence",
+  "complete": true,
+  "id": "mutation-benchmark-v1",
+  "mutants": {
+    "delegation": [
+      {
+        "killed": true,
+        "mutation": "widened_scope",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "wrong_beneficiary",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "reuse",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "expiry_bypass",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "revocation_bypass",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "redelegation",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "post_influence_issuance",
+        "verdict": "unsafe",
+        "witness_length": 1
+      }
+    ],
+    "delegation_ir": [
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "widened_scope",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "wrong_beneficiary",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "reuse",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "expiry_bypass",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "revocation_bypass",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "redelegation",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "post_influence_issuance",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "redelegation_chain",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "widened_scope_chain",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      },
+      {
+        "backends_agree": true,
+        "coi_equivalent": true,
+        "killed": true,
+        "mutation": "stale_context",
+        "original_variables": 11,
+        "reduced_variables": 11,
+        "reference": {
+          "states": 4,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_original": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        },
+        "z3_reduced": {
+          "error": null,
+          "verdict": "unsafe",
+          "witness_length": 2
+        }
+      }
+    ],
+    "disclosure": [
+      {
+        "killed": true,
+        "mutation": "unauthorised_selector",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "hidden_error_leak",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "incomplete_attribution",
+        "verdict": "unsafe",
+        "witness_length": 1
+      },
+      {
+        "killed": true,
+        "mutation": "unsafe_redaction",
+        "verdict": "unsafe",
+        "witness_length": 1
+      }
+    ],
+    "synthesis": [
+      {
+        "decisions": 0,
+        "equivalent_to_ites": false,
+        "ites_decisions": 0,
+        "killed": true,
+        "mutation": "any_authorised",
+        "verdict": "unsafe",
+        "witness_length": 4
+      },
+      {
+        "decisions": 0,
+        "equivalent_to_ites": false,
+        "ites_decisions": 0,
+        "killed": true,
+        "mutation": "requester_only",
+        "verdict": "unsafe",
+        "witness_length": 4
+      },
+      {
+        "decisions": 0,
+        "equivalent_to_ites": false,
+        "ites_decisions": 0,
+        "killed": true,
+        "mutation": "drop_provenance",
+        "verdict": "unsafe",
+        "witness_length": 4
+      },
+      {
+        "decisions": 0,
+        "equivalent_to_ites": false,
+        "ites_decisions": 0,
+        "killed": true,
+        "mutation": "empty_is_privileged",
+        "verdict": "unsafe",
+        "witness_length": 4
+      },
+      {
+        "decisions": 0,
+        "equivalent_to_ites": false,
+        "ites_decisions": 0,
+        "killed": true,
+        "mutation": "stale_acs",
+        "verdict": "unsafe",
+        "witness_length": 4
+      }
+    ]
+  },
+  "runtime_delegation_enabled": false,
+  "schema_version": "1",
+  "summary": {
+    "families": {
+      "delegation": {
+        "backend": "native_sled",
+        "count": 7,
+        "killed": 7
+      },
+      "delegation_ir": {
+        "backend": "reference_bfs+z3_bmc+coi_z3_bmc",
+        "count": 10,
+        "killed": 10
+      },
+      "disclosure": {
+        "backend": "native_sled",
+        "count": 4,
+        "killed": 4
+      },
+      "synthesis": {
+        "backend": "synthesis_ir+z3_bmc",
+        "count": 5,
+        "killed": 5
+      }
+    },
+    "family_count": 4,
+    "kill_rate": 1.0,
+    "total_killed": 26,
+    "total_mutants": 26
+  }
+}
