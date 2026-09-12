@@ -105,11 +105,22 @@ class AgentDojoCellExecutor(Protocol):
 
 
 def agentdojo_matrix(protocol: ExperimentProtocol) -> tuple[AgentDojoCell, ...]:
-    """Expand an AgentDojo protocol into its full cross-product of cells."""
+    """Expand an AgentDojo protocol into its full cross-product of cells.
+
+    When the protocol suite includes ``task_ids``, the matrix iterates
+    over each task ID.  Otherwise it falls back to the single default
+    ``user_task_17`` for backward compatibility.
+    """
     if protocol.track != "agentdojo" or protocol.model is None:
         raise ValueError("agentdojo_protocol_with_model_required")
+    task_ids = protocol.suite.get("task_ids")
+    if isinstance(task_ids, (tuple, list)) and task_ids:
+        resolved_task_ids: tuple[str, ...] = tuple(task_ids)
+    else:
+        resolved_task_ids = ("user_task_17",)
     return tuple(
-        AgentDojoCell(attacked, defence, repetition, seed)
+        AgentDojoCell(attacked, defence, repetition, seed, user_task_id=task_id)
+        for task_id in resolved_task_ids
         for attacked in (False, True)
         for defence in ("no_defence", "ites_conservative", "ites_oracle")
         for repetition in range(protocol.repetitions)

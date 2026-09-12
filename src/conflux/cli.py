@@ -219,6 +219,12 @@ def _parser() -> argparse.ArgumentParser:
     agentdojo_preflight_source.add_argument("--model-config", type=Path)
     agentdojo_preflight.add_argument("--source-commit")
     agentdojo_preflight.add_argument("--output", type=Path, required=True)
+    agentdojo_preflight.add_argument(
+        "--task-ids",
+        type=str,
+        default=None,
+        help="comma-separated user task IDs for expanded matrix (default: user_task_17)",
+    )
     agentdojo_run = agentdojo_commands.add_parser("run", help="deliberately run the pinned six-cell local comparison")
     agentdojo_run.add_argument("--config", type=Path, required=True)
     agentdojo_run.add_argument("--model-config", type=Path)
@@ -1320,11 +1326,16 @@ def _benchmark(arguments: argparse.Namespace) -> int:
     model_config = cast(Path | None, getattr(arguments, "model_config", None))
     if command == "preflight" and model_config is not None:
         resolved = load_resolved_local_model(model_config)
+        raw_task_ids = getattr(arguments, "task_ids", None)
+        parsed_task_ids: tuple[str, ...] | None = None
+        if raw_task_ids:
+            parsed_task_ids = tuple(t.strip() for t in raw_task_ids.split(",") if t.strip())
         protocol = _agentdojo_pilot_protocol(
             resolved,
             model_config=model_config,
             output=output,
             source_commit=str(arguments.source_commit or _git_head()),
+            task_ids=parsed_task_ids,
         )
         model: SelfHostedOpenAIModel | TransformersLocalModel = TransformersLocalModel(
             resolved.spec,
@@ -1389,18 +1400,23 @@ def _agentdojo_pilot_protocol(
     model_config: Path,
     output: Path,
     source_commit: str,
+    task_ids: tuple[str, ...] | None = None,
 ) -> ExperimentProtocol:
     """Build a pinned AgentDojo pilot protocol from a resolved local-model configuration."""
     schemas = Path("research/experiments/suites/agentdojo-tool-schemas-v1.json")
     exceptions = Path("research/experiments/suites/agentdojo-annotation-exceptions-v1.json")
+    suite: dict[str, object] = {
+        "id": "workspace:user_task_17:injection_task_1",
+        "version": "v1.2.2",
+        "case_ids": ["benign", "attacked"],
+    }
+    if task_ids:
+        suite["task_ids"] = list(task_ids)
+        suite["id"] = f"workspace:expanded:{task_ids[0]}"
     return ExperimentProtocol(
         id="agentdojo-local-pilot-v2",
         track="agentdojo",
-        suite={
-            "id": "workspace:user_task_17:injection_task_1",
-            "version": "v1.2.2",
-            "case_ids": ["benign", "attacked"],
-        },
+        suite=suite,
         source_commit=source_commit,
         inputs={
             schemas.as_posix(): _text_sha256(schemas),

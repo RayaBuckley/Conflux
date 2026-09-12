@@ -115,3 +115,28 @@ def test_matrix_requires_model_protocol() -> None:
     object.__setattr__(protocol, "model", None)
     with pytest.raises(ValueError, match="with_model"):
         agentdojo_matrix(protocol)
+
+
+def test_expanded_matrix_iterates_over_task_ids() -> None:
+    """When task_ids is set, matrix expands over all tasks."""
+    protocol = _protocol()
+    object.__setattr__(
+        protocol,
+        "suite",
+        {
+            "id": "workspace:expanded",
+            "version": "v1.2.2",
+            "task_ids": ["user_task_14", "user_task_17", "user_task_22"],
+        },
+    )
+    matrix = agentdojo_matrix(protocol)
+    assert len(matrix) == 72  # 3 tasks × 2 attacks × 3 defences × 2 reps × 2 seeds
+    task_ids_in_matrix = {cell.user_task_id for cell in matrix}
+    assert task_ids_in_matrix == {"user_task_14", "user_task_17", "user_task_22"}
+
+
+def test_default_matrix_uses_user_task_17() -> None:
+    """Without task_ids, matrix falls back to user_task_17."""
+    protocol = _protocol()
+    matrix = agentdojo_matrix(protocol)
+    assert all(cell.user_task_id == "user_task_17" for cell in matrix)
