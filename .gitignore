@@ -183,6 +183,8 @@ data/
 !research/output/runs/planning-pilot-qwen3-4b-v4/**
 !research/output/runs/provenance-precision-v1/
 !research/output/runs/provenance-precision-v1/**
+!research/output/runs/sledv-scaling-v1/
+!research/output/runs/sledv-scaling-v1/**
 !research/output/runs/planning-pilot-llama-3b-v3/
 !research/output/runs/planning-pilot-llama-3b-v3/**
 dist/
