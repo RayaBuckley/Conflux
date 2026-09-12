@@ -44,6 +44,10 @@
 | Authority confinement does not guarantee semantic appropriateness of authorised choices | Documented semantics | ADR-025; security model distinguishes authority confinement from semantic judgement |
 | Model-level defences are genuine empirical security but outside the authority TCB | Documented semantics | ADR-025; model/planner/classifier output cannot grant authority or narrow PC |
 | Effective ACS includes only explicit valid delegation; runtime delegation remains disabled | Specified, runtime disabled | ADR-025; scoped delegation model exists but operational delegation is denied |
+| SLED-V scaling: COI reduction never causes safe-to-unsafe verdict downgrade | Bounded evidence | `research/output/runs/sledv-scaling-v1/`: 28 fixtures across noise/principal/depth scaling families; no COI verdict downgrade on any fixture; Z3 BMC agrees with reference on all fixtures where Z3 is available; 5 fixtures show bounded_safe→safe upgrade from COI reduction |
+| Expanded mutation benchmark: 26 mutants across 4 families, 100% kill rate | Bounded evidence | `research/output/runs/mutation-benchmark-v1/`: 4 disclosure (native SLED), 7 delegation (native SLED), 10 delegation IR (reference BFS + Z3 BMC + COI-reduced Z3 BMC), 5 synthesis (Z3 BMC); all killed within tested bound |
+| Authenticated provenance recovers utility without soundness violations | Bounded evidence | `research/output/runs/provenance-precision-v1/`: 324 tasks across 4×4×3×3 parameter grid; C2 (authenticated) completion ≥ C1 (conservative) completion; C2 has zero enforcement soundness violations; C1 mean PC size > C2 mean PC size (overapproximation confirmed) |
+| Planning diagnostic suite covers 22 scenario categories | Implemented | `research/experiments/suites/planning-diagnostic-v1.yaml`: 22 deterministic scenarios across 16 categories; all validated against planning-diagnostic-suite schema; 4 planning modes tested (reactive, static, dynamic, dynamic_code) |
 
 ## Novelty qualification
 
