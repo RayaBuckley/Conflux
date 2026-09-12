@@ -22,9 +22,12 @@ def test_direction_bundle_separates_readiness_from_bounded_evidence(
 ) -> None:
     output = tmp_path / "direction"
     generate_direction_evidence_bundle("abcdef0", output, repo_root=ROOT)
+    from conflux.experiments.planning_runner import load_default_planning_diagnostic_suite
+
+    expected_planning_cells = len(load_default_planning_diagnostic_suite()) * 4
     for name, cells in (
         ("laptop-planning-preflight.json", 16),
-        ("planning-preflight.json", 48),
+        ("planning-preflight.json", expected_planning_cells),
         ("agentdojo-preflight.json", 4),
     ):
         payload = json.loads((output / name).read_text(encoding="utf-8"))

@@ -3,7 +3,7 @@
 | Track | Classification | Cells | Execution |
 |---|---|---:|---|
 | Laptop planning | evaluation_ready | 16 | unavailable |
-| Full planning | evaluation_ready | 32 | unavailable |
+| Full planning | evaluation_ready | 84 | unavailable |
 | AgentDojo | evaluation_ready | 4 | unavailable |
 | Security mutants | bounded_evidence | 11 (11 killed) | native SLED |
 

@@ -597,7 +597,10 @@ def test_model_dependent_commands_preflight_without_model_invocation(
     )
     plan_preflight = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert plan_preflight["execute_local"] is False
-    assert len(plan_preflight["matrix"]) == 48
+    from conflux.experiments.planning_runner import load_default_planning_diagnostic_suite
+
+    expected_cells = len(load_default_planning_diagnostic_suite()) * 4
+    assert len(plan_preflight["matrix"]) == expected_cells
     assert json.loads((planning_output / "preflight.json").read_text())["complete"] is False
 
     transformers = tmp_path / "laptop-transformers.json"

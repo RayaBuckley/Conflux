@@ -788,7 +788,7 @@
         },
         {
             "package_id": "2026-08-24-evidence-visualisation-and-workflow",
-            "original_path": "Conflux Human-Reviewable Evidence and Visualisation \u2014 Implementation Specification.md",
+            "original_path": "Conflux Human-Reviewable Evidence and Visualisation — Implementation Specification.md",
             "archive_path": "research/reports/archive/2026-08-24-evidence-visualisation-and-workflow/evidence_visualisation_implementation_spec.md",
             "media_type": "text/markdown",
             "size_bytes": 34733,
@@ -1255,7 +1255,7 @@
             "media_type": "text/markdown",
             "size_bytes": 7551,
             "sha256_bytes": "27b956588255e9373247020716168ac6e591636ae87630a3e0ac1f102350971e",
-            "git_blob_oid": null,
+            "git_blob_oid": "544bb65ffe3f1d17eec3e4716eeaa79bc506f664",
             "role": "implementation_specification",
             "duplicate_of": null
         },
@@ -1266,7 +1266,7 @@
             "media_type": "text/markdown",
             "size_bytes": 3875,
             "sha256_bytes": "b577ef79047a7fa2aa7fcf15456d53b8467027d2e34137dd0d3cc53d806c50b4",
-            "git_blob_oid": null,
+            "git_blob_oid": "7d544a11367b34d789db0d3e9898516d74578d13",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1277,7 +1277,7 @@
             "media_type": "text/markdown",
             "size_bytes": 5950,
             "sha256_bytes": "a5a17542581a1814fba5a156bc1a1d6825565f7c414cee8d3b713f5816da2279",
-            "git_blob_oid": null,
+            "git_blob_oid": "bb0be00d226180ad6c2ac1876b83a8b1cbb9e99c",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1288,7 +1288,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4081,
             "sha256_bytes": "3239451d107ee97dd32f7f5e4eb084c0d75f33f984870f53e1bd21b6cddf61f5",
-            "git_blob_oid": null,
+            "git_blob_oid": "b4d0a07380f97f332932d7e2fcd258f31a1c62fa",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1299,7 +1299,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4040,
             "sha256_bytes": "747056977aa9aca3677a6f3a7d1b32f612d1a41363147f891f76094e3f5316b7",
-            "git_blob_oid": null,
+            "git_blob_oid": "02bbf5ba4eaea4d8c4ae42aa30d3ef26aba9238e",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1310,7 +1310,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4567,
             "sha256_bytes": "19e8e962657d2faee855ebf0772f76dd2bb40cc245b50305e6132fbc4d263c9c",
-            "git_blob_oid": null,
+            "git_blob_oid": "0d5cba9978af22dcf6ffbc6f155a1505c269c2d7",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1321,7 +1321,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4325,
             "sha256_bytes": "1e4c550c1fe5b4af1e65bf6817344fa89826e81852347dfd87bf616bfa54d4d4",
-            "git_blob_oid": null,
+            "git_blob_oid": "8eb060a1f08d38bd8351eb5076a68f1397d70280",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1332,7 +1332,7 @@
             "media_type": "text/markdown",
             "size_bytes": 3897,
             "sha256_bytes": "234576aa7424dd79c884cb36ef3ddeb9c92916f43b6be233a33eb9bc011fd55d",
-            "git_blob_oid": null,
+            "git_blob_oid": "b737070225cbe83ba276e415655e43ea0a44872d",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1343,7 +1343,7 @@
             "media_type": "text/markdown",
             "size_bytes": 6766,
             "sha256_bytes": "87b9bbfd0fcbeccf25416571674d708c8e0e732e26213b0a1b4c2f2aa0a542ca",
-            "git_blob_oid": null,
+            "git_blob_oid": "a876b15da99de73f9b928d84f2604fcd5d34ba64",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1354,7 +1354,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4056,
             "sha256_bytes": "f050c45138f8dbfb37312a84f3cc3bd1d98b4675080b001408aacc5e1427a358",
-            "git_blob_oid": null,
+            "git_blob_oid": "e4c4213ac8d0039dc19bfbeb17f3ed39978d7037",
             "role": "navigation",
             "duplicate_of": null
         },
@@ -1365,7 +1365,7 @@
             "media_type": "application/json",
             "size_bytes": 3888,
             "sha256_bytes": "e847cb046f6416e6f11d4a641388fbb52d9086b274c7edc956e34161df8552a0",
-            "git_blob_oid": null,
+            "git_blob_oid": "75ee2127325bbb6b26dfd6a63bec265b828f486f",
             "role": "source_manifest",
             "duplicate_of": null
         },
@@ -1376,7 +1376,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4820,
             "sha256_bytes": "408822c637405a490c94b0399cce2bc0a0a0857ed2779ada2ac6cbc6de18b9a8",
-            "git_blob_oid": null,
+            "git_blob_oid": "5172e3e57eb454d49d7d57b24718be5f22046d53",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1387,7 +1387,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4570,
             "sha256_bytes": "af394d051f98a7e24405c918a595cff0dadd1daa76bd3a427765e5c2eec378eb",
-            "git_blob_oid": null,
+            "git_blob_oid": "7e451a2a8654bdb5485245a9a7181ec194d23888",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1398,7 +1398,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4488,
             "sha256_bytes": "26ba6ba39c213c06757896a30b7bab432e5efc7cacabb8acb41c8dbb375d737a",
-            "git_blob_oid": null,
+            "git_blob_oid": "081f02c4c8e1094fd5a018ee902158aef553c0fc",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1409,7 +1409,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4639,
             "sha256_bytes": "bb8c560f0ee0488d22cdd9f16f02fd80aa5374faf071740322ab5a781de99acb",
-            "git_blob_oid": null,
+            "git_blob_oid": "84ca5fdf44c2af7aa34e50fc7996b93fc2a35388",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1420,7 +1420,7 @@
             "media_type": "text/markdown",
             "size_bytes": 5722,
             "sha256_bytes": "2b287a26cb2fab15f7c172939157a54a6f871400554504324e660ec1ca94faef",
-            "git_blob_oid": null,
+            "git_blob_oid": "8b914ac0a6f09573eb13f700d09f6995d36f1492",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1431,7 +1431,7 @@
             "media_type": "text/markdown",
             "size_bytes": 3896,
             "sha256_bytes": "8fa648117aed8126a794f522c7b68c7e98f9d2e772ebae94d5c55439eea0859d",
-            "git_blob_oid": null,
+            "git_blob_oid": "033146c60a7253dea15ec62662564aad9afaaa05",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1442,7 +1442,7 @@
             "media_type": "text/markdown",
             "size_bytes": 2086,
             "sha256_bytes": "4e8fea6cbc4b6d836687a3d65d617cbef748a9fe1945f818c5982c3fd3541159",
-            "git_blob_oid": null,
+            "git_blob_oid": "7731700e557637899fd40894b531a0350a2c8116",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1453,7 +1453,7 @@
             "media_type": "text/markdown",
             "size_bytes": 3734,
             "sha256_bytes": "11719108550186e5d990f8cc069f4cb146d257b9d4535fc8c171808d737d9853",
-            "git_blob_oid": null,
+            "git_blob_oid": "05164ce230113e151ee1aebbf1c1b31cc2f7597e",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1464,7 +1464,7 @@
             "media_type": "text/markdown",
             "size_bytes": 4109,
             "sha256_bytes": "ca3fb14e071eaf111487b76eed4fdbf237cff93ebdd0329ecae0ebfc02eefb98",
-            "git_blob_oid": null,
+            "git_blob_oid": "fcf45766140180e0c3d29bee296356189d6797c0",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1475,7 +1475,7 @@
             "media_type": "text/markdown",
             "size_bytes": 3781,
             "sha256_bytes": "0bf2de5b6596e9c10a9b1e62173d1bd262f61df518fde09035cf64a572c41a69",
-            "git_blob_oid": null,
+            "git_blob_oid": "6c84f5deb303abc6f85c509d9fe541bc93770822",
             "role": "experiment_specification",
             "duplicate_of": null
         },
@@ -1486,7 +1486,7 @@
             "media_type": "application/json",
             "size_bytes": 2475,
             "sha256_bytes": "6013401fc6cc84046c976a0774833d500b6922cd387df99b6dfc98e64b757323",
-            "git_blob_oid": null,
+            "git_blob_oid": "3cb5711333a47286985a622a4918654a11264f83",
             "role": "source_manifest",
             "duplicate_of": null
         },
@@ -1497,7 +1497,7 @@
             "media_type": "text/markdown",
             "size_bytes": 2220,
             "sha256_bytes": "eade241208346a26cb88becaac2d85d3526723dfb8fc8efe4b4b81c260bdbd33",
-            "git_blob_oid": null,
+            "git_blob_oid": "b96d24701b11c62f44fbc90794c71b1e21b6a600",
             "role": "navigation",
             "duplicate_of": null
         },
@@ -1508,7 +1508,7 @@
             "media_type": "application/json",
             "size_bytes": 4716,
             "sha256_bytes": "9e38070bf993aa60207044e666c44910c1f461d959d4740e5d266f047f498207",
-            "git_blob_oid": null,
+            "git_blob_oid": "051626258ee3c38defc4b13dbf7b875b1d799177",
             "role": "source_manifest",
             "duplicate_of": null
         },
@@ -1519,7 +1519,7 @@
             "media_type": "application/json",
             "size_bytes": 1706,
             "sha256_bytes": "08c30e77b63eb757f7fa7551de3366393c38738868c52780a6a6163ac9cdcff7",
-            "git_blob_oid": null,
+            "git_blob_oid": "12c6e733f3520adad944e4296189cdab5e8b1dd2",
             "role": "source_manifest",
             "duplicate_of": null
         },
@@ -1530,7 +1530,7 @@
             "media_type": "application/json",
             "size_bytes": 2766,
             "sha256_bytes": "d424fd7638d1da9dbfdc480e700341178f0478561fd07e402bb69d7c987ae6ff",
-            "git_blob_oid": null,
+            "git_blob_oid": "9816dab69d12940445f08ee18d30a1c28b20dc65",
             "role": "source_manifest",
             "duplicate_of": null
         },
@@ -1541,7 +1541,7 @@
             "media_type": "text/markdown",
             "size_bytes": 5457,
             "sha256_bytes": "3f6e2c6001a7e315322218f0455b699f632c10f0e321f45af7e2ae9e8fb3ef24",
-            "git_blob_oid": null,
+            "git_blob_oid": "cd893999facb699ae5004852fe73456cbbea31b1",
             "role": "navigation",
             "duplicate_of": null
         },
@@ -1552,7 +1552,7 @@
             "media_type": "application/json",
             "size_bytes": 2853,
             "sha256_bytes": "ae35cdb1f2720a3c5ed24ff29a737b8960295f97f8eef1c5e555d8197651fbd3",
-            "git_blob_oid": null,
+            "git_blob_oid": "698412cabe0f9deeb3166f67f4ced0081dd5887f",
             "role": "source_manifest",
             "duplicate_of": null
         },
@@ -1563,7 +1563,7 @@
             "media_type": "text/markdown",
             "size_bytes": 3674,
             "sha256_bytes": "07972f0c69cc1f1430fc5f6932259bcc5efc661cfa9c1717bd9b33498d4beaa6",
-            "git_blob_oid": null,
+            "git_blob_oid": "817769379a2bcac83a3abc0385b819c0d7a9ccc3",
             "role": "experiment_specification",
             "duplicate_of": null
         }
