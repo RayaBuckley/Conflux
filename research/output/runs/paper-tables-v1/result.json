@@ -1,0 +1,241 @@
+{
+  "evidence_index": [
+    {
+      "claim": "SLED-V reduces 1,462,607 traces to 31 canonical states",
+      "evidence_path": "research/output/runs/sledv-scaling-v1/result.json",
+      "field": "historical_anchor.total_traces / total_canonical_states"
+    },
+    {
+      "claim": "COI reduction never causes safe-to-unsafe verdict downgrade",
+      "evidence_path": "research/output/runs/sledv-scaling-v1/result.json",
+      "field": "summary.no_coi_downgrade"
+    },
+    {
+      "claim": "Z3 BMC agrees with reference on all tested fixtures",
+      "evidence_path": "research/output/runs/sledv-scaling-v1/result.json",
+      "field": "summary.ref_z3_agree"
+    },
+    {
+      "claim": "26 mutants across 4 families, 100% kill rate",
+      "evidence_path": "research/output/runs/mutation-benchmark-v1/result.json",
+      "field": "summary.total_mutants / total_killed / kill_rate"
+    },
+    {
+      "claim": "Authenticated provenance recovers utility without soundness violations",
+      "evidence_path": "research/output/runs/provenance-precision-v1/result.json",
+      "field": "summary.c2_sound_violations / utility_recovery"
+    },
+    {
+      "claim": "Conservative provenance overapproximates PC size vs authenticated",
+      "evidence_path": "research/output/runs/provenance-precision-v1/result.json",
+      "field": "summary.c1_mean_pc / c2_mean_pc / pc_reduction"
+    },
+    {
+      "claim": "22 planning diagnostic scenarios across 16 categories",
+      "evidence_path": "research/experiments/suites/planning-diagnostic-v1.yaml",
+      "field": "scenarios"
+    }
+  ],
+  "evidence_sources": {
+    "mutation_benchmark": "research\\output\\runs\\mutation-benchmark-v1",
+    "provenance_precision": "research\\output\\runs\\provenance-precision-v1",
+    "sledv_scaling": "research\\output\\runs\\sledv-scaling-v1"
+  },
+  "id": "paper-tables-v1",
+  "schema_version": "1",
+  "summary": {
+    "experiments_covered": [
+      "sledv_scaling",
+      "mutation_benchmark",
+      "provenance_precision"
+    ],
+    "experiments_pending": [
+      "agentdojo_live",
+      "planning_live",
+      "cedar_differential",
+      "confidentiality"
+    ],
+    "table_count": 3
+  },
+  "tables": [
+    {
+      "columns": [
+        "family",
+        "fixtures",
+        "max_original_states",
+        "max_reduced_states",
+        "max_original_variables",
+        "max_reduced_variables",
+        "state_reduction_ratio"
+      ],
+      "rows": [
+        {
+          "family": "depth_scaling",
+          "fixtures": 10,
+          "max_original_states": 32,
+          "max_original_variables": 6,
+          "max_reduced_states": 1,
+          "max_reduced_variables": 6,
+          "state_reduction_ratio": 32.0
+        },
+        {
+          "family": "noise_scaling",
+          "fixtures": 10,
+          "max_original_states": 41449,
+          "max_original_variables": 34,
+          "max_reduced_states": 2,
+          "max_reduced_variables": 2,
+          "state_reduction_ratio": 20724.5
+        },
+        {
+          "family": "principal_scaling",
+          "fixtures": 8,
+          "max_original_states": 2517,
+          "max_original_variables": 17,
+          "max_reduced_states": 2,
+          "max_reduced_variables": 1,
+          "state_reduction_ratio": 1258.5
+        }
+      ],
+      "summary": {
+        "all_coi_equivalent": false,
+        "no_coi_downgrade": true,
+        "ref_z3_agree": true,
+        "total_fixtures": 28,
+        "z3_all_agree": true
+      },
+      "table_id": "T1",
+      "title": "SLED-V scaling: state reduction by family"
+    },
+    {
+      "columns": [
+        "family",
+        "mutants",
+        "killed",
+        "kill_rate",
+        "backend"
+      ],
+      "rows": [
+        {
+          "backend": "native_sled",
+          "family": "delegation",
+          "kill_rate": 1.0,
+          "killed": 7,
+          "mutants": 7
+        },
+        {
+          "backend": "reference_bfs+z3_bmc+coi_z3_bmc",
+          "family": "delegation_ir",
+          "kill_rate": 1.0,
+          "killed": 10,
+          "mutants": 10
+        },
+        {
+          "backend": "native_sled",
+          "family": "disclosure",
+          "kill_rate": 1.0,
+          "killed": 4,
+          "mutants": 4
+        },
+        {
+          "backend": "synthesis_ir+z3_bmc",
+          "family": "synthesis",
+          "kill_rate": 1.0,
+          "killed": 5,
+          "mutants": 5
+        }
+      ],
+      "summary": {
+        "families": {
+          "delegation": {
+            "backend": "native_sled",
+            "count": 7,
+            "killed": 7
+          },
+          "delegation_ir": {
+            "backend": "reference_bfs+z3_bmc+coi_z3_bmc",
+            "count": 10,
+            "killed": 10
+          },
+          "disclosure": {
+            "backend": "native_sled",
+            "count": 4,
+            "killed": 4
+          },
+          "synthesis": {
+            "backend": "synthesis_ir+z3_bmc",
+            "count": 5,
+            "killed": 5
+          }
+        },
+        "family_count": 4,
+        "kill_rate": 1.0,
+        "total_killed": 26,
+        "total_mutants": 26
+      },
+      "table_id": "T2",
+      "title": "Security mutation benchmark: kill rate by family"
+    },
+    {
+      "columns": [
+        "n_possible_authors",
+        "c0_completion",
+        "c1_completion",
+        "c2_completion",
+        "c1_mean_pc",
+        "c2_mean_pc"
+      ],
+      "rows": [
+        {
+          "c0_completion": 0.5741,
+          "c1_completion": 0.4722,
+          "c1_mean_pc": 16.0,
+          "c2_completion": 0.5741,
+          "c2_mean_pc": 3.75,
+          "n_possible_authors": "16"
+        },
+        {
+          "c0_completion": 0.7593,
+          "c1_completion": 0.6667,
+          "c1_mean_pc": 2.0,
+          "c2_completion": 0.7593,
+          "c2_mean_pc": 1.5,
+          "n_possible_authors": "2"
+        },
+        {
+          "c0_completion": 0.5802,
+          "c1_completion": 0.4938,
+          "c1_mean_pc": 4.0,
+          "c2_completion": 0.5802,
+          "c2_mean_pc": 2.33,
+          "n_possible_authors": "4"
+        },
+        {
+          "c0_completion": 0.537,
+          "c1_completion": 0.4259,
+          "c1_mean_pc": 8.0,
+          "c2_completion": 0.537,
+          "c2_mean_pc": 3.75,
+          "n_possible_authors": "8"
+        }
+      ],
+      "summary": {
+        "c0_completion_rate": 0.5925925925925926,
+        "c0_mean_pc": 1.0,
+        "c0_vulnerable_rate": 0.13675213675213677,
+        "c1_blocked_rate": 0.5071225071225072,
+        "c1_completion_rate": 0.4928774928774929,
+        "c1_mean_pc": 8.615384615384615,
+        "c2_blocked_rate": 0.4074074074074074,
+        "c2_completion_rate": 0.5925925925925926,
+        "c2_mean_pc": 3.076923076923077,
+        "c2_sound_violations": 0,
+        "pc_reduction": 5.538461538461538,
+        "total_tasks": 351,
+        "utility_recovery": 0.09971509971509972
+      },
+      "table_id": "T3",
+      "title": "Provenance precision vs utility: completion by possible authors"
+    }
+  ]
+}
