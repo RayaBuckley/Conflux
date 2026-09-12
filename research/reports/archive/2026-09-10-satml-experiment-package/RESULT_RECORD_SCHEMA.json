@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Conflux SaTML Experiment Cell Record (guidance schema)",
+  "description": "Map onto existing repository schemas where possible. Do not create a duplicate canonical schema unless current schemas cannot express these fields.",
+  "type": "object",
+  "required": ["experiment_id", "cell_id", "status", "source_commit", "parameters", "metrics"],
+  "properties": {
+    "experiment_id": {"type": "string"},
+    "cell_id": {"type": "string"},
+    "status": {"enum": ["complete", "unavailable", "model_failed", "parse_failed", "benchmark_failed", "backend_unavailable", "timeout", "unknown"]},
+    "source_commit": {"type": "string"},
+    "manifest_id": {"type": "string"},
+    "backend": {"type": ["string", "null"]},
+    "backend_version": {"type": ["string", "null"]},
+    "model_id": {"type": ["string", "null"]},
+    "seed": {"type": ["integer", "null"]},
+    "parameters": {"type": "object", "additionalProperties": true},
+    "expected": {"type": "object", "additionalProperties": true},
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "verdict": {"type": ["string", "null"]},
+        "runtime_seconds": {"type": ["number", "null"], "minimum": 0},
+        "peak_memory_bytes": {"type": ["integer", "null"], "minimum": 0},
+        "trace_count": {"type": ["integer", "null"], "minimum": 0},
+        "state_count": {"type": ["integer", "null"], "minimum": 0},
+        "transition_count": {"type": ["integer", "null"], "minimum": 0},
+        "witness_length": {"type": ["integer", "null"], "minimum": 0},
+        "witness_replayed": {"type": ["boolean", "null"]},
+        "utility": {"type": ["boolean", "null"]},
+        "native_security": {"type": ["boolean", "null"]},
+        "unauthorised_effect": {"type": ["boolean", "null"]},
+        "malicious_proposal_observed": {"type": ["boolean", "null"]},
+        "blocked_proposal_count": {"type": ["integer", "null"], "minimum": 0},
+        "model_calls": {"type": ["integer", "null"], "minimum": 0},
+        "tool_calls": {"type": ["integer", "null"], "minimum": 0},
+        "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "mean_pc_size": {"type": ["number", "null"], "minimum": 0},
+        "max_pc_size": {"type": ["integer", "null"], "minimum": 0},
+        "sensitive_observations": {"type": ["integer", "null"], "minimum": 0},
+        "unnecessary_reads": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "additionalProperties": true
+    },
+    "error_category": {"type": ["string", "null"]},
+    "error_detail": {"type": ["string", "null"]},
+    "raw_artifact_refs": {"type": "array", "items": {"type": "string"}},
+    "claim_boundary": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

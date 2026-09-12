@@ -1,0 +1,46 @@
+{
+  "scaling": {
+    "minimum": {
+      "historical_environments": 3,
+      "noise_variables": [0, 4, 8, 16, 32],
+      "principals": [2, 4, 8, 16],
+      "depth": [1, 2, 3, 4, 5],
+      "branching": [1, 2, 4],
+      "safety_variants": ["safe", "unsafe"]
+    },
+    "modes": ["trace_enum", "native_state", "reference_coi", "z3_bmc", "z3_bmc_coi"]
+  },
+  "mutations": {
+    "minimum_total": 20,
+    "ideal_total": 30,
+    "minimum_families": 4,
+    "families": ["principal_context", "provenance", "read_disclosure", "action_arguments", "planning_certificates", "delegation"]
+  },
+  "provenance_precision": {
+    "possible_authors": [2, 4, 8, 16],
+    "actual_contributors": [1, 2, 4, 8],
+    "permission_heterogeneity": ["low", "medium", "high"],
+    "workflow_depth": [1, 2, 3],
+    "conditions": ["requester_only_vulnerable", "conservative_may_have_written", "authenticated_actual_contributors"],
+    "target_task_count": "200-1000 deterministic tasks"
+  },
+  "agentdojo": {
+    "pilot_tasks": "3-5",
+    "final_tasks": "12-30",
+    "conditions": ["benign", "attacked"],
+    "defences_minimum": ["no_defense", "conservative_ites"],
+    "optional_negative_control": "requester_only_vulnerable",
+    "models_minimum": 1,
+    "models_preferred": 2,
+    "stochastic_seeds_if_needed": 3
+  },
+  "planning": {
+    "target_scenarios": "20-30",
+    "modes": ["reactive", "static_plan", "dynamic_plan", "dynamic_code_modeled_only"],
+    "live_models_minimum": 1,
+    "deterministic_baseline_required": true
+  },
+  "confidentiality": {
+    "fixtures": ["return_value_leak", "action_argument_leak", "branch_observation_leak", "error_message_leak", "safe_redaction", "safe_hidden_error", "same_low_observation"]
+  }
+}

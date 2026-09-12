@@ -1,0 +1,79 @@
+{
+  "package_date": "2026-09-10",
+  "target": "SaTML 2027",
+  "goal": "Generate fast, meaningful, reproducible evidence without broadening Conflux security semantics.",
+  "tasks": [
+    {
+      "id": "EXP-SCALE-001",
+      "priority": "P0",
+      "title": "Extend SLED-V scaling harness",
+      "depends_on": [],
+      "deliverables": ["parameterised finite fixture generator", "backend-comparison runner", "historical anchor regression", "raw result bundle", "summary tables", "scaling figures"],
+      "acceptance": ["historical 1462607 trace count preserved", "31-state canonical anchor preserved", "safe/unsafe verdict agreement for supported backends", "unsafe witnesses replay/lift successfully", "timeouts retained explicitly"]
+    },
+    {
+      "id": "EXP-MUT-001",
+      "priority": "P0",
+      "title": "Expand security mutation benchmark",
+      "depends_on": [],
+      "deliverables": [">=20 principled mutants across >=4 families", "stable mutant registry", "native/Z3/COI runs", "minimal witness summaries", "family-level table"],
+      "acceptance": ["all retained unsafe mutants detected by all claiming backends", "canonical controls remain safe", "mutants isolated from runtime", "mutant activation itself tested"]
+    },
+    {
+      "id": "EXP-PROV-001",
+      "priority": "P0",
+      "title": "Measure provenance precision vs utility",
+      "depends_on": [],
+      "deliverables": ["deterministic fixture generator", "requester-only negative control", "conservative provenance condition", "authenticated-contributor condition", "summary CSV/JSON", "utility/PC plots"],
+      "acceptance": ["same authorisation rule across ITES conditions", "no actual contributor authority violation in authenticated condition", "seeded reproducibility", "ground truth from deterministic ACS logic"]
+    },
+    {
+      "id": "EXP-ADOJO-001",
+      "priority": "P0",
+      "title": "Run competent real-model AgentDojo subset",
+      "depends_on": [],
+      "deliverables": ["competency gate", "frozen task subset", "no-defense vs ITES matrix", "raw upstream traces", "failure taxonomy", "paper summary table"],
+      "acceptance": ["non-zero benign utility on selected model", "all upstream IDs/native metrics preserved", "no benchmark-specific success hacks", "failed cells retained", "unauthorised effect separated from malicious proposal"]
+    },
+    {
+      "id": "EXP-PLAN-001",
+      "priority": "P1",
+      "title": "Expand planning utility-recovery suite",
+      "depends_on": [],
+      "deliverables": ["20-30 mode-independent scenarios", "deterministic planner baselines", "live-model comparison", "authority-exposure metrics", "summary table/figure"],
+      "acceptance": ["all modes use canonical ITES kernel", "no generated code execution", "goal evaluator mode-independent", "safe abort on impossible/denied paths", "action-time reauthorisation visible"]
+    },
+    {
+      "id": "EXP-CEDAR-001",
+      "priority": "P1",
+      "title": "Execute pinned Cedar differential corpus",
+      "depends_on": [],
+      "deliverables": ["binary identity record", "full differential matrix", "mismatch report", "parity summary"],
+      "acceptance": ["exact pinned version", "unsupported cases explicit", "no silent approximation"]
+    },
+    {
+      "id": "EXP-CONF-001",
+      "priority": "P1",
+      "title": "Expand observational confidentiality fixtures",
+      "depends_on": [],
+      "deliverables": ["return leak fixture", "argument leak fixture", "branch leak fixture", "error leak fixture", "redacted safe fixtures", "Z3/reference comparison"],
+      "acceptance": ["expected safe/unsafe verdicts match", "unsafe witnesses readable", "bounded claim language retained"]
+    },
+    {
+      "id": "PUB-AGG-001",
+      "priority": "P0",
+      "title": "Generate paper tables and figures from retained evidence",
+      "depends_on": ["EXP-SCALE-001", "EXP-MUT-001", "EXP-PROV-001"],
+      "deliverables": ["T1-T6 generated tables where available", "F1-F4 generated figures where available", "evidence index", "claim-boundary notes"],
+      "acceptance": ["no hand-transcribed numerical results", "all paper numbers map to evidence path/key", "clean-tree regeneration", "visual spot-checks"]
+    },
+    {
+      "id": "PUB-CLAIMS-001",
+      "priority": "P0",
+      "title": "Update evidence ledger and manuscript claims",
+      "depends_on": ["PUB-AGG-001"],
+      "deliverables": ["CLAIMS.md updates", "STATUS.md update", "manuscript generated result inputs", "final limitations audit"],
+      "acceptance": ["no bounded-to-unbounded claim promotion", "candidate defence models not presented as faithful comparative implementations", "all numerical claims cite retained evidence internally"]
+    }
+  ]
+}

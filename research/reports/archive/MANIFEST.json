@@ -3,7 +3,7 @@
     "integrity_scope": "exact repository blob bytes",
     "hash_algorithm": "sha256",
     "git_object_format": "sha1",
-    "artifact_count": 81,
+    "artifact_count": 109,
     "packages": [
         {
             "id": "2026-07-27-engineering-and-sled",
@@ -330,6 +330,40 @@
             "limitations": [
                 "Package was prepared from public main snapshot on 2026-09-07; local checkout is authoritative.",
                 "All implementation is in canonical successors; the package itself is historical input."
+            ]
+        },
+        {
+            "id": "2026-09-08-experiment-programme",
+            "title": "Conflux experiment programme — 2026-09-08 (broader research programme)",
+            "snapshot_date": "2026-09-08",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [],
+            "superseded_by": [
+                "2026-09-10-satml-experiment-package"
+            ],
+            "canonical_successors": [],
+            "limitations": [
+                "Broad research programme covering 8 RQs including unbounded verification, implementation conformance, comparative defence models, persistent memory, argument effects, and delegation.",
+                "Narrowed by the SaTML experiment package (2026-09-10) to the subset most likely to produce fast publication-grade evidence.",
+                "All implementation is pending; the package is dated analysis and implementation guidance."
+            ]
+        },
+        {
+            "id": "2026-09-10-satml-experiment-package",
+            "title": "Conflux SaTML experiment package — 2026-09-10 (focused SaTML 2027 submission)",
+            "snapshot_date": "2026-09-10",
+            "source_commits": [],
+            "status": "historical_input",
+            "supersedes": [
+                "2026-09-08-experiment-programme"
+            ],
+            "superseded_by": [],
+            "canonical_successors": [],
+            "limitations": [
+                "Focused on SaTML 2027 submission: SLED-V scaling, mutation benchmark, provenance precision, AgentDojo, planning, Cedar, confidentiality.",
+                "Drops unbounded verification, implementation conformance, comparative defence matrix, persistent memory, argument effects, and delegation from the broader programme.",
+                "All implementation is pending; the package is dated analysis and implementation guidance."
             ]
         }
     ],
@@ -1221,8 +1255,316 @@
             "media_type": "text/markdown",
             "size_bytes": 7551,
             "sha256_bytes": "27b956588255e9373247020716168ac6e591636ae87630a3e0ac1f102350971e",
-            "git_blob_oid": "544bb65ffe3f1d17eec3e4716eeaa79bc506f664",
+            "git_blob_oid": null,
             "role": "implementation_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/00_EXECUTIVE_ROADMAP.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/00_EXECUTIVE_ROADMAP.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3875,
+            "sha256_bytes": "b577ef79047a7fa2aa7fcf15456d53b8467027d2e34137dd0d3cc53d806c50b4",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/01_SLEDV_EXPERIMENTS.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/01_SLEDV_EXPERIMENTS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 5950,
+            "sha256_bytes": "a5a17542581a1814fba5a156bc1a1d6825565f7c414cee8d3b713f5816da2279",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/02_COMPARATIVE_AND_CONFORMANCE.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/02_COMPARATIVE_AND_CONFORMANCE.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4081,
+            "sha256_bytes": "3239451d107ee97dd32f7f5e4eb084c0d75f33f984870f53e1bd21b6cddf61f5",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/03_AGENTDOJO_MODEL_EXPERIMENTS.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/03_AGENTDOJO_MODEL_EXPERIMENTS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4040,
+            "sha256_bytes": "747056977aa9aca3677a6f3a7d1b32f612d1a41363147f891f76094e3f5316b7",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/04_PLANNING_EXPERIMENTS.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/04_PLANNING_EXPERIMENTS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4567,
+            "sha256_bytes": "19e8e962657d2faee855ebf0772f76dd2bb40cc245b50305e6132fbc4d263c9c",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/05_SEMANTIC_EXTENSION_EXPERIMENTS.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/05_SEMANTIC_EXTENSION_EXPERIMENTS.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4325,
+            "sha256_bytes": "1e4c550c1fe5b4af1e65bf6817344fa89826e81852347dfd87bf616bfa54d4d4",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/06_REPRODUCIBILITY_PROTOCOL.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/06_REPRODUCIBILITY_PROTOCOL.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3897,
+            "sha256_bytes": "234576aa7424dd79c884cb36ef3ddeb9c92916f43b6be233a33eb9bc011fd55d",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/07_AI_CODER_EXECUTION_PLAN.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/07_AI_CODER_EXECUTION_PLAN.md",
+            "media_type": "text/markdown",
+            "size_bytes": 6766,
+            "sha256_bytes": "87b9bbfd0fcbeccf25416571674d708c8e0e732e26213b0a1b4c2f2aa0a542ca",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/README.md",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/README.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4056,
+            "sha256_bytes": "f050c45138f8dbfb37312a84f3cc3bd1d98b4675080b001408aacc5e1427a358",
+            "git_blob_oid": null,
+            "role": "navigation",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-08-experiment-programme",
+            "original_path": "Conflux_Experiment_Programme_2026-09-08(1)/research/reports/analysis/2026-09-08-experiment-program/experiment_program.json",
+            "archive_path": "research/reports/archive/2026-09-08-experiment-programme/experiment_program.json",
+            "media_type": "application/json",
+            "size_bytes": 3888,
+            "sha256_bytes": "e847cb046f6416e6f11d4a641388fbb52d9086b274c7edc956e34161df8552a0",
+            "git_blob_oid": null,
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/00_EXECUTION_ORDER.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/00_EXECUTION_ORDER.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4820,
+            "sha256_bytes": "408822c637405a490c94b0399cce2bc0a0a0857ed2779ada2ac6cbc6de18b9a8",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/01_SLEDV_SCALING.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/01_SLEDV_SCALING.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4570,
+            "sha256_bytes": "af394d051f98a7e24405c918a595cff0dadd1daa76bd3a427765e5c2eec378eb",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/02_MUTATION_BENCHMARK.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/02_MUTATION_BENCHMARK.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4488,
+            "sha256_bytes": "26ba6ba39c213c06757896a30b7bab432e5efc7cacabb8acb41c8dbb375d737a",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/03_PROVENANCE_PRECISION.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/03_PROVENANCE_PRECISION.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4639,
+            "sha256_bytes": "bb8c560f0ee0488d22cdd9f16f02fd80aa5374faf071740322ab5a781de99acb",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/04_AGENTDOJO.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/04_AGENTDOJO.md",
+            "media_type": "text/markdown",
+            "size_bytes": 5722,
+            "sha256_bytes": "2b287a26cb2fab15f7c172939157a54a6f871400554504324e660ec1ca94faef",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/05_PLANNING.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/05_PLANNING.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3896,
+            "sha256_bytes": "8fa648117aed8126a794f522c7b68c7e98f9d2e772ebae94d5c55439eea0859d",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/06_CEDAR_CONFIDENTIALITY.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/06_CEDAR_CONFIDENTIALITY.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2086,
+            "sha256_bytes": "4e8fea6cbc4b6d836687a3d65d617cbef748a9fe1945f818c5982c3fd3541159",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/07_AGGREGATION_AND_FIGURES.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/07_AGGREGATION_AND_FIGURES.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3734,
+            "sha256_bytes": "11719108550186e5d990f8cc069f4cb146d257b9d4535fc8c171808d737d9853",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/08_CLAIMS_AND_PAPER.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/08_CLAIMS_AND_PAPER.md",
+            "media_type": "text/markdown",
+            "size_bytes": 4109,
+            "sha256_bytes": "ca3fb14e071eaf111487b76eed4fdbf237cff93ebdd0329ecae0ebfc02eefb98",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/09_COMMIT_PLAN.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/09_COMMIT_PLAN.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3781,
+            "sha256_bytes": "0bf2de5b6596e9c10a9b1e62173d1bd262f61df518fde09035cf64a572c41a69",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/ACCEPTANCE_CRITERIA.json",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/ACCEPTANCE_CRITERIA.json",
+            "media_type": "application/json",
+            "size_bytes": 2475,
+            "sha256_bytes": "6013401fc6cc84046c976a0774833d500b6922cd387df99b6dfc98e64b757323",
+            "git_blob_oid": null,
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/AI_CODER_START_PROMPT.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/AI_CODER_START_PROMPT.md",
+            "media_type": "text/markdown",
+            "size_bytes": 2220,
+            "sha256_bytes": "eade241208346a26cb88becaac2d85d3526723dfb8fc8efe4b4b81c260bdbd33",
+            "git_blob_oid": null,
+            "role": "navigation",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/CODER_TASKS.json",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/CODER_TASKS.json",
+            "media_type": "application/json",
+            "size_bytes": 4716,
+            "sha256_bytes": "9e38070bf993aa60207044e666c44910c1f461d959d4740e5d266f047f498207",
+            "git_blob_oid": null,
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/EXPERIMENT_MATRIX.json",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/EXPERIMENT_MATRIX.json",
+            "media_type": "application/json",
+            "size_bytes": 1706,
+            "sha256_bytes": "08c30e77b63eb757f7fa7551de3366393c38738868c52780a6a6163ac9cdcff7",
+            "git_blob_oid": null,
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/PACKAGE_MANIFEST.json",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/PACKAGE_MANIFEST.json",
+            "media_type": "application/json",
+            "size_bytes": 2766,
+            "sha256_bytes": "d424fd7638d1da9dbfdc480e700341178f0478561fd07e402bb69d7c987ae6ff",
+            "git_blob_oid": null,
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/README_FOR_AI_CODER.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/README_FOR_AI_CODER.md",
+            "media_type": "text/markdown",
+            "size_bytes": 5457,
+            "sha256_bytes": "3f6e2c6001a7e315322218f0455b699f632c10f0e321f45af7e2ae9e8fb3ef24",
+            "git_blob_oid": null,
+            "role": "navigation",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/RESULT_RECORD_SCHEMA.json",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/RESULT_RECORD_SCHEMA.json",
+            "media_type": "application/json",
+            "size_bytes": 2853,
+            "sha256_bytes": "ae35cdb1f2720a3c5ed24ff29a737b8960295f97f8eef1c5e555d8197651fbd3",
+            "git_blob_oid": null,
+            "role": "source_manifest",
+            "duplicate_of": null
+        },
+        {
+            "package_id": "2026-09-10-satml-experiment-package",
+            "original_path": "Conflux_SaTML_Experiment_Package_2026-09-10/conflux_satml_experiment_package_2026-09-10/SOURCE_CONTEXT.md",
+            "archive_path": "research/reports/archive/2026-09-10-satml-experiment-package/SOURCE_CONTEXT.md",
+            "media_type": "text/markdown",
+            "size_bytes": 3674,
+            "sha256_bytes": "07972f0c69cc1f1430fc5f6932259bcc5efc661cfa9c1717bd9b33498d4beaa6",
+            "git_blob_oid": null,
+            "role": "experiment_specification",
             "duplicate_of": null
         }
     ]

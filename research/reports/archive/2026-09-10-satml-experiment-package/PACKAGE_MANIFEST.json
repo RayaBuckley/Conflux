@@ -1,0 +1,91 @@
+{
+  "package": "conflux_satml_experiment_package_2026-09-10",
+  "created": "2026-09-10",
+  "files": [
+    {
+      "file": "00_EXECUTION_ORDER.md",
+      "sha256": "408822c637405a490c94b0399cce2bc0a0a0857ed2779ada2ac6cbc6de18b9a8",
+      "bytes": 4820
+    },
+    {
+      "file": "01_SLEDV_SCALING.md",
+      "sha256": "af394d051f98a7e24405c918a595cff0dadd1daa76bd3a427765e5c2eec378eb",
+      "bytes": 4570
+    },
+    {
+      "file": "02_MUTATION_BENCHMARK.md",
+      "sha256": "26ba6ba39c213c06757896a30b7bab432e5efc7cacabb8acb41c8dbb375d737a",
+      "bytes": 4488
+    },
+    {
+      "file": "03_PROVENANCE_PRECISION.md",
+      "sha256": "bb8c560f0ee0488d22cdd9f16f02fd80aa5374faf071740322ab5a781de99acb",
+      "bytes": 4639
+    },
+    {
+      "file": "04_AGENTDOJO.md",
+      "sha256": "2b287a26cb2fab15f7c172939157a54a6f871400554504324e660ec1ca94faef",
+      "bytes": 5722
+    },
+    {
+      "file": "05_PLANNING.md",
+      "sha256": "8fa648117aed8126a794f522c7b68c7e98f9d2e772ebae94d5c55439eea0859d",
+      "bytes": 3896
+    },
+    {
+      "file": "06_CEDAR_CONFIDENTIALITY.md",
+      "sha256": "4e8fea6cbc4b6d836687a3d65d617cbef748a9fe1945f818c5982c3fd3541159",
+      "bytes": 2086
+    },
+    {
+      "file": "07_AGGREGATION_AND_FIGURES.md",
+      "sha256": "11719108550186e5d990f8cc069f4cb146d257b9d4535fc8c171808d737d9853",
+      "bytes": 3734
+    },
+    {
+      "file": "08_CLAIMS_AND_PAPER.md",
+      "sha256": "ca3fb14e071eaf111487b76eed4fdbf237cff93ebdd0329ecae0ebfc02eefb98",
+      "bytes": 4109
+    },
+    {
+      "file": "09_COMMIT_PLAN.md",
+      "sha256": "0bf2de5b6596e9c10a9b1e62173d1bd262f61df518fde09035cf64a572c41a69",
+      "bytes": 3781
+    },
+    {
+      "file": "ACCEPTANCE_CRITERIA.json",
+      "sha256": "6013401fc6cc84046c976a0774833d500b6922cd387df99b6dfc98e64b757323",
+      "bytes": 2475
+    },
+    {
+      "file": "AI_CODER_START_PROMPT.md",
+      "sha256": "eade241208346a26cb88becaac2d85d3526723dfb8fc8efe4b4b81c260bdbd33",
+      "bytes": 2220
+    },
+    {
+      "file": "CODER_TASKS.json",
+      "sha256": "9e38070bf993aa60207044e666c44910c1f461d959d4740e5d266f047f498207",
+      "bytes": 4716
+    },
+    {
+      "file": "EXPERIMENT_MATRIX.json",
+      "sha256": "08c30e77b63eb757f7fa7551de3366393c38738868c52780a6a6163ac9cdcff7",
+      "bytes": 1706
+    },
+    {
+      "file": "README_FOR_AI_CODER.md",
+      "sha256": "3f6e2c6001a7e315322218f0455b699f632c10f0e321f45af7e2ae9e8fb3ef24",
+      "bytes": 5457
+    },
+    {
+      "file": "RESULT_RECORD_SCHEMA.json",
+      "sha256": "ae35cdb1f2720a3c5ed24ff29a737b8960295f97f8eef1c5e555d8197651fbd3",
+      "bytes": 2853
+    },
+    {
+      "file": "SOURCE_CONTEXT.md",
+      "sha256": "07972f0c69cc1f1430fc5f6932259bcc5efc661cfa9c1717bd9b33498d4beaa6",
+      "bytes": 3674
+    }
+  ]
+}

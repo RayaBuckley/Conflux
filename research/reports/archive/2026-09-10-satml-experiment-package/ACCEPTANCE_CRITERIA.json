@@ -1,0 +1,44 @@
+{
+  "global": [
+    "Read and follow repository AGENTS.md before edits.",
+    "Do not change canonical security semantics to improve experiment results.",
+    "Implementation and generated-evidence commits are separate.",
+    "Every experiment has a manifest, raw output, summary, checksum, rerun command, and claim boundary.",
+    "Unavailable and failed cells remain visible.",
+    "All deterministic outputs are reproducible from a clean tree.",
+    "python scripts/validate.py passes before final integration, unless an unavailable external dependency is explicitly documented.",
+    "No secrets, API keys, access tokens, or private model credentials are retained in evidence."
+  ],
+  "scaling": [
+    "Historical 1,462,607 raw trace result remains exactly reproducible.",
+    "Historical canonical-state anchor remains 31 unless a documented semantic correction intentionally changes the representation.",
+    "Every supported safe/unsafe fixture has semantically agreeing verdicts across independent backends.",
+    "Every reduced unsafe witness lifts/replays against the original model.",
+    "Timeouts are explicit results."
+  ],
+  "mutations": [
+    "At least 20 non-duplicate mutants across at least four property families.",
+    "All deliberately unsafe retained mutants are detected by all backends that claim support.",
+    "Canonical controls remain safe.",
+    "Each mutant has a stable ID and expected property violation."
+  ],
+  "provenance_precision": [
+    "All ITES conditions use the same action authorisation rule.",
+    "Authenticated-contributor condition never ignores an actual contributor.",
+    "Ground-truth labels are derived deterministically from ACS/provenance fixtures.",
+    "Requester-only baseline is labelled non-deployable/vulnerable."
+  ],
+  "agentdojo": [
+    "Final selected model has meaningful benign competence on the frozen subset.",
+    "Upstream task IDs and native metrics are preserved.",
+    "No benchmark-specific evaluator shortcut is added.",
+    "Malicious proposal and unauthorised executed effect are separate metrics.",
+    "Raw traces are retained or referenced according to repository privacy/size policy."
+  ],
+  "planning": [
+    "All planning modes execute through the same action-time security kernel.",
+    "Generated code is not executed in the research comparison.",
+    "Task success criteria are planner-mode independent.",
+    "Policy/argument changes invalidate or re-authorise plans as designed."
+  ]
+}
