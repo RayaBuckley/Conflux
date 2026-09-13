@@ -20,7 +20,8 @@ echo "=== Running AgentDojo Preflight ==="
 python -m conflux.cli benchmark agentdojo preflight \
     --model-config "$MODEL_CONFIG" \
     --output "$OUTPUT_DIR" \
-    --source-commit "$COMMIT"
+    --source-commit "$COMMIT" \
+    --task-ids user_task_14,user_task_16,user_task_17,user_task_22,user_task_39
 
 echo "=== Running AgentDojo Comparison ==="
 python -m conflux.cli benchmark agentdojo run \

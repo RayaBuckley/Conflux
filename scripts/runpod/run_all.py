@@ -176,13 +176,13 @@ def run_all(
         eval_script = Path(__file__).parent / "run_evaluations.sh"
         _scp(key, ip, port, str(eval_script), f"root@{ip}:/workspace/run_evaluations.sh")
         config_path = f"research/output/runs/runpod-{model_id.replace('/', '-')}/transformers.json"
-        print("Running evaluations (this takes ~3-5 minutes)...")
+        print("Running evaluations (this takes ~10-20 minutes for expanded 30-cell matrix)...")
         _ssh(
             key,
             ip,
             port,
             f"bash /workspace/run_evaluations.sh research/output/runs/runpod-eval {config_path}",
-            timeout=600,
+            timeout=1800,
             allow_exit=(0, 3, 4),
         )
 
@@ -232,7 +232,7 @@ def main() -> None:
     parser.add_argument("--repo", default="https://github.com/RayaBuckley/Conflux.git")
     parser.add_argument("--output", type=Path, default=Path("research/output/runs/runpod-results"))
     parser.add_argument("--keep-pod", action="store_true", help="Keep pod running after evaluation")
-    parser.add_argument("--max-runtime-minutes", type=int, default=30, help="Hard stop limit (default 30)")
+    parser.add_argument("--max-runtime-minutes", type=int, default=60, help="Hard stop limit (default 60)")
     parser.add_argument("--yes", "-y", action="store_true", help="Skip confirmation prompt")
     args = parser.parse_args()
     run_all(args.model, args.gpu, args.repo, args.output, args.keep_pod, args.max_runtime_minutes, args.yes)
