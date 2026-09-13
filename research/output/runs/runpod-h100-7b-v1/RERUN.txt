@@ -1,0 +1,1 @@
+conflux benchmark agentdojo run --config research/output/runs/runpod-eval/protocol.json --output research/output/runs/runpod-eval --execute-local
