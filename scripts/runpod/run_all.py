@@ -145,10 +145,18 @@ def run_all(
         print("\n=== Phase 2: Setting up environment ===")
         print("Waiting 10s for container to fully initialize...")
         time.sleep(10)
+
+        # SCP the local repo to the pod (avoids needing to push to GitHub)
+        print("Uploading local repository to pod (this may take a minute)...")
+        local_repo = Path(__file__).resolve().parents[2]
+        _ssh(key, ip, port, "mkdir -p /workspace/conflux", timeout=15)
+        _scp(key, ip, port, f"{local_repo}/.git", f"root@{ip}:/workspace/conflux/.git", timeout=600)
+        _ssh(key, ip, port, "cd /workspace/conflux && git checkout -- .", timeout=60)
+
         setup_script = Path(__file__).parent / "setup_pod.sh"
         _scp(key, ip, port, str(setup_script), f"root@{ip}:/workspace/setup_pod.sh")
         env_prefix = f"HF_TOKEN={os.environ['HF_TOKEN']} " if os.environ.get("HF_TOKEN") else ""
-        setup_cmd = f"{env_prefix}bash /workspace/setup_pod.sh {model_id} {git_repo}"
+        setup_cmd = f"{env_prefix}bash /workspace/setup_pod.sh {model_id} LOCAL"
         print("Starting setup in background (this takes ~5-10 minutes)...")
         _ssh(key, ip, port, f"nohup bash -c '{setup_cmd}' > /workspace/setup.log 2>&1 &", timeout=30)
         # Poll for completion

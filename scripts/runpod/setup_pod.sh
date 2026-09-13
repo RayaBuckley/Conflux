@@ -18,7 +18,9 @@ echo "Repo:  $GIT_REPO"
 
 # 1. Clone and install
 echo "--- Cloning repository ---"
-if [ ! -d "$WORKDIR" ]; then
+if [ "$GIT_REPO" = "LOCAL" ]; then
+    echo "Using local repository already at $WORKDIR"
+elif [ ! -d "$WORKDIR" ]; then
     git clone "$GIT_REPO" "$WORKDIR"
 fi
 cd "$WORKDIR"
