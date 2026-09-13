@@ -189,6 +189,10 @@ data/
 !research/output/runs/mutation-benchmark-v1/**
 !research/output/runs/paper-tables-v1/
 !research/output/runs/paper-tables-v1/**
+!research/output/runs/agentdojo-7b-v6/
+!research/output/runs/agentdojo-7b-v6/**
+!research/output/runs/agentdojo-qwen3-4b-v4/
+!research/output/runs/agentdojo-qwen3-4b-v4/**
 !research/output/runs/agentdojo-0b5-v1/
 !research/output/runs/agentdojo-0b5-v1/**
 !research/output/runs/agentdojo-lfm2-1b2-v1/
