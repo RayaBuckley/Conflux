@@ -72,6 +72,21 @@ class ExperimentProtocol:
         """Return a content-based fingerprint of this protocol."""
         return fingerprint(self.to_dict())
 
+    @property
+    def comparability_fingerprint(self) -> str:
+        """Return a fingerprint that two runs of one measurement share.
+
+        ``fingerprint`` covers the whole record, so it also covers where the artefact was written:
+        ``output_directory`` and ``rerun_command`` both name the output location, so the same
+        measurement repeated into a different directory carries a different fingerprint and the two
+        runs cannot be shown comparable from the recorded field alone. This key keeps everything that
+        describes the measurement and drops those two fields. Repeating a run into the same directory
+        still reproduces ``fingerprint`` exactly, which is the stronger check; where the directory
+        must differ, compare this key.
+        """
+        payload = {key: value for key, value in self.to_dict().items() if key not in ("output_directory", "rerun_command")}
+        return fingerprint(payload)
+
     def materialise(self, directory: Path) -> Path:
         """Write the protocol and rerun command into *directory* and return the path."""
         directory.mkdir(parents=True, exist_ok=True)

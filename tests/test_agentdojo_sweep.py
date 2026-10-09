@@ -165,7 +165,7 @@ def test_main_runs_every_suite_when_asked_for_all(tmp_path: Path, monkeypatch: p
         return True
 
     monkeypatch.setattr(sweep, "run_suite", fake_run_suite)
-    monkeypatch.setattr(sweep, "_git_head", lambda: "a" * 40)
+    monkeypatch.setattr(sweep, "resolve_commit", lambda value, runner=None: "a" * 40)
     config = tmp_path / "transformers.json"
     config.write_text("{}", encoding="utf-8")
     assert sweep.main(["--model-config", str(config), "--conflux", "/bin/true"]) == 0
@@ -177,3 +177,28 @@ def test_main_refuses_an_unknown_suite(tmp_path: Path) -> None:
     config.write_text("{}", encoding="utf-8")
     with pytest.raises(ValueError, match="unknown_suite:policy"):
         sweep.main(["--model-config", str(config), "--suite", "policy", "--conflux", "/bin/true"])
+
+
+def test_source_commit_is_resolved_to_a_full_sha() -> None:
+    """A short commit in a protocol record is ambiguous, so the sweep resolves it first."""
+    seen: list[list[str]] = []
+
+    def runner(command: list[str]) -> str:
+        seen.append(command)
+        return "1127281372dc7ce938b835be8c7d2184ccfa0a0a\n"
+
+    resolved = sweep.resolve_commit("1127281", runner)
+    assert resolved == "1127281372dc7ce938b835be8c7d2184ccfa0a0a"
+    assert seen == [["git", "rev-parse", "--verify", "1127281^{commit}"]]
+    sweep.resolve_commit(None, runner)
+    assert seen[1] == ["git", "rev-parse", "--verify", "HEAD^{commit}"]
+
+
+def test_source_commit_that_does_not_resolve_is_refused() -> None:
+    """An unresolvable commit stops the sweep instead of recording a spelling nobody can resolve."""
+
+    def runner(command: list[str]) -> str:
+        raise subprocess.CalledProcessError(1, command)
+
+    with pytest.raises(SystemExit):
+        sweep.resolve_commit("not-a-commit", runner)

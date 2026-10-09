@@ -14,6 +14,7 @@ _.project
 _.record_execution
 _.supported
 _.fingerprint_seed
+_.comparability_fingerprint
 _.ordered_plan
 _.ID
 _.passed

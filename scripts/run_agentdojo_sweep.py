@@ -135,15 +135,24 @@ def run_suite(
     return run.returncode == 0
 
 
-def _git_head() -> str:
-    head = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return head.stdout.strip()
+def _git_resolve(command: list[str]) -> str:
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=True)
+    return result.stdout.strip()
+
+
+def resolve_commit(value: str | None, runner: Callable[[list[str]], str] | None = None) -> str:
+    """Return the full commit SHA to record for *value*, defaulting to the current HEAD.
+
+    One commit must have one spelling in a protocol record: a short SHA is ambiguous as soon as the
+    repository grows, and two records of the same commit written in different spellings do not compare
+    equal.
+    """
+    resolve = runner if runner is not None else _git_resolve
+    try:
+        resolved = resolve(["git", "rev-parse", "--verify", f"{value or 'HEAD'}^{{commit}}"])
+    except subprocess.CalledProcessError as error:
+        raise SystemExit(f"cannot resolve --source-commit {value!r} to a full commit SHA") from error
+    return resolved.strip()
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -167,7 +176,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"no conflux entry point at {conflux}; pass --conflux")
             return 2
         conflux = Path(shutil.which("conflux") or "conflux")
-    source_commit = args.source_commit or _git_head()
+    source_commit = resolve_commit(args.source_commit)
 
     def runner(command: list[str]) -> subprocess.CompletedProcess[str]:
         return subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)

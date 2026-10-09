@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -135,3 +136,23 @@ def test_resolved_manifest_enforces_completeness_and_failure_taxonomy() -> None:
             environment={},
             checksums={},
         )
+
+
+def test_comparability_fingerprint_ignores_where_the_run_was_written() -> None:
+    """Two runs of one measurement in different directories share the comparability key."""
+    first = _protocol(_model())
+    second = replace(
+        first,
+        output_directory=".local/repeat",
+        rerun_command=("conflux", "benchmark", "--output", ".local/repeat"),
+    )
+    assert first.fingerprint != second.fingerprint
+    assert first.comparability_fingerprint == second.comparability_fingerprint
+
+
+def test_comparability_fingerprint_still_moves_with_the_measurement() -> None:
+    """A changed measurement moves both keys, so the comparability key cannot hide a difference."""
+    first = _protocol(_model())
+    second = replace(first, seeds=(1,), repetitions=2)
+    assert first.fingerprint != second.fingerprint
+    assert first.comparability_fingerprint != second.comparability_fingerprint

@@ -1904,6 +1904,37 @@ vacuous in the same way as the earlier workspace pilots: a model that completes 
 shown to be protected by a defence. Utility-bearing breadth needs the 7B-plus configuration, which
 the retained runs took on rented pods rather than on this laptop.
 
+### Repeatability of the travel suite (measured the same night, after the section above)
+
+The counts above were one sample per suite. Travel was repeated twice more on the same laptop, same
+model, same seed and same temperature, and the repeats answer the question directly:
+
+- all 60 cells agree with the retained bundle on `status`, `native_utility`, `native_security`,
+  `model_calls` and the failure list, in both repeats;
+- in all 60 cells the raw upstream traces differ in exactly two fields, `evaluation_timestamp` and
+  `duration` (7.78 s against 6.94 s in the cell inspected); no message, tool call, token count or
+  verdict differs anywhere. That is why `raw_sha256` still differs per cell when a run is otherwise
+  identical;
+- the repeat written into the retained directory re-recorded the protocol field for field, so its
+  recorded `protocol_fingerprint` equals the retained `54781fe7e475522b...` exactly. The earlier
+  repeat, written into `.local/`, did not: see the first trap below.
+
+Two traps found while doing this, both now fixed or made explicit:
+
+- `ExperimentProtocol.fingerprint` covers the whole record, including `output_directory` and
+  `rerun_command`, so the same measurement written to a different directory carries a different
+  fingerprint and two runs in different directories cannot be compared from that field. The recorded
+  fingerprint is left alone (every retained bundle would otherwise change); a new
+  `ExperimentProtocol.comparability_fingerprint` drops those two fields for cross-run comparison, and
+  a repeat into the same directory still reproduces `fingerprint` exactly.
+- the first repeat recorded the short spelling `1127281` while the retained bundle records the full
+  SHA, so two records of one commit did not compare equal. `scripts/run_agentdojo_sweep.py` now
+  resolves `--source-commit` to a full commit SHA and refuses a value that does not resolve.
+
+What this changes above: travel's counts are repeatable, cell by cell, on this host and this model.
+What it does not change: banking, slack and workspace still carry one sample each, and 0.5B utility is
+zero everywhere, so this measures repeatability of the harness, not of any defence.
+
 ## 28. Three-way verdict agreement on the delegation IR family (2026-10-09, author-run)
 
 The delegation IR family had a two-tool agreement record: `scripts/generate_backend_cross_validation.py`

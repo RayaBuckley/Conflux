@@ -12,6 +12,13 @@ The protocol counted 42 policy-caused utility failures across the cells; with ut
 at this scale that says nothing about defence efficacy.
 
 Rerun: `python scripts/run_agentdojo_sweep.py --suite travel --model-config <run>/transformers.json`.
+A repeat written into this directory reproduces the recorded `protocol_fingerprint` exactly; a repeat
+written elsewhere records a different output path and therefore a different fingerprint, so compare
+`ExperimentProtocol.comparability_fingerprint` instead.
+
+Repeatability: this suite was repeated twice on the same host and model. All 60 cells agree on status,
+utility, security, model calls and failures, and the raw traces differ only in `evaluation_timestamp`
+and `duration`. `docs/evidence/VERIFICATION.md` §27 records the measurement and the two traps it found.
 
 Limits: 0.5B utility is zero by measurement at this scale (see `docs/evidence/VERIFICATION.md` §27),
 so the security counts are vacuous: a model that completes no task cannot be shown to be protected.

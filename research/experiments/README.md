@@ -22,7 +22,8 @@ result, generated summary, checksums, and one rerun command.
   `python scripts/run_agentdojo_sweep.py --suite all --model-config <run>/transformers.json` on the
   local nf4 0.5B model, which preflights and runs each suite from the frozen selection; each bundle
   carries a `SUMMARY.md`, and `docs/evidence/VERIFICATION.md` §27 records what they do and do not
-  show.
+  show. Travel was repeated twice afterwards and matched cell by cell; §27 records that measurement
+  and the fingerprint trap it exposed.
 - `../output/runs/three-way-agreement-v1/` is the verdict agreement bundle over the delegation IR
   family: the reference interpreter, Z3 and nuXmv IC3 decide the same eleven variants, and agreement
   is compared by verdict class while the raw verdicts stay per variant. Regenerate it with
