@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import json
+from typing import Any
+
+import pytest
 
 from scripts.generate_sledv_scaling_evidence import (
     HISTORICAL_TOTAL_STATES,
@@ -18,64 +21,60 @@ from scripts.generate_sledv_scaling_evidence import (
 )
 
 
+@pytest.fixture(scope="module")
+def bundle() -> dict[str, Any]:
+    """Build the scaling bundle once; a single generation re-runs every fixture."""
+    return generate()
+
+
 class TestSledvScalingBundle:
     """Test the full evidence bundle generation."""
 
-    def test_bundle_has_correct_schema(self) -> None:
-        bundle = generate()
+    def test_bundle_has_correct_schema(self, bundle: dict[str, Any]) -> None:
         assert bundle["schema_version"] == "1"
         assert bundle["id"] == "sledv-scaling-v1"
 
-    def test_bundle_has_historical_anchor(self) -> None:
-        bundle = generate()
+    def test_bundle_has_historical_anchor(self, bundle: dict[str, Any]) -> None:
         anchor = bundle["historical_anchor"]
         assert anchor["total_traces"] == HISTORICAL_TOTAL_TRACES
         assert anchor["total_canonical_states"] == HISTORICAL_TOTAL_STATES
 
-    def test_bundle_has_all_scaling_families(self) -> None:
-        bundle = generate()
+    def test_bundle_has_all_scaling_families(self, bundle: dict[str, Any]) -> None:
         families = bundle["scaling_families"]
         assert "noise_scaling" in families
         assert "principal_scaling" in families
         assert "depth_scaling" in families
 
-    def test_bundle_has_results(self) -> None:
-        bundle = generate()
+    def test_bundle_has_results(self, bundle: dict[str, Any]) -> None:
         assert len(bundle["fixtures"]) > 0
         assert bundle["summary"]["total_fixtures"] == len(bundle["fixtures"])
 
-    def test_no_coi_verdict_downgrade(self) -> None:
+    def test_no_coi_verdict_downgrade(self, bundle: dict[str, Any]) -> None:
         """COI reduction must never turn a safe verdict into unsafe."""
-        bundle = generate()
         for r in bundle["fixtures"]:
             if r["original"]["verdict"] in ("safe", "bounded_safe"):
                 assert r["reduced"]["verdict"] != "unsafe", f"{r['fixture_id']}: safe→unsafe downgrade"
 
-    def test_z3_all_agree(self) -> None:
+    def test_z3_all_agree(self, bundle: dict[str, Any]) -> None:
         """Z3 on original and reduced IR must agree where both succeed."""
-        bundle = generate()
         assert bundle["summary"]["z3_all_agree"] is True
 
-    def test_ref_z3_agree(self) -> None:
+    def test_ref_z3_agree(self, bundle: dict[str, Any]) -> None:
         """Reference and Z3 verdicts must agree where Z3 is available."""
-        bundle = generate()
         assert bundle["summary"]["ref_z3_agree"] is True
 
-    def test_deterministic_regeneration(self) -> None:
-        b1 = generate()
-        b2 = generate()
-        assert json.dumps(b1, sort_keys=True) == json.dumps(b2, sort_keys=True)
+    def test_deterministic_regeneration(self, bundle: dict[str, Any]) -> None:
+        regenerated = generate()
+        assert json.dumps(bundle, sort_keys=True) == json.dumps(regenerated, sort_keys=True)
 
-    def test_by_family_summaries(self) -> None:
-        bundle = generate()
+    def test_by_family_summaries(self, bundle: dict[str, Any]) -> None:
         by_fam = bundle["by_family"]
         for metrics in by_fam.values():
             assert metrics["total_fixtures"] > 0
             assert metrics["max_original_states"] > 0
             assert metrics["max_reduced_states"] > 0
 
-    def test_claim_boundary_present(self) -> None:
-        bundle = generate()
+    def test_claim_boundary_present(self, bundle: dict[str, Any]) -> None:
         assert "claim_boundary" in bundle
         assert "bounded" in bundle["claim_boundary"].lower()
 
