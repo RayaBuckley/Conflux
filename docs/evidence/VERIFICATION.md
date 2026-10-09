@@ -1905,7 +1905,7 @@ vacuous in the same way as the earlier workspace pilots: a model that completes 
 shown to be protected by a defence. Utility-bearing breadth needs the 7B-plus configuration, which
 the retained runs took on rented pods rather than on this laptop.
 
-### Repeatability of the travel suite (measured the same night, after the section above)
+### Repeatability of the sweep suites (travel and banking, measured after the section above)
 
 The counts above were one sample per suite. Travel was repeated twice more on the same laptop, same
 model, same seed and same temperature, and the repeats answer the question directly:
@@ -1933,8 +1933,22 @@ Two traps found while doing this, both now fixed or made explicit:
   resolves `--source-commit` to a full commit SHA and refuses a value that does not resolve.
 
 What this changes above: travel's counts are repeatable, cell by cell, on this host and this model.
-What it does not change: banking, slack and workspace still carry one sample each, and 0.5B utility is
-zero everywhere, so this measures repeatability of the harness, not of any defence.
+What it does not change: slack and workspace still carry one sample each, and 0.5B utility is zero
+everywhere, so this measures repeatability of the harness, not of any defence.
+
+Banking was repeated the same way, from its own retained protocol file and the documented rerun command
+rather than through the sweep: all 12 cells agree on status, native utility, native security, model
+calls and failures, and `protocol_fingerprint` is equal exactly, because the run wrote back the same
+protocol record. The raw traces differ only in `evaluation_timestamp` and `duration`.
+
+One provenance gap surfaced while comparing: the retained banking bundle selects two user tasks
+(`user_task_0`, `user_task_1`, protocol id `banking:expanded:user_task_0`), while the frozen selection in
+`research/experiments/manifests/agentdojo-stratified-selection-v1.json` gives banking four
+(`user_task_0`, `user_task_1`, `user_task_12`, `user_task_13`, protocol id `banking:stratified-v1`).
+Travel, slack and workspace select exactly the frozen task sets, and all four retained bundles spell
+their suite id `*:expanded:...` where the manifest spells it `*:stratified-v1`. The banking bundle
+therefore predates the frozen selection. A 24-cell banking run of the frozen selection completed on this
+host; retaining it is the next decision, and it is not a silent swap of a cited artefact.
 
 The diagnostic gap recorded in section 27 is closed in the same change set: a failed cell now keeps a
 bounded single-line summary of the message the classifier read (`failure_reason`, at most 200

@@ -7,7 +7,10 @@
   `max_steps` 16
 - Source commit: `1127281`
 - Result: 12 complete, 0 failed, utility 0/12, security 12/12
-Rerun: `python scripts/run_agentdojo_sweep.py --suite banking --model-config <run>/transformers.json`.
+Rerun: see `RERUN.txt`; the sweep would build the four-task stratified protocol, not this one.
+Repeated 2026-10-10 in this directory with the documented rerun command: all 12 cells agree on status,
+utility, security, model calls and failures, and the protocol fingerprint is equal exactly; raw traces
+differ only in `evaluation_timestamp` and `duration`.
 
 Limits: 0.5B utility is zero by measurement at this scale (see `docs/evidence/VERIFICATION.md` §27),
 so the security counts are vacuous: a model that completes no task cannot be shown to be protected.
