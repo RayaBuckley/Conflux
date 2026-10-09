@@ -108,6 +108,16 @@ The repository has a multi-layer validation pipeline orchestrated by
   smoke test, the markdownlint and cspell extension checks, and the
   informational pip-audit.  This is the continuous-integration path.
 
+Optional-backend boundary: the gate environment installs `.[dev,visualisation]`
+and therefore has no z3, so `verify_plan` returns the documented `UNKNOWN`
+verdict there and the positive `BOUNDED_SAFE`/`UNSAFE` branches, including the
+counterexample trace, are asserted only where the solver exists.  Exercise them
+with `.local/venv-z3/bin/python -m pytest tests/test_plan_ir_extensions.py
+tests/test_verification_ir.py -q` (29 passed on 2026-10-09, z3-solver 5.1.0).
+A z3-dependent assertion must accept `UNKNOWN` with
+`optional_dependency_unavailable:z3` when the solver is absent, as
+`test_z3_backend_is_bounded_or_explicitly_unavailable` does.
+
 Tiers 1 and 2 stop at the first failing step; the full tier runs every step so
 CI can report all failures.  Iterate at `quick` and run `full` before commits;
 `standard` is the middle option when packaging does not matter.  Numbers

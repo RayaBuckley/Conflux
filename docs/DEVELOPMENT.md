@@ -39,6 +39,20 @@ offline contract and failure tests, but their live results belong in explicit
 optional workflows with retained manifests and logs. Missing optional access
 is recorded as unavailable, not converted into a passing empirical claim.
 
+The solver boundary is the sharpest example. The gate environment installs
+`.[dev,visualisation]` and has no z3, so `verify_plan` returns the documented
+`UNKNOWN` verdict there and the positive `BOUNDED_SAFE`/`UNSAFE` results,
+including the counterexample trace, are only produced where the solver exists.
+A z3-dependent assertion must therefore accept the documented unavailable
+verdict instead of failing, and changes to the verification paths should be
+checked in an environment that has the solver:
+
+```bash
+.local/venv-z3/bin/python -m pytest tests/test_plan_ir_extensions.py tests/test_verification_ir.py -q
+```
+
+That command passed 29 tests on 2026-10-09 with z3-solver 5.1.0.
+
 ## Rationale
 
 Focused tests provide fast diagnosis; the full gate detects cross-boundary
