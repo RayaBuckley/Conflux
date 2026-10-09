@@ -227,9 +227,16 @@ def test_full_tier_survives_a_failing_doctest_step(
 @pytest.mark.parametrize(("returncode", "expected"), [(0, 0), (5, 0), (1, 1), (2, 2)])
 def test_doctest_step_maps_the_pytest_exit_code(
     monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
     returncode: int,
     expected: int,
 ) -> None:
     """Exit code 5 (no doctests collected) is success; anything else is a failure."""
     monkeypatch.setattr("subprocess.run", lambda *arguments, **keywords: _CompletedStub(returncode))
     assert validate_module.run_doctests() == expected
+    output = capsys.readouterr().out
+    if returncode == 5:
+        # The empty collection is the normal case today, so it must be visible.
+        assert "no doctests collected" in output
+    else:
+        assert "no doctests collected" not in output

@@ -145,7 +145,12 @@ def run_doctests() -> int:
         text=True,
         env=VALIDATION_ENV,
     )
-    if process.returncode and process.returncode != 5:
+    if process.returncode == 5:
+        # There are no doctest examples in src/ as of 2026-10-09, so this branch
+        # is the normal case; say so instead of passing silently.
+        print(f"[validate] {DOCTEST_CHECK}: no doctests collected", flush=True)
+        return 0
+    if process.returncode:
         print(f"[validate] {DOCTEST_CHECK}")
         print(process.stdout, end="")
         print(process.stderr, end="", file=sys.stderr)

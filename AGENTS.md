@@ -100,8 +100,9 @@ The repository has a multi-layer validation pipeline orchestrated by
   Ruff, and the fast test subset (the suite minus the SLED-V scaling-evidence
   file, which regenerates a large bundle).
 - **standard** (`--tier standard`, about 110 s) — adds the full test suite with
-  the branch-coverage threshold, the evidence reproductions, doctests, mypy,
-  yamllint, and vulture.  The branch-coverage run is about 105 s of it; the
+  the branch-coverage threshold, the evidence reproductions, the domain doctest
+  step (which reports "no doctests collected" because `src/` has no doctest
+  examples; pytest exit code 5 counts as success), mypy, yamllint, and vulture.  The branch-coverage run is about 105 s of it; the
   same suite without instrumentation takes about 33 s.
 - **full** (the default, about 2 min) — adds the wheel build, the installed-CLI
   smoke test, the markdownlint and cspell extension checks, and the
