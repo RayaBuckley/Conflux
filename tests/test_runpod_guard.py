@@ -7,6 +7,7 @@ API so that no request ever leaves the machine.
 
 from __future__ import annotations
 
+import hashlib
 import importlib
 import json
 import math
@@ -104,10 +105,30 @@ class FakeApi:
         return [call for call in self.calls if call[0] in {"create", "stop", "delete"}]
 
 
+@pytest.fixture(autouse=True)
+def isolated_state(tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Redirect the whole guard state directory into a fresh temporary directory.
+
+    Autouse, and a fresh directory per test rather than the shared per-test tmp_path:
+    that path is reused between runs, so a ledger left behind by an earlier run made
+    later runs fail the daily cap with spend the test had invented. Two real defects
+    live here. First, the guard used to capture AUDIT_PATH as a function default, so a
+    test that called guard.main() appended fake creates and refusals to the live log
+    under .local/runpod/ and the log then described operations that never happened.
+    Second, a state directory that survives across runs makes the suite unrepeatable.
+    """
+    state = tmp_path_factory.mktemp("guard-state")
+    monkeypatch.setattr(guard, "STATE_DIR", state)
+    monkeypatch.setattr(guard, "LEDGER_PATH", state / "ledger.json")
+    monkeypatch.setattr(guard, "AUDIT_PATH", state / "audit.jsonl")
+    monkeypatch.setattr(guard, "BUDGET_PATH", state / "budget.json")
+    monkeypatch.setattr(guard, "REPORT_DIR", state / "reports")
+    return state
+
+
 @pytest.fixture
-def state_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setattr(guard, "STATE_DIR", tmp_path)
-    return tmp_path
+def state_dir(isolated_state: Path) -> Path:
+    return isolated_state
 
 
 @pytest.fixture
@@ -899,3 +920,62 @@ def test_run_all_accepts_a_pod_the_guard_owns(
     api = FakeApi([conflux_pod("pilot-1", "pod-conflux1")])
     wire(monkeypatch, api)
     run_all_module._assert_conflux_pod({"pod_id": "pod-conflux1"})
+
+
+# --------------------------------------------------------------------------
+# Hermeticity: the suite must never write the live state directory.
+# --------------------------------------------------------------------------
+
+
+def live_state_dir() -> Path:
+    return REPO_ROOT / ".local" / "runpod"
+
+
+def digest_live_state() -> dict[str, tuple[int, str]]:
+    directory = live_state_dir()
+    if not directory.exists():
+        return {}
+    return {
+        path.name: (path.stat().st_size, hashlib.sha256(path.read_bytes()).hexdigest())
+        for path in sorted(directory.iterdir())
+        if path.is_file()
+    }
+
+
+def test_every_state_path_is_redirected(isolated_state: Path) -> None:
+    live = live_state_dir()
+    for path in (guard.STATE_DIR, guard.LEDGER_PATH, guard.AUDIT_PATH, guard.BUDGET_PATH, guard.REPORT_DIR):
+        assert path == isolated_state or isolated_state in path.parents
+        assert path != live
+        assert live not in path.parents
+
+
+def test_a_create_and_stop_cycle_leaves_the_live_state_directory_alone(
+    monkeypatch: pytest.MonkeyPatch, state_dir: Path,
+) -> None:
+    """The real defect this covers: the suite appended fake records to the live audit log."""
+    before = digest_live_state()
+    api = FakeApi([foreign_pod()])
+    wire(monkeypatch, api)
+    assert guard.main(["create", "--run-id", "hermetic", "--hours", "1", "--assume-rate", "1.79", "--yes"]) == 0
+    assert guard.main(["stop", "--run-id", "hermetic", "--yes"]) == 0
+    assert digest_live_state() == before
+
+
+def test_audit_records_land_in_the_isolated_directory(monkeypatch: pytest.MonkeyPatch, state_dir: Path) -> None:
+    api = FakeApi([foreign_pod()])
+    wire(monkeypatch, api)
+    assert guard.main(["create", "--run-id", "hermetic-audit", "--hours", "1", "--assume-rate", "1.79", "--yes"]) == 0
+    records = [json.loads(line) for line in (state_dir / "audit.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [record["action"] for record in records][:2] == ["create", "created"]
+    assert all(str(record["target"]).startswith("conflux-") for record in records)
+
+
+def test_refusals_are_audited_in_the_isolated_directory_too(monkeypatch: pytest.MonkeyPatch, state_dir: Path) -> None:
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1")])
+    wire(monkeypatch, api)
+    assert guard.main(["stop", "--pod-id", "pod-tenant-a1", "--yes"]) == guard.EXIT_REFUSED
+    text = (state_dir / "audit.jsonl").read_text(encoding="utf-8")
+    assert "stop-refused" in text
+    assert "pod-tenant-a1" in text  # the log records the selector the user typed...
+    assert "tenant-a-h100" not in text  # ...and never the foreign pod's name or env

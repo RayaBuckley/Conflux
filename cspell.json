@@ -773,7 +773,8 @@
     "vname",
     "xiao",
     "raya",
-    "unrefereed"
+    "unrefereed",
+    "hermeticity"
   ],
   "ignorePaths": [
     "research/reports/archive/**",

@@ -58,6 +58,10 @@ from urllib.request import urlopen
 API_BASE = "https://rest.runpod.io/v1"
 USER_AGENT = "Conflux-Guard/1.0 (local ops tool)"
 REPO_ROOT = Path(__file__).resolve().parents[2]
+# State lives in one gitignored directory. Every path below is read at call time,
+# never captured as a function default, so a caller or a test can redirect the whole
+# state directory with one monkeypatch. A captured default would send a test's audit
+# records into the live audit log and make the trail lie about what ran.
 STATE_DIR = REPO_ROOT / ".local" / "runpod"
 LEDGER_PATH = STATE_DIR / "ledger.json"
 AUDIT_PATH = STATE_DIR / "audit.jsonl"
@@ -300,8 +304,9 @@ def _positive_int(value: object, default: int, key: str, notes: list[str]) -> in
     return max(int(_finite_number(value, float(default), key, notes)), 1)
 
 
-def load_budget(path: Path = BUDGET_PATH) -> tuple[Budget, list[str]]:
+def load_budget(path: Path | None = None) -> tuple[Budget, list[str]]:
     """Load the local budget file, clamping every value to the absolute limits."""
+    path = BUDGET_PATH if path is None else path
     budget = Budget()
     notes: list[str] = []
     if path.exists():
@@ -475,8 +480,8 @@ class LedgerEntry:
 class Ledger:
     """Local record of every pod this machine created. Gitignored under .local/."""
 
-    def __init__(self, path: Path = LEDGER_PATH) -> None:
-        self.path = path
+    def __init__(self, path: Path | None = None) -> None:
+        self.path = LEDGER_PATH if path is None else path
         self.entries: list[LedgerEntry] = []
         self._load()
 
@@ -570,8 +575,9 @@ class Ledger:
         ]
 
 
-def audit(action: str, target: str, detail: Mapping[str, object], path: Path = AUDIT_PATH) -> None:
+def audit(action: str, target: str, detail: Mapping[str, object], path: Path | None = None) -> None:
     """Append one action record. Never contains env values or credentials."""
+    path = AUDIT_PATH if path is None else path
     path.parent.mkdir(parents=True, exist_ok=True)
     record = {"ts": datetime.now(UTC).isoformat(), "action": action, "target": target, **detail}
     with path.open("a", encoding="utf-8") as handle:
@@ -685,9 +691,9 @@ def hf_token() -> str:
 
 def cmd_status(_args: argparse.Namespace) -> int:
     now = datetime.now(UTC)
-    ledger = Ledger(STATE_DIR / "ledger.json")
+    ledger = Ledger()
     pods = api_from_env().list_pods()
-    budget, notes = load_budget(STATE_DIR / "budget.json")
+    budget, notes = load_budget()
     trusted = ledger.trusted_ids()
     mine = managed_pods(pods, trusted)
     print(f"Conflux pods: {len(mine)}")
@@ -719,9 +725,9 @@ def cmd_status(_args: argparse.Namespace) -> int:
 
 def cmd_preflight(args: argparse.Namespace) -> int:
     now = datetime.now(UTC)
-    ledger = Ledger(STATE_DIR / "ledger.json")
+    ledger = Ledger()
     pods = api_from_env().list_pods()
-    budget, _ = load_budget(STATE_DIR / "budget.json")
+    budget, _ = load_budget()
     trusted = ledger.trusted_ids()
     gpu_type = args.gpu_type or budget.allowed_gpu_types[0]
     rate = float(args.assume_rate) if args.assume_rate else assumed_rate(gpu_type, pods, ledger)
@@ -742,8 +748,8 @@ def cmd_preflight(args: argparse.Namespace) -> int:
 
 def cmd_create(args: argparse.Namespace) -> int:
     now = datetime.now(UTC)
-    ledger = Ledger(STATE_DIR / "ledger.json")
-    budget, _ = load_budget(STATE_DIR / "budget.json")
+    ledger = Ledger()
+    budget, _ = load_budget()
     gpu_type = args.gpu_type or budget.allowed_gpu_types[0]
     api = api_from_env()
     pods = api.list_pods()
@@ -868,7 +874,7 @@ def cmd_create(args: argparse.Namespace) -> int:
 
 def _stop_targets(args: argparse.Namespace, *, terminate: bool) -> int:
     now = datetime.now(UTC)
-    ledger = Ledger(STATE_DIR / "ledger.json")
+    ledger = Ledger()
     api = api_from_env()
     pods = api.list_pods()
     selector = args.run_id or args.pod_id
@@ -909,7 +915,7 @@ def cmd_terminate(args: argparse.Namespace) -> int:
 
 def cmd_stop_all(args: argparse.Namespace) -> int:
     now = datetime.now(UTC)
-    ledger = Ledger(STATE_DIR / "ledger.json")
+    ledger = Ledger()
     api = api_from_env()
     pods = api.list_pods()
     mine = [pod for pod in managed_pods(pods, ledger.trusted_ids()) if pod_state(pod) in {"RUNNING", "EXITED"}]
@@ -936,7 +942,7 @@ def cmd_watch(args: argparse.Namespace) -> int:
     """Enforce per-pod TTLs: stop Conflux pods whose expiry has passed."""
     interval = max(float(args.interval), 15.0)
     api = api_from_env()
-    ledger = Ledger(STATE_DIR / "ledger.json")
+    ledger = Ledger()
     iterations = 0
     while True:
         iterations += 1
@@ -961,7 +967,7 @@ def cmd_watch(args: argparse.Namespace) -> int:
 
 def cmd_report(args: argparse.Namespace) -> int:
     now = datetime.now(UTC)
-    ledger = Ledger(STATE_DIR / "ledger.json")
+    ledger = Ledger()
     api = api_from_env()
     start = now - timedelta(days=int(args.days))
     records = api.billing_pods(start, now)
@@ -1052,7 +1058,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command == "create" and not args.image:
-        args.image = load_budget(STATE_DIR / "budget.json")[0].default_image
+        args.image = load_budget()[0].default_image
     try:
         return int(cast("int", args.func(args)))
     except GuardError as exc:
