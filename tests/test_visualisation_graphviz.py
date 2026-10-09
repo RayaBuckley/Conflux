@@ -3,14 +3,30 @@
 from __future__ import annotations
 
 import os
+import shutil
+import sys
 from pathlib import Path
 
 import pytest
 
-# Ensure Graphviz bin directory is on PATH for subprocess calls
-_GRAPHVIZ_BIN = r"C:\Program Files\Graphviz\bin"
-if Path(_GRAPHVIZ_BIN).is_dir() and _GRAPHVIZ_BIN not in os.environ.get("PATH", ""):
-    os.environ["PATH"] = _GRAPHVIZ_BIN + os.pathsep + os.environ.get("PATH", "")
+# The renderer shells out to ``dot``. A Windows install usually lives outside PATH, so its
+# default location is added when it exists; on every other platform ``dot`` must already be
+# on PATH, and its absence is reported in the skip reason rather than hidden.
+_WINDOWS_GRAPHVIZ_BIN = Path(r"C:\Program Files\Graphviz\bin")
+GRAPHVIZ_SKIP_REASON = "dot is not on PATH: the SVG rendering tests did not run on this host"
+
+
+def _ensure_graphviz_on_path() -> bool:
+    """Return whether ``dot`` is reachable, adding the Windows default install if needed."""
+    if shutil.which("dot"):
+        return True
+    if os.name == "nt" and _WINDOWS_GRAPHVIZ_BIN.is_dir():
+        os.environ["PATH"] = str(_WINDOWS_GRAPHVIZ_BIN) + os.pathsep + os.environ.get("PATH", "")
+        return shutil.which("dot") is not None
+    return False
+
+
+_ensure_graphviz_on_path()
 
 from conflux.visualisation.graph.graphviz import (  # noqa: E402
     _escape_label,
@@ -164,10 +180,41 @@ class TestTruncateGraph:
             assert edge.target in kept_ids
 
 
+class TestGraphvizOnPath:
+    """The PATH fix must help on Windows and stay inert everywhere else."""
+
+    def test_a_posix_host_gains_no_windows_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("PATH", raising=False)
+        monkeypatch.setattr(shutil, "which", lambda _name: None)
+        monkeypatch.setattr(os, "name", "posix")
+        assert _ensure_graphviz_on_path() is False
+        assert "PATH" not in os.environ
+
+    def test_the_windows_default_is_added_only_when_it_holds_dot(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        bin_dir = tmp_path / "Graphviz" / "bin"
+        bin_dir.mkdir(parents=True)
+        seen: list[str] = []
+
+        def fake_which(name: str) -> str | None:
+            seen.append(name)
+            return str(bin_dir / "dot.exe") if len(seen) > 1 else None
+
+        monkeypatch.setenv("PATH", "/usr/bin")
+        monkeypatch.setattr(shutil, "which", fake_which)
+        monkeypatch.setattr(os, "name", "nt")
+        monkeypatch.setattr(sys.modules[__name__], "_WINDOWS_GRAPHVIZ_BIN", bin_dir)
+        assert _ensure_graphviz_on_path() is True
+        assert os.environ["PATH"] == f"{bin_dir}{os.pathsep}/usr/bin"
+
+
 class TestRenderSvg:
     @pytest.mark.skipif(
         not _is_graphviz_available(),
-        reason="Graphviz not available",
+        reason=GRAPHVIZ_SKIP_REASON,
     )
     def test_produces_svg(self) -> None:
         graph = _make_graph(node_count=3)
@@ -178,7 +225,7 @@ class TestRenderSvg:
 
     @pytest.mark.skipif(
         not _is_graphviz_available(),
-        reason="Graphviz not available",
+        reason=GRAPHVIZ_SKIP_REASON,
     )
     def test_deterministic_output(self) -> None:
         graph = _make_graph(node_count=5)
@@ -188,7 +235,7 @@ class TestRenderSvg:
 
     @pytest.mark.skipif(
         not _is_graphviz_available(),
-        reason="Graphviz not available",
+        reason=GRAPHVIZ_SKIP_REASON,
     )
     def test_hostile_labels_escaped(self) -> None:
         node = VisualNode(
@@ -209,7 +256,7 @@ class TestRenderSvg:
 
     @pytest.mark.skipif(
         not _is_graphviz_available(),
-        reason="Graphviz not available",
+        reason=GRAPHVIZ_SKIP_REASON,
     )
     def test_truncation_notice(self) -> None:
         graph = _make_graph(node_count=10)
@@ -229,7 +276,7 @@ class TestRenderSvg:
 
     @pytest.mark.skipif(
         not _is_graphviz_available(),
-        reason="Graphviz not available",
+        reason=GRAPHVIZ_SKIP_REASON,
     )
     def test_layout_options_respected(self) -> None:
         graph = _make_graph(node_count=3)

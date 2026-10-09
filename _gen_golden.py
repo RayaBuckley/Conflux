@@ -1,10 +1,9 @@
 """Generate golden SVG fixtures for visualisation testing."""
 
 import os
+import shutil
 import sys
 from pathlib import Path
-
-os.environ["PATH"] = r"C:\Program Files\Graphviz\bin" + os.pathsep + os.environ["PATH"]
 
 from conflux.visualisation.graph.graphviz import render_svg
 from conflux.visualisation.model import (
@@ -17,6 +16,10 @@ from conflux.visualisation.model import (
     VisualNode,
     VisualStatus,
 )
+
+_WINDOWS_GRAPHVIZ_BIN = Path(r"C:\Program Files\Graphviz\bin")
+if shutil.which("dot") is None and os.name == "nt" and _WINDOWS_GRAPHVIZ_BIN.is_dir():
+    os.environ["PATH"] = str(_WINDOWS_GRAPHVIZ_BIN) + os.pathsep + os.environ["PATH"]
 
 out = Path("tests/fixtures/visualisation/golden")
 out.mkdir(parents=True, exist_ok=True)

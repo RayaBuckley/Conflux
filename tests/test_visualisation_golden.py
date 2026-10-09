@@ -4,21 +4,36 @@ Regenerates SVG from known VisualGraph fixtures and compares against
 committed golden files.  If the SVG changes intentionally, update the
 golden in the same commit that caused the change.
 
-To regenerate goldens:  set PATH=C:\\Program Files\\Graphviz\\bin;%PATH%
-and run:  python _gen_golden.py
+To regenerate the goldens, install Graphviz so ``dot`` is on PATH and run:
+python _gen_golden.py
 """
 
 from __future__ import annotations
 
 import os
+import shutil
 from pathlib import Path
 
 import pytest
 
-# Ensure Graphviz bin directory is on PATH for subprocess calls
-_GRAPHVIZ_BIN = r"C:\Program Files\Graphviz\bin"
-if Path(_GRAPHVIZ_BIN).is_dir() and _GRAPHVIZ_BIN not in os.environ.get("PATH", ""):
-    os.environ["PATH"] = _GRAPHVIZ_BIN + os.pathsep + os.environ.get("PATH", "")
+# The renderer shells out to ``dot``. A Windows install usually lives outside PATH, so its
+# default location is added when it exists; on every other platform ``dot`` must already be
+# on PATH, and its absence is reported in the skip reason rather than hidden.
+_WINDOWS_GRAPHVIZ_BIN = Path(r"C:\Program Files\Graphviz\bin")
+GRAPHVIZ_SKIP_REASON = "dot is not on PATH: the SVG rendering tests did not run on this host"
+
+
+def _ensure_graphviz_on_path() -> bool:
+    """Return whether ``dot`` is reachable, adding the Windows default install if needed."""
+    if shutil.which("dot"):
+        return True
+    if os.name == "nt" and _WINDOWS_GRAPHVIZ_BIN.is_dir():
+        os.environ["PATH"] = str(_WINDOWS_GRAPHVIZ_BIN) + os.pathsep + os.environ.get("PATH", "")
+        return shutil.which("dot") is not None
+    return False
+
+
+_ensure_graphviz_on_path()
 
 from conflux.visualisation.graph.graphviz import (  # noqa: E402
     _is_graphviz_available,
@@ -100,7 +115,7 @@ _FIXTURES = {
 }
 
 
-@pytest.mark.skipif(not _is_graphviz_available(), reason="Graphviz not available")
+@pytest.mark.skipif(not _is_graphviz_available(), reason=GRAPHVIZ_SKIP_REASON)
 class TestGoldenSvgComparison:
     @pytest.mark.parametrize("fixture_name", sorted(_FIXTURES))
     def test_golden_svg_matches(self, fixture_name: str) -> None:

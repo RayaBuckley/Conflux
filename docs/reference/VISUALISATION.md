@@ -97,6 +97,12 @@ Graphviz is an optional dependency declared as `visualisation` in
 `shutil.which("dot")`. If unavailable, the visualiser returns
 `UNAVAILABLE` status. Core Conflux execution is unaffected.
 
+The tests that render SVG skip when `dot` is absent, and the skip reason names the
+consequence ("dot is not on PATH: the SVG rendering tests did not run on this host"), so a
+green run cannot be read as having verified the golden files. A Debian or Ubuntu host needs
+`sudo apt install graphviz`; on Windows the test helper adds the installer's `bin` directory
+when it exists.
+
 ## Security
 
 - Default diagrams do not embed raw document contents, secrets, credentials,
