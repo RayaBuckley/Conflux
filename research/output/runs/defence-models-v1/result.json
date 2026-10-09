@@ -1,12 +1,27 @@
 {
+  "available_formal_backends": [
+    "z3"
+  ],
+  "formal_backends": {
+    "nuxmv": {
+      "available": false,
+      "reason": "unavailable"
+    },
+    "z3": {
+      "available": true,
+      "reason": null
+    }
+  },
   "id": "defence-models-v1",
   "models": [
     {
       "name": "Dual-LLM",
       "native_property": {
-        "counterexample": true,
+        "counterexample": false,
         "counterexample_length": 0,
-        "nuxmv_verdict": "safe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 2,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -14,7 +29,9 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 4,
-        "nuxmv_verdict": "unsafe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 4,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -23,9 +40,11 @@
     {
       "name": "CaMeL",
       "native_property": {
-        "counterexample": true,
+        "counterexample": false,
         "counterexample_length": 0,
-        "nuxmv_verdict": "safe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 2,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -33,7 +52,9 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 4,
-        "nuxmv_verdict": "unsafe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -42,9 +63,11 @@
     {
       "name": "Progent",
       "native_property": {
-        "counterexample": true,
+        "counterexample": false,
         "counterexample_length": 0,
-        "nuxmv_verdict": "safe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 1,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -52,7 +75,9 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 3,
-        "nuxmv_verdict": "unsafe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -61,9 +86,11 @@
     {
       "name": "PACT",
       "native_property": {
-        "counterexample": true,
+        "counterexample": false,
         "counterexample_length": 0,
-        "nuxmv_verdict": "safe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 1,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -71,7 +98,9 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 3,
-        "nuxmv_verdict": "unsafe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -83,7 +112,9 @@
       "pe_property": {
         "counterexample": true,
         "counterexample_length": 4,
-        "nuxmv_verdict": "unsafe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -93,9 +124,11 @@
       "name": "ITES",
       "native_property": null,
       "pe_property": {
-        "counterexample": true,
+        "counterexample": false,
         "counterexample_length": 0,
-        "nuxmv_verdict": "safe",
+        "error": null,
+        "nuxmv_error": "optional_binary_unavailable:nuXmv",
+        "nuxmv_verdict": "unknown",
         "reference_states": 5,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -104,8 +137,12 @@
   ],
   "schema_version": "1",
   "summary": {
+    "native_measured": 4,
     "native_satisfied": 4,
+    "native_unknown": 0,
+    "pe_measured": 6,
     "pe_safe": 1,
+    "pe_unknown": 0,
     "pe_unsafe": 5,
     "total_models": 6
   }

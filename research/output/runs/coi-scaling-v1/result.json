@@ -1,4 +1,7 @@
 {
+  "available_formal_backends": [
+    "z3"
+  ],
   "fixtures": [
     {
       "fixture_id": "safe-noise-0",
@@ -20,7 +23,9 @@
       },
       "witness_length": 0,
       "z3": {
+        "original_error": null,
         "original_verdict": "bounded_safe",
+        "reduced_error": null,
         "reduced_verdict": "bounded_safe"
       }
     },
@@ -44,7 +49,9 @@
       },
       "witness_length": 0,
       "z3": {
+        "original_error": null,
         "original_verdict": "bounded_safe",
+        "reduced_error": null,
         "reduced_verdict": "bounded_safe"
       }
     },
@@ -68,7 +75,9 @@
       },
       "witness_length": 0,
       "z3": {
+        "original_error": null,
         "original_verdict": "bounded_safe",
+        "reduced_error": null,
         "reduced_verdict": "bounded_safe"
       }
     },
@@ -92,7 +101,9 @@
       },
       "witness_length": 0,
       "z3": {
+        "original_error": null,
         "original_verdict": "bounded_safe",
+        "reduced_error": null,
         "reduced_verdict": "bounded_safe"
       }
     },
@@ -116,7 +127,9 @@
       },
       "witness_length": 0,
       "z3": {
+        "original_error": null,
         "original_verdict": "bounded_safe",
+        "reduced_error": null,
         "reduced_verdict": "bounded_safe"
       }
     },
@@ -140,7 +153,9 @@
       },
       "witness_length": 0,
       "z3": {
+        "original_error": null,
         "original_verdict": "bounded_safe",
+        "reduced_error": null,
         "reduced_verdict": "bounded_safe"
       }
     },
@@ -164,7 +179,9 @@
       },
       "witness_length": 2,
       "z3": {
+        "original_error": null,
         "original_verdict": "unsafe",
+        "reduced_error": null,
         "reduced_verdict": "unsafe"
       }
     },
@@ -188,7 +205,9 @@
       },
       "witness_length": 2,
       "z3": {
+        "original_error": null,
         "original_verdict": "unsafe",
+        "reduced_error": null,
         "reduced_verdict": "unsafe"
       }
     },
@@ -212,7 +231,9 @@
       },
       "witness_length": 2,
       "z3": {
+        "original_error": null,
         "original_verdict": "unsafe",
+        "reduced_error": null,
         "reduced_verdict": "unsafe"
       }
     },
@@ -236,7 +257,9 @@
       },
       "witness_length": 2,
       "z3": {
+        "original_error": null,
         "original_verdict": "unsafe",
+        "reduced_error": null,
         "reduced_verdict": "unsafe"
       }
     },
@@ -260,7 +283,9 @@
       },
       "witness_length": 2,
       "z3": {
+        "original_error": null,
         "original_verdict": "unsafe",
+        "reduced_error": null,
         "reduced_verdict": "unsafe"
       }
     },
@@ -284,11 +309,19 @@
       },
       "witness_length": 2,
       "z3": {
+        "original_error": null,
         "original_verdict": "unsafe",
+        "reduced_error": null,
         "reduced_verdict": "unsafe"
       }
     }
   ],
+  "formal_backends": {
+    "z3": {
+      "available": true,
+      "reason": null
+    }
+  },
   "id": "coi-scaling-v1",
   "noise_counts": [
     0,
@@ -302,6 +335,7 @@
   "summary": {
     "all_equivalent": true,
     "total_fixtures": 12,
-    "z3_all_agree": true
+    "z3_all_agree": true,
+    "z3_measured": 12
   }
 }
