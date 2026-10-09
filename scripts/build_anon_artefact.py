@@ -17,7 +17,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / ".local" / "anon-arteffact"
+OUT = ROOT / ".local" / "anon-artefact"
 
 # --- 1. Source modules to include (claim dependency closure) ---
 SRC_INCLUDE_DIRS = [
