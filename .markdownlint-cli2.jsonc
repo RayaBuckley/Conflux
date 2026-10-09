@@ -9,6 +9,9 @@
   "ignores": [
     ".ae3code/**",
     ".local/**",
+    ".venv/**",
+    "build/**",
+    "dist/**",
     "node_modules/**",
     "research/reports/analysis/**",
     "research/reports/archive/**"
