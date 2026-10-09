@@ -596,8 +596,9 @@ new `UNAVAILABLE_Z3` constant). Test-only change; `src/` and `scripts/` are unto
     (`pe_safe: 1, pe_unsafe: 5`).
   - Honest siblings, no action: `generate_z3_agreement.py` (`all_agree` also compares with the
     conclusive reference verdict, so it is false without z3),
-    `generate_backend_cross_validation.py` (`all_agree = disagreements == 0`, no filter -> false),
     `generate_mutation_benchmark.py` (`backends_agree` becomes `None` when z3 errored).
+  - `generate_backend_cross_validation.py` compared raw verdict strings only, so its `all_agree` read
+    `false` on a run with no disagreement in it; §29 fixes the comparison and keeps both readings.
 
 ## 15. `bbd59a2`: the measurement-coverage bar (closes §14's residual)
 
@@ -1970,3 +1971,27 @@ What this does not establish: agreement is evidence about the encodings, not a p
 semantics. All three tools read the same IR, so a misreading shared by all three is invisible to this
 measurement, and the Z3 result is bounded. Coverage is the eleven enumerated variants, not every IR
 the schema admits.
+
+## 29. Cross-backend validation: 11/11 verdict classes, and what that does not prove (2026-10-09, author-run)
+
+`scripts/generate_backend_cross_validation.py` measured both backends on every variant of the delegation
+IR family and now retains the result as `research/output/runs/backend-cross-validation-v1/`:
+
+- 11 of 11 variants agree by verdict class, and the raw strings agree on 10: the bounded checker reports
+  `bounded_safe` where the interpreter reports `safe`. The generator used to compare raw strings only, so
+  its `all_agree` read `false` on a run with no disagreement in it. §14 listed that as an honest sibling;
+  it is fixed here rather than tolerated, and both readings are recorded per variant so the raw
+  difference stays visible instead of being filtered out of the record.
+- 10 of the 11 variants carry an unsafe reference verdict, so an all-clear cannot come from a family that
+  nothing can refute, and z3 returned a verdict for every variant (`unmeasured` is empty).
+- Each row keeps its witness flag honest: `z3_counterexample` is true only when the result carries
+  counterexample steps, and the step count is recorded next to it.
+
+What this does not prove: that the IR semantics are correct, or that they hold beyond this family.
+Agreement is between two encodings, and the reference interpreter is the definition the encoding is
+checked against; the family is a fixed enumeration of hand-built variants rather than a closed grammar,
+so nothing follows about variants outside it. The bundle states that boundary in its own `SUMMARY.md`,
+and a test pins the sentence, so a later edit cannot quietly drop it.
+
+This closes the item queued before §28: encoding agreement is now recorded together with its own
+boundary instead of being read as a proof of the semantics.
