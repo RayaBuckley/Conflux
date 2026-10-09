@@ -4,17 +4,35 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
 
+import scripts.generate_defence_evidence as generator
+from conflux.verification.results import FormalVerdict
 from scripts.generate_defence_evidence import generate
 
 pytestmark = pytest.mark.reproducibility
 
 UNAVAILABLE_Z3 = "optional_dependency_unavailable:z3"
+NUXMV_UNAVAILABLE = "optional_binary_unavailable:nuXmv"
 SAFE_VERDICTS = ("safe", "bounded_safe")
 UNSAFE_VERDICTS = ("unsafe",)
+INCONCLUSIVE_VERDICT = "unknown"
+
+# The corpus's only nuXmv measurement, taken on a nuXmv-capable host and retained
+# in the bundle committed at bbd59a2.  It is not reproducible on this host, which
+# has no nuXmv binary.
+PRESERVED_NUXMV = {
+    "Dual-LLM": {"pe": "unsafe", "native": "safe"},
+    "CaMeL": {"pe": "unsafe", "native": "safe"},
+    "Progent": {"pe": "unsafe", "native": "safe"},
+    "PACT": {"pe": "unsafe", "native": "safe"},
+    "Requester-only": {"pe": "unsafe", "native": None},
+    "ITES": {"pe": "safe", "native": None},
+}
 
 
 @pytest.fixture(scope="module")
@@ -92,6 +110,37 @@ class TestDefenceEvidenceBundle:
         assert summary["native_unknown"] == len(measured) - _safe_count(measured) - _unsafe_count(measured)
         assert summary["native_satisfied"] + summary["native_unknown"] <= summary["native_measured"]
 
+    def test_measured_verdicts_are_conclusive(self, bundle: dict[str, Any]) -> None:
+        """A measured verdict must be conclusive, so UNKNOWN can never count.
+
+        The safe-or-unsafe vocabulary is the only verdict class a counter may use:
+        an inconclusive verdict must never appear in it, and every measured verdict
+        -- this host's solver rows plus the preserved nuXmv measurement -- must
+        belong to it.  Adding ``unknown`` to ``SAFE_VERDICTS`` would let an
+        inconclusive result be counted as a safety result.
+
+        ``pe_unknown`` counts the *measured* rows whose verdict is inconclusive, not
+        the rows no backend answered; those are ``total_models - pe_measured``.  With
+        the solver absent ``pe_measured`` and ``pe_unknown`` are both 0 while all six
+        models report UNKNOWN.
+        """
+        conclusive = set(generator.SAFE_VERDICTS) | set(generator.UNSAFE_VERDICTS)
+        assert INCONCLUSIVE_VERDICT not in conclusive, "an inconclusive verdict must never be counted as a result"
+        assert set(SAFE_VERDICTS) | set(UNSAFE_VERDICTS) <= conclusive, "the counters must cover this test's verdict classes"
+        pe_results = _pe_results(bundle)
+        measured = _measured(pe_results) + _measured(_native_results(bundle))
+        assert {row["verdict"] for row in measured} <= conclusive
+        preserved = bundle["nuxmv_evidence"]["recorded"]
+        if preserved is not None:
+            retained_verdicts = {verdict for row in preserved["verdicts"].values() for verdict in row.values() if verdict}
+            assert retained_verdicts <= conclusive, "a preserved measurement must be a conclusive verdict"
+        summary = bundle["summary"]
+        assert summary["pe_unknown"] == sum(1 for row in measured if row["verdict"] not in conclusive)
+        if importlib.util.find_spec("z3") is None:
+            assert summary["pe_measured"] == 0
+            assert summary["pe_unknown"] == 0
+            assert sum(1 for row in pe_results if row["verdict"] == INCONCLUSIVE_VERDICT) == summary["total_models"]
+
     def test_unmeasured_models_never_count_as_safe(self, bundle: dict[str, Any]) -> None:
         """Assert the counters, or the documented unavailable state where z3 is absent.
 
@@ -150,6 +199,106 @@ class TestDefenceEvidenceBundle:
                 assert result["counterexample"] == (result["counterexample_length"] > 0), (model["name"], key)
                 if result["error"] is None:
                     assert result["counterexample"] == (result["verdict"] in UNSAFE_VERDICTS), (model["name"], key)
+
+    def test_nuxmv_measurement_is_preserved_when_the_binary_is_absent(self, bundle: dict[str, Any]) -> None:
+        """Keep the marker *and* the last nuXmv measurement with its provenance.
+
+        nuXmv is not installed on this host, so every row records the unavailability
+        marker and the bundle carries the measured verdicts under
+        ``nuxmv_evidence.recorded``.  Dropping that record would delete the corpus's
+        only nuXmv measurement.
+        """
+        evidence = bundle["nuxmv_evidence"]
+        pe_results = _pe_results(bundle)
+        if evidence["available_here"]:
+            assert evidence["unavailable_reason"] is None
+            assert all(row["nuxmv_error"] is None for row in pe_results)
+            assert evidence["recorded"]["reproducible_here"] is True
+            return
+        assert evidence["unavailable_reason"] == NUXMV_UNAVAILABLE
+        assert {row["nuxmv_error"] for row in pe_results} == {NUXMV_UNAVAILABLE}
+        assert {row["nuxmv_verdict"] for row in pe_results} == {INCONCLUSIVE_VERDICT}
+        assert bundle["formal_backends"]["nuxmv"] == {"available": False, "reason": "unavailable"}
+        recorded = evidence["recorded"]
+        assert recorded is not None, "the last nuXmv measurement must be preserved"
+        assert recorded["verdicts"] == PRESERVED_NUXMV
+        assert recorded["source_revision"] == "bbd59a2"
+        assert recorded["origin"] == "nuXmv-capable host"
+        assert recorded["reproducible_here"] is False
+        assert "not reproducible" in recorded["note"]
+
+    def test_a_later_regeneration_carries_the_preserved_measurement_forward(self, tmp_path: Path) -> None:
+        """The provenance record outlives regeneration, its revision included.
+
+        A bundle that already records provenance is copied verbatim, a bundle whose
+        rows still carry measured nuXmv verdicts recovers them, and a missing bundle
+        falls back to the historical measurement -- so regenerating on a host without
+        the binary cannot drop the values.
+        """
+        assert generator._preserved_nuxmv(tmp_path)["verdicts"] == PRESERVED_NUXMV
+        legacy = {
+            "models": [
+                {
+                    "name": "Model-A",
+                    "pe_property": {"nuxmv_verdict": "safe", "nuxmv_error": None},
+                    "native_property": {"nuxmv_verdict": "unsafe", "nuxmv_error": None},
+                },
+                {
+                    "name": "Model-B",
+                    "pe_property": {"nuxmv_verdict": INCONCLUSIVE_VERDICT, "nuxmv_error": NUXMV_UNAVAILABLE},
+                    "native_property": None,
+                },
+            ],
+        }
+        (tmp_path / "result.json").write_text(json.dumps(legacy), encoding="utf-8")
+        recovered = generator._preserved_nuxmv(tmp_path)
+        assert recovered["verdicts"] == {"Model-A": {"pe": "safe", "native": "unsafe"}}
+        assert recovered["source_revision"] == "bbd59a2"
+        assert recovered["reproducible_here"] is False
+        carried = {
+            "nuxmv_evidence": {
+                "available_here": False,
+                "unavailable_reason": NUXMV_UNAVAILABLE,
+                "recorded": {
+                    "origin": "a later host",
+                    "source_revision": "cafebabe",
+                    "reproducible_here": False,
+                    "note": "kept",
+                    "verdicts": {"Model-A": {"pe": "unsafe", "native": None}},
+                },
+            },
+        }
+        (tmp_path / "result.json").write_text(json.dumps(carried), encoding="utf-8")
+        assert generator._preserved_nuxmv(tmp_path) == carried["nuxmv_evidence"]["recorded"]
+
+    def test_a_host_with_nuxmv_overwrites_the_preserved_record(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Availability must replace the preserved record with a fresh measurement.
+
+        The stub backend stands in for a nuXmv-capable host, the only host where the
+        recorded values are reproducible.
+        """
+
+        class _AvailableNuXmv:
+            """Stand-in backend for a host that has the nuXmv binary."""
+
+            def verify(self, ir: Any) -> Any:
+                return SimpleNamespace(verdict=FormalVerdict.SAFE, error=None)
+
+        monkeypatch.setattr(generator, "_nuxmv", _AvailableNuXmv())
+        available = generator.generate()
+        evidence = available["nuxmv_evidence"]
+        assert evidence["available_here"] is True
+        assert evidence["unavailable_reason"] is None
+        assert "nuxmv" in available["available_formal_backends"]
+        assert {row["nuxmv_error"] for row in _pe_results(available)} == {None}
+        recorded = evidence["recorded"]
+        assert recorded["origin"] == "this host"
+        assert recorded["source_revision"] is None, "a fresh measurement must not claim a retained revision"
+        assert recorded["reproducible_here"] is True
+        assert set(recorded["verdicts"]) == {model["name"] for model in available["models"]}
+        assert recorded["verdicts"]["Dual-LLM"] == {"pe": "safe", "native": "safe"}
+        assert recorded["verdicts"]["ITES"] == {"pe": "safe", "native": None}
+        assert recorded["verdicts"] != PRESERVED_NUXMV, "a fresh measurement must overwrite the preserved values"
 
     def test_deterministic_regeneration(self, bundle: dict[str, Any]) -> None:
         regenerated = generate()

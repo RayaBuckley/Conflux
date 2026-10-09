@@ -7,7 +7,18 @@ Z3 is an optional dependency: each property result records the verdict *and* the
 solver error, and every summary counter covers only the models the solver
 answered.  UNKNOWN results get their own counters and are never counted as safe,
 so a missing solver reports ``pe_safe: 0`` with ``formal_backends`` unavailable
-instead of converting UNKNOWN into a safety claim.
+instead of converting UNKNOWN into a safety claim.  ``pe_unknown`` counts the
+*measured* rows whose verdict is inconclusive, not the rows no backend answered;
+those are the difference between ``total_models`` and ``pe_measured``.
+
+nuXmv is an optional binary as well.  A host without it records the
+``optional_binary_unavailable:nuXmv`` marker on every row and keeps the last
+measured verdicts under ``nuxmv_evidence.recorded`` together with the revision
+they came from, because that measurement cannot be reproduced without the
+binary.  A host with the binary records the fresh measurement instead.  Retained
+solver bundles are therefore regenerated in an environment that has the optional
+backend, and the gate checks them in-process instead of running ``--check``; see
+"Offline and optional evidence" in ``docs/DEVELOPMENT.md``.
 
 Usage::
 
@@ -45,6 +56,23 @@ OUTPUT = ROOT / "research" / "output" / "runs" / "defence-models-v1"
 
 _nuxmv = NuXmvBackend()
 
+# The last nuXmv measurement in the corpus: taken on a nuXmv-capable host and
+# retained in the bundle committed at bbd59a2 (verified against
+# ``git show bbd59a2:research/output/runs/defence-models-v1/result.json``).  nuXmv is
+# not installed in either standard environment, so the historical values are kept
+# under an explicit provenance field instead of being dropped on regeneration.
+NUXMV_HISTORICAL_ORIGIN = "nuXmv-capable host"
+NUXMV_HISTORICAL_REVISION = "bbd59a2"
+NUXMV_HISTORICAL_NOTE = "not reproducible without a nuXmv binary on this host"
+NUXMV_HISTORICAL_VERDICTS: dict[str, dict[str, str | None]] = {
+    "Dual-LLM": {"pe": "unsafe", "native": "safe"},
+    "CaMeL": {"pe": "unsafe", "native": "safe"},
+    "Progent": {"pe": "unsafe", "native": "safe"},
+    "PACT": {"pe": "unsafe", "native": "safe"},
+    "Requester-only": {"pe": "unsafe", "native": None},
+    "ITES": {"pe": "safe", "native": None},
+}
+
 
 def _verify(ir_fn: Any) -> dict[str, Any]:
     ir = ir_fn()
@@ -80,11 +108,91 @@ def _backend(available: bool) -> dict[str, Any]:
     return {"available": available, "reason": None if available else "unavailable"}
 
 
+def _row_nuxmv_verdicts(model: dict[str, Any]) -> dict[str, str | None]:
+    """Return the nuXmv verdicts recorded for one model, per property."""
+    results = {"pe": model["pe_property"], "native": model["native_property"]}
+    return {name: (result or {}).get("nuxmv_verdict") for name, result in results.items()}
+
+
+def _retained_bundle(output: Path | None = None) -> dict[str, Any] | None:
+    """Read the currently retained bundle, if any, for provenance carry-forward."""
+    result_path = (output or OUTPUT) / "result.json"
+    if not result_path.is_file():
+        return None
+    try:
+        retained = json.loads(result_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return retained if isinstance(retained, dict) else None
+
+
+def _historical_nuxmv() -> dict[str, Any]:
+    """Return the last nuXmv measurement of the corpus with its provenance."""
+    return {
+        "origin": NUXMV_HISTORICAL_ORIGIN,
+        "source_revision": NUXMV_HISTORICAL_REVISION,
+        "reproducible_here": False,
+        "note": NUXMV_HISTORICAL_NOTE,
+        "verdicts": {name: dict(verdicts) for name, verdicts in NUXMV_HISTORICAL_VERDICTS.items()},
+    }
+
+
+def _preserved_nuxmv(output: Path | None = None) -> dict[str, Any]:
+    """Return the last measured nuXmv verdicts and their provenance.
+
+    A later regeneration on a host without the binary carries the record forward
+    instead of dropping the corpus's only nuXmv measurement.  A retained record
+    wins, verdicts on the retained rows come next, and the historical measurement
+    above is the last resort.
+    """
+    retained = _retained_bundle(output)
+    if retained is not None:
+        evidence = retained.get("nuxmv_evidence")
+        recorded = evidence.get("recorded") if isinstance(evidence, dict) else None
+        if isinstance(recorded, dict) and isinstance(recorded.get("verdicts"), dict):
+            return recorded
+        verdicts = {
+            model["name"]: _row_nuxmv_verdicts(model)
+            for model in retained.get("models", [])
+            if isinstance(model, dict) and (model.get("pe_property") or {}).get("nuxmv_error") is None
+        }
+        if verdicts:
+            preserved = _historical_nuxmv()
+            preserved["verdicts"] = verdicts
+            return preserved
+    return _historical_nuxmv()
+
+
+def _nuxmv_evidence(models: list[dict[str, Any]], available: bool, output: Path | None = None) -> dict[str, Any]:
+    """Record the current nuXmv state and preserve the last measurement without it.
+
+    Preserve when the binary is missing, overwrite with a fresh measurement when it
+    is present.
+    """
+    reason = next((model["pe_property"]["nuxmv_error"] for model in models if model["pe_property"]["nuxmv_error"]), None)
+    if not available:
+        return {"available_here": False, "unavailable_reason": reason, "recorded": _preserved_nuxmv(output)}
+    verdicts = {
+        model["name"]: _row_nuxmv_verdicts(model) for model in models if model["pe_property"]["nuxmv_error"] is None
+    }
+    recorded = {
+        "origin": "this host",
+        "source_revision": None,
+        "reproducible_here": True,
+        "note": None,
+        "verdicts": verdicts,
+    }
+    return {"available_here": True, "unavailable_reason": None, "recorded": recorded}
+
+
 def generate() -> dict[str, Any]:
     """Generate the defence model verification evidence bundle.
 
     Counters cover only the models the optional solver measured; UNKNOWN results
-    are counted in their own fields and never as safe.
+    are counted in their own fields and never as safe.  The nuXmv measurement is
+    preserved with its provenance when the binary is absent, so regenerating on a
+    host without nuXmv does not drop the only measurement of it (see
+    ``_nuxmv_evidence``).
     """
     models: list[dict[str, Any]] = [
         {
@@ -132,6 +240,7 @@ def generate() -> dict[str, Any]:
         "available_formal_backends": [
             name for name, available in (("z3", bool(pe_measured)), ("nuxmv", nuxmv_available)) if available
         ],
+        "nuxmv_evidence": _nuxmv_evidence(models, nuxmv_available),
         "summary": {
             "total_models": len(models),
             "pe_measured": len(pe_measured),
