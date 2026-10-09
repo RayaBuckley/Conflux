@@ -37,9 +37,9 @@
     ],
     "error": null,
     "benchmark_version": "v1.2.2",
-    "evaluation_timestamp": "2026-10-09 21:15:47",
+    "evaluation_timestamp": "2026-10-10 00:13:37",
     "agentdojo_package_version": "0.1.35",
     "utility": false,
     "security": true,
-    "duration": 0.4955599308013916
+    "duration": 0.4887380599975586
 }

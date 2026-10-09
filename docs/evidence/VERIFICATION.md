@@ -1857,7 +1857,8 @@ transformers 5.19.0, bitsandbytes 0.50.2), `Qwen/Qwen2.5-0.5B-Instruct` revision
 
 | run | suite | cells | complete | failed | utility | security |
 | --- | --- | --- | --- | --- | --- | --- |
-| `agentdojo-stratified-banking-v1` | banking v1.2.2 | 12 | 12 | 0 | 0/12 | 12/12 |
+| `agentdojo-stratified-banking-v1` | banking v1.2.2 | 24 | 24 | 0 | 0/24 | 24/24 |
+| `agentdojo-pilot-banking-v1` | banking v1.2.2 | 12 | 12 | 0 | 0/12 | 12/12 |
 | `agentdojo-stratified-slack-v1` | slack v1.2.0 | 30 | 24 | 6 | 0/24 | 24/24 |
 | `agentdojo-stratified-travel-v1` | travel v1.2.0 | 60 | 60 | 0 | 0/60 | 60/60 |
 | `agentdojo-stratified-workspace-v1` | workspace v1.2.2 | 78 | 78 | 0 | 0/78 | 78/78 |
@@ -1945,10 +1946,17 @@ One provenance gap surfaced while comparing: the retained banking bundle selects
 (`user_task_0`, `user_task_1`, protocol id `banking:expanded:user_task_0`), while the frozen selection in
 `research/experiments/manifests/agentdojo-stratified-selection-v1.json` gives banking four
 (`user_task_0`, `user_task_1`, `user_task_12`, `user_task_13`, protocol id `banking:stratified-v1`).
-Travel, slack and workspace select exactly the frozen task sets, and all four retained bundles spell
-their suite id `*:expanded:...` where the manifest spells it `*:stratified-v1`. The banking bundle
-therefore predates the frozen selection. A 24-cell banking run of the frozen selection completed on this
-host; retaining it is the next decision, and it is not a silent swap of a cited artefact.
+Travel, slack and workspace select exactly the frozen task sets, and every retained bundle spells its
+suite id `*:expanded:...` where the manifest spells it `*:stratified-v1`. The banking bundle therefore
+predates the frozen selection.
+
+That gap is closed, and not by a silent swap: the two-task bundle moved to
+`agentdojo-pilot-banking-v1` with its provenance recorded in its own `SUMMARY.md`, and the 24-cell run
+of the frozen selection is retained at `agentdojo-stratified-banking-v1`, which is the path its record
+already named. The pilot run is listed in the table above for completeness. The suite id of a fresh
+stratified run is still the preflight's `*:expanded:...` spelling, because the sweep passes the
+manifest's suite key rather than its suite id; the task set, not the spelling, is what identifies a run
+against the manifest.
 
 The diagnostic gap recorded in section 27 is closed in the same change set: a failed cell now keeps a
 bounded single-line summary of the message the classifier read (`failure_reason`, at most 200

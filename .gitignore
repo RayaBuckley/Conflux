@@ -81,6 +81,8 @@ research/output/runs/*
 !research/output/runs/planning-pilot-3b-v1/**
 !research/output/runs/agentdojo-stratified-banking-v1/
 !research/output/runs/agentdojo-stratified-banking-v1/**
+!research/output/runs/agentdojo-pilot-banking-v1/
+!research/output/runs/agentdojo-pilot-banking-v1/**
 !research/output/runs/agentdojo-stratified-slack-v1/
 !research/output/runs/agentdojo-stratified-slack-v1/**
 !research/output/runs/agentdojo-stratified-travel-v1/
