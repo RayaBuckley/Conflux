@@ -60,12 +60,15 @@ class TestProvenancePrecisionBundle:
 
     def test_c1_completion_le_c2_completion(self, bundle: dict[str, Any]) -> None:
         """C1 (conservative) completion rate must not exceed C2 (authenticated)."""
+        assert bundle["summary"]["c1_completion_rate"] <= bundle["summary"]["c2_completion_rate"]
 
     def test_c0_has_vulnerable_executions(self, bundle: dict[str, Any]) -> None:
         """C0 (requester-only) should have some vulnerable executions."""
         assert bundle["summary"]["c0_vulnerable_rate"] > 0
+
     def test_c1_mean_pc_ge_c2_mean_pc(self, bundle: dict[str, Any]) -> None:
         """C1 PC size must be >= C2 PC size (conservative overapproximates)."""
+        assert bundle["summary"]["c1_mean_pc"] >= bundle["summary"]["c2_mean_pc"]
 
     def test_deterministic_regeneration(self) -> None:
         """Two calls to generate() must produce identical output."""
