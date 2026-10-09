@@ -29,3 +29,38 @@ DYNAMIC
 # Private helpers used via string dispatch
 _equal
 _has_pe_violation
+
+# Visualisation surface used by the CLI entry point, by tests, and by
+# downstream consumers. The gate scans only src/conflux, so this public API
+# looks unreferenced from inside the package.
+_.status_changed
+_.label_changed
+_.policy_signature
+_.is_empty
+diff_graphs
+render_full_report
+validate_graph
+sorted_artifacts
+safe_label
+planning_to_graph
+trace_to_timeline
+diagnose_provenance
+sled_to_graph
+ir_to_graph
+verdict_to_graph
+reduction_to_graph
+
+# Fixed enumerations: layout directions and the node/edge kind vocabulary
+# are part of the documented visualisation data model.
+LEFT_TO_RIGHT
+BOTTOM_TO_TOP
+RIGHT_TO_LEFT
+STATE
+ASSUMPTION
+GOAL
+FAILURE
+AUTHORED
+DERIVED_FROM
+OUTPUT_OF
+OBSERVABLE_TO
+RETRY
