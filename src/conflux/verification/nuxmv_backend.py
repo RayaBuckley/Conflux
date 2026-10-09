@@ -166,17 +166,53 @@ class WslNuXmvRunner:
                 pass
 
 
+_NUXMV_PATH_ENV = "CONFLUX_NUXMV_PATH"
+
+
+def configured_binary(default: str = "nuXmv") -> str:
+    """Return the binary named by ``CONFLUX_NUXMV_PATH``, or ``default`` when it is unset.
+
+    The environment is read on every call, so an export in the shell that runs the
+    verification is enough.  An empty or blank value is unset, not a path.
+    """
+    override = os.environ.get(_NUXMV_PATH_ENV, "").strip()
+    return override or default
+
+
+def default_runner(binary: str) -> NuXmvRunner:
+    """Return the runner to use for ``binary`` on this host.
+
+    A binary that ``PATH`` resolves is used directly.  It is the one a verification
+    record names, it needs no shell, and on a Windows host with WSL installed it is
+    still the faster of the two.  WSL is the fallback for a nuXmv that exists only
+    inside a distribution, and it is probed only when no local binary is found.
+    """
+    if shutil.which(binary) is not None:
+        return SubprocessNuXmvRunner()
+    if _wsl_available():
+        return WslNuXmvRunner()
+    return SubprocessNuXmvRunner()
+
+
 @dataclass(frozen=True, slots=True)
 class NuXmvBackend:
     """Optional nuXmv IC3 backend for the supported Boolean IR subset."""
 
-    binary: str = "nuXmv"
-    runner: NuXmvRunner = field(default_factory=lambda: WslNuXmvRunner() if _wsl_available() else SubprocessNuXmvRunner())
+    binary: str | None = None
+    runner: NuXmvRunner | None = None
     availability: Callable[[str], bool] = field(
         default=lambda binary: shutil.which(binary) is not None or _wsl_available(),
         repr=False,
         compare=False,
     )
+
+    def resolved_binary(self) -> str:
+        """Return the binary to run: the constructor value, the environment, or ``nuXmv``."""
+        return self.binary or configured_binary()
+
+    def selected_runner(self) -> NuXmvRunner:
+        """Return the runner this backend uses: the given one, or the host default."""
+        return self.runner if self.runner is not None else default_runner(self.resolved_binary())
 
     def verify(self, ir: VerificationIR) -> FormalVerificationResult:
         """Verify Boolean IR invariants using nuXmv IC3, returning a formal result."""
@@ -188,7 +224,8 @@ class NuXmvBackend:
             )
         if not ir.invariants:
             return self._unknown(ir, "no_safety_invariants")
-        if not self.availability(self.binary):
+        binary = self.resolved_binary()
+        if not self.availability(binary):
             return self._unknown(ir, "optional_binary_unavailable:nuXmv")
         try:
             model = _smv(ir)
@@ -198,7 +235,7 @@ class NuXmvBackend:
         with TemporaryDirectory(prefix="conflux-nuxmv-") as temporary:
             path = Path(temporary) / "model.smv"
             path.write_text(model, encoding="utf-8", newline="\n")
-            outcome = self.runner.run(self.binary, path, commands)
+            outcome = self.selected_runner().run(binary, path, commands)
         solver_hash = fingerprint({"backend": "nuXmv-ic3", "version": outcome.version})
         query_hash = fingerprint(commands)
         model_hash = fingerprint(model)
@@ -319,4 +356,6 @@ __all__ = [
     "NuXmvRunner",
     "SubprocessNuXmvRunner",
     "WslNuXmvRunner",
+    "configured_binary",
+    "default_runner",
 ]

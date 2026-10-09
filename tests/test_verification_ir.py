@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -27,6 +28,7 @@ from conflux.verification import (
     VerificationIR,
     differential_conformance,
     initial_state,
+    nuxmv_backend,
     successors,
     verify_with_z3,
 )
@@ -191,6 +193,75 @@ def test_nuxmv_adapter_safe_unsafe_unknown_and_hashes() -> None:
     unsupported = NuXmvBackend(availability=lambda _: True).verify(integer)
     assert unsupported.verdict == FormalVerdict.UNKNOWN
     assert "unsupported_integer_variables" in (unsupported.error or "")
+
+
+@dataclass
+class RecordingRunner:
+    """Records the binary it was asked to run, and always reports the invariant true."""
+
+    binaries: list[str] = field(default_factory=list)
+
+    def run(self, binary: str, model_path: Path, commands: str) -> NuXmvOutcome:
+        self.binaries.append(binary)
+        return NuXmvOutcome(0, "-- invariant x is true\n", "", "2.2.0")
+
+
+def test_the_binary_override_is_read_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("CONFLUX_NUXMV_PATH", raising=False)
+    assert nuxmv_backend.configured_binary() == "nuXmv"
+    monkeypatch.setenv("CONFLUX_NUXMV_PATH", "  /opt/nuxmv/bin/nuXmv  ")
+    assert nuxmv_backend.configured_binary() == "/opt/nuxmv/bin/nuXmv"
+    monkeypatch.setenv("CONFLUX_NUXMV_PATH", "   ")
+    assert nuxmv_backend.configured_binary() == "nuXmv", "blank is unset, not a path"
+    assert nuxmv_backend.configured_binary("/usr/local/bin/nuXmv") == "/usr/local/bin/nuXmv"
+
+
+def test_the_override_reaches_the_process_call(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CONFLUX_NUXMV_PATH", "/opt/nuxmv/bin/nuXmv")
+    recorder = RecordingRunner()
+    result = NuXmvBackend(runner=recorder, availability=lambda _: True).verify(security_ir())
+    assert result.verdict == FormalVerdict.SAFE
+    assert recorder.binaries == ["/opt/nuxmv/bin/nuXmv"]
+
+
+def test_an_explicit_binary_beats_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CONFLUX_NUXMV_PATH", "/opt/nuxmv/bin/nuXmv")
+    assert NuXmvBackend(binary="nuXmv-2.2.0").resolved_binary() == "nuXmv-2.2.0"
+    assert NuXmvBackend().resolved_binary() == "/opt/nuxmv/bin/nuXmv"
+    monkeypatch.delenv("CONFLUX_NUXMV_PATH", raising=False)
+    assert NuXmvBackend().resolved_binary() == "nuXmv"
+
+
+def test_a_local_binary_is_preferred_over_wsl(monkeypatch: pytest.MonkeyPatch) -> None:
+    probed: list[str] = []
+
+    def probe() -> bool:
+        probed.append("wsl")
+        return True
+
+    monkeypatch.setattr(shutil, "which", lambda name: f"/usr/local/bin/{name}")
+    monkeypatch.setattr(nuxmv_backend, "_wsl_available", probe)
+    runner = nuxmv_backend.default_runner("nuXmv")
+    assert isinstance(runner, nuxmv_backend.SubprocessNuXmvRunner)
+    assert probed == [], "a binary on PATH must not make the host probe WSL"
+
+
+def test_wsl_is_the_fallback_when_no_local_binary_exists(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(shutil, "which", lambda _name: None)
+    monkeypatch.setattr(nuxmv_backend, "_wsl_available", lambda: True)
+    assert isinstance(nuxmv_backend.default_runner("nuXmv"), nuxmv_backend.WslNuXmvRunner)
+    monkeypatch.setattr(nuxmv_backend, "_wsl_available", lambda: False)
+    assert isinstance(nuxmv_backend.default_runner("nuXmv"), nuxmv_backend.SubprocessNuXmvRunner)
+
+
+def test_the_backend_resolves_a_runner_this_host_can_use() -> None:
+    """Whatever this host provides, resolution must neither fail nor hang."""
+    given = RecordingRunner()
+    assert NuXmvBackend(runner=given).selected_runner() is given
+    assert isinstance(
+        NuXmvBackend().selected_runner(),
+        (nuxmv_backend.SubprocessNuXmvRunner, nuxmv_backend.WslNuXmvRunner),
+    )
 
 
 def test_wsl_nuxmv_runner_writes_to_wsl_tmp(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

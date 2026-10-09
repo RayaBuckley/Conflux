@@ -1662,3 +1662,67 @@ because creating one costs money and the account is shared. The allowances above
 reason - they accept an absent environment block instead of failing closed on a legitimate pod. The
 first live `create` through the guard is therefore the first end-to-end test of this path, and the
 ledger note it writes is the evidence to read out.
+
+### 26.8 Personal Windows user folders: the redaction, and the audit rule that keeps it
+
+Measured 2026-10-09, in the same batch as the privacy change above.
+
+- Ten tracked files recorded a Windows user folder. Nine were run bundles - eight
+  `research/output/runs/<model>/transformers.json` files plus
+  `research/output/runs/cedar-differential-preflight-v1/live-preflight/preflight.json` - each holding
+  one absolute path (`snapshot_path`, `binary_path`). The tenth was this record, which already used
+  `<profile>`.
+- The nine files were protected by nothing: no `CHECKSUMS.sha256` sits beside them, the Cedar
+  bundle's manifest lists its seven top-level files and not `live-preflight/preflight.json`,
+  `compare_cedar_preflight_bundle` compares only the top level of that bundle,
+  `scripts/validate.py` regenerates the smoke, native-SLED, COI, Cedar preflight and direction
+  bundles and none of the other eight, the audit verifies checksums for the smoke and native-SLED
+  bundles only, and cspell and markdownlint never read JSON. The redaction therefore changes no
+  gate, no manifest and no recorded digest.
+- Each of the nine files now says `<profile>` where the user folder was: nine files, one changed
+  line each (measured with `git diff`, which reports one insertion and one deletion per file), each still parsing as JSON, and a search of the
+  index finds no occurrence of the name.
+- The rule is enforced instead of remembered. `scripts/audit_repository.py` gained
+  `check_personal_paths`, which reads the tracked index and fails on a Windows user folder in any
+  tracked file. Placeholders (`<profile>`, `<user>`, `<username>`, `<name>`, `<you>`) and Windows
+  system profiles (`Public`, `Default`, `defaultuser0`, `All Users`) are
+  accepted. The message names the file and the count, never the folder, so the audit log cannot
+  become the next copy of what it reports.
+- Two proofs. Unit: a planted file that holds a user folder is reported as
+  `research/output/runs/example/transformers.json: 1 Windows user folder(s) recorded in a tracked
+  file; replace the user folder with <profile>`, and the accepted forms produce no error. End to
+  end: a staged scratch file holding a user folder made the audit exit 1 and name that file, with
+  the folder name absent from the output; removing the file from the index returned the audit to
+  exit 0.
+
+### 26.9 The nuXmv override the guide promised, and which runner runs it
+
+Measured 2026-10-09 on Linux, with nuXmv 2.2.0 installed user-local at
+`/home/raya/.local/opt/nuxmv-bin/nuXmv` and symlinked onto `PATH` at
+`/home/raya/.local/bin/nuXmv`.
+
+Two claims in `docs/integrations/verification.md` were not true of the code:
+
+- The guide said `CONFLUX_NUXMV_PATH` selects the binary. Nothing read that variable: a
+  search of `src/`, `scripts/`, `tests/` and `docs/` found the string only in the guide.
+- The backend preferred WSL whenever `wsl` answered, even with a local binary on `PATH`,
+  and no test named the direct runner at all.
+
+Both are fixed. `CONFLUX_NUXMV_PATH` is read on every call (`configured_binary()`), an
+explicit `NuXmvBackend(binary=...)` wins over it, a blank value counts as unset, and a
+binary that `PATH` or the override resolves is run directly - WSL is now the fallback and
+is probed only when nothing resolves locally. The missing-binary verdict token is
+unchanged, so recorded bundles still read the same.
+
+Three live runs on this host, each through the public `NuXmvBackend()`:
+
+| `CONFLUX_NUXMV_PATH` | resolved binary | runner | verdict |
+| --- | --- | --- | --- |
+| unset | `nuXmv` | `SubprocessNuXmvRunner` | `safe`, backend `nuxmv-ic3` |
+| `/home/raya/.local/opt/nuxmv-bin/nuXmv` | that path | `SubprocessNuXmvRunner` | `safe`, backend `nuxmv-ic3` |
+| `/opt/nowhere/nuXmv` | `/opt/nowhere/nuXmv` | `SubprocessNuXmvRunner` | `unknown`, `optional_binary_unavailable:nuXmv` |
+
+The third row is the point of the change: an override that is set but unusable fails
+closed instead of letting a property pass. Six new tests cover the override, its
+precedence, the runner order (a local binary must not make the host probe WSL) and the
+resolution this host performs.

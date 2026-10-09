@@ -46,11 +46,26 @@ Provides `httpx>=0.27`, used by the OpenAI-compatible planner adapter
 nuXmv is a standalone binary, not a Python package.
 
 1. Download from <https://nuxmv.fbk.eu/>.
-2. Place the `nuxmv` binary on `PATH`, or set the
+2. Place the `nuXmv` binary on `PATH`, or set the
    `CONFLUX_NUXMV_PATH` environment variable to its absolute path.
 3. The symbolic backend
    (`src/conflux/verification/nuxmv_backend.py`) will locate it
    automatically.
+
+The environment is read on every call, so an export in the shell that
+runs the verification is enough, and an explicit
+`NuXmvBackend(binary=...)` wins over it. A `CONFLUX_NUXMV_PATH` that
+is set but unusable fails closed: the backend returns the
+`optional_binary_unavailable:nuXmv` unknown verdict instead of
+reporting a property as safe.
+
+Which runner runs the binary: a path that `PATH` or the override
+resolves is executed directly as a subprocess. WSL
+(`wsl -d <distribution> -- bash -ic 'which nuXmv'`) is the fallback for
+a Windows host whose nuXmv lives inside a distribution, and it is
+probed only when the binary cannot be resolved locally.
+`NuXmvBackend().resolved_binary()` returns the binary and
+`NuXmvBackend().selected_runner()` the runner that will be used.
 
 Without nuXmv installed, symbolic model-checking calls return a
 missing-backend result.

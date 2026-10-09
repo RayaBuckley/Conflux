@@ -16,6 +16,7 @@ from scripts.audit_repository import (
     check_archived_paper,
     check_docstrings,
     check_evidence_registry,
+    check_personal_paths,
     check_report_archive,
     check_report_crosswalk,
     check_repository_governance,
@@ -71,6 +72,7 @@ REPOSITORY_CHECKS: dict[str, Callable[[list[str]], None]] = {
     "repository_governance": check_repository_governance,
     "docstrings": check_docstrings,
     "evidence_registry": check_evidence_registry,
+    "personal_paths": check_personal_paths,
 }
 
 
@@ -95,6 +97,55 @@ def test_unregistered_evidence_file_is_reported(tmp_path: Path, monkeypatch: pyt
     audit_module.check_evidence_registry(errors)
 
     assert errors == ["unregistered evidence file docs/evidence/orphan.md: add it to CANONICAL_DOCS"]
+
+
+_BACKSLASH = chr(92)
+
+
+def _windows_user_path(user: str, tail: str = ".cache") -> str:
+    """Build a Windows user path at runtime, so this file does not hold one itself."""
+    separator = _BACKSLASH * 2
+    return f"C:{separator}Users{separator}{user}{separator}{tail}"
+
+
+def _audit_with_planted_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, relative: str, text: str) -> list[str]:
+    """Run the personal-path check over one planted file."""
+    planted = tmp_path / relative
+    planted.parent.mkdir(parents=True, exist_ok=True)
+    planted.write_text(text, encoding="utf-8")
+    monkeypatch.setattr(audit_module, "ROOT", tmp_path)
+    monkeypatch.setattr(audit_module, "tracked_files", lambda: (relative,))
+    errors: list[str] = []
+    audit_module.check_personal_paths(errors)
+    return errors
+
+
+def test_a_personal_windows_user_folder_is_reported(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A tracked file that names the owner's user folder must fail the audit."""
+    planted = '{"snapshot_path": "' + _windows_user_path("TOK2") + '"}'
+    errors = _audit_with_planted_file(tmp_path, monkeypatch, "research/output/runs/example/transformers.json", planted)
+    assert len(errors) == 1
+    assert errors[0].startswith("research/output/runs/example/transformers.json: 1 Windows user folder")
+    assert "TOK2" not in errors[0], "the audit message must not repeat the folder it reports"
+
+
+def test_the_placeholder_and_system_folders_are_accepted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A redacted path, a Windows system profile, and a POSIX path are all fine."""
+    accepted = [
+        '{"snapshot_path": "' + _windows_user_path("<profile>") + '"}',
+        '{"binary_path": "' + _windows_user_path("Public", tail="tools") + '"}',
+        '{"path": "/home/someone/.cache"}',
+    ]
+    for planted in accepted:
+        errors = _audit_with_planted_file(tmp_path, monkeypatch, "evidence/note.json", planted)
+        assert errors == [], f"unexpected error for {planted}"
+
+
+def test_the_scan_reads_the_index_not_the_working_tree() -> None:
+    """The scanned set is the repository's own index, so scratch files cannot fail it."""
+    tracked = audit_module.tracked_files()
+    assert "docs/evidence/VERIFICATION.md" in tracked
+    assert all(not entry.startswith(".local/") for entry in tracked)
 
 
 def test_supersession_cycle_detection() -> None:

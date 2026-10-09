@@ -107,6 +107,9 @@ ADDITIONAL_TASK_IDS = {
     "EXP-S2",
     "EXP-S3",
 }
+PERSONAL_PATH_PATTERN = re.compile(r"[A-Za-z]:[\\/]+Users[\\/]+([^\\/\s\"]+)")
+PLACEHOLDER_USER_SEGMENTS = frozenset({"<profile>", "<user>", "<username>", "<name>", "<you>"})
+SYSTEM_USER_SEGMENTS = frozenset({"public", "default", "defaultuser0", "all users"})
 APPROVED_TOP_LEVEL_DIRECTORIES = {
     ".github",
     ".vscode",
@@ -1099,6 +1102,58 @@ def check_evidence_line_endings(errors: list[str]) -> None:
                 errors.append(f"CRLF line ending in evidence file: {path.relative_to(ROOT)}")
 
 
+def tracked_files() -> tuple[str, ...]:
+    """Return the repository-relative path of every tracked file, sorted.
+
+    The audit reads the index rather than walking the working tree so that an
+    untracked scratch file can never fail the build, and so that the scan covers
+    everything that would be published.
+    """
+    result = subprocess.run(
+        ("git", "ls-files"),
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return ()
+    return tuple(sorted(line for line in result.stdout.splitlines() if line.strip()))
+
+
+def personal_path_segments(text: str) -> set[str]:
+    """Return the non-placeholder Windows user folders named in ``text``."""
+    found = set(PERSONAL_PATH_PATTERN.findall(text))
+    return {
+        segment
+        for segment in found
+        if segment.lower() not in PLACEHOLDER_USER_SEGMENTS and segment.lower() not in SYSTEM_USER_SEGMENTS
+    }
+
+
+def check_personal_paths(errors: list[str]) -> None:
+    """Verify that no tracked file records a personal Windows user folder.
+
+    Run bundles record absolute paths for provenance, which on the machine that
+    produced them included the owner's user folder.  The folder is replaced with
+    ``<profile>``, which keeps the provenance (there was a user folder there) without
+    the name.  The message names the file and how many folders were found, never the
+    folder itself: an audit log must not become the next copy of it.
+    """
+    for relative in tracked_files():
+        path = ROOT / relative
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        personal = personal_path_segments(text)
+        if personal:
+            errors.append(
+                f"{relative}: {len(personal)} Windows user folder(s) recorded in a tracked file; "
+                "replace the user folder with <profile>",
+            )
+
+
 def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
@@ -1118,6 +1173,7 @@ def main() -> int:
     check_direction_evidence(errors)
     check_schemas(errors)
     check_evidence_line_endings(errors)
+    check_personal_paths(errors)
     if errors:
         print("Repository audit failed:")
         print("\n".join(f"- {error}" for error in errors))

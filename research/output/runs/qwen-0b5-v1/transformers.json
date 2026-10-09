@@ -45,7 +45,7 @@
     "total_size": 999586347
   },
   "schema_version": "1",
-  "snapshot_path": "C:\\Users\\rbuck\\.cache\\huggingface\\hub\\models--Qwen--Qwen2.5-0.5B-Instruct\\snapshots\\7ae557604adf67be50417f59c2c2f167def9a775",
+  "snapshot_path": "C:\\Users\\<profile>\\.cache\\huggingface\\hub\\models--Qwen--Qwen2.5-0.5B-Instruct\\snapshots\\7ae557604adf67be50417f59c2c2f167def9a775",
   "spec": {
     "allow_private_remote": false,
     "backend": "transformers",

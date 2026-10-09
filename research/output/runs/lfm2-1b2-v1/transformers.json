@@ -65,7 +65,7 @@
     "total_size": 2345559487
   },
   "schema_version": "1",
-  "snapshot_path": "C:\\Users\\rbuck\\.cache\\huggingface\\hub\\models--LiquidAI--LFM2.5-1.2B-Instruct\\snapshots\\0f604ada3f766f9f257460c4c9f0b5d6f69d431b",
+  "snapshot_path": "C:\\Users\\<profile>\\.cache\\huggingface\\hub\\models--LiquidAI--LFM2.5-1.2B-Instruct\\snapshots\\0f604ada3f766f9f257460c4c9f0b5d6f69d431b",
   "spec": {
     "allow_private_remote": false,
     "backend": "transformers",

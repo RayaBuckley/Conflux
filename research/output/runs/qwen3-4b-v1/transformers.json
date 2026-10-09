@@ -60,7 +60,7 @@
     "total_size": 8060897934
   },
   "schema_version": "1",
-  "snapshot_path": "C:\\Users\\rbuck\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-4B-Instruct-2507\\snapshots\\eb25fbe4f35f7147763bc24445679d1c00588d89",
+  "snapshot_path": "C:\\Users\\<profile>\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-4B-Instruct-2507\\snapshots\\eb25fbe4f35f7147763bc24445679d1c00588d89",
   "spec": {
     "allow_private_remote": false,
     "backend": "transformers",

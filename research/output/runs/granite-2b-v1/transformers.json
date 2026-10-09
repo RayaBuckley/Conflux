@@ -75,7 +75,7 @@
     "total_size": 5071897172
   },
   "schema_version": "1",
-  "snapshot_path": "C:\\Users\\rbuck\\.cache\\huggingface\\hub\\models--ibm-granite--granite-3.3-2b-instruct\\snapshots\\707f574c62054322f6b5b04b6d075f0a8f05e0f0",
+  "snapshot_path": "C:\\Users\\<profile>\\.cache\\huggingface\\hub\\models--ibm-granite--granite-3.3-2b-instruct\\snapshots\\707f574c62054322f6b5b04b6d075f0a8f05e0f0",
   "spec": {
     "allow_private_remote": false,
     "backend": "transformers",
