@@ -206,6 +206,9 @@ Unreleased — 8 September 2026:
   - IC3/PDR is already wired in the nuXmv backend
     (`src/conflux/verification/nuxmv_backend.py:197`) but the backend
     supports Boolean-only IR variables and a limited expression subset.
+    The binary-backed path was re-measured for the six defence-model
+    abstractions on 2026-10-09 (`defence-models-v1`), so the gap is now
+    expressiveness, not availability.
   - All four external defence model abstractions (Dual-LLM, CaMeL,
     Progent, PACT) remain unvalidated in
     `docs/evidence/defence-model-fidelity.json`.

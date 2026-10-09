@@ -83,7 +83,7 @@ by nuXmv, and compared. That is what makes the differential and reduction result
 | `z3-agreement-v1` | original and COI-reduced fixtures agree: `safe-noise` is `bounded_safe`/`bounded_safe`, `unsafe-control` is `unsafe`/`unsafe` with a counterexample of length 2 | both fixtures are finite IR models |
 | `coi-scaling-v1` | 12 fixtures over noise counts 0, 1, 2, 4, 8, 16; `all_equivalent` true, `z3_measured` 12, `z3_all_agree` true; reference interpreter agrees in every row | `z3_all_agree` is defined as null when no solver answered, so the field cannot pass by accident |
 | `sled-coi-reduction-v1` | recorded with `z3` and `nuxmv` both `unavailable`; equivalence comes from the independent reference interpreter | the formal half of this run does not exist; the run says so |
-| `defence-models-v1` | z3 available, nuXmv unavailable; Dual-LLM, CaMeL, Progent and PACT each have a native property that is `bounded_safe` while the PE property is `unsafe`, with a counterexample | the models are unvalidated finite abstractions of the published systems, not the systems |
+| `defence-models-v1` | z3 available; nuXmv unavailable when this row was written, then re-measured with nuXmv 2.2.0 on 2026-10-09, where every model's unbounded IC3 verdict agrees with the value preserved from `bbd59a2`; Dual-LLM, CaMeL, Progent and PACT each have a native property that is `bounded_safe` while the PE property is `unsafe`, with a counterexample | the models are unvalidated finite abstractions of the published systems, not the systems |
 | `mutation-benchmark-v1` | 26 mutants in 4 families (4 disclosure, 7 delegation native, 10 delegation IR, 5 synthesis), all killed within `max_depth` 1 and `max_states` 4 | quoted: "All seeded security mutants are killed by at least one verification backend within the tested bound. Not allowed: this proves all possible mutants are detectable." |
 | `provenance-precision-v1` | conditions C0 (negative control), C1 (conservative may-have-written), C2 (authenticated actual contributor); possible authors 2, 4, 8; heterogeneity low, medium, high; depths 1 to 3; 3 repetitions per cell | quoted: the utility recovery holds "under the trusted provenance assumptions of the experiment" |
 | `cedar-differential-preflight-v1` | `cedar_status = unavailable`, `classification = evaluation_ready`, `complete = false` | a preflight that refuses to claim a differential result it could not run |
@@ -165,7 +165,7 @@ record, with the failure classified per cell instead of being dropped.
 | COI reduction preserves the two recorded fixtures | bounded evidence |
 | Native properties of four contemporary defence models do not imply the PE property | bounded evidence, unvalidated abstractions |
 | Confidentiality is established for finite IR product models | bounded evidence; not a noninterference proof |
-| Any unbounded result | open: nuXmv is `unavailable` in every run I inspected |
+| Any unbounded result | closed 2026-10-09: the binary is installed and the six defence-model abstractions were re-measured with IC3; other runs remain bounded-only |
 | Effect-time re-authorisation | implemented, and prior art for it exists; the project claims replication, not novelty |
 | Delegated authority being safe to enable | open: the runtime keeps delegation denied |
 | The gate proving any positive formal verdict | not applicable by design: the gate has no solver and reports `unknown` |
@@ -176,8 +176,9 @@ Recommended next steps, in the order that would strengthen the empirical record 
    verification tests with z3 installed and retains `solver_hash` next to the verdict.
 2. Record a human-readable solver version beside `solver_hash` in the result record; the hash alone
    cannot be read by a reviewer without the environment.
-3. Decide the nuXmv question. Without it, RQ2 has no unbounded evidence at all, and every recorded
-   formal result is bounded.
+3. Decide the nuXmv question. **Decided and executed on 2026-10-09**: the binary is installed
+   and the six defence-model abstractions were re-measured with IC3, so RQ2 now has unbounded
+   evidence for those abstractions; every other recorded formal result remains bounded-only.
 4. Add tests that assert the gate's `unknown` verdict on purpose, so an accidental solver install in
    the default environment cannot silently change what a green gate means.
 5. Test the bound edge explicitly, the way the RunPod guard now tests its trust-window edge: a
@@ -256,3 +257,16 @@ becomes possible. It also makes the gate environment question sharper rather tha
 recorded bundle that says "nuXmv unavailable" is only reproducible where nuXmv is absent, so the
 environment that produced each bundle has to be recorded with it. Section "Recommendations" already
 proposes exactly that; this install is the first case that needs it.
+
+Outcome, measured the same day. `scripts/generate_defence_evidence.py` was re-run with the binary
+on `PATH` and the bundle now records nuXmv as available: all six abstractions carry real unbounded
+IC3 verdicts (`unsafe` for the PE property of Dual-LLM, CaMeL, Progent, PACT and Requester-only,
+`safe` for ITES; `safe` for the native property of the four external abstractions), and every one
+of them agrees with the value preserved from revision `bbd59a2`. Two runs produced byte-identical
+output, so the bundle is deterministic, and only the source-hash line of the comparative-defence
+table changed - no published number moved. What is *not* recorded in the bundle is which nuXmv
+version produced the rows: `nuxmv_evidence.recorded` has no version field, so the version lives in
+this report and in `docs/DEVELOPMENT.md` instead. Adding a version or solver-hash field to a
+bundle that has a `schema_version` is a schema change worth doing deliberately, together with the
+same field for Z3, rather than halfway through a re-measurement.
+

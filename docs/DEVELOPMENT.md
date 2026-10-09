@@ -61,14 +61,20 @@ backends during 2026-10-09:
 | Environment | `generate_coi_scaling.py --check` | `generate_defence_evidence.py --check` | `generate_sledv_scaling_evidence.py --check` |
 | --- | --- | --- | --- |
 | `.venv`, no solver (baseline) | 1 | 1 | 1 |
-| `.venv`, z3-solver 5.1.0.0 present | 0 | 0 | 0 |
-| `.venv`, z3 and nuXmv 2.2.0 on `PATH` | 0 | 1 | 0 |
+| `.venv`, z3-solver 5.1.0.0, bundle as retained before 2026-10-09 | 0 | 0 | 0 |
+| `.venv`, z3 and nuXmv 2.2.0 on `PATH`, same bundle | 0 | 1 | 0 |
+| `.venv`, z3 and nuXmv 2.2.0, after the re-measured defence bundle | 0 | 0 | 0 |
 
-The last row is the one to keep in mind: the defence-model bundle records nuXmv
-availability, so a bundle that says "nuXmv unavailable" is only reproducible on a
-host where nuXmv is absent. Installing an optional backend is a change of
-measurement environment, not just of tooling; record the environment with the
-bundle instead of letting a local install silently change a `--check` outcome.
+Two rows matter here. The third shows that a bundle recording nuXmv as unavailable is
+only reproducible where nuXmv is absent. The fourth closes that gap: the defence-model
+bundle was re-measured on 2026-10-09 with nuXmv 2.2.0, every model's unbounded IC3
+verdict agrees with the measurement that had been preserved from revision `bbd59a2`,
+and the bundle now records nuXmv as available. That bundle is therefore reproducible
+only on a host with the binary; a z3-only host will see that one check fail, by design.
+The gate does not run these checks, so gate outcomes stay host-independent. Installing
+an optional backend is a change of measurement environment, not just of tooling, so
+record the environment with the bundle instead of letting a local install silently
+change a `--check` outcome.
 
 The compensating control holds in every one of those environments, because the
 reproducibility tests branch on availability rather than assuming it:

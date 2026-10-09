@@ -126,9 +126,13 @@ row was measured; and `pe_measured`, `pe_unknown`, `native_measured`,
 `native_unknown`, with `pe_safe`, `pe_unsafe` and `native_satisfied` covering
 measured verdicts only. A run without Z3 records the backend as unavailable and
 makes no agreement or satisfaction claim, and an UNKNOWN verdict is never counted
-as safe or satisfied. The retained bundles record Z3 as available and measured;
-`defence-models-v1` records nuXmv as unavailable on the regeneration host, so its
-`nuxmv_verdict` fields are UNKNOWN and no claim here rests on nuXmv.
+as safe or satisfied. The retained bundles record Z3 as available and measured. `defence-models-v1` was
+re-measured on 2026-10-09 on a host with nuXmv 2.2.0, so its `nuxmv_verdict` fields carry
+real unbounded IC3 verdicts instead of UNKNOWN, and the fresh verdicts agree model by
+model with the measurement previously preserved from revision `bbd59a2`: the retained
+provenance block was superseded by a reproducible one, not dropped. No claim rests on
+nuXmv alone, because the `pe_*` and `native_*` counters are computed over the Z3 verdicts
+and the reference interpreter; the IC3 rows corroborate them without a bound.
 
 ## Rationale
 

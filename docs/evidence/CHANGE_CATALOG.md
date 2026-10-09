@@ -38,7 +38,7 @@ the repository has accepted, implemented, or deferred.
 | FW-001, MCP-001, SUPPLY-001 | Framework, protocol, and supply-chain integration |
 | MODEL-001, MODEL-002, PLAN-DYN-012 | Offline adapters are implemented; credentialed/model-weight evidence remains gated |
 | AGENTDOJO-003 | Pinned manifest and translation exist; live no-defence-versus-ITES result remains gated |
-| SLEDV-004 | nuXmv adapter exists; binary-backed evidence remains gated |
+| SLEDV-004 | nuXmv adapter exists; binary-backed IC3 evidence measured 2026-10-09 (licence-gated binary, installed user-local, never redistributed) |
 | PLAN-DYN-016 | Strict four-mode aggregation exists; live observations remain gated |
 | PAPER-002, RW-001 | Generated external-result evidence and continuing related-work revision |
 

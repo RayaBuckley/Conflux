@@ -1,11 +1,12 @@
 {
   "available_formal_backends": [
-    "z3"
+    "z3",
+    "nuxmv"
   ],
   "formal_backends": {
     "nuxmv": {
-      "available": false,
-      "reason": "unavailable"
+      "available": true,
+      "reason": null
     },
     "z3": {
       "available": true,
@@ -20,8 +21,8 @@
         "counterexample": false,
         "counterexample_length": 0,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "safe",
         "reference_states": 2,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -30,8 +31,8 @@
         "counterexample": true,
         "counterexample_length": 4,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 4,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -43,8 +44,8 @@
         "counterexample": false,
         "counterexample_length": 0,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "safe",
         "reference_states": 2,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -53,8 +54,8 @@
         "counterexample": true,
         "counterexample_length": 4,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -66,8 +67,8 @@
         "counterexample": false,
         "counterexample_length": 0,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "safe",
         "reference_states": 1,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -76,8 +77,8 @@
         "counterexample": true,
         "counterexample_length": 3,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -89,8 +90,8 @@
         "counterexample": false,
         "counterexample_length": 0,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "safe",
         "reference_states": 1,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -99,8 +100,8 @@
         "counterexample": true,
         "counterexample_length": 3,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -113,8 +114,8 @@
         "counterexample": true,
         "counterexample_length": 4,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "unsafe",
         "reference_states": 5,
         "reference_verdict": "unsafe",
         "verdict": "unsafe"
@@ -127,8 +128,8 @@
         "counterexample": false,
         "counterexample_length": 0,
         "error": null,
-        "nuxmv_error": "optional_binary_unavailable:nuXmv",
-        "nuxmv_verdict": "unknown",
+        "nuxmv_error": null,
+        "nuxmv_verdict": "safe",
         "reference_states": 5,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
@@ -136,12 +137,12 @@
     }
   ],
   "nuxmv_evidence": {
-    "available_here": false,
+    "available_here": true,
     "recorded": {
-      "note": "not reproducible without a nuXmv binary on this host",
-      "origin": "nuXmv-capable host",
-      "reproducible_here": false,
-      "source_revision": "bbd59a2",
+      "note": null,
+      "origin": "this host",
+      "reproducible_here": true,
+      "source_revision": null,
       "verdicts": {
         "CaMeL": {
           "native": "safe",
@@ -169,7 +170,7 @@
         }
       }
     },
-    "unavailable_reason": "optional_binary_unavailable:nuXmv"
+    "unavailable_reason": null
   },
   "schema_version": "1",
   "summary": {
