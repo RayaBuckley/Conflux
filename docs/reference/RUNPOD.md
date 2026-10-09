@@ -12,8 +12,9 @@ Per supervisor guidance:
 
 ## Cost guard and shared-account safety
 
-`scripts/runpod/guard.py` is the only supported way to create or stop a pod from
-this repository. A single H100 and one pod at a time are enforced in code.
+`scripts/runpod/guard.py` is the supported way to create or stop a pod from this
+repository, and the only path that enforces the identity rule and the cost caps in
+code. A single H100 and one pod at a time are enforced there.
 
 ```bash
 python scripts/runpod/guard.py status          # Conflux pods, burn rate, budget
@@ -25,21 +26,66 @@ python scripts/runpod/guard.py watch           # stop pods whose TTL has passed
 python scripts/runpod/guard.py report --days 7
 ```
 
-The account is shared with other students. The guard identifies a Conflux pod by
-its name (`^conflux-...`) plus the `CONFLUX_MANAGED=1` environment marker, or by
-a pod id in the local ledger written at creation time. Anything else is treated
-as someone else's pod: it is never named, stopped, started or terminated, and it
-appears only as an aggregate count and hourly cost. Destructive subcommands
-resolve their targets through that check and refuse the whole command if any
-target is foreign.
+The account is shared with other students, so the guard's first job is identity.
+A pod is Conflux's only if its name matches `^conflux-...` **and** either it carries
+the `CONFLUX_MANAGED=1` environment marker or its id appears in a **live, recent**
+ledger entry (state `created` or `running`, recorded within `TRUST_WINDOW_DAYS`).
+A finished or older entry does not authorise anything, because pod ids can be
+recycled on a shared account. Anything else is treated as someone else's pod.
+
+Foreign pods are never named, listed, stopped, started or terminated. The guard does
+not repeat a foreign pod's id, name or environment value anywhere - not on stdout,
+not on stderr and not in the audit log, including in a refusal, which reports only a
+count. Foreign pods appear solely as an aggregate count and hourly cost. Destructive
+subcommands resolve their targets through the identity check and refuse the whole
+command if any target is foreign.
 
 Caps live in `.local/runpod/budget.json` (created on first use, gitignored).
 Configuration may lower them but never raise them past the absolute limits in the
 module: one GPU, H100 family only, one Conflux pod at a time, 12 hours per pod,
-USD 50 per pod, USD 100 per day. Every mutating action needs `--yes` and is
-appended to `.local/runpod/audit.jsonl` before the API call. After creation the
-guard re-reads the pod, records the real hourly rate, and stops it immediately if
-the real rate exceeds the per-pod cap.
+USD 50 per pod, USD 100 per day. A non-finite value (`NaN`, infinity) is rejected
+rather than clamped, because a NaN would otherwise pass every comparison.
+
+`create`, `stop`, `terminate` and `stop-all` require `--yes` and are appended to
+`.local/runpod/audit.jsonl` **before** the API call, so a failed call still leaves
+the record. Three stops run without `--yes` on purpose, because each can only stop
+our own pods and only reduces spend: `watch` (the expiry watchdog), the compensating
+stop of a pod that fails the identity recheck right after creation, and the
+compensating stop of a pod whose real rate exceeds the per-pod cap. None of the three
+ever creates, terminates or deletes anything.
+
+After creation the guard re-reads the pod, checks its identity again, and records the
+hourly rate **the vendor reports**. If the vendor does not report a price, the
+observed rate is stored as 0.0 - an assumed rate is never written as an observed one,
+so it cannot seed later estimates - and the projected cost uses the rate you passed.
+When a real rate is reported above the per-pod cap, the pod is stopped immediately.
+
+`stop_pod.py` and `run_all.py` no longer act on a pod themselves. Both route every
+stop through `guard.py`, so they refuse a pod that is not Conflux's, and `run_all.py`
+re-reads the account and re-checks identity before it opens the first ssh connection:
+a wrong id, a stale id or a recycled id must never become a shell or a kill on
+somebody else's pod. `tests/test_runpod_guard.py` fails if any other file under
+`scripts/` gains a way to stop or delete a pod.
+
+`create_pod.py` and the SSH-key recipe below still create pods outside the guard, so
+they enforce neither the caps nor a ledger record. `create_pod.py` does set the marker
+and a conforming name, so the pods it creates stay manageable, but the recipe does not:
+without the marker and a `conflux-` name the guard treats the pod it creates as another
+user's pod.
+
+### Hard rules on a shared account
+
+- Never run an account-wide command: no stop-all or remove-all through `runpodctl`, no
+  listing piped into a stop, and no loop over pods this machine did not create.
+- Never stop, terminate, restart or reconfigure a pod that is not Conflux's, even if it
+  looks abandoned and even if it appears to waste money. Report it to the account owner
+  instead.
+- Never pass an id you typed by hand. Pass a run id or pod id that the guard can verify
+  against the ledger or against the `CONFLUX_MANAGED` marker.
+- Treat a refusal as final. The guard fails closed by design, and a refusal says nothing
+  about the pod it protected - that is the point, not a missing message.
+- Read before you touch: `guard.py status` for Conflux pods, `guard.py report --days 7`
+  for spend, and `guard.py watch` to let expired pods stop themselves.
 
 ## Bypassing the RunPod proxy via SSH key injection
 
@@ -57,6 +103,10 @@ pod at creation time.
 
 3. Re-create the pod with the `PUBLIC_KEY` environment variable. Replace
    `[PASTE_YOUR_PUBLIC_KEY_HERE]` with the string you just copied:
+
+   This recipe bypasses the guard: it enforces no cap, and without the
+   `CONFLUX_MANAGED=1` marker and a `^conflux-...` name the guard will treat the pod
+   it creates as another user's and refuse to manage it.
 
    ```bash
    runpodctl create pod \

@@ -13,16 +13,25 @@ Usage:
 
 Safety model (fail closed):
   * A Conflux pod has a name matching ``^conflux-...`` AND either the env marker
-    ``CONFLUX_MANAGED=1`` or a pod id already recorded in this machine's ledger.
-    Both conditions require the name, so a foreign pod can never qualify.
-  * Foreign pods belong to other users of the shared RunPod account. This tool
-    never names, lists, stops, starts or terminates them. They appear only as
-    aggregate counts and hourly cost.
-  * Caps enforced before any API mutation: one GPU, H100 family only, one Conflux
-    pod at a time, per-pod hour and spend caps, per-day spend cap. Configuration
-    may lower these; the absolute limits in this module can never be raised.
-  * Every mutating action requires ``--yes`` and is written to the audit log
-    before the API call.
+    ``CONFLUX_MANAGED=1`` or a pod id in a live, recent ledger entry (state created
+    or running, recorded within ``TRUST_WINDOW_DAYS``). Both conditions require the
+    name, so a foreign pod can never qualify.
+  * Foreign pods belong to other users of the shared RunPod account. This tool never
+    names, lists, stops, starts or terminates them, and it does not repeat a foreign
+    pod id, name or environment value anywhere - not on stdout, not on stderr and not
+    in the audit log, including in a refusal. They appear only as aggregate counts and
+    hourly cost.
+  * Caps enforced before any API mutation: one GPU, H100 family only, one Conflux pod
+    at a time, per-pod hour and spend caps, per-day spend cap. Configuration may lower
+    these; the absolute limits in this module can never be raised, and a non-finite
+    budget value is rejected instead of clamped.
+  * ``create``, ``stop``, ``terminate`` and ``stop-all`` require ``--yes`` and write
+    the audit record before the API call. Three stops happen without ``--yes`` on
+    purpose, because each can only stop our own pods and only reduces spend:
+    ``watch`` (the expiry watchdog), the compensating stop of a pod that fails the
+    identity recheck after creation, and the compensating stop of a pod whose real
+    rate exceeds the per-pod cap. None of the three ever creates, terminates or
+    deletes anything, and every one is written to the audit log.
 
 Requires RUNPOD_API_KEY in the environment (see ~/.config/conflux/credentials.env).
 """
@@ -31,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -54,8 +64,16 @@ AUDIT_PATH = STATE_DIR / "audit.jsonl"
 BUDGET_PATH = STATE_DIR / "budget.json"
 REPORT_DIR = STATE_DIR / "reports"
 
+LIVE_STATES = frozenset({"created", "running"})
+# A ledger entry older than this, or already finished, must not authorise a stop:
+# pod ids can be recycled, and the ledger is a local file.
+TRUST_WINDOW_DAYS = 7
 NAME_PREFIX = "conflux-"
-NAME_PATTERN = re.compile(r"^conflux-[a-z0-9][a-z0-9-]{1,60}$")
+# Lower-case letters, digits, dots and hyphens only: model slugs such as
+# `qwen2.5-7b-instruct` are allowed, while `conflux-Bad_Name` and anything with
+# uppercase, underscore or whitespace stays foreign. The name alone never qualifies
+# a pod; the marker or a live ledger entry must also match.
+NAME_PATTERN = re.compile(r"^conflux-[a-z0-9][a-z0-9.-]{1,60}$")
 MARKER_KEY = "CONFLUX_MANAGED"
 MARKER_VALUE = "1"
 
@@ -70,6 +88,8 @@ H100_TYPES: tuple[str, ...] = (
 ABSOLUTE_MAX_GPU_COUNT = 1
 ABSOLUTE_MAX_HOURS = 12.0
 ABSOLUTE_MAX_USD_PER_POD = 50.0
+INT_BUDGET_KEYS = frozenset({"max_gpu_count", "max_concurrent_pods", "container_disk_gb", "volume_gb"})
+FLOAT_BUDGET_KEYS = frozenset({"max_hours_per_pod", "max_usd_per_pod", "max_usd_per_day"})
 ABSOLUTE_MAX_CONCURRENT = 1
 DEFAULT_IMAGE = "runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
 EXIT_REFUSED = 2
@@ -258,6 +278,28 @@ class Budget:
     cloud_type: str = "SECURE"
 
 
+def _finite_number(value: object, default: float, key: str, notes: list[str]) -> float:
+    """Coerce a budget value to a finite float. NaN and infinity are rejected, not clamped.
+
+    ``min(nan, cap)`` returns nan in Python, so a NaN in the budget file would silently
+    defeat every money cap. A bad value falls back to the default and is reported.
+    """
+    try:
+        number = float(str(value)) if isinstance(value, str) else float(cast("float", value))
+    except (TypeError, ValueError):
+        notes.append(f"ignored {key}: not a number")
+        return default
+    if not math.isfinite(number):
+        notes.append(f"ignored {key}: not a finite number")
+        return default
+    return number
+
+
+def _positive_int(value: object, default: int, key: str, notes: list[str]) -> int:
+    """Coerce a budget value to an int of at least 1, rejecting NaN, infinity and junk."""
+    return max(int(_finite_number(value, float(default), key, notes)), 1)
+
+
 def load_budget(path: Path = BUDGET_PATH) -> tuple[Budget, list[str]]:
     """Load the local budget file, clamping every value to the absolute limits."""
     budget = Budget()
@@ -281,6 +323,12 @@ def load_budget(path: Path = BUDGET_PATH) -> tuple[Budget, list[str]]:
                 else:
                     notes.append("ignored allowed_gpu_types: must be a non-empty list")
                 continue
+            if key in INT_BUDGET_KEYS:
+                updates[key] = _positive_int(value, cast("int", getattr(budget, key)), key, notes)
+                continue
+            if key in FLOAT_BUDGET_KEYS:
+                updates[key] = _finite_number(value, cast("float", getattr(budget, key)), key, notes)
+                continue
             updates[key] = value
         budget = replace(budget, **updates)  # type: ignore[arg-type]
     else:
@@ -288,16 +336,30 @@ def load_budget(path: Path = BUDGET_PATH) -> tuple[Budget, list[str]]:
         path.write_text(json.dumps(asdict(budget), indent=2, sort_keys=True) + "\n", encoding="utf-8")
         notes.append(f"wrote default budget to {path}")
 
+    # Values are re-sanitised here as well as on load, because a Budget can also be
+    # constructed directly (by code or by a future caller) with a NaN field.
     clamped = Budget(
-        max_gpu_count=min(int(budget.max_gpu_count), ABSOLUTE_MAX_GPU_COUNT),
+        max_gpu_count=min(_positive_int(budget.max_gpu_count, 1, "max_gpu_count", notes), ABSOLUTE_MAX_GPU_COUNT),
         allowed_gpu_types=tuple(t for t in budget.allowed_gpu_types if t in H100_TYPES) or H100_TYPES,
-        max_concurrent_pods=min(int(budget.max_concurrent_pods), ABSOLUTE_MAX_CONCURRENT),
-        max_hours_per_pod=min(float(budget.max_hours_per_pod), ABSOLUTE_MAX_HOURS),
-        max_usd_per_pod=min(float(budget.max_usd_per_pod), ABSOLUTE_MAX_USD_PER_POD),
-        max_usd_per_day=min(float(budget.max_usd_per_day), ABSOLUTE_MAX_USD_PER_POD * 2),
+        max_concurrent_pods=min(
+            _positive_int(budget.max_concurrent_pods, 1, "max_concurrent_pods", notes),
+            ABSOLUTE_MAX_CONCURRENT,
+        ),
+        max_hours_per_pod=min(
+            _finite_number(budget.max_hours_per_pod, 1.0, "max_hours_per_pod", notes),
+            ABSOLUTE_MAX_HOURS,
+        ),
+        max_usd_per_pod=min(
+            _finite_number(budget.max_usd_per_pod, 1.0, "max_usd_per_pod", notes),
+            ABSOLUTE_MAX_USD_PER_POD,
+        ),
+        max_usd_per_day=min(
+            _finite_number(budget.max_usd_per_day, 1.0, "max_usd_per_day", notes),
+            ABSOLUTE_MAX_USD_PER_POD * 2,
+        ),
         default_image=budget.default_image,
-        container_disk_gb=max(int(budget.container_disk_gb), 10),
-        volume_gb=max(int(budget.volume_gb), 10),
+        container_disk_gb=max(_positive_int(budget.container_disk_gb, 10, "container_disk_gb", notes), 10),
+        volume_gb=max(_positive_int(budget.volume_gb, 10, "volume_gb", notes), 10),
         volume_mount=budget.volume_mount,
         ports=tuple(budget.ports) or ("22/tcp",),
         cloud_type=budget.cloud_type if budget.cloud_type in {"SECURE", "COMMUNITY"} else "SECURE",
@@ -462,11 +524,31 @@ class Ledger:
                 return entry
         return None
 
-    def trusted_ids(self) -> frozenset[str]:
-        return frozenset(entry.pod_id for entry in self.entries if entry.pod_id)
+    def trusted_ids(self, now: datetime | None = None) -> frozenset[str]:
+        """Ids this machine may act on: live, recent entries only.
+
+        A finished or stale entry must not authorise anything, because pod ids can be
+        recycled on a shared account. Entries within the window in a live state remain
+        trusted even if the vendor omits the marker.
+        """
+        moment = now or datetime.now(UTC)
+        window = timedelta(days=TRUST_WINDOW_DAYS)
+        trusted: set[str] = set()
+        for entry in self.entries:
+            if not entry.pod_id or entry.state not in LIVE_STATES:
+                continue
+            created = parse_time(entry.created_at)
+            if created is None:
+                continue
+            if created.tzinfo is None:
+                created = created.replace(tzinfo=UTC)
+            if moment - created > window:
+                continue
+            trusted.add(entry.pod_id)
+        return frozenset(trusted)
 
     def live_run_ids(self) -> set[str]:
-        return {entry.run_id for entry in self.entries if entry.state in {"created", "running"}}
+        return {entry.run_id for entry in self.entries if entry.state in LIVE_STATES}
 
     def spend_on(self, day: datetime) -> float:
         total = 0.0
@@ -523,8 +605,15 @@ class RunPodApi:
         return json.loads(raw) if raw.strip() else None
 
     def list_pods(self) -> list[Mapping[str, Any]]:
+        """Return the account's pods.
+
+        An unexpected body is an error, never an empty list: silently reading "no pods"
+        would hide a running pod from the caps and from every identity check.
+        """
         data = self._request("GET", "/pods")
-        return [cast("Mapping[str, Any]", item) for item in data] if isinstance(data, list) else []
+        if not isinstance(data, list):
+            raise GuardError("pods list returned an unexpected body; refusing to continue")
+        return [cast("Mapping[str, Any]", item) for item in data]
 
     def create_pod(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
         data = self._request("POST", "/pods", payload)
@@ -566,9 +655,10 @@ def resolve_targets(
         raise GuardError(f"no pod matches {selector!r} on this account")
     foreign = [pod for pod in matches if not classify(pod, trusted)[0]]
     if foreign:
-        ids = ", ".join(pod_id(pod) for pod in foreign)
+        # Deliberately no ids, names or environment values here: a refusal must not
+        # disclose another user's pod, and this text reaches stderr and the audit log.
         raise GuardError(
-            f"refusing to act on {len(foreign)} pod(s) that are not Conflux pods (ids: {ids}); "
+            f"refusing to act on {len(foreign)} of {len(matches)} matched pod(s) that are not Conflux pods; "
             "this tool never touches other users' pods",
         )
     return matches
@@ -722,15 +812,20 @@ def cmd_create(args: argparse.Namespace) -> int:
     created = api.create_pod(payload)
     created_id = pod_id(created)
     if not created_id:
-        raise GuardError(f"create returned no pod id: {json.dumps(created)[:200]}")
+        # No raw vendor body: it can echo other account data into our logs.
+        raise GuardError(f"create returned no pod id (response keys: {sorted(str(k) for k in created)})")
     # Re-read the pod: confirm identity, take the real rate, and enforce the cap.
     refreshed = next((pod for pod in api.list_pods() if pod_id(pod) == created_id), created)
     ok, evidence = classify(refreshed, trusted | {created_id})
     if not ok:
         api.stop_pod(created_id)
         raise GuardError(f"created pod {created_id} failed the identity check ({evidence}); stopped it")
-    actual_rate = hourly_rate(refreshed) or rate
-    projected = round(actual_rate * request.hours, 2)
+    observed_rate = hourly_rate(refreshed)
+    # Never record an assumed price as an observed one: an unknown rate stays 0.0 so it
+    # cannot seed later assumed_rate() calls with a number nobody measured.
+    actual_rate = observed_rate if observed_rate > 0 else 0.0
+    billed_rate = observed_rate or rate
+    projected = round(billed_rate * request.hours, 2)
     entry = LedgerEntry(
         run_id=request.run_id,
         pod_id=created_id,
@@ -748,9 +843,18 @@ def cmd_create(args: argparse.Namespace) -> int:
         note=evidence,
     )
     ledger.add(entry)
-    audit("created", name, {"pod_id": created_id, "actual_usd_per_hr": actual_rate, "planned_usd": projected})
+    audit(
+        "created",
+        name,
+        {
+            "pod_id": created_id,
+            "observed_usd_per_hr": observed_rate,
+            "billed_usd_per_hr": billed_rate,
+            "planned_usd": projected,
+        },
+    )
     over_cap = projected > min(budget.max_usd_per_pod, ABSOLUTE_MAX_USD_PER_POD)
-    print(f"created {name} [{created_id}] at ${actual_rate:.2f}/hr, planned ${projected:.2f}, "
+    print(f"created {name} [{created_id}] at ${billed_rate:.2f}/hr, planned ${projected:.2f}, "
           f"expires {entry.expires_at}")
     print(f"stop it with: python scripts/runpod/guard.py stop --run-id {request.run_id} --yes")
     if over_cap:

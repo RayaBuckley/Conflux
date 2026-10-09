@@ -20,9 +20,13 @@ import subprocess
 import sys
 import threading
 import time
+from collections.abc import Mapping
 from pathlib import Path
 
-from create_pod import GPU_TYPES
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from scripts.runpod import guard
+from scripts.runpod.create_pod import GPU_TYPES
 
 
 def _check_env() -> None:
@@ -88,12 +92,37 @@ def _scp(key: Path, ip: str, port: str, src: str, dst: str, timeout: int = 120) 
         raise
 
 
+def _guard_stop(pod_id_value: str, *, terminate: bool = False) -> int:
+    """Stop one pod through the guard, which refuses any pod that is not Conflux's."""
+    action = "terminate" if terminate else "stop"
+    code = guard.main([action, "--pod-id", pod_id_value, "--yes"])
+    if code != 0:
+        print(f"Warning: guard refused or failed to stop {pod_id_value} (exit {code}).", file=sys.stderr)
+    return code
+
+
+def _assert_conflux_pod(pod: Mapping[str, str]) -> None:
+    """Verify against the live account that the pod just created is Conflux's.
+
+    This runs before any ssh or scp, so a mix-up in the create response cannot
+    send commands to another user's pod. It fails closed.
+    """
+    pod_id_value = pod["pod_id"]
+    api = guard.api_from_env()
+    pods = api.list_pods()
+    matches = [candidate for candidate in pods if guard.pod_id(candidate) == pod_id_value]
+    if not matches:
+        raise SystemExit(f"pod {pod_id_value} is not visible on this account; refusing to continue")
+    try:
+        guard.resolve_targets(matches, pod_id_value, guard.Ledger(guard.LEDGER_PATH).trusted_ids())
+    except guard.GuardError as exc:
+        raise SystemExit(f"refusing to touch a pod that is not Conflux's: {exc}") from exc
+
+
 def _start_auto_stop_timer(pod_id: str, max_minutes: int) -> threading.Timer:
     def _stop() -> None:
         print(f"\n!!! MAX RUNTIME ({max_minutes} min) REACHED — FORCE-STOPPING POD {pod_id} !!!", file=sys.stderr)
-        from stop_pod import stop_pod
-
-        stop_pod(pod_id, remove=False)
+        _guard_stop(pod_id)
         sys.exit(1)
 
     timer = threading.Timer(max_minutes * 60, _stop)
@@ -129,10 +158,10 @@ def run_all(
 
     # Phase 1: Create pod
     print("\n=== Phase 1: Creating pod ===")
-    sys.path.insert(0, str(Path(__file__).parent))
-    from create_pod import create_pod
+    from scripts.runpod.create_pod import create_pod
 
     pod = create_pod(gpu=gpu, model_id=model_id, max_runtime_minutes=max_runtime_minutes)
+    _assert_conflux_pod(pod)
     pod_id = pod["pod_id"]
     ip = pod.get("ssh_ip", "")
     port = pod.get("ssh_port", "22")
@@ -225,12 +254,10 @@ def run_all(
         if keep_pod:
             print(f"Pod kept running: {pod_id}")
             print(f"SSH: ssh -p {port} root@{ip}")
-            print(f"Stop: python scripts/runpod/stop_pod.py --pod-id {pod_id}")
+            print(f"Stop: python scripts/runpod/guard.py stop --pod-id {pod_id} --yes")
         else:
             print(f"Stopping pod {pod_id}...")
-            from stop_pod import stop_pod
-
-            stop_pod(pod_id, remove=False)
+            _guard_stop(pod_id)
 
 
 def main() -> None:

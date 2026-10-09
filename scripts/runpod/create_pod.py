@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 GPU_TYPES = {
@@ -46,7 +47,9 @@ def create_pod(
 ) -> dict[str, str]:
     gpu_type, price_per_hr = GPU_TYPES.get(gpu, (gpu, 0.0))
     max_cost = price_per_hr * max_runtime_minutes / 60
-    name = f"conflux-{model_id.rsplit('/', maxsplit=1)[-1].lower()}"
+    slug = model_id.rsplit("/", maxsplit=1)[-1].lower().replace("_", "-")
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    name = f"conflux-{slug}-{stamp}"
     print(f"Pod: {name} ({gpu_type})")
     print(f"Rate: ${price_per_hr:.2f}/hr  Max runtime: {max_runtime_minutes} min  Max cost: ${max_cost:.2f}")
     runpod_key = Path.home() / ".runpod" / "ssh" / "runpodctl-ssh-key.pub"
@@ -78,7 +81,10 @@ def create_pod(
         "--ports",
         "22/tcp",
         "--env",
-        json.dumps({"PUBLIC_KEY": public_key}),
+        # The marker is what lets scripts/runpod/guard.py recognise this pod as ours
+        # (name convention plus marker). Without it the guard treats the pod as another
+        # user's and refuses to manage it.
+        json.dumps({"PUBLIC_KEY": public_key, "CONFLUX_MANAGED": "1"}),
         "--wait",
         "--wait-timeout",
         "10m",

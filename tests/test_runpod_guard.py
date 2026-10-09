@@ -7,7 +7,10 @@ API so that no request ever leaves the machine.
 
 from __future__ import annotations
 
+import importlib
 import json
+import math
+import sys
 from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -16,6 +19,12 @@ from typing import Any
 import pytest
 
 from scripts.runpod import guard
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# Tokens that mean "this file can act on a pod by itself". Only guard.py may
+# contain them: every other path must go through the guard's identity gate.
+DESTRUCTIVE_TOKENS = ("pod stop", "pod delete", "pod remove", "pod terminate")
 
 
 def mk_pod(
@@ -45,8 +54,24 @@ def conflux_pod(run_id: str = "pilot-1", pod_id: str = "pod-conflux1", **kwargs:
     return mk_pod(f"{guard.NAME_PREFIX}{run_id}-20261009-120000", pod_id, env=env, **kwargs)
 
 
-def foreign_pod(pod_id: str = "pod-jema1", name: str = "jema-hard200k-pcie-20261009-abc123") -> dict[str, Any]:
+def foreign_pod(pod_id: str = "pod-tenant-a1", name: str = "tenant-a-h100-pcie-20261009-abc123") -> dict[str, Any]:
     return mk_pod(name, pod_id, env={"SOME_OTHER_USERS_TOKEN": "their_secret"})
+
+
+class FakeResponse:
+    """Minimal stand-in for the object urllib returns, for transport-level tests."""
+
+    def __init__(self, body: bytes) -> None:
+        self._body = body
+
+    def read(self) -> bytes:
+        return self._body
+
+    def __enter__(self) -> FakeResponse:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
 
 
 class FakeApi:
@@ -114,7 +139,7 @@ def test_classify_accepts_ledger_record_without_marker() -> None:
 
 
 def test_classify_rejects_foreign_pod_even_with_our_marker() -> None:
-    pod = mk_pod("jema-hard200k-pcie-20261009-abc123", "pod-jema1", env={guard.MARKER_KEY: guard.MARKER_VALUE})
+    pod = mk_pod("tenant-a-h100-pcie-20261009-abc123", "pod-tenant-a1", env={guard.MARKER_KEY: guard.MARKER_VALUE})
     ok, evidence = guard.classify(pod)
     assert ok is False
     assert "naming convention" in evidence
@@ -128,18 +153,18 @@ def test_classify_rejects_conflux_name_without_evidence() -> None:
 
 
 def test_managed_pods_separates_the_fleet() -> None:
-    pods = [conflux_pod(), foreign_pod(), mk_pod("alesia-h1-promptlen", "pod-alesia")]
+    pods = [conflux_pod(), foreign_pod(), mk_pod("tenant-b-h100-promptlen", "pod-tenant-b1")]
     assert [guard.pod_id(p) for p in guard.managed_pods(pods)] == ["pod-conflux1"]
 
 
 def test_foreign_summary_is_aggregate_only() -> None:
-    pods = [conflux_pod(), foreign_pod(), mk_pod("osaze-jema-pcie", "pod-osaze", state="EXITED", rate=1.5)]
+    pods = [conflux_pod(), foreign_pod(), mk_pod("tenant-c-h100-pcie", "pod-tenant-c1", state="EXITED", rate=1.5)]
     summary = guard.foreign_summary(pods)
     text = json.dumps(summary)
     assert summary["pods_running"] == 1
     assert summary["pods_total"] == 2
     assert summary["by_state"] == {"EXITED": 1, "RUNNING": 1}
-    for leak in ("jema", "osaze", "pod-jema1", "pod-osaze", "their_secret"):
+    for leak in ("tenant-a", "tenant-c", "pod-tenant-a1", "pod-tenant-c1", "their_secret"):
         assert leak not in text
 
 
@@ -159,10 +184,30 @@ def test_public_view_never_exposes_env_values() -> None:
 def test_resolve_targets_refuses_foreign_pod_by_id() -> None:
     pods = [conflux_pod(), foreign_pod()]
     with pytest.raises(guard.GuardError) as exc:
-        guard.resolve_targets(pods, "pod-jema1", [])
-    assert "pod-jema1" in str(exc.value)
-    assert "jema-hard200k" not in str(exc.value)
-    assert "never touches other users" in str(exc.value)
+        guard.resolve_targets(pods, "pod-tenant-a1", [])
+    text = str(exc.value)
+    assert "not Conflux pods" in text
+    assert "never touches other users" in text
+    # A refusal must not disclose another user's pod, in any spelling of its identity.
+    assert "pod-tenant-a1" not in text
+    assert "tenant-a-h100" not in text
+
+
+def test_refusal_does_not_disclose_a_foreign_pod_to_the_user(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    squatter = mk_pod("conflux-pilot-1-20261009-120000", "pod-squat", env={"THEIR_TOKEN": "their_secret"})
+    api = FakeApi([squatter])
+    wire(monkeypatch, api)
+    assert guard.main(["stop", "--run-id", "pilot-1", "--yes"]) == guard.EXIT_REFUSED
+    captured = capsys.readouterr()
+    visible = captured.out + captured.err + json.dumps(audit_log)
+    for leak in ("pod-squat", "their_secret"):
+        assert leak not in visible
+    assert api.mutating_calls() == []
 
 
 def test_resolve_targets_matches_run_id_prefix() -> None:
@@ -197,7 +242,7 @@ def test_clean_request_passes() -> None:
 
 
 def test_foreign_running_pods_do_not_block_our_creation() -> None:
-    pods = [foreign_pod(), foreign_pod("pod-jema2"), foreign_pod("pod-alesia")]
+    pods = [foreign_pod(), foreign_pod("pod-tenant-a2"), foreign_pod("pod-tenant-b1")]
     reasons = guard.refusals(pods, guard.Budget(), request(), datetime.now(UTC))
     assert reasons == []
 
@@ -333,7 +378,7 @@ def wire(monkeypatch: pytest.MonkeyPatch, api: FakeApi) -> None:
 
 
 def test_cli_stop_all_stops_only_conflux_pods(monkeypatch: pytest.MonkeyPatch, state_dir: Path, audit_log: list[dict[str, object]]) -> None:
-    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1"), foreign_pod(), foreign_pod("pod-jema2"), mk_pod("tb-1", "pod-tb")])
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1"), foreign_pod(), foreign_pod("pod-tenant-a2"), mk_pod("tb-1", "pod-tb")])
     wire(monkeypatch, api)
     code = guard.main(["stop-all", "--yes"])
     assert code == 0
@@ -342,7 +387,7 @@ def test_cli_stop_all_stops_only_conflux_pods(monkeypatch: pytest.MonkeyPatch, s
 
 
 def test_cli_stop_all_with_no_conflux_pods_does_nothing(monkeypatch: pytest.MonkeyPatch, state_dir: Path) -> None:
-    api = FakeApi([foreign_pod(), foreign_pod("pod-jema2")])
+    api = FakeApi([foreign_pod(), foreign_pod("pod-tenant-a2")])
     wire(monkeypatch, api)
     assert guard.main(["stop-all", "--yes"]) == 0
     assert api.mutating_calls() == []
@@ -351,7 +396,7 @@ def test_cli_stop_all_with_no_conflux_pods_does_nothing(monkeypatch: pytest.Monk
 def test_cli_stop_refuses_a_foreign_selector(monkeypatch: pytest.MonkeyPatch, state_dir: Path, audit_log: list[dict[str, object]]) -> None:
     api = FakeApi([conflux_pod(), foreign_pod()])
     wire(monkeypatch, api)
-    assert guard.main(["stop", "--pod-id", "pod-jema1", "--yes"]) == guard.EXIT_REFUSED
+    assert guard.main(["stop", "--pod-id", "pod-tenant-a1", "--yes"]) == guard.EXIT_REFUSED
     assert api.mutating_calls() == []
     assert any(record["action"] == "stop-refused" for record in audit_log)
 
@@ -423,11 +468,11 @@ def test_cli_create_stops_the_pod_when_the_real_rate_exceeds_the_cap(monkeypatch
 
 
 def test_cli_status_reports_foreign_usage_as_aggregate_only(monkeypatch: pytest.MonkeyPatch, state_dir: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    api = FakeApi([conflux_pod(), foreign_pod(), foreign_pod("pod-jema2")])
+    api = FakeApi([conflux_pod(), foreign_pod(), foreign_pod("pod-tenant-a2")])
     wire(monkeypatch, api)
     assert guard.main(["status"]) == 0
     out = capsys.readouterr().out
-    assert "jema-hard200k-pcie-20261009-abc123" not in out
+    assert "tenant-a-h100-pcie-20261009-abc123" not in out
     assert "their_secret" not in out
     assert "Other users on this account (untouched, aggregate only): 2 running" in out
 
@@ -463,3 +508,394 @@ def test_preflight_refuses_without_a_rate(monkeypatch: pytest.MonkeyPatch, state
     wire(monkeypatch, api)
     assert guard.main(["preflight", "--hours", "1"]) == guard.EXIT_REFUSED
     assert "no rate known" in capsys.readouterr().err
+
+
+# --------------------------------------------------------------------------
+# Audit round 2 (2026-10-09): every claim below was a surviving mutant or an
+# uncovered path in an independent mutation audit of commit c4e5ace.
+# Constants are pinned with literal numbers on purpose: comparing a cap against
+# the same constant that defines it proves nothing.
+# --------------------------------------------------------------------------
+
+
+def test_absolute_caps_are_pinned_by_literal_numbers() -> None:
+    assert guard.ABSOLUTE_MAX_GPU_COUNT == 1
+    assert guard.ABSOLUTE_MAX_CONCURRENT == 1
+    assert guard.ABSOLUTE_MAX_HOURS == 12.0
+    assert guard.ABSOLUTE_MAX_USD_PER_POD == 50.0
+    assert guard.TRUST_WINDOW_DAYS == 7
+
+
+def test_ledger_trust_ignores_finished_and_stale_entries(tmp_path: Path) -> None:
+    path = tmp_path / "ledger.json"
+    ledger = guard.Ledger(path)
+    ledger.add(entry(run_id="live", pod_id="pod-live"))
+    ledger.add(entry(run_id="done", pod_id="pod-done", state="exited"))
+    ledger.add(entry(run_id="stale", pod_id="pod-stale", created_days_ago=8.0))
+    assert ledger.trusted_ids() == {"pod-live"}
+    # A finished or stale entry must not turn a differently-named pod into ours.
+    outsider = mk_pod("tenant-c-h100-pcie", "pod-done", env={})
+    assert guard.classify(outsider, ledger.trusted_ids())[0] is False
+    stale_outsider = mk_pod("tenant-c-h100-pcie", "pod-stale", env={})
+    assert guard.classify(stale_outsider, ledger.trusted_ids())[0] is False
+
+
+def test_trusted_ledger_id_still_requires_the_name_convention() -> None:
+    for bad_name in ("tenant-c-h100-pcie", "conflux-Bad_Name", "conflux-Bad-Name", "conflux-bad name"):
+        pod = mk_pod(bad_name, "pod-known", env={})
+        ok, evidence = guard.classify(pod, ["pod-known"])
+        assert ok is False, bad_name
+        assert "naming convention" in evidence
+    good = mk_pod("conflux-pilot-1-20261009-120000", "pod-known", env={})
+    assert guard.classify(good, ["pod-known"])[0] is True
+
+
+def test_name_pattern_accepts_model_slugs_and_rejects_loose_names() -> None:
+    assert guard.NAME_PATTERN.match("conflux-qwen2.5-7b-instruct-20261009-120000")
+    assert guard.NAME_PATTERN.match("conflux-pilot-1")
+    for bad in ("conflux-Bad_Name", "conflux-Bad-Name", "conflux-", "tenant-a-pod", "conflux-a/b"):
+        assert guard.NAME_PATTERN.match(bad) is None, bad
+
+
+def test_budget_caps_are_clamped_to_literal_numbers(state_dir: Path) -> None:
+    (state_dir / "budget.json").write_text(
+        json.dumps(
+            {
+                "max_hours_per_pod": 48.0,
+                "max_usd_per_pod": 500.0,
+                "max_usd_per_day": 300.0,
+                "max_concurrent_pods": 3,
+            },
+        ),
+        encoding="utf-8",
+    )
+    budget, _ = guard.load_budget(state_dir / "budget.json")
+    assert budget.max_hours_per_pod == 12.0
+    assert budget.max_usd_per_pod == 50.0
+    assert budget.max_usd_per_day == 100.0
+    assert budget.max_concurrent_pods == 1
+    reasons = guard.refusals([], budget, request(hours=13.0), datetime.now(UTC))
+    assert any("hours 13.0" in reason for reason in reasons), reasons
+    reasons = guard.refusals([], budget, request(hours=12.0, assumed_rate_usd_per_hr=4.5), datetime.now(UTC))
+    assert any("per-pod cap" in reason for reason in reasons), reasons
+
+
+def test_daily_cap_counts_spend_already_recorded(state_dir: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    ledger = guard.Ledger(state_dir / "ledger.json")
+    ledger.add(entry(run_id="earlier", pod_id="pod-earlier"))
+    monkeypatch.setattr(guard, "STATE_DIR", state_dir)
+    api = FakeApi([])
+    wire(monkeypatch, api)
+    assert guard.main(["preflight", "--hours", "12", "--assume-rate", "4.0"]) == guard.EXIT_REFUSED
+
+
+def test_non_finite_budget_values_are_rejected_not_clamped(state_dir: Path) -> None:
+    (state_dir / "budget.json").write_text(
+        json.dumps(
+            {
+                "max_usd_per_pod": float("nan"),
+                "max_usd_per_day": float("inf"),
+                "max_hours_per_pod": float("nan"),
+            },
+        ),
+        encoding="utf-8",
+    )
+    budget, notes = guard.load_budget(state_dir / "budget.json")
+    assert math.isfinite(budget.max_usd_per_pod)
+    assert math.isfinite(budget.max_usd_per_day)
+    assert math.isfinite(budget.max_hours_per_pod)
+    assert budget.max_usd_per_pod == 10.0
+    assert budget.max_usd_per_day == 20.0
+    assert any("not a finite number" in note for note in notes), notes
+    reasons = guard.refusals([], budget, request(hours=2.0, assumed_rate_usd_per_hr=500.0), datetime.now(UTC))
+    assert any("per-pod cap" in reason for reason in reasons), reasons
+
+
+def test_list_pods_fails_closed_on_an_unexpected_body(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_urlopen(request: Any, timeout: float = 30.0) -> FakeResponse:
+        return FakeResponse(b'{"error": "nope"}')
+
+    monkeypatch.setattr(guard, "urlopen", fake_urlopen)
+    with pytest.raises(guard.GuardError, match="unexpected body"):
+        guard.RunPodApi("test-key").list_pods()
+
+
+def test_api_requests_carry_the_explicit_user_agent(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: list[Any] = []
+
+    def fake_urlopen(request: Any, timeout: float = 30.0) -> FakeResponse:
+        captured.append(request)
+        return FakeResponse(b"[]")
+
+    monkeypatch.setattr(guard, "urlopen", fake_urlopen)
+    assert guard.RunPodApi("test-key").list_pods() == []
+    headers = {key.lower(): value for key, value in captured[0].headers.items()}
+    assert headers["user-agent"] == guard.USER_AGENT
+    assert "conflux" in headers["user-agent"].lower()
+    assert "python-urllib" not in headers["user-agent"].lower()
+    assert headers["authorization"] == "Bearer test-key"
+
+
+def test_cli_stop_all_without_yes_mutates_nothing(monkeypatch: pytest.MonkeyPatch, state_dir: Path) -> None:
+    api = FakeApi([conflux_pod(), foreign_pod()])
+    wire(monkeypatch, api)
+    assert guard.main(["stop-all"]) == guard.EXIT_REFUSED
+    assert api.mutating_calls() == []
+
+
+class RaisingApi(FakeApi):
+    """Raises on the mutating call, to prove the audit record was written first."""
+
+    def __init__(self, pods: list[dict[str, Any]] | None = None, *, fail_on: str = "stop") -> None:
+        super().__init__(pods)
+        self.fail_on = fail_on
+
+    def stop_pod(self, pod_id: str) -> None:
+        self.calls.append(("stop", pod_id))
+        raise OSError("transport died")
+
+    def create_pod(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+        self.calls.append(("create", str(payload.get("name"))))
+        raise OSError("transport died")
+
+
+def test_stop_writes_the_audit_record_before_the_api_call(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+) -> None:
+    api = RaisingApi([conflux_pod()])
+    wire(monkeypatch, api)
+    with pytest.raises(OSError):
+        guard.main(["stop", "--run-id", "pilot-1", "--yes"])
+    assert [record["action"] for record in audit_log] == ["stop"]
+    assert audit_log[0]["pod_id"] == "pod-conflux1"
+
+
+def test_create_writes_the_audit_record_before_the_api_call(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+) -> None:
+    api = RaisingApi([], fail_on="create")
+    wire(monkeypatch, api)
+    with pytest.raises(OSError):
+        guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"])
+    assert [record["action"] for record in audit_log] == ["create"]
+    assert api.calls == [("create", api.calls[0][1])]
+    assert not (state_dir / "ledger.json").exists() or guard.Ledger(state_dir / "ledger.json").entries == []
+
+
+def test_cli_stop_happy_path_stops_exactly_one_pod(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+) -> None:
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1"), conflux_pod("pilot-2", "pod-conflux2")])
+    wire(monkeypatch, api)
+    assert guard.main(["stop", "--run-id", "pilot-1", "--yes"]) == 0
+    assert api.mutating_calls() == [("stop", "pod-conflux1")]
+    assert [record["action"] for record in audit_log] == ["stop"]
+    assert guard.Ledger(state_dir / "ledger.json").entries == []
+
+
+def test_watch_stops_only_pods_that_are_still_listed_and_never_deletes(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+) -> None:
+    ledger = guard.Ledger(state_dir / "ledger.json")
+    ledger.add(entry(run_id="pilot-1", pod_id="pod-real", expires_in_hours=-1.0))
+    ledger.add(entry(run_id="pilot-ghost", pod_id="pod-ghost", expires_in_hours=-1.0))
+    api = FakeApi([conflux_pod("pilot-1", "pod-real")])
+    wire(monkeypatch, api)
+    assert guard.main(["watch", "--interval", "15", "--max-iterations", "1"]) == 0
+    assert api.mutating_calls() == [("stop", "pod-real")]
+    assert not [call for call in api.calls if call[0] == "delete"]
+    assert [record["action"] for record in audit_log] == ["ttl-stop"]
+
+
+def test_watch_exits_when_no_conflux_pods_remain(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    api = FakeApi([foreign_pod()])
+    wire(monkeypatch, api)
+    assert guard.main(["watch", "--interval", "15"]) == 0
+    assert "no Conflux pods left" in capsys.readouterr().out
+    assert api.mutating_calls() == []
+
+
+class BillingApi(FakeApi):
+    """Returns billing records for our pod and for a foreign pod."""
+
+    def billing_pods(self, start: datetime, end: datetime) -> list[Mapping[str, Any]]:
+        return [
+            {"podId": "pod-conflux1", "amount": 3.5, "timeBilledMs": 1_800_000},
+            {"podId": "pod-tenant-a1", "amount": 42.0, "timeBilledMs": 3_600_000},
+        ]
+
+
+def test_report_excludes_foreign_pods_from_output_and_from_the_file(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    ledger = guard.Ledger(state_dir / "ledger.json")
+    ledger.add(entry(run_id="pilot-1", pod_id="pod-conflux1"))
+    report_dir = tmp_path / "reports"
+    monkeypatch.setattr(guard, "REPORT_DIR", report_dir)
+    api = BillingApi([conflux_pod(), foreign_pod()])
+    wire(monkeypatch, api)
+    assert guard.main(["report", "--days", "7", "--write"]) == 0
+    printed = capsys.readouterr().out
+    written = "".join(path.read_text(encoding="utf-8") for path in report_dir.iterdir())
+    for text in (printed, written):
+        assert "pod-conflux1" in text
+        assert "3.50" in text
+        assert "pod-tenant-a1" not in text
+        assert "tenant-a-h100" not in text
+        assert "42.00" not in text
+
+
+class RogueApi(FakeApi):
+    """Creates a pod that fails the identity check, as a compromised API could."""
+
+    def __init__(self, *, rogue_name: str, rogue_rate: float) -> None:
+        super().__init__([])
+        self.rogue_name = rogue_name
+        self.rogue_rate = rogue_rate
+
+    def create_pod(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+        self.calls.append(("create", str(payload.get("name"))))
+        pod = mk_pod(self.rogue_name, "pod-rogue", env={}, rate=self.rogue_rate)
+        self.pods.append(pod)
+        return pod
+
+
+def test_post_create_identity_recheck_stops_a_rogue_pod(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+) -> None:
+    api = RogueApi(rogue_name="tenant-c-h100-pcie", rogue_rate=1.79)
+    wire(monkeypatch, api)
+    code = guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"])
+    assert code == guard.EXIT_API_ERROR
+    assert code != 0
+    assert api.mutating_calls() == [("create", api.calls[0][1]), ("stop", "pod-rogue")]
+    assert guard.Ledger(state_dir / "ledger.json").entries == []
+    assert "auto-stop" not in [record["action"] for record in audit_log]
+
+
+def test_an_unreported_real_rate_is_never_recorded_as_observed(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+) -> None:
+    api = RogueApi(rogue_name="conflux-pilot-1-20261009-120000", rogue_rate=0.0)
+    wire(monkeypatch, api)
+    assert guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"]) == 0
+    ledger = guard.Ledger(state_dir / "ledger.json")
+    assert ledger.entries[0].actual_rate_usd_per_hr == 0.0
+    assert ledger.entries[0].assumed_rate_usd_per_hr == 1.79
+    assert ledger.entries[0].planned_usd == pytest.approx(3.58, abs=0.01)
+    # The assumed price must not come back as if it had been measured.
+    assert guard.assumed_rate("NVIDIA H100 PCIe", [], ledger) is None
+
+
+# --------------------------------------------------------------------------
+# Scope: no other path may act on a pod.
+# --------------------------------------------------------------------------
+
+
+def test_stop_pod_shim_refuses_a_foreign_pod(monkeypatch: pytest.MonkeyPatch, state_dir: Path) -> None:
+    from scripts.runpod import stop_pod as shim
+
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1"), foreign_pod()])
+    wire(monkeypatch, api)
+    assert shim.stop_pod("pod-tenant-a1", yes=True) == guard.EXIT_REFUSED
+    assert api.mutating_calls() == []
+
+
+def test_stop_pod_shim_stops_a_managed_pod(monkeypatch: pytest.MonkeyPatch, state_dir: Path, audit_log: list[dict[str, object]]) -> None:
+    from scripts.runpod import stop_pod as shim
+
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1")])
+    wire(monkeypatch, api)
+    assert shim.stop_pod("pod-conflux1", yes=True) == 0
+    assert api.mutating_calls() == [("stop", "pod-conflux1")]
+
+
+def test_stop_pod_shim_keeps_the_confirmation_requirement(monkeypatch: pytest.MonkeyPatch, state_dir: Path) -> None:
+    from scripts.runpod import stop_pod as shim
+
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1")])
+    wire(monkeypatch, api)
+    assert shim.stop_pod("pod-conflux1") == guard.EXIT_REFUSED
+    assert api.mutating_calls() == []
+
+
+def test_no_other_script_can_stop_or_delete_a_pod() -> None:
+    offenders: dict[str, list[str]] = {}
+    for path in sorted((REPO_ROOT / "scripts").rglob("*")):
+        if path.suffix not in {".py", ".sh"} or path.name == "guard.py" or not path.is_file():
+            continue
+        lowered = path.read_text(encoding="utf-8", errors="replace").lower()
+        hits = [token for token in DESTRUCTIVE_TOKENS if token in lowered]
+        if '"delete",' in lowered and "/pods/" in lowered:
+            hits.append("DELETE /pods")
+        if hits:
+            offenders[str(path.relative_to(REPO_ROOT))] = hits
+    assert offenders == {}, f"these files bypass the guard: {offenders}"
+
+
+def test_run_all_routes_every_stop_through_the_guard() -> None:
+    text = (REPO_ROOT / "scripts/runpod/run_all.py").read_text(encoding="utf-8")
+    assert "from stop_pod import stop_pod" not in text
+    assert "_guard_stop(pod_id)" in text
+    assert "stop_pod.py --pod-id" not in text
+
+
+def test_run_all_checks_pod_identity_before_it_touches_the_pod() -> None:
+    text = (REPO_ROOT / "scripts/runpod/run_all.py").read_text(encoding="utf-8")
+    check_at = text.index("_assert_conflux_pod(pod)")
+    first_remote = text.index('_ssh(key, ip, port, "mkdir -p /workspace/conflux"')
+    assert check_at < first_remote, "identity check must run before the first ssh"
+
+
+@pytest.fixture
+def run_all_module(monkeypatch: pytest.MonkeyPatch, state_dir: Path) -> Any:
+    monkeypatch.setattr(guard, "LEDGER_PATH", state_dir / "ledger.json")
+    helper_dir = str(REPO_ROOT / "scripts" / "runpod")
+    sys.path.insert(0, helper_dir)
+    try:
+        return importlib.import_module("scripts.runpod.run_all")
+    finally:
+        sys.path.remove(helper_dir)
+
+
+def test_run_all_fails_closed_when_the_created_pod_is_not_ours(
+    run_all_module: Any, monkeypatch: pytest.MonkeyPatch, state_dir: Path,
+) -> None:
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1"), foreign_pod()])
+    wire(monkeypatch, api)
+    with pytest.raises(SystemExit):
+        run_all_module._assert_conflux_pod({"pod_id": "pod-tenant-a1"})
+
+
+def test_run_all_fails_closed_when_the_created_pod_is_not_visible(
+    run_all_module: Any, monkeypatch: pytest.MonkeyPatch, state_dir: Path,
+) -> None:
+    wire(monkeypatch, FakeApi([]))
+    with pytest.raises(SystemExit):
+        run_all_module._assert_conflux_pod({"pod_id": "pod-gone"})
+
+
+def test_run_all_accepts_a_pod_the_guard_owns(
+    run_all_module: Any, monkeypatch: pytest.MonkeyPatch, state_dir: Path,
+) -> None:
+    api = FakeApi([conflux_pod("pilot-1", "pod-conflux1")])
+    wire(monkeypatch, api)
+    run_all_module._assert_conflux_pod({"pod_id": "pod-conflux1"})
