@@ -209,3 +209,50 @@ cd ~/projects/Conflux && .venv/bin/python -m pytest tests/test_verification_ir.p
 ```bash
 cd ~/projects/Conflux && for f in research/output/runs/*/result.json; do echo "$f"; done
 ```
+
+## Solver posture after the 2026-10-09 install
+
+The owner asked for the solvers to be installed if they help the repository. Outcome, measured:
+
+**z3 - installed locally.** `z3-solver 5.1.0.0` is now installed in the project virtual environment,
+so the positive verification path runs locally without a temporary install. The documented gate
+environment is unchanged: `docs/DEVELOPMENT.md` still installs `.[dev,visualisation]`, which carries
+no solver, and the guard tests keep forcing the unavailable path themselves - they set
+`sys.modules["z3"] = None` (`tests/test_omitted_coverage.py`, `tests/test_performance.py`) rather than
+depending on the ambient environment, so installing the solver cannot make them vacuous. Verified with
+the solver present: 22 tests pass across `tests/test_verification_ir_sets.py`,
+`tests/test_omitted_coverage.py` and `tests/test_performance.py`; 19 pass across
+`tests/test_coi_scaling_evidence.py` and `tests/test_defence_model_evidence.py`, and those two branch
+correctly on whether the solver answered.
+
+Re-measured through the repository's own generator with the solver installed:
+`research/output/runs/z3-agreement-v1/result.json` reports `bounded_safe` for the safe fixture with no
+counterexample and `unsafe` with a two-step counterexample for the control fixture, and the two
+fixtures agree once bounded and unbounded verdicts are compared by class. That generator was carrying
+two misleading fields before this run - a permanently false agreement flag and a counterexample flag that was
+true for every result including a bounded-safe one - and `tests/test_z3_agreement_evidence.py` now pins the
+corrected semantics.
+
+**nuXmv - no package, but the vendor download does work.** Checked on 2026-10-09: the local apt index
+has no `nuxmv` or `nusmv` candidate, PyPI has no `nuxmv` package, and the nearest name, `pynuxmv`, is a
+Python-to-nuXmv source transpiler rather than the model checker. FBK publishes nuXmv directly instead:
+version 2.2.0 (4 June 2026), Linux x86_64 tarball with a published SHA-256, under a licence that allows
+academic and non-commercial research use but forbids modification and redistribution. That licence is
+the owner's to accept, and they qualify; the binary is now installed locally from the vendor URL with
+the published digest verified, outside the repository, and reachable as `nuXmv` on `PATH`.
+
+One finding is worth carrying: the official tarball does not run unmodified on this host (Ubuntu 26.04,
+glibc 2.43). The launcher the vendor ships puts the whole bundled library directory first on the search
+path, and that directory contains an older `libc.so.6` plus a `libxml2.so.2` built against ICU 70; the
+loader rejects the first against the system `libstdc++` and cannot satisfy the second, because Ubuntu
+26.04 ships `libxml2.so.16` and ICU 78. The working arrangement is contained and documented in
+`docs/DEVELOPMENT.md`: keep the vendor's own `libxml2.so.2`, supply ICU 70 beside it, and let every
+other library resolve from the system, so the backend's `nuXmv -h` reports its real version line rather
+than a loader warning - the version line feeds the recorded solver fingerprint, so loader noise would
+otherwise put machine-local paths into evidence bundles.
+
+Consequence: the IC3 path is now available for the first time, and re-measuring the unbounded results
+becomes possible. It also makes the gate environment question sharper rather than closing it - a
+recorded bundle that says "nuXmv unavailable" is only reproducible where nuXmv is absent, so the
+environment that produced each bundle has to be recorded with it. Section "Recommendations" already
+proposes exactly that; this install is the first case that needs it.
