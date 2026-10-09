@@ -13,8 +13,11 @@ Use the narrowest useful feedback first, then finish with the repository gate.
 2. Run Ruff and strict mypy over changed Python boundaries.
 3. Run `python scripts/audit_repository.py` after architecture, evidence, or
    documentation changes.
-4. Run `python scripts/validate.py` before every review boundary. PowerShell
-   users may call `.\scripts\validate.ps1`.
+4. Run `python scripts/validate.py` before every review boundary, at the
+   depth the moment needs (`--tier quick` while iterating, `--tier standard`
+   before a commit, the default full tier at infrequent checkpoints); the tier
+   list is owned by `AGENTS.md`. PowerShell users may call
+   `.\scripts\validate.ps1 -Tier standard`.
 5. Review `git diff --check`, the staged diff, and the resulting evidence.
 
 The portable validator checks the AST import graph, documentation and archive

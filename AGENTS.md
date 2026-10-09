@@ -74,9 +74,12 @@ and testing instructions, see [Development](docs/DEVELOPMENT.md) and the
   saying "tested".
 - Do not claim stronger scientific evidence in a commit message than the
   retained artifacts support.
-- Before the final commit, run `python scripts/validate.py` unless the
-  environment prevents it; report unavailable checks explicitly rather than
-  silently skipping them.
+- Match validation depth to the moment: `--tier quick` while iterating,
+  `--tier standard` before a commit, and the full `python scripts/validate.py`
+  only at infrequent checkpoints, because the whole pipeline is heavy on a
+  laptop.  Do not present a lower tier as if the full pipeline had passed;
+  report checks that did not run explicitly rather than silently skipping
+  them.
 
 ## Visual evidence requirement
 
@@ -91,8 +94,25 @@ Distinguish: implemented / tested / verified / visually reviewed.
 ## Validation tooling
 
 The repository has a multi-layer validation pipeline orchestrated by
-`scripts/validate.py`.  AI agents should run `python scripts/validate.py`
-before committing.  The following checkers are included:
+`scripts/validate.py`, grouped into three tiers:
+
+- **quick** (`--tier quick`, about 10 s) — repository audit, schema validation,
+  Ruff, and the fast test subset (the suite minus the SLED-V scaling-evidence
+  file, which regenerates a large bundle).
+- **standard** (`--tier standard`, about 110 s) — adds the full test suite with
+  the branch-coverage threshold, the evidence reproductions, doctests, mypy,
+  yamllint, and vulture.  The branch-coverage run is about 105 s of it; the
+  same suite without instrumentation takes about 33 s.
+- **full** (the default, about 2 min) — adds the wheel build, the installed-CLI
+  smoke test, the markdownlint and cspell extension checks, and the
+  informational pip-audit.  This is the continuous-integration path.
+
+Tiers 1 and 2 stop at the first failing step; the full tier runs every step so
+CI can report all failures.  Iterate at `quick` and run `full` before commits;
+`standard` is the middle option when packaging does not matter.  Numbers
+measured 2026-10-08, after the SLED-V scaling test stopped regenerating its
+bundle per assertion (that change took the suite from 342 s to 103 s).  The
+following checkers are included:
 
 - **ruff** — linting with a broad rule set (`E`, `F`, `I`, `UP`, `RUF`,
   `SIM`, `PERF`, `B`, `PIE`, `FURB`, `COM`, `C4`, `PTH`, `N`, `DTZ`,

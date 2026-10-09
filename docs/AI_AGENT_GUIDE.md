@@ -213,7 +213,7 @@ The coder consumes the plan file via the PLAN → BUILD mode transition:
 1. Read the plan file fully.
 2. Restate as a todo list.
 3. Implement step by step, verifying each step (lint, types, tests).
-4. Run `python scripts/validate.py` before committing.
+4. Run `python scripts/validate.py --tier standard` before committing.
 5. Commit atomically with `Security impact:` line.
 
 ### 5. Evidence and synchronisation
@@ -246,7 +246,8 @@ Use this checklist when reviewing a diff:
 - [ ] Security cases tested: allow, deny, mixed-context, failure, immutability.
 - [ ] Appropriate tests added (unit, integration, adapter, reproducibility).
 - [ ] `python scripts/audit_repository.py` passes.
-- [ ] `python scripts/validate.py` passes.
+- [ ] `python scripts/validate.py` passes, or an explicit lower tier with the
+      steps it did not run recorded.
 - [ ] Existing canonical owner updated, no competing source created.
 - [ ] Terminology and paper notes synchronised if architecture changed.
 - [ ] Diff reviewed for hidden trust assumptions, benchmark shortcuts,
