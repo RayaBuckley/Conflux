@@ -76,10 +76,20 @@ def run_native_reproduction(
     protocol: ExperimentProtocol,
     root: Path | None = None,
 ) -> dict[str, object]:
-    """Run the paired native SLED reproduction and return the validated result."""
+    """Run the paired native SLED reproduction and return the validated result.
+
+    ``root`` may be a source checkout root or an installed ``share/conflux``
+    directory; when omitted, both layouts are probed.
+    """
     if protocol.track != "native_sled" or protocol.model is not None:
         raise ValueError("native_sled_protocol_required")
-    selected_root = root or _default_reproduction_root()
+    if root is None:
+        selected_root = _default_reproduction_root()
+    else:
+        selected = _experiments_root(root)
+        if selected is None:
+            raise ValueError("native_sled_reproduction_fixtures_unavailable")
+        selected_root = selected
     bounds = VerificationBounds(
         max_depth=_bound(protocol, "max_depth", 4),
         max_states=_bound(protocol, "max_states", 10_000),
@@ -90,8 +100,8 @@ def run_native_reproduction(
     total_transitions = 0
     for index in range(1, 4):
         filename = f"env-0{index}-{_suffix(index)}"
-        legacy = load_scenario(selected_root / "research" / "experiments" / "suites" / "legacy-reproduction" / filename)
-        canonical = load_scenario(selected_root / "research" / "experiments" / "suites" / "canonical" / filename)
+        legacy = load_scenario(selected_root / "suites" / "legacy-reproduction" / filename)
+        canonical = load_scenario(selected_root / "suites" / "canonical" / filename)
         results = []
         for suite_name, scenario in (("legacy_reproduction", legacy), ("canonical", canonical)):
             for defence_name, factory in _defences():
@@ -108,7 +118,7 @@ def run_native_reproduction(
         )
     controls = _negative_controls(bounds)
     baseline = json.loads(
-        (selected_root / "research" / "experiments" / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8"),
+        (selected_root / "baselines" / "sled-historical-v1.json").read_text(encoding="utf-8"),
     )
     result: dict[str, object] = {
         "schema_version": "2",
@@ -133,14 +143,29 @@ def run_native_reproduction(
     return result
 
 
+def _experiments_root(base: Path) -> Path | None:
+    """Return the experiments directory beneath ``base``, or None when absent.
+
+    A source checkout keeps the fixtures under ``research/experiments``; the
+    installed wheel ships them under ``share/conflux/experiments``.
+    """
+    for relative in ("research/experiments", "experiments"):
+        candidate = base / relative
+        if (candidate / "baselines" / "sled-historical-v1.json").is_file():
+            return candidate
+    return None
+
+
 def _default_reproduction_root() -> Path:
-    candidates = (
+    """Return the fixture directory of the source checkout or the installed wheel."""
+    bases = (
         _ROOT,
         Path(sysconfig.get_path("data")) / "share" / "conflux",
     )
-    for candidate in candidates:
-        if (candidate / "research" / "experiments" / "baselines" / "sled-historical-v1.json").is_file():
-            return candidate
+    for base in bases:
+        found = _experiments_root(base)
+        if found is not None:
+            return found
     raise ValueError("native_sled_reproduction_fixtures_unavailable")
 
 

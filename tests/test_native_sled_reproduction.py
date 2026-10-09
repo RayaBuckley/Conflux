@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,8 @@ from conflux.adapters.scenarios import load_schema
 from conflux.experiments import ExperimentProtocol, run_native_reproduction
 
 pytestmark = pytest.mark.reproducibility
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _protocol() -> ExperimentProtocol:
@@ -77,6 +80,17 @@ def test_historical_comparison_is_explicitly_non_comparable() -> None:
         "peak_memory_bytes": None,
         "measurement_status": "omitted_from_deterministic_fixture",
     }
+
+
+def test_installed_fixture_layout_is_resolved_from_an_explicit_root(tmp_path: Path) -> None:
+    """The installed wheel ships the fixtures under experiments/, not research/experiments."""
+    shutil.copytree(ROOT / "research" / "experiments", tmp_path / "experiments")
+    assert run_native_reproduction(_protocol(), tmp_path) == run_native_reproduction(_protocol())
+
+
+def test_missing_fixtures_are_reported_as_unavailable(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="native_sled_reproduction_fixtures_unavailable"):
+        run_native_reproduction(_protocol(), tmp_path)
 
 
 def test_protocol_requires_native_track_without_model() -> None:
