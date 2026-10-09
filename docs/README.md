@@ -35,6 +35,7 @@ prioritise different entry points for specific audiences:
   [Security model](reference/SECURITY_MODEL.md) →
   [Status](evidence/STATUS.md) →
   [Claim ledger](evidence/CLAIMS.md) →
+  [Contribution provenance](evidence/CONTRIBUTION_PROVENANCE.md) →
   [SLED](reference/SLED.md)
 - **AI agent**: [AGENTS.md](../AGENTS.md) →
   [AI agent guide](AI_AGENT_GUIDE.md) →

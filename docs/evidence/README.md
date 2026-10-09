@@ -7,6 +7,7 @@ records.
 |---|---|
 | [Status](STATUS.md) | Current capability summary and what's next. |
 | [Claim ledger](CLAIMS.md) | Claim strength and limitations. |
+| [Contribution provenance](CONTRIBUTION_PROVENANCE.md) | Third-year (Part B) and fourth-year (Part C) contributions, generated from the claim ledger. |
 | [Evaluation](EVALUATION.md) | Result and trace evidence. |
 | [Negative controls](NEGATIVE_CONTROLS.md) | Deliberately defective variants for validation. |
 | [Smoke result](MVP_RESULTS.md) | Bounded pipeline-readiness evidence. |

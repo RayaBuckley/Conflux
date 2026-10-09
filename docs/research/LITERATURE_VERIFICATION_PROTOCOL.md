@@ -203,6 +203,8 @@ The test suite (`tests/test_literature_corpus.py`) enforces:
 | [Novelty audit](../../research/reports/analysis/2026-08-16-novelty-audit.md) | Defines claims A1–A15 and their current risk levels |
 | [Foundational literature analysis](../../research/reports/analysis/2026-08-13-foundational-security-literature.md) | Conceptual analysis that motivates the reading list |
 | [Literature matrix](../../research/reports/analysis/2026-08-16-literature-matrix.md) | Structured comparison of Priority A–C works |
+| [Contribution provenance](../evidence/CONTRIBUTION_PROVENANCE.md) | Third-year and fourth-year contributions, generated from the claim ledger |
+| [Differentiation threats (2026-10-09)](../../research/reports/analysis/2026-10-09-differentiation-threats.md) | Six near-contemporary agent-security papers read in full; ten unsafe claim shapes; marks effect-time re-authorisation a replication |
 | [Claim ledger](../evidence/CLAIMS.md) | Canonical claim-strength tracking |
 | [Related work](RELATED_WORK.md) | Manuscript-facing positioning |
 | [REFERENCES.md](../../research/publications/manuscript/REFERENCES.md) | Bibliography verification status |

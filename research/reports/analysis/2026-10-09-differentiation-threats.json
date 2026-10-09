@@ -1,0 +1,538 @@
+{
+ "artifact": "05-differentiation-threats.json",
+ "companion_markdown": "05-differentiation-threats.md",
+ "verbose_edition": "05-differentiation-threats.verbose.md",
+ "generated": "2026-10-09",
+ "repo": "/home/raya/projects/Conflux",
+ "repo_head": "c4e5ace",
+ "scope": "Differentiate Conflux from six priority published threat papers (read in priority order), per the task brief; name unsafe claims; give honest answers to the five hardest marker questions.",
+ "method": {
+  "read_depth": "All six papers read as FULL TEXT from arXiv HTML v1 (abs page plus https://arxiv.org/html/<id>v1); no PDF or LaTeX cross-check.",
+  "raw_copies": "literature/scratch/raw-threats/<id>.html and <id>.abs.html",
+  "child_extractions": [
+   "literature/scratch/raw-threats/extract-A.md (papers 1-3)",
+   "literature/scratch/raw-threats/extract-B.md (papers 4-6)"
+  ],
+  "conflux_access": "read-only; quotes taken at HEAD c4e5ace",
+  "truncation_rule": "In the markdown twin, long fields are cut at a clause boundary and marked ' ...'; this JSON holds the full field text."
+ },
+ "conflux_claim_surface": [
+  {
+   "source": "0.1 What the system claims to be (`docs/reference/SECURITY_MODEL.md`)",
+   "quote": "For an action `a`, the core ITES rule is: Allow(a, PC) iff for every p in PC, ACS permits p to perform a."
+  },
+  {
+   "source": "0.1 What the system claims to be (`docs/reference/SECURITY_MODEL.md`)",
+   "quote": "Empty or unknown Principal Context denies observable, nested, delegation, and effectful actions."
+  },
+  {
+   "source": "0.1 What the system claims to be (`docs/reference/SECURITY_MODEL.md`)",
+   "quote": "Every Principal in the context must receive a pointwise policy allow."
+  },
+  {
+   "source": "0.1 What the system claims to be (`docs/reference/SECURITY_MODEL.md`)",
+   "quote": "An externally fetched object retains the authenticated provenance of its actual source(s). It does not inherit the requesting user's organisational authority merely because the request was made on the user's behalf."
+  },
+  {
+   "source": "0.1 What the system claims to be (`docs/reference/SECURITY_MODEL.md`)",
+   "quote": "Authentication makes the security decision accurate; it does not make the decision permissive."
+  },
+  {
+   "source": "0.1 What the system claims to be (`docs/reference/SECURITY_MODEL.md`)",
+   "quote": "Conflux guarantees confinement to this represented envelope under its assumptions. It does not guarantee that a human or model chooses the semantically best member of the envelope."
+  },
+  {
+   "source": "0.1 What the system claims to be (`docs/reference/SECURITY_MODEL.md`)",
+   "quote": "Delegation remains denied at runtime. Its scoped, one-use grant model is implemented, but activation requires independent policy parity and all certificate, visibility, attribution, expiry, and revocation gates."
+  },
+  {
+   "source": "0.2 Assurance boundary (`docs/research/RESEARCH_OVERVIEW.md`)",
+   "quote": "The central threat model is deliberately stronger than ordinary prompt-injection evaluation: information supplied to an LLM may arbitrarily influence its subsequent behaviour. The security mechanism therefore should not depend on the model correctly recognising malicious instructions."
+  },
+  {
+   "source": "0.2 Assurance boundary (`docs/research/RESEARCH_OVERVIEW.md`)",
+   "quote": "The core security question is instead: If a principal can influence an action, is that principal already authorised by the organisation's access-control system (ACS) to perform that action?"
+  },
+  {
+   "source": "0.2 Assurance boundary (`docs/research/RESEARCH_OVERVIEW.md`)",
+   "quote": "ITES prevents authority amplification relative to the granularity of the ACS. It does not by itself guarantee that authorised actions are safe, intended, or optimally parameterised."
+  },
+  {
+   "source": "0.2 Assurance boundary (`docs/research/RESEARCH_OVERVIEW.md`)",
+   "quote": "These are candidate distinctions, not established novelty claims, until a targeted prior-art search is complete."
+  },
+  {
+   "source": "0.3 Plan authority (`docs/decisions/011-open-ended-dynamic-plans.md`, accepted)",
+   "quote": "The planning domain separates: an authenticated `OperationSchema`; an `ActionTemplate` containing typed bindings; a `GroundAction` whose operation and arguments are fully resolved; a `Plan` containing typed nodes and explicit dependencies; a `PlanPatch` returned at a continuation point; and immutable `PlanExecutionState` and records."
+  },
+  {
+   "source": "0.3 Plan authority (`docs/decisions/011-open-ended-dynamic-plans.md`, accepted)",
+   "quote": "A planner is a pure port. Natural-language text is never executable. Patches may append nodes, replace an unstarted subtree, spawn a subplan, request an approval node, or terminate. A patch cannot modify completed history."
+  },
+  {
+   "source": "0.3 Plan authority (`docs/decisions/011-open-ended-dynamic-plans.md`, accepted)",
+   "quote": "New nodes produced by a continuation conservatively inherit the complete trusted provenance of the planner call. A later dataflow-sensitive refinement must prove that it does not remove an influence. Model-supplied provenance is never trusted."
+  },
+  {
+   "source": "0.3 Plan authority (`docs/decisions/011-open-ended-dynamic-plans.md`, accepted)",
+   "quote": "Planning approval does not grant action authority. Every grounded effect is converted to a canonical action, independently mediated at execution time, bound to its exact decision certificate, and executed only through an `ExecutorPort`. Policy revocation therefore takes effect between any two nodes."
+  },
+  {
+   "source": "0.3 Plan authority (`docs/decisions/011-open-ended-dynamic-plans.md`, accepted)",
+   "quote": "Neither runtime support nor bounded evidence is described as a proof of arbitrary generated program semantics."
+  },
+  {
+   "source": "0.4 Principal provenance (`docs/decisions/024-external-provenance-and-authority-bounds.md`, accepted)",
+   "quote": "External-provenance non-escalation: an externally fetched object retains the authenticated provenance of its actual source(s). It does not inherit the requesting user's organisational authority merely because the request was made on the user's behalf."
+  },
+  {
+   "source": "0.4 Principal provenance (`docs/decisions/024-external-provenance-and-authority-bounds.md`, accepted)",
+   "quote": "No-laundering closure: for ordinary derived objects, `PC(output) ⊇ PC(execution inputs)`. For scheduled executions, `PC(scheduled) includes PC(scheduling context)`. New assistant calls or sessions cannot reset Principal Context."
+  },
+  {
+   "source": "0.5 Effect-time checking (`docs/reference/SECURITY_MODEL.md`, `docs/evidence/CLAIMS.md`)",
+   "quote": "Only the conjunction of all decisions can permit an observable or effectful action, and execution evaluates current policy state again.\" — SECURITY_MODEL.md"
+  },
+  {
+   "source": "0.7 Intended Part C thesis (`.conflux-investigation/PLAN-partC-programme.md`)",
+   "quote": "A tool-using LLM agent can be defended by **restricting its options through a plan**: the plan fixes what the agent may do and with whose authority ... The project's contribution is that this restriction carries **formal guarantees** rather than an oracle's opinion, and that the price of the restriction is **measured**."
+  },
+  {
+   "source": "0.7 Intended Part C thesis (`.conflux-investigation/PLAN-partC-programme.md`)",
+   "quote": "Conflux instead derives authority from a plan and enforces it, and where the evaluation does need labels, they come from the mechanism rather than from an oracle."
+  }
+ ],
+ "papers": [
+  {
+   "n": 1,
+   "id": "2610.04975",
+   "slug": "runtime-authorization-subgoals",
+   "title": "Runtime Authorization of Self-Generated Subgoals in Long-Horizon Tool-Using AI Agents",
+   "authors": "Genliang Zhu, Chu Wang",
+   "date": "2026-10-04 (v1)",
+   "url": "https://arxiv.org/abs/2610.04975",
+   "read_depth": "FULL TEXT",
+   "local": "scratch/raw-threats/2610.04975.html",
+   "claim": "Every goal-graph mutation (create/replace/delegate/same-root join) must carry a version-bound transition witness that refines a principal-approved root contract; each protected effect is normalised, reserved and committed at one linearisation point with freshness recheck.",
+   "guarantee": "PROVEN, conditional: Theorem 2 (B1 root-task safety) under assumptions A1-A8 preserves t in L_C, and every protected effect commits on a fresh same-root witness with no modelled successor in B_C; plus Theorem 3 (conditional root-success), Lemma 0 (insufficiency of a memoryless local allowlist) and Proposition 0 (decidability). Proofs do not show an implementation meets A3-A6.",
+   "provenance_source": "MIXED: subgoal authority is DERIVED by witness refinement; root authority is NOT derived - the contract is supplied or explicitly approved by the principal (4.1) and A8 fixes one principal and one authorization root. 1.1: the paper does not infer authority from free-form text; 9.5 leaves provenance tracking to other controls.",
+   "enforcement_point": "Both mutation time (transition decision W1-W7) and effect time (reserve, then atomic commit; version change invalidates stale witnesses and reservations).",
+   "benchmark": "No LLM in the loop. 96 matched cases = 48 templates x {benign, drifted}; executable model 340 states / 419 transitions; 2692 mutants in 48 families; 2 upstream runtimes (AgentDojo FunctionsRuntime, tau-bench) with 32 cases / 258 native dispatches; 129 frozen cells / 25,800 latency samples; 5 comparators.",
+   "cost_note": "Cost only, no live-agent utility: Table 6 on an M4 Max (30,000 ops) - transition authorization median 83.584 us (p95 131.000, p99 225.166), effect authorization 22.292 us, commit 42.375 us; receipts 1348/847/1673 B; state 5470/8866 B. All 48 benign cases finish; 43 Deny + 5 Reauthorize on drifted.",
+   "overlap": [
+    "Plan-derived authority: an approved root contract fixes what the execution may do, and subgoal mutations must refine it - the same shape as Conflux plan authority over a self-generated plan.",
+    "Effect-time re-authorisation with freshness: reserve-then-commit at a single linearisation point is the closest published analogue of Conflux effect-time recheck.",
+    "Separation result for memoryless allowlists: independent evidence that a one-shot permission check is insufficient, which is the argument Conflux makes for commit-time checking.",
+    "Provenance as principal set: the paper refuses to infer authority from free-form text, matching Conflux treatment of untrusted text as never executable."
+   ],
+   "delta": [
+    "Multi-principal composition is explicitly out of scope: A8 fixes one principal and one authorization root, and 2.5 calls combining independent roots a separate problem. Conflux pointwise ACS-over-PC rule has no published equal.",
+    "Principal provenance is not mechanism-derived: 1.1 and 9.5 leave provenance tracking to other controls. Conflux derives the influencing principal set from the execution path.",
+    "Authority source: the root contract is supplied/approved per task; Conflux takes authority from the organisation ACS that exists independently of the task."
+   ],
+   "citation_sentence": "Runtime Authorization of Self-Generated Subgoals (arXiv:2610.04975) binds every goal-graph mutation to a version-bound witness refining a principal-approved root contract and rechecks each protected effect at an atomic commit, proving forbidden-state preservation and a separation result for memoryless allowlists under A1-A8 - establishing plan-derived authority plus effect-time re-authorisation as published prior art, while restricting itself to one principal and one authorization root and leaving provenance derivation to other controls.",
+   "must_not_claim": [
+    "First to authorise a self-generated plan or subgoal graph at effect time.",
+    "First to combine plan approval with commit-time recheck, or first to give a separation result for memoryless allowlists.",
+    "That a checked property is proven for Conflux: this paper proves theorems about a model, and Conflux has no equivalent proof obligation."
+   ],
+   "marker_question": "Theorem 2 needs A1-A8 and a structured contract the mechanism may not derive, and 9.5 hands provenance tracking elsewhere. If your system derives the principal label itself, what plays the role of C and of principal approval, and can you still state prefix safety (t in L_C) for effects admitted under a computed label?",
+   "quotes": [
+    {
+     "quote": "Free-form goal text supplies no authority.",
+     "locator": "Abstract"
+    },
+    {
+     "quote": "The paper does not infer authority from free-form text. An upstream component may translate a user request into a structured contract, but the principal or a trusted policy service must approve the structure used for enforcement.",
+     "locator": "1.1"
+    },
+    {
+     "quote": "These rules bind planner-visible goal evolution to operation-time enforcement rather than to a one-time plan approval.",
+     "locator": "5.3"
+    },
+    {
+     "quote": "Goal-transition authorization does not replace caller authentication, credential isolation, provenance tracking, input sanitization, rate limits, or settlement protocols.",
+     "locator": "9.5"
+    }
+   ],
+   "invalidation_verdict": {
+    "level": "partial (the only real novelty loss)",
+    "invalidates": "Novelty of version-bound witness refinement on goal-graph mutation, of atomic reserve/commit recheck with version freshness, and of the memoryless-local-allowlist separation result; the CLAIMS.md row \"Dynamic effects are re-authorised at execution time (Implemented)\" becomes a replication.",
+    "survives": "What the paper excludes by construction: multi-principal composition (A8 fixes one principal and one authorization root; 2.5 calls combining roots a separate problem) and mechanism-derived principal provenance (1.1, 9.5). Repo evidence: docs/reference/SECURITY_MODEL.md pointwise rule Allow(a, PC), docs/decisions/024-external-provenance-and-authority-bounds.md, src/conflux/domain/provenance.py, tests/test_provenance_precision_evidence.py."
+   }
+  },
+  {
+   "n": 2,
+   "id": "2609.18674",
+   "slug": "camelot",
+   "title": "CaMeLoT: CaMeL orchestrated with Temporal logic for static verification and liveness",
+   "authors": "Elia Nikolaou, Magnus Wiik Eckhoff, Robert Flood, et al.",
+   "date": "2026-09-16 (v1)",
+   "url": "https://arxiv.org/abs/2609.18674",
+   "read_depth": "FULL TEXT",
+   "local": "scratch/raw-threats/2609.18674.html",
+   "claim": "Inserts a verification stage between plan generation and execution: the restricted-Python plan is translated into a finite-state model labelled with tool calls, taint and history predicates, a filtered CTL suite is checked with nuXmv, and a counterexample becomes a repair prompt; execution then runs under CaMeL original runtime capability checks.",
+   "guarantee": "EMPIRICAL ONLY: zero occurrences of theorem/lemma/proof/sound. Exhaustive model checking of a generated finite abstraction with no soundness link to the real execution (loops over-approximated).",
+   "provenance_source": "DERIVED (inherited from CaMeL dataflow) but statically over-approximated: any value untrusted, conditionally trusted or not statically decidable is marked tainted. Reader (confidentiality) capabilities are deliberately not modelled; the policy formulas are operator artefacts.",
+   "enforcement_point": "Plan time, once per plan, before any tool is invoked; no re-check after a plan or goal change, runtime enforcement delegated to CaMeL.",
+   "benchmark": "AgentDojo 4 suites / 97 tasks, 1 model (claude-haiku-4-5); 22/28 CaMeL security policies covered statically (24/46 in the tagging study); E2 one SOC workflow with 7 CTL properties vs 1 safe + 7 unsafe variants; E3 97 tasks, 4 models, exact 87.6% / faithful 90.7% / F1 0.86.",
+   "cost_note": "No token or latency numbers. Over-blocking proxy only: CaMeLoT and CaMeL disagree on 16 of 75 successful tests (mostly CaMeL blocking on runtime readers); Table 3 over 97 tasks gives 9 CaMeLoT-only passes and 7 CaMeL-only passes; 6 of 28 CaMeL policies are not statically coverable; token savings asserted, never measured.",
+   "overlap": [
+    "Plan-time verification of the plan the agent will execute - the same stage Conflux calls plan verification, and the reason pre-execution plan verification is on the unsafe-claims list.",
+    "Over-approximating taint as a conservative static class, structurally the same choice as a conservative principal set.",
+    "Counterexample-driven repair, sharing the refinement idea with Conflux counterexample-driven plan repair."
+   ],
+   "delta": [
+    "Temporal scope: one plan, checked once, with no model of goal mutation and no re-check after an edit; Conflux checks the executed effect and re-evaluates policy state at commit.",
+    "Enforcement: CaMeLoT returns all runtime authority to CaMeL procedural per-call checks rather than stating an effect-level authority invariant.",
+    "Label semantics: taint is a binary over-approximation of CaMeL provenance; Conflux carries a principal set checked against an ACS.",
+    "Evidence class: CaMeLoT verifies a model it generated; no soundness claim links it to execution."
+   ],
+   "citation_sentence": "CaMeLoT (arXiv:2609.18674) translates a restricted-Python agent plan into a finite-state model, model-checks temporal properties before any tool call, and repairs from counterexamples, covering 22 of 28 CaMeL policies on 97 AgentDojo tasks while returning runtime enforcement to CaMeL - establishing plan-time verification as prior art and leaving effect-time authority over a mutable plan unaddressed.",
+   "must_not_claim": [
+    "First to verify a generated agent plan before execution, or first to use temporal properties over a tool-using plan.",
+    "First to repair a plan from a counterexample.",
+    "Any equivalence to model checking: Conflux plan verification is a finite worst-case abstraction, not CTL model checking over a generated program."
+   ],
+   "marker_question": "CaMeLoT verifies one plan and then returns all effect-time authority to CaMeL, and it models no goal mutation. If you claim effect-time authorization over a plan the agent can still rewrite, what is your analogue for re-proving the temporal invariant after a plan or goal change, and how do you avoid the over-taint over-blocking that is asserted but never quantified?",
+   "quotes": [
+    {
+     "quote": "However, CaMeL’s policy model is inherently procedural and temporally local. A policy is evaluated at tool invocation, using the current tool, its arguments, and the provenance information available at that point.",
+     "locator": "1"
+    },
+    {
+     "quote": "Any value whose provenance is untrusted, conditionally trusted, or not statically decidable is marked as tainted by CaMeLoT.",
+     "locator": "4 (Mapping CaMeL Capabilities to Static Taints)"
+    },
+    {
+     "quote": "conditionally trusted function outputs are over-tainted, which may result in excessive blocking, while values and reader capabilities are not modelled, potentially leading to insufficient blocking.",
+     "locator": "6"
+    }
+   ],
+   "invalidation_verdict": {
+    "level": "none (adjacent layer)",
+    "invalidates": "Novelty of checking a generated plan before execution, already on the unsafe-claims list (03-planning-recent.md F).",
+    "survives": "Effect-time authority, because CaMeLoT is plan-time only and returns runtime enforcement to CaMeL. Repo evidence: SECURITY_MODEL.md effect-time recheck; src/conflux/planning/verify.py delegates to src/conflux/verification/plan_ir.py (docs/decisions/023-ir-encoded-verification.md), scope must be stated as IR invariants, not model checking."
+   }
+  },
+  {
+   "n": 3,
+   "id": "2609.37196",
+   "slug": "toolfence",
+   "title": "ToolFence: Fine-Grained Authorization for Secure Tool-Using LLM Agents",
+   "authors": "Yanjie Li, Xiangyu He, Xuelong Dai, et al.",
+   "date": "2026-09-29 (v1)",
+   "url": "https://arxiv.org/abs/2609.37196",
+   "read_depth": "FULL TEXT",
+   "local": "scratch/raw-threats/2609.37196.html",
+   "claim": "An isolated LLM policy architect that never sees untrusted content compiles the authenticated query plus controller-owned tool schemas into a typed blueprint: a tool manifest with effect class and per-parameter authority-sensitivity flags, plus capabilities (tool, effect, per-parameter bindings, budget, reusable). A no-LLM monitor checks capability match, binding traceability and budget on every call; a miss triggers a capability grant or an LLM judge, and approved shapes are cached.",
+   "guarantee": "ARGUED, not proven: zero occurrences of theorem/lemma/proof. App. A.2 states a fail-closed authorization property relative to the capabilities the judge is willing to grant, so the property is relative to an LLM judgement.",
+   "provenance_source": "DERIVED at two levels, with an LLM in the authority path: concrete value provenance is computed at runtime (pi(p_j) in {user, tool, model} by checking whether the value occurs in the query, in an observation of an executed tool, or neither), but the blueprint label (allowed bindings, sensitive parameters) is LLM-compiled and new capabilities come from an LLM judge.",
+   "enforcement_point": "Per tool call, immediately before dispatch (deterministic fast path over a typed blueprint); no goal-graph authorization event and no post-hoc audit.",
+   "benchmark": "AgentDojo parameter-aware split: 629 pairs (524 cross-tool, 85 within-tool, 20 ambiguous), main ASR over 609, 6 attack strategies; 3 models (Qwen3-max, GPT-4o, Mistral-small-3.1-24B); baselines No Defence, Repeat Prompt, Spotlighting, Tool Filter, PromptArmor, SecInfer, CaMeL.",
+   "cost_note": "Yes, quantified. Qwen3-max clean utility 38.90 / U@A 32.45 / overall ASR 0.20 vs no defence 42.70 / 31.85 / 21.20 (the 3.80 pp drop); blueprint-only ablation U@A 25.60 at ASR 0.45 - the paper own over-blocking evidence - recovering to 32.45 with grants; runtime 1.90x full, 1.63x vs CaMeL 12.95x.",
+   "overlap": [
+    "Per-argument authorization of a tool call - the same granularity Conflux claims, but enforced per call from a compiled blueprint rather than from a plan object.",
+    "Deterministic monitor in the authority path with an LLM kept out of the fast path, echoing Conflux treatment of model output as non-authoritative.",
+    "Capability objects with budget and reuse lifetime, close to Conflux capability envelope."
+   ],
+   "delta": [
+    "Where the label comes from: ToolFence traces where a value came from by string/observation matching in a three-way class; Conflux asks whether every influencing principal is permitted by the ACS, so the label is a principal set and the check is a policy query.",
+    "Authority source: the blueprint is LLM-compiled from one authenticated query and extended by a judge; Conflux authority is stable organisational policy and no judged grant can enlarge it.",
+    "Scope: no plan object, no ordering or liveness property over an execution, and the paper concedes it verifies where a value comes from but not whether the model choice among authorized values matches user intent."
+   ],
+   "citation_sentence": "ToolFence (arXiv:2609.37196) compiles a typed authorization blueprint from the authenticated query, enforces per-parameter provenance bindings and budgets with a no-LLM monitor, and reduces attack success from 21.20% to 0.20% for a 3.80 percentage-point utility drop at 1.63x-1.90x runtime - establishing fine-grained per-call authorization as prior art while leaving authority labels LLM-compiled and the guarantee judge-relative.",
+   "must_not_claim": [
+    "First fine-grained or per-argument authorization for tool calls, and first to gate a call on per-parameter provenance.",
+    "First to combine a compiled policy artefact with a deterministic runtime monitor.",
+    "That provenance-only enforcement suffices: ToolFence own failure analysis says it verifies where a value comes from, not whether the model chose among authorized values as the user intended."
+   ],
+   "marker_question": "ToolFence already derives per-argument provenance, but by string/observation traceability, with an LLM compiling the policy and an LLM judge adding authority. If you claim mechanism-derived principal provenance, what is your label lattice and derivation rule versus pi(p_j) in {user, tool, model}, and can you state fail-closed authorization without depending on what a judge will grant?",
+   "quotes": [
+    {
+     "quote": "Before execution, a policy architect compiles the authenticated query q into an authorization blueprint. The architect is an isolated LLM call that sees only q and the controller-owned tool schemas; it never observes untrusted content.",
+     "locator": "3.2"
+    },
+    {
+     "quote": "Instead it asks the judge to grant a new capability and, on approval, extends the running blueprint so that this and future same-shape calls are handled by the deterministic monitor with no further judge call.",
+     "locator": "3.4"
+    },
+    {
+     "quote": "This exposes a limitation of provenance-only enforcement: ToolFence verifies where a value comes from, but not whether the model’s choice among multiple authorized values faithfully reflects user intent.",
+     "locator": "4.4"
+    }
+   ],
+   "invalidation_verdict": {
+    "level": "none (different layer), but removes argument-level novelty",
+    "invalidates": "Novelty of fine-grained / per-argument authorization of tool calls and of a deterministic monitor over a compiled blueprint.",
+    "survives": "Label semantics and authority source: ToolFence computes pi(p_j) in {user, tool, model} by traceability and lets an LLM judge grant new capabilities, while Conflux queries the ACS for every influencing principal and keeps model judgement outside the TCB. Repo evidence: docs/decisions/025-authority-confinement-semantic-judgement-delegation.md, tests/test_argument_visibility_attribution.py, tests/test_plan_ir_extensions.py."
+   }
+  },
+  {
+   "n": 4,
+   "id": "2610.06966",
+   "slug": "apex",
+   "title": "arXiv:2610.06966: Active Protection at Execution Boundaries for LLM Agents",
+   "authors": "Xinran Zheng, Xin Fan Guo, Zhiqiang Hao, et al. (10 authors)",
+   "date": "2026-10-03 (v1)",
+   "url": "https://arxiv.org/abs/2610.06966",
+   "read_depth": "FULL TEXT",
+   "local": "scratch/raw-threats/2610.06966.html",
+   "claim": "Registers tools, MCP methods and skills as capability units, compiles the trusted task before untrusted execution into a fixed contract DAG (Acquire/Derive/Conditional value clauses plus Effect clauses with per-argument justifications), then admits an external effect at the boundary only if it is not rejected and no exposure probe fired; repair and replanning run under the original contract.",
+   "guarantee": "PROVEN, conditional - the strongest formal claim after paper 1: Lemma (Authorization soundness) and Theorem (Task-level authorization soundness) in App. B.2.2 under three stated assumptions (contract fidelity, receipt correctness, valid semantic bindings, where ambiguous bindings are resolved by agent judgements); exposure has a separate lemma under a signalling assumption.",
+   "provenance_source": "DERIVED by LLM compilation of the trusted task, not by runtime dataflow: the contract clauses are treated as the user endorsement itself; contract fidelity is assumed; identity-bearing slots (recipient, path, account) are contract-fixed values, not derived principals; receipts grant no authority.",
+   "enforcement_point": "Per proposed external effect, pre-commit at the execution boundary; each proposal is checked independently and inherits no admission from the nested invocation that issued it; compilation is plan time; no post-hoc audit stage.",
+   "benchmark": "6 benchmarks, 5,486 attack cases: AgentDojo 97 benign + 629, ASB-OPI 2,040, MCPTox 357 clean + 1,348, MSB 622, SkillInject 180, SCR-Bench 667; 13 baselines; 3 defender backbones. 0% ASR on 5 of 6, 0.56% on SkillInject, 0% under adaptive attacks; AU 80.29 AgentDojo / 85.05 ASB-OPI.",
+   "cost_note": "Yes, with explicit attribution. Table 9 over 5,486 cases: 813 utility errors (597 contract errors/refusals of legitimate work, 34 contract errors at 0.6%, 218 WRAP false positives, 0 PLANT false positives, 322 continuation failures); token cost reported only in a figure (fewer than TaskShield, about as many as Spotlighting).",
+   "overlap": [
+    "Authorized effect plus task-endorsed influence, both settled by the trusted task: the design idea Conflux expresses as the conjunction of all decisions being needed for an effect.",
+    "Execution-boundary enforcement of a contract compiled before untrusted content is read, matching Conflux effect-time check with an explicit trust boundary.",
+    "No attack-specific policy and no taint tracking: same architectural choice as treating provenance conservatively instead of detecting attacks.",
+    "Lemma/theorem structure with named assumptions: the pattern Conflux should copy for its own claims."
+   ],
+   "delta": [
+    "Authority source: the contract is assumed faithful to one trusted task, so authorization is task-local; Conflux authority is the ACS over principals, which no task can enlarge and which can bind an external source (external-provenance non-escalation, docs/decisions/024).",
+    "The TCB boundary: arXiv:2610.06966 assumption (iii) places LLM semantic binding inside soundness; Conflux forbids model output from granting authority or narrowing PC (docs/decisions/025; SECURITY_MODEL.md TCB table).",
+    "arXiv:2610.06966 cannot express tasks that delegate decisions to external content, and has no runtime re-authorization; Conflux must not claim delegation either, because runtime delegation is disabled in task-registry.json (DIR-DELEG-001)."
+   ],
+   "citation_sentence": "arXiv:2610.06966 (arXiv:2610.06966) compiles a single authorization contract from the trusted task and admits an effect at the execution boundary only when the effect is authorized and the influencing information is endorsed, proving task-level authorization soundness under contract-fidelity, receipt and semantic-binding assumptions and reporting 0% attack success on five of six benchmarks (5,486 cases; 813 attributed utility errors) - establishing boundary-level authorization as prior art and leaving authority derived from an organisational policy over multiple principals as the open problem.",
+   "must_not_claim": [
+    "First to enforce at the execution boundary, or first to compile a contract from the trusted task before untrusted execution.",
+    "First to prove authorization soundness with explicit assumptions, or first to pair an authorized-effect condition with an endorsed-influence condition.",
+    "First to report token overhead alongside security and utility."
+   ],
+   "marker_question": "Soundness is conditional on contract fidelity and on repair and replanning preserving the contract, both assumed rather than runtime-verified. If labels come from an LLM compiler reading the trusted task, what mechanism rather than assumption keeps principal provenance non-circular when the task is ambiguous or delegates authority to external content?",
+   "quotes": [
+    {
+     "quote": "Safety there turns on two conditions, both settled by the trusted task rather than by the run: whether the proposed effect is authorized, and whether the runtime information reaching it is endorsed by that task.",
+     "locator": "Abstract"
+    },
+    {
+     "quote": "the contract is the oracle: its clauses are the user’s endorsement itself, so every authorized proposal is derivable from them",
+     "locator": "3.3"
+    },
+    {
+     "quote": "arXiv:2610.06966 enforces what the contract authorizes, so its protection is only as good as the contract’s fidelity to the user’s request.",
+     "locator": "5"
+    },
+    {
+     "quote": "Accurate receipts do not imply trustworthy content: they record what was returned, including malicious content.",
+     "locator": "App. B.2.2"
+    }
+   ],
+   "invalidation_verdict": {
+    "level": "none (but the formal equal to beat)",
+    "invalidates": "Novelty of proving authorization soundness at the execution boundary with named assumptions, and of pairing an authorized-effect condition with an endorsed-influence condition.",
+    "survives": "The authority source: arXiv:2610.06966 assumes contract fidelity for one trusted task and places LLM semantic binding inside its assumptions (App. B.2.2), while Conflux takes authority from the ACS over the accumulated principal set. Repo evidence: src/conflux/verification/plan_ir.py invariant principal-context-monotonic, docs/decisions/025, SECURITY_MODEL.md TCB table."
+   }
+  },
+  {
+   "n": 5,
+   "id": "2504.20984",
+   "slug": "ace",
+   "title": "ACE: A Security Architecture for LLM-Integrated App Systems",
+   "authors": "Evan Li, Tushin Mallick, Evan Rose, et al. (Northeastern)",
+   "date": "2025-04-29 (v1)",
+   "url": "https://arxiv.org/abs/2504.20984",
+   "read_depth": "FULL TEXT",
+   "local": "scratch/raw-threats/2504.20984.html",
+   "claim": "Splits planning: an abstract planner that sees only the trusted query and is oblivious to installed apps emits an abstract plan over abstract apps that hard-constrains all downstream paths; a concrete planner maps abstract apps to installed apps and statically checks the compiled plan against a user-specified information-flow lattice; the executor runs orchestrator / plan worker / app workers with data and capability barriers and never places app output in an LLM prompt.",
+   "guarantee": "ARGUED plus EMPIRICAL only: no theorem, lemma or proposition in the full text (the only Theorem string is a reference title); the design claim is that static verification guarantees pre-specified flow conditions, and the 100% security number is empirical.",
+   "provenance_source": "ASSUMED: labels are human or registry input. The system requires the user to label all information sources including within the query, and app and storage classes come from registered application security clearances; only propagation is derived by lattice contamination. If a label is wrong, leakage is not detected.",
+   "enforcement_point": "Plan time: static analysis of the compiled plan before execution; plus execution-time capability barriers per app invocation and orchestrator type/schema validation. No per-effect authorization decision and no audit stage.",
+   "benchmark": "InjecAgent only: 1,054 cases (544 exfiltration, 510 direct harm), 17 user apps, 52 attacker apps, 4 models; the paper own three new attacks against IsolateGPT are reported to fail by design; baselines are architectural check/cross marks rather than numeric.",
+   "cost_note": "Utility is measured, restriction cost is not isolated: overall utility success 75.2% for gpt-4o and gpt-o3-mini (matching 82.1%, execution 91.7%), with model-specific overall 67.8 / 47.2 / 66.7; no latency or token overhead and no false-block rate; ambiguity is recovered by the user rewriting the query.",
+   "overlap": [
+    "Trusted-information-only planning: the same discipline as Conflux ADR-011 (a planner is a pure port; natural-language text is never executable).",
+    "Structured plan checked before execution, sharing shape with the Conflux plan IR and verification stage.",
+    "Per-component capability barriers and isolation at execution, close to Conflux capability envelope and scoped delegation choice set.",
+    "Planning-integrity attacks as the threat class Conflux plan authority is meant to survive."
+   ],
+   "delta": [
+    "Authority model: the lattice is an information-flow policy over sensitivity classes, not an ACS over principals; ACE can forbid a flow while still permitting a principal-unauthorised effect.",
+    "Label source: user and registry supplied, so security rests on correct human labelling; Conflux derives the influencing principal set from the execution path (src/conflux/domain/provenance.py).",
+    "Dynamic arguments: static analysis of the plan structure cannot cover the values of an executed effect, which is what Conflux effect-time certificate and recheck address.",
+    "No proof and no per-effect decision: the security claim is attack-prevention counts."
+   ],
+   "citation_sentence": "ACE (arXiv:2504.20984) builds the plan from trusted information only, verifies user-specified information-flow constraints by static analysis of the structured plan, and enforces per-app barriers at execution, preventing all 1,054 InjecAgent cases at 75.2% overall utility - establishing trusted-plan-derived restriction as prior art while leaving the trust classes user-supplied and unverified against mechanism-derived principal authority.",
+   "must_not_claim": [
+    "First to build the plan from trusted information only, or first to keep the planner oblivious to untrusted content and installed apps.",
+    "First to statically check a structured agent plan against an information-flow policy before execution.",
+    "First to isolate agent apps behind capability barriers, or first to name planning-integrity attacks."
+   ],
+   "marker_question": "The analysis is only as good as two human inputs, the query sensitivity label and the registered app clearance, and no lemma ties label correctness to the 100% figure. What stops a mislabelled or self-described app from passing static analysis while an unauthorized flow occurs, and how does that differ from plan authority that derives principal labels from a mechanism rather than a registry field?",
+   "quotes": [
+    {
+     "quote": "We verify that the plans generated by our system satisfy user-specified secure information flow constraints via static analysis on the structured plan output.",
+     "locator": "Abstract"
+    },
+    {
+     "quote": "our system requires the user to label all information sources used by the system, including within user queries",
+     "locator": "IV-D3"
+    },
+    {
+     "quote": "If the user fails to appropriately label any of these data sources, information leakage will not be detected by the flow analysis component.",
+     "locator": "IV-D3"
+    },
+    {
+     "quote": "the user may be able to recover lost utility by providing additional context relevant to the task in the query itself",
+     "locator": "App. C-A"
+    }
+   ],
+   "invalidation_verdict": {
+    "level": "none (oracle-labelled provenance)",
+    "invalidates": "Novelty of trusted-information-only planning and of static information-flow checking of a structured plan, both on the unsafe-claims list.",
+    "survives": "Mechanism-derived labelling: ACE requires the user to label all information sources and reads app classes from registered security clearances, which is the oracle-labelled provenance class named in 03-planning-recent.md C. Repo evidence: src/conflux/domain/provenance.py, docs/decisions/024, tests/test_provenance_precision_evidence.py."
+   }
+  },
+  {
+   "n": 6,
+   "id": "2601.11816",
+   "slug": "polaris",
+   "title": "POLARIS: Typed Planning and Governed Execution for Agentic AI in Back-Office Automation",
+   "authors": "Zahra Moslemi, Keerthi Koneru, Yen-Ting Lee, et al.",
+   "date": "2026-01-16 (v1)",
+   "url": "https://arxiv.org/abs/2601.11816",
+   "read_depth": "FULL TEXT",
+   "local": "scratch/raw-threats/2601.11816.html",
+   "claim": "Recasts agent orchestration as typed plan synthesis and validated execution: a planner proposes K=5 structurally diverse type-checked DAGs over typed agents, a rubric-guided reasoner selects one, a dependency-aware scheduler executes it, a bounded validator-gated repair loop re-parses only failing fields before irreversible actions, and compiled policy guardrails block or route side effects before they occur.",
+   "guarantee": "EMPIRICAL only: no theorem, lemma or proposition; 4.6 termination and guarantees is a bounded-loop stopping argument (stop on validator pass or budget exhaustion, else a safe fallback), and type soundness is asserted as generation-time checking.",
+   "provenance_source": "ASSUMED: all authority inputs are operator-supplied (typed agent library, policy store keyed by vendor, sector, currency); provenance appears only as a document-artifact requirement (purchase order, receiving and approval artifacts), not as a derived principal.",
+   "enforcement_point": "Plan time (type-checked DAG feasibility, policy-aware rubric selection) and pre-commit (risk-control gates, graded routing auto-approve / review / block, validator gate before irreversible actions), with post-hoc audit artifacts and execution traces.",
+   "benchmark": "SROIE 4-field extraction plus a controlled synthetic invoice suite (4 scenarios x 10 invoices = 40); policy ground truth is vendor absence from the policy DB; anomaly ground truth is vendor-wise MAD z > 3.5; 2 models (GPT-4o planner, GPT-5 selector); baselines qualitative only.",
+   "cost_note": "Partly, as false-positive violations: policy counts TPV 9 / FPV 2 / FNV 2 / TNV 15 (precision, recall and F1 all 0.8182; noisy scan scenario F1 0.4000); anomaly routing FP 0, recall 0.9000, F1 0.9474; extraction accuracy 0.945-0.968; SROIE micro-F1 0.8116. No latency, token, over-blocking or human-intervention measurement.",
+   "overlap": [
+    "Typed plan IR with type-checked candidate plans and validation before execution: the phrase-level origin of the unsafe claims typed plan IR and pre-execution plan verification.",
+    "Validator-gated bounded repair loop, structurally like counterexample-driven repair in CaMeLoT and Conflux refinement.",
+    "Guardrails that block or route side effects before they occur, and auditability by construction, echoing Conflux certificate and records layer."
+   ],
+   "delta": [
+    "No adversary and no security property: the full text has zero occurrences of attack, adversarial, malicious, threat or authorize, so nothing here constrains the Conflux claim surface.",
+    "No principal provenance and no ACS: authority inputs are operator tables, not a policy over principals the effect must satisfy.",
+    "Evaluation is a back-office accuracy and compliance setting (SROIE plus 40 synthetic invoices), not comparable to an injection benchmark."
+   ],
+   "citation_sentence": "POLARIS (arXiv:2601.11816) casts enterprise automation as typed plan synthesis with validator-gated execution, a bounded repair loop and compiled policy guardrails that gate side effects, reporting 0.81 micro-F1 on SROIE and 0.95-1.00 anomaly-routing precision on a 40-invoice suite - showing that typed-plan governance is already published in a non-adversarial setting and that a security claim must rest on a different property.",
+   "must_not_claim": [
+    "First to use a typed plan IR, or first to gate side effects with compiled plan-level policy checks.",
+    "First to combine plan synthesis with a bounded validator-gated repair loop.",
+    "First to derive auditable execution traces from a typed plan."
+   ],
+   "marker_question": "POLARIS already ships typed-plan synthesis plus guardrails for a real enterprise task. What makes your typed plan load-bearing for security rather than governance, and where do you show that difference adversarially?",
+   "quotes": [
+    {
+     "quote": "a planner proposes structurally diverse, type-checked directed acyclic graphs (DAGs); a rubric-guided reasoning module selects a single compliant plan; and execution is guarded by validator-gated checks, a bounded repair loop, and compiled policy guardrails that block or route side effects before they occur",
+     "locator": "Abstract"
+    },
+    {
+     "quote": "each specifying a capability description, typed I/O schemas, pre/postconditions, and policy or risk tags (eligibility, side effects, segregation-of-duties)",
+     "locator": "3"
+    },
+    {
+     "quote": "enforcement of provenance that requires PO, receiving, and approval artifacts. Missing provenance automatically registers as a violation.",
+     "locator": "4.7"
+    }
+   ],
+   "invalidation_verdict": {
+    "level": "none (nothing security-relevant to invalidate)",
+    "invalidates": "Novelty of typed-plan governance: typed DAG synthesis, validator-gated execution and guardrails before side effects, all already on the unsafe-claims list.",
+    "survives": "No security claim to compare: POLARIS has no threat model (zero occurrences of attack, adversarial, malicious, threat, authorize). Conflux planning evidence is utility-only and bounded (CLAIMS.md; research/output/runs/planning-pilot-{1b,3b,7b}-v1/, research/output/runs/runpod-results/runpod-eval/planning/), which is a limitation to disclose."
+   }
+  }
+ ],
+ "unsafe_claims": {
+  "source": ".conflux-investigation/PLAN-partC-programme.md section F (items 1-8) plus two added by this pass (items 9-10)",
+  "items": [
+   {
+    "n": 1,
+    "claim": "Typed plan IR",
+    "why": "POLARIS ships typed plan synthesis with typed I/O contracts; ACE compiles the plan into an information-flow grammar. Say \"the plan carries authority\", never \"we introduce a typed plan IR\"."
+   },
+   {
+    "n": 2,
+    "claim": "Pre-execution plan verification against a policy",
+    "why": "CaMeLoT model-checks a generated plan; ACE analyses the compiled plan against a lattice; POLARIS type-checks candidate DAGs."
+   },
+   {
+    "n": 3,
+    "claim": "Plan-following least privilege",
+    "why": "ToolFence enforces capability, per-parameter binding and budget per call from an authenticated-query blueprint; ACE binds app clearances at planning time."
+   },
+   {
+    "n": 4,
+    "claim": "Monotone / attenuation-only authority",
+    "why": "2610.04975 derives subgoal authority by witness refinement against a principal-approved root contract (§4.3, §5.2)."
+   },
+   {
+    "n": 5,
+    "claim": "Commit-time re-authorisation",
+    "why": "2610.04975 reserves a normalised effect and commits it at one linearisation point with version freshness (Theorem 2, B1); arXiv:2610.06966 mediates every external effect pre-commit."
+   },
+   {
+    "n": 6,
+    "claim": "Region-local plan repair",
+    "why": "CaMeLoT repairs from a counterexample; arXiv:2610.06966 repair and replanning preserve the contract; POLARIS has a bounded validator-gated repair loop (L_max = 3)."
+   },
+   {
+    "n": 7,
+    "claim": "Typed-block runtime guards",
+    "why": "ToolFence monitor plus typed blueprint; arXiv:2610.06966 WRAP admission; POLARIS risk-control gates."
+   },
+   {
+    "n": 8,
+    "claim": "A residual-authority or progress metric",
+    "why": "the direct threat already has prefix safety `t in L_C` and `SafeFuture_C`; CaMeLoT has liveness-style properties."
+   },
+   {
+    "n": 9,
+    "claim": "(new) First fine-grained / per-argument tool-call authorization",
+    "why": "ToolFence: 629 parameter-aware pairs, ASR 21.20% -> 0.20%, 3.80 pp utility drop."
+   },
+   {
+    "n": 10,
+    "claim": "(new) First to prove authorization soundness at the execution boundary",
+    "why": "arXiv:2610.06966: Lemma (Authorization soundness) and Theorem (Task-level authorization soundness), App. B.2.2."
+   }
+  ]
+ },
+ "marker_questions": [
+  {
+   "n": 1,
+   "question": "2610.04975 requires principal approval of the structure enforcement uses (A8, §4.1). What plays that role for you, and can you still state prefix safety `t in L_C` for a computed label?",
+   "honest_answer": "The analogue is the organisational ACS plus the effect-time certificate, not a per-task approval: weaker in that no human reviews the plan, stronger in that authority exists independently of the task. Prefix safety over a whole execution cannot be claimed — the checked property is per-effect authority confinement against current policy at commit, with `src/conflux/verification/plan_ir.py` and `tests/test_policy_and_ites.py` as implementation, not proof."
+  },
+  {
+   "n": 2,
+   "question": "Does the guarantee compose across principals and survive plan mutation after approval?",
+   "honest_answer": "The multi-principal rule is the design (`Allow(a, PC) iff for every p in PC, ACS permits p`; `docs/decisions/024-...md`), and 2610.04975 excludes exactly that case (A8; §2.5). Composition across independent authorization roots is not claimed and not implemented, and runtime delegation is disabled (`task-registry.json`: DIR-DELEG-001), so the answer stops there — do not borrow CaMeL's cross-agent non-composition result as support."
+  },
+  {
+   "n": 3,
+   "question": "arXiv:2610.06966 assumes contract fidelity; you claim derived authority. Where is the derivation?",
+   "honest_answer": "In the policy kernel: the principal set accumulates along the execution path (`src/conflux/domain/provenance.py`) and an effect is admitted only if the policy permits every member. The honest limit is that ACS correctness and principal-set completeness are trust assumptions, stated in the `SECURITY_MODEL.md` TCB table and ADR-025, not proved."
+  },
+  {
+   "n": 4,
+   "question": "ACE uses user labels, ToolFence traces `{user, tool, model}`. What is your label lattice, and who writes the policy?",
+   "honest_answer": "There is no separate lattice: provenance is a principal set and the policy is the organisation's existing ACS (Cedar policies; `tests/test_cedar_policy.py`, `tests/test_cedar_preflight.py`). That is the headline delta — the policy is not authored for the agent, and no LLM judgement sits in the authority path."
+  },
+  {
+   "n": 5,
+   "question": "You claim the price of restriction is measured. What is your over-blocking number?",
+   "honest_answer": "Not yet comparable: Conflux reports bounded utility evidence with `security_violations=0` (`CLAIMS.md`; planning-pilot 7B 7/8, 3B 5/8, 1B 0/8; runpod 24-cell 19/24) but no false-block rate and no latency table against a baseline. ToolFence reports 3.80 pp utility drop and 1.63x-1.90x runtime; arXiv:2610.06966 attributes 813 utility errors and 218 false positives over 5,486 cases; CaMeLoT reports 16 of 75 disagreements. Until Conflux has that accounting, \"measured price\" is partial and the missing numbers must be named."
+  }
+ ],
+ "unverified_items": [
+  "Venue metadata: 'CAMLIS 2026' (CaMeLoT) and the AAAI 2026 workshop footer (POLARIS) come from arXiv HTML only; no conference page checked.",
+  "SSRN twin 7559180 of arXiv:2610.04975 is named in 03-planning-recent.md F but was not fetched.",
+  "arXiv:2610.06966 code release github.com/ZhengXR930/arXiv:2610.06966_official is stated in the paper but was not fetched, so it is not evidence of reproduction.",
+  "POLARIS does not state an SROIE task count; only the 40-invoice synthetic suite is sized.",
+  "Secondhand (same local HTML, read by child workers): ToolFence pair counts and timing breakdown, ACE per-model utility table, POLARIS Table 3/4 confusion counts, and the 340-state / 419-transition figures. Re-verified verbatim by the lead: 2610.04975 Theorem 2 and Table 6 (83.584 us transition authorization; 25,800 samples), arXiv:2610.06966 5,486 cases / 813 utility errors / 34 contract errors / 218 WRAP false positives / zero PLANT false positives, ACE labelling requirement, POLARIS zero occurrences of attack/adversarial/malicious/threat/authorize.",
+  "Correction to a worker claim: extract-A.md says CaMeLoT blocked 7 of 75 cases CaMeL passed. Raw text: the systems 'only disagre[e] on 16 out of 75 successful tests', mostly CaMeL blocking on runtime readers; Table 3 gives 9 CaMeLoT-only and 7 CaMeL-only passes of 97 tasks. The corrected reading is used in paper 2.",
+  "Out of scope this pass, therefore unverified: Commit-Time Authorization, CAPLOCK, AgentLock, 'Can CaMeLs Talk?', WIPI, TTP, UndoBench, The Price of Safety."
+ ],
+ "headline_verdict": "One of the six papers, arXiv:2610.04975, removes novelty from Conflux's mechanism claims (version-bound witness refinement, effect-time reserve/commit recheck, memoryless-allowlist separation) while restricting itself to one principal and one authorization root and explicitly leaving provenance derivation to other controls. arXiv:2610.06966 is the formal equal to beat on execution-boundary authorization soundness, CaMeLoT/ToolFence/ACE remove plan-time and per-call checking novelty (with oracle-labelled or judge-relative provenance), and POLARIS shows typed planning and guardrails are non-adversarial engineering.",
+ "files": {
+  "markdown_bytes": 29348,
+  "verbose_bytes": 70498
+ }
+}

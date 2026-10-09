@@ -35,3 +35,4 @@ documentation.
 | [023](023-ir-encoded-verification.md) | specification | IR-encoded verification for delegation and planning |
 | [024](024-external-provenance-and-authority-bounds.md) | adr | External provenance non-escalation and authority bounds |
 | [025](025-authority-confinement-semantic-judgement-delegation.md) | adr | Authority confinement, semantic judgement, and explicit scoped delegation |
+| [026](026-continuation-and-contribution-provenance.md) | adr | Continuation of the Part B project and contribution provenance |
