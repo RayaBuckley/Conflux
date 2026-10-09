@@ -1,0 +1,187 @@
+{
+ "commit_under_audit": "f7d198f",
+ "run_by": "the author agent (NOT an independent auditor)",
+ "mutants_total": 25,
+ "caught": 24,
+ "survived": [
+  "M02"
+ ],
+ "not_applied": [],
+ "results": [
+  {
+   "id": "M01",
+   "desc": "name pattern accepts every name",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M02",
+   "desc": "name pattern no longer anchored",
+   "should": "guard tests",
+   "exit": 0,
+   "verdict": "SURVIVED"
+  },
+  {
+   "id": "M03",
+   "desc": "the mandatory name check is skipped",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M04",
+   "desc": "a name-matching pod counts as ours without marker or ledger",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M05",
+   "desc": "every pod counts as marker-carrying",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M06",
+   "desc": "every pod counts as ledger-trusted",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M07",
+   "desc": "finished pods stay inside the trust window",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M08",
+   "desc": "the trust window is widened to every age",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M09",
+   "desc": "the gpu-count cap is widened",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M10",
+   "desc": "the hours-per-pod cap is widened",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M11",
+   "desc": "the per-pod dollar cap is widened",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M12",
+   "desc": "the daily dollar cap is widened",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M13",
+   "desc": "the one-pod rule is disarmed",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M14",
+   "desc": "a non-finite budget value is accepted instead of rejected",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M15",
+   "desc": "the hours clamp is widened",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M16",
+   "desc": "the configured gpu allow-list is no longer filtered to H100",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M17",
+   "desc": "the absolute H100 family check is skipped",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M18",
+   "desc": "the refusal prints the foreign pod names",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M19",
+   "desc": "the foreign summary leaks names",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M20",
+   "desc": "a foreign match is acted on instead of refused",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M21",
+   "desc": "an unexpected pods body is read as an empty list",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M22",
+   "desc": "pod detail returns env values",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M23",
+   "desc": "the assumed price is recorded as the observed price",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M24",
+   "desc": "target matching accepts any name that contains the selector",
+   "should": "guard tests",
+   "exit": 1,
+   "verdict": "caught"
+  },
+  {
+   "id": "M25",
+   "desc": "a second script grows a pod-stop path",
+   "should": "static scope test",
+   "exit": 1,
+   "verdict": "caught"
+  }
+ ]
+}

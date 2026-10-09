@@ -14,3 +14,5 @@ records.
 | [Baseline 2026-07](BASELINE_2026-07.md) | Validated baseline record. |
 | [Change catalogue](CHANGE_CATALOG.md) | Report-derived work grouped by theme. |
 | [Audit ledger](AUDIT.md) | Automated repository invariants. |
+| [Verification record](VERIFICATION.md) | Independent and author-run audits of the test-deduplication, RunPod-guard, and solver-boundary changes, with the evidence boundary of each measurement. |
+| [Guard mutation audit](guard-mutation-audit-2026-10-09.json) | Raw result of the author-run mutation audit of the RunPod guard (25 mutants, 24 caught, 1 equivalent). |

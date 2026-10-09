@@ -779,7 +779,19 @@
     "libc",
     "libstdc",
     "dpkg",
-    "libicuuc"
+    "libicuuc",
+    "PYTHONDONTWRITEBYTECODE",
+    "dedup",
+    "elif",
+    "incl",
+    "kwargs",
+    "mktemp",
+    "pycache",
+    "pynuxmv",
+    "repros",
+    "unapplied",
+    "vendored",
+    "xfail"
   ],
   "ignorePaths": [
     "research/reports/archive/**",

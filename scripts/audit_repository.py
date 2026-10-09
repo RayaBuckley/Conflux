@@ -36,6 +36,7 @@ CANONICAL_DOCS = {
     "evidence/CHANGE_CATALOG.md",
     "evidence/AUDIT.md",
     "evidence/BASELINE_2026-07.md",
+    "evidence/VERIFICATION.md",
     "research/RELATED_WORK.md",
     "research/RESEARCH_OVERVIEW.md",
     "research/RESEARCH_QUESTIONS.md",
