@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import importlib.util
+
 import pytest
 
 from conflux.domain import WRITE, Principal, Provenance
@@ -203,4 +205,8 @@ def test_existing_plan_verification_still_works() -> None:
         effect_summaries=(EffectSummary("write", True, True),),
         bound=4,
     )
-    assert result.verdict in (FormalVerdict.BOUNDED_SAFE, FormalVerdict.SAFE)
+    if importlib.util.find_spec("z3") is None:
+        assert result.verdict == FormalVerdict.UNKNOWN
+        assert result.error == "optional_dependency_unavailable:z3"
+    else:
+        assert result.verdict in (FormalVerdict.BOUNDED_SAFE, FormalVerdict.SAFE)
