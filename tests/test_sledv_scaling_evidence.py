@@ -47,6 +47,7 @@ def _assert_z3_agreement(bundle: dict[str, Any], measured: list[dict[str, Any]],
         assert {row["z3_reduced"]["error"] for row in bundle["fixtures"]} == {UNAVAILABLE_Z3}
         return
     assert measured, "z3 is installed but no fixture produced a measurement"
+    assert len(measured) == len(bundle["fixtures"]), "every fixture must be measured before the flag is trusted"
     assert bundle["summary"][flag] is True
 
 
