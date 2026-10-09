@@ -88,6 +88,7 @@ def test_quick_tier_selects_the_fast_subset(
     pytest_calls = [call for call in recorder.invoked if call.startswith("-m pytest")]
     assert len(pytest_calls) == 1
     assert "--ignore=tests/test_sledv_scaling_evidence.py" in pytest_calls[0]
+    assert " -x " in pytest_calls[0]
     assert "--cov" not in pytest_calls[0]
     assert any("audit_repository.py" in call for call in recorder.invoked)
     assert any("validate_schemas.py" in call for call in recorder.invoked)
@@ -95,7 +96,10 @@ def test_quick_tier_selects_the_fast_subset(
     deep = ("-m build", "validate_wheel.py", "validate_extensions.py", "pip_audit", "-m mypy", "yamllint", "vulture")
     assert not any(step in call for call in recorder.invoked for step in deep)
     assert recorder.informational == []
+    assert not any("--check" in call for call in recorder.invoked)
     assert "slower check(s) skipped at this tier" in output
+    assert "-m mypy . --no-error-summary" in output
+    assert "tests/test_omitted_coverage.py" in output
     assert "python scripts/validate.py --tier standard" in output
 
 
@@ -109,8 +113,13 @@ def test_standard_tier_runs_the_whole_suite_with_the_coverage_gate(
     pytest_calls = [call for call in recorder.invoked if call.startswith("-m pytest")]
     suite = [call for call in pytest_calls if "--cov=conflux" in call]
     assert len(suite) == 1
+    assert "--cov=conflux" in suite[0]
+    assert "--cov-branch" in suite[0]
     assert "--cov-fail-under=89" in suite[0]
     assert "--ignore=" not in suite[0]
+    assert any("generate_smoke_evidence.py" in call and "--check" in call for call in recorder.invoked)
+    assert any("audit_repository.py" in call for call in recorder.invoked)
+    assert any("validate_schemas.py" in call for call in recorder.invoked)
     assert any("tests/test_omitted_coverage.py" in call for call in pytest_calls)
     assert any("-m mypy ." in call for call in recorder.invoked)
     assert any("yamllint" in call for call in recorder.invoked)
