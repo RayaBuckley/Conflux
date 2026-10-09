@@ -7,7 +7,7 @@ oracle.
 Usage::
 
     python scripts/run_cedar_differential.py \\
-        --binary C:/Users/rbuck/.cargo/bin/cedar.exe \\
+        --binary /usr/local/bin/cedar \\
         --output research/output/runs/cedar-differential-v1/
 """
 

@@ -1007,6 +1007,15 @@ pod is not the pod the entry was written for.
 - Coverage of `scripts/runpod/guard.py` from this file alone: 645 statements, 210 branches, **70 %**; uncovered
   areas include watch/report, the HTTP client, the payload error paths, and `main`'s `GuardError` handler.
 
+**Follow-up, 2026-10-09 (section 26).** Two of the findings above were repaired after this audit. The
+autouse `isolated_state` fixture now redirects `LEDGER_PATH`, `AUDIT_PATH`, `BUDGET_PATH` and
+`REPORT_DIR` into a fresh temporary directory per test, so a regression that wrote to the real
+`.local/runpod/audit.jsonl` would now be visible. The fakes also reach the branches the guard was
+written for: `BillingRecordsApi` returns foreign billing rows, non-marker pods are used directly, and
+payload-capturing fakes check what a request sends. The coverage figure above is the audit's baseline;
+section 26.3 records the measured progression 70 % -> 88 % -> 99 % of 718 statements, with the two
+statements that remain uncovered named there.
+
 ### 17.7 Verdict
 
 | mechanism | verdict |
@@ -1501,3 +1510,155 @@ did. A version or solver-hash field belongs in `formal_backends` for both nuXmv 
 schema change (`schema_version` is currently `"1"`) worth making deliberately rather than midway
 through a re-measurement. Until then the producing version is recorded here: nuXmv 2.2.0, Linux
 x86_64, installed user-local under the FBK academic licence.
+
+## 26. Guard hardening after the mutation audit (author-run, 2026-10-09)
+
+Three change sets landed after section 20's audit and after the hardening in section 19. Each was
+measured on this host, on the committed tree, and each measurement below is reproducible with the
+command named next to it. Commits: `df28abd` (created-pod verification), `02da2b0` (validation and
+audit hygiene), and the vendor-error-body change recorded in this section.
+
+### 26.1 The post-create recheck was true by construction
+
+The audit (section 20, mutant M22) recorded that `cmd_create`'s re-read of the pod it had just asked
+for passed the new pod's own id into `classify()` as a _trusted_ id. That clause is satisfied by
+construction, so the naming convention was the only real check: a response that kept our name but
+dropped the `CONFLUX_MANAGED` marker, or substituted another image, passed.
+
+`verify_created_pod()` now compares the values the caller sent - exact name, requested image, and the
+management marker when the listing carries our environment namespace. Two allowances are explicit and
+recorded in the ledger note rather than assumed: a listing that omits the environment block, and a pod
+not yet visible in a fresh listing.
+
+**Evidence.** Six tests were added; a mutation that restores the `classify()` line kills three of them,
+and `scripts/runpod/guard.py` was reverted byte-identically afterwards (md5 `c4b8598bb970` before and
+after). Command: `.venv/bin/python -m pytest tests/test_runpod_guard.py -q`.
+
+### 26.2 A vendor error body was quoted into our logs
+
+`RunPodApi._request` put up to 300 characters of the vendor's raw error body into the `GuardError`
+message, which reaches stderr and `audit.jsonl`. That contradicts the guard's own rule, stated in its
+docstring, that a refusal never repeats another tenant's pod identity, and the account is shared.
+`describe_error_body()` now reports the status code, the body size and the JSON key names, never the
+text.
+
+**Evidence.** Two tests fail against the old line (measured by restoring it, then reverting
+byte-identically). One asserts that a 409 body naming a foreign pod never reaches the message; the
+other that a non-JSON body is reported by size and shape only. Eight body shapes were also run
+through the summariser directly - empty, whitespace, HTML, a JSON object with one key, one with two
+keys, a list, a string and a number - and every one produced a summary with no value from the body.
+
+### 26.3 Fail-closed paths now have tests
+
+Nine further tests cover paths the audit left uncovered: an absent API key, an HTTP failure (two
+tests: a JSON body and a non-JSON one), a transport failure, a corrupt `ledger.json` (which must
+authorise nothing rather than crash or trust ids), a malformed `--env`, `--with-hf-token` when no
+token exists anywhere, the local Hugging Face token file fallback, and `preflight`'s pass path.
+
+**Coverage, measured.** `scripts/runpod/guard.py` went from **70 %** of 645 statements (section 17.6, same
+method: this test file on its own) to **88 %** of 718 statements, and then to **99 %** (two statements
+and nine partial branches left) with a further 41 tests. Command:
+`.venv/bin/python -m coverage run --branch --source=scripts.runpod.guard -m pytest
+tests/test_runpod_guard.py -q` followed by `.venv/bin/python -m coverage report`.
+
+The second batch covers the shapes a shared vendor account actually returns, and the commands that
+send money and credentials:
+
+- money and GPU fields read from the nested `machine` and `gpu` blocks (`costPerHr`,
+  `currentPricePerGpu` times the GPU count, `securePrice`, `communityPrice`, `count`, `gpuCount`,
+  `displayName`, `gpuTypeId`), with zero and "unknown" when no shape matches;
+- `parse_time` rejecting junk and labelling a naive timestamp as UTC, which is what decides whether a
+  ledger entry is inside the trust window;
+- every `describe_error_body` shape: empty, whitespace, HTML, a JSON object with one and two keys, a
+  list, a string and a number. The eight cases are checked by exact equality, so a value from the body
+  cannot appear in the summary without failing;
+- budget files that hold the wrong value types (`"many"`, `"nan"`), a non-object document, unreadable
+  JSON, and `allowed_gpu_types` as an empty list: each keeps the safe default and records a note;
+- ledger files that hold no entry list, a record missing required fields, an unreadable creation time
+  (untrusted) beside a naive one (trusted), `update`/`by_run_id` for an unknown pod, and `spend_on`
+  using the measured rate for an exited pod;
+- the CLI plumbing: `api_from_env`, `hf_token` preferring the environment, `create` refusing an unknown
+  GPU instead of guessing a price, `create` sending `--env` pairs and `--cmd` in the payload,
+  `--with-hf-token` putting the token in the payload without printing it, and `status` printing our
+  pod, the burn rate and an expired TTL while naming no foreign pod;
+- `stop` without a selector refused with no API call, `report` counting only our pods (a foreign row of
+  $99 in the same billing response is excluded from the total and from the written markdown), the
+  empty-report line, `watch` sleeping the enforced minimum interval between passes and stopping a pod
+  whose TTL passed;
+- `create_pod`, `stop_pod` and `delete_pod` sending the expected method and path with a JSON content
+  type, and `create_pod` rejecting a body that is not a pod.
+
+Two statements stay uncovered, and both are known: the `if __name__ == "__main__"` guard, which only
+runs when the module is a script, and the `created.tzinfo is None` line in `trusted_ids`. The second one
+is unreachable, because `parse_time` already labels a naive timestamp as UTC - the branch is
+defence-in-depth, not a live path, and a future editor should not "fix" it by deleting the
+normalisation in `parse_time`. The nine partial branches are alternative vendor shapes where one shape
+is enough to prove the path.
+
+### 26.4 Validation and audit hygiene
+
+- `scripts/validate.py` deletes the `__pycache__` trees under `src`, `tests`, `scripts` and `research`
+  before its first step, and prints what it removed. The failure this prevents is measured: a cached
+  module from an earlier in-place edit once shadowed the file restored over it and made a green tree
+  report a failure.
+- `scripts/audit_repository.py` now fails when a file under `docs/evidence` is not registered in
+  `CANONICAL_DOCS`. Three claim-bearing documents were unregistered, so their deletion would have gone
+  unnoticed. Proved by removing `CONTRIBUTION_PROVENANCE.md`: the audit reports the missing document
+  plus the three links to it; the file was restored byte-identically.
+- `scripts/generate_flmsec_tables.py --check` is now a standard-tier step. It had been green for
+  weeks while no automated path ran it: `scripts/validate.py` did not mention it and
+  `.github/workflows/validate.yml` runs only `generate_api_docs.py --check` besides the tier. A
+  regeneration that moved a published number in the manuscript's tables would therefore have gone
+  unnoticed. The step is unguarded, so deleting the generated tables fails the tier instead of
+  silently skipping the check; measured here as exit 0, and a forced failure stops the standard tier
+  and is named in the failure summary.
+- Each run prints its five slowest steps and their total, before the verdict line. The tier docstring
+  quotes what each tier costs in minutes, measured once; nothing in the output said where those
+  minutes went, so the numbers aged silently. Measured here: the coverage pytest dominates, the static
+  checks are seconds. A test drives a fake clock, so the ordering claim is checked without running the
+  suite.
+
+- The static scan that keeps pod mutations inside the guard now knows both word orders, the vendor
+  CLI, the GraphQL mutation names, `.stop_pod()`/`.delete_pod()` and "pod endpoint plus mutating
+  verb"; it scans `scripts` and `src`, and its exemption is an allow-list by path, so a second
+  `guard.py` in another directory is not exempt. Both directions were probed with files that were
+  created, reported by the scan, and removed again.
+
+### 26.5 The SVG golden comparison was skipping quietly
+
+`tests/test_visualisation_graphviz.py` and `tests/test_visualisation_golden.py` prepended the
+Windows install path `C:\Program Files\Graphviz\bin` to `PATH` before importing the renderer, and
+`_gen_golden.py` did the same unconditionally. On this Linux host `dot` is not on `PATH` at all, so
+the eight rendering and golden-comparison tests skip: the SVG evidence for section 21's visualisation
+claims is unverified here, and the skip reason said only "Graphviz not available".
+
+The path fix is now a small helper that asks `shutil.which("dot")` first and adds the Windows default
+location only when it exists on Windows. The skip reason names the consequence: "dot is not on PATH:
+the SVG rendering tests did not run on this host". Two tests cover the helper (a POSIX host gains no
+Windows path; the Windows default is added only when it holds `dot`). Measured afterwards: 20 tests
+pass, 8 skip, and the skip is visible with `-rs`. Graphviz is installed in CI, which is where the
+comparison does run; **this host does not verify the goldens**, and no claim here should suggest it
+does.
+
+### 26.6 The rerun command carried a Windows profile name
+
+`scripts/run_cedar_differential.py`'s usage block told the reader to pass
+`C:/Users/<profile>/.cargo/bin/cedar.exe`, and `cspell.json` taught the spell-checker that
+profile name so the line
+could stay. The command is now platform-neutral and the word is gone; the
+extension checks still pass with it removed, which also proves that cspell only reads `.md`,
+`.py`, `.yaml`, `.yml`, `.tex` and `.bib` - not the JSON run bundles.
+
+Nine retained bundles still contain the profile name inside recorded absolute cache and toolchain
+paths (for example `transformers.json`'s `snapshot_path`). They are checksum-protected, so this
+change set does not touch them: the redaction is a decision for the owner, with the checksum
+consequence and the recommended procedure written down in the local investigation notes.
+
+### 26.7 What is not proven here
+
+The exact-name, image and marker comparison is a client-side check of what the vendor's listing
+returns. It has not been run against the live account since the change: no pod was created to test it,
+because creating one costs money and the account is shared. The allowances above exist for that
+reason - they accept an absent environment block instead of failing closed on a legitimate pod. The
+first live `create` through the guard is therefore the first end-to-end test of this path, and the
+ledger note it writes is the evidence to read out.
