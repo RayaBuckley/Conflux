@@ -207,6 +207,7 @@ under `research/output/runs/`:
 | Cross-backend validation | `scripts/generate_backend_cross_validation.py` | Z3 BMC vs. reference interpreter on delegation IR variants |
 
 Key findings:
+
 - All delegation IR mutants are correctly detected as UNSAFE; canonical is SAFE.
 - Z3 BMC returns `bounded_safe` for canonical (expected: BMC cannot prove
   exhaustion), while the reference interpreter returns `safe` (exhaustive

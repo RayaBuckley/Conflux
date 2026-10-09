@@ -269,7 +269,7 @@ granted authority.
 | Model delegation before activation | Authority transfer adds attenuation, ordering, expiry, revocation, and atomic-use obligations that must be evidenced before runtime use |
 | Require live differential evidence before Cedar-backed activation | Successful translation and an oracle expectation do not demonstrate that an unavailable PDP agrees |
 | Fail closed on errors | Infrastructure uncertainty is not evidence of permission |
-| Distinguish authority confinement from semantic judgement | ITES bounds authority; it does not prove appropriateness of choices within authority | [ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md) |
+| Distinguish authority confinement from semantic judgement | ITES bounds authority; it does not prove appropriateness of choices within authority ([ADR-025](../decisions/025-authority-confinement-semantic-judgement-delegation.md)) |
 
 ### Classical foundations
 

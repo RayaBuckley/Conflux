@@ -116,7 +116,7 @@ before committing.  The following checkers are included:
 
 ### Quick commands for AI agents
 
-```
+```bash
 python -m ruff check .                    # lint
 python -m ruff check --fix .              # auto-fix lint
 python -m mypy . --no-error-summary       # type check

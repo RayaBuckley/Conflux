@@ -41,7 +41,7 @@ generator produce the final output.
 
 Dependency direction:
 
-```
+```text
 domain / ITES / evaluation / verification / planning
                      |
                      v
@@ -96,7 +96,7 @@ and icon/shape distinction.
 
 ## CLI design
 
-```
+```bash
 conflux visualise <result.json>
 ```
 

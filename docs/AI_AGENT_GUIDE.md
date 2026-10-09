@@ -66,7 +66,7 @@ design hypothesis, but must be labelled accordingly.
 
 The development process follows a staged, evidence-oriented workflow:
 
-```
+```text
 Discover -> Falsify -> Research -> Specify -> Human gate
 -> Implement -> Verify -> Adversarial review -> Human gate
 -> Commit/evidence -> Claims/literature synchronisation
@@ -150,7 +150,7 @@ To build a learning packet for a target area:
 
 ### Examiner prompt template
 
-```
+```text
 You are examining the <area> subsystem of Conflux.
 
 Read these files in order:

@@ -22,6 +22,7 @@ paper section, and supporting artifact.
 | Remaining action | Ensure all limitations listed in Section 7 are visible, not only in the checklist |
 
 Limitations that must appear:
+
 - Provenance correctness (trusted assumption)
 - ACS correctness (trusted assumption)
 - Complete mediation (trusted assumption)

@@ -17,7 +17,7 @@ pod at creation time.
 
 1. Display your public key string:
 
-   ```
+   ```powershell
    type .ssh\your_key.pub
    ```
 

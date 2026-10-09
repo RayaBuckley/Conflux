@@ -36,7 +36,7 @@ retained evidence.
 
 ## Staged workflow
 
-```
+```text
 Discover -> Falsify -> Research -> Specify -> Human gate
 -> Implement -> Verify -> Adversarial review -> Human gate
 -> Commit/evidence -> Claims/literature synchronisation

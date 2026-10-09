@@ -13,7 +13,7 @@ deterministic SVG and HTML diagrams without reconstructing security semantics.
 
 ## Architecture
 
-```
+```text
 domain / ITES / evaluation / verification / planning
                      |
                      v

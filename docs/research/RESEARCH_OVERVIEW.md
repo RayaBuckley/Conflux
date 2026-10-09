@@ -146,9 +146,7 @@ machine-readable policy (`ACS_explicit`) from the execution-effective
 relation (`ACS_effective(e)`) obtained after applying valid scoped
 delegation `D_e`:
 
-```text
-ACS_effective(e, p, a) = ACS_explicit(p, a) OR DelegatedAllow(D_e, p, a)
-```
+    ACS_effective(e, p, a) = ACS_explicit(p, a) OR DelegatedAllow(D_e, p, a)
 
 A scoped execution delegation may be ephemeral without globally mutating the
 persistent ACS. The preferred unit is a constrained choice set or predicate

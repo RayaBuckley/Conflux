@@ -1,5 +1,7 @@
 # Next Review: 2026-08-27
 
+<!-- markdownlint-disable MD029 -- review items are numbered continuously across subsections -->
+
 ## Manuscript status
 
 - **Location**: `research/publications/flmsec_2026/main.tex`
