@@ -68,7 +68,8 @@ The comparison must retain upstream JSON and report:
 - native AgentDojo utility and security;
 - Conflux policy blocks, executions, provider failures, context size, and
   provenance annotations;
-- setup, model, parser, policy, security, and utility failures separately.
+- setup, model, parser, policy, security, and utility failures separately, and the
+  failing cell keeps a bounded summary of the message that produced its category.
 
 Benign state begins with only the authenticated human Principal. An injection
 Principal is introduced only when injected content actually affects a retained

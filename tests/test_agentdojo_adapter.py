@@ -137,3 +137,14 @@ def test_failure_category_reads_the_message_not_the_exception_class() -> None:
     assert category(ValueError("output schema drift")) == "parser"
     assert category(ModuleNotFoundError("agentdojo")) == "setup"
     assert category(RuntimeError("boom")) == "unknown"
+
+
+def test_failure_summary_is_bounded_and_stays_on_one_line() -> None:
+    """The record keeps a diagnosable summary: collapsed, capped, and not rewritten."""
+    long_message = "malformed_output: " + "x" * 500 + "\nsecond line"
+    summary = agentdojo_local.summarise_failure(ValueError(long_message))
+    assert len(summary) == agentdojo_local.FAILURE_REASON_LIMIT
+    assert summary.endswith("...")
+    assert "\n" not in summary
+    assert summary.startswith("malformed_output:")
+    assert agentdojo_local.summarise_failure(RuntimeError("short message")) == "short message"

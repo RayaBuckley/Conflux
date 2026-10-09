@@ -39,7 +39,8 @@
           "prompt_tokens": {"type": ["integer", "null"], "minimum": 0},
           "output_tokens": {"type": ["integer", "null"], "minimum": 0},
           "latency_ms": {"type": "integer", "minimum": 0},
-          "output_summary": {"type": "array", "items": {"type": "string"}}
+          "output_summary": {"type": "array", "items": {"type": "string"}},
+          "failure_reason": {"type": ["string", "null"]}
         }
       }
     },

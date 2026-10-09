@@ -424,6 +424,7 @@ class PinnedAgentDojoCellExecutor:
                 output_tokens,
                 latency,
                 _build_output_summary(responses),
+                failure_reason=summarise_failure(error),
             )
 
     def _execute(
@@ -567,6 +568,24 @@ def _build_output_summary(responses: list[object]) -> tuple[str, ...]:
             summary.append(f"{label}: {str(item)[:200]}")
     summary.append(f"total_calls={len(responses)}")
     return tuple(summary)
+
+
+FAILURE_REASON_LIMIT = 200
+"""Longest failure summary kept in a cell record, in characters."""
+
+
+def summarise_failure(error: Exception) -> str:
+    """Return a bounded single-line summary of a cell failure for the record.
+
+    The record keeps the category for counting and this summary for diagnosis. A bundle that holds
+    only the category cannot be explained afterwards without rerunning the cell, and a rerun costs the
+    model calls that made it fail. Whitespace is collapsed and the text is capped; nothing is
+    rewritten, so the summary is the same text the classifier read.
+    """
+    text = " ".join(str(error).split())
+    if len(text) <= FAILURE_REASON_LIMIT:
+        return text
+    return text[: FAILURE_REASON_LIMIT - 3] + "..."
 
 
 def _failure_category(error: Exception) -> str:

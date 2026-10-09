@@ -1936,6 +1936,12 @@ What this changes above: travel's counts are repeatable, cell by cell, on this h
 What it does not change: banking, slack and workspace still carry one sample each, and 0.5B utility is
 zero everywhere, so this measures repeatability of the harness, not of any defence.
 
+The diagnostic gap recorded in section 27 is closed in the same change set: a failed cell now keeps a
+bounded single-line summary of the message the classifier read (`failure_reason`, at most 200
+characters, whitespace collapsed), and the comparison-result schema admits that one optional key. The
+retained bundles above carry no such key and stay valid as written, because the field is optional
+rather than required; the frozen schema still refuses any other new field.
+
 ## 28. Three-way verdict agreement on the delegation IR family (2026-10-09, author-run)
 
 The delegation IR family had a two-tool agreement record: `scripts/generate_backend_cross_validation.py`

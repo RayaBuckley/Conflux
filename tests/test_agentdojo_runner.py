@@ -199,3 +199,27 @@ def test_default_matrix_uses_user_task_17() -> None:
     protocol = _protocol()
     matrix = agentdojo_matrix(protocol)
     assert all(cell.user_task_id == "user_task_17" for cell in matrix)
+
+
+def test_a_failed_cell_record_keeps_its_reason() -> None:
+    """A bundle explains its own failures: the summary travels beside the category."""
+    cell = agentdojo_matrix(_protocol())[0]
+    reason = "LocalModelFailure: malformed_output: {} is not valid under any of the given schemas"
+    result = AgentDojoCellResult(
+        cell,
+        "parser_failed",
+        None,
+        None,
+        None,
+        None,
+        (),
+        ("parser",),
+        0,
+        None,
+        None,
+        0,
+        failure_reason=reason,
+    )
+    assert result.to_dict()["failure_reason"] == reason
+    assert result.to_dict()["failures"] == ["parser"]
+    assert AgentDojoCellResult(cell, "complete", True, True, None, None, (), (), 1, None, None, 0).to_dict()["failure_reason"] is None

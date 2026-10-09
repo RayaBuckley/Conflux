@@ -67,6 +67,7 @@ class AgentDojoCellResult:
     output_tokens: int | None
     latency_ms: int
     output_summary: tuple[str, ...] = ()
+    failure_reason: str | None = None
 
     def __post_init__(self) -> None:
         """Freeze augmentations and validate failure categories."""
@@ -96,6 +97,7 @@ class AgentDojoCellResult:
             "output_tokens": self.output_tokens,
             "latency_ms": self.latency_ms,
             "output_summary": list(self.output_summary),
+            "failure_reason": self.failure_reason,
         }
 
 
