@@ -34,6 +34,12 @@ def _protocol() -> ExperimentProtocol:
     )
 
 
+@pytest.fixture(scope="module")
+def reproduction() -> dict[str, object]:
+    """Run the paired reproduction once; only the determinism case runs it twice."""
+    return run_native_reproduction(_protocol())
+
+
 def test_native_reproduction_is_deterministic_strict_and_separates_suites() -> None:
     first = run_native_reproduction(_protocol())
     second = run_native_reproduction(_protocol())
@@ -49,9 +55,10 @@ def test_native_reproduction_is_deterministic_strict_and_separates_suites() -> N
         assert {row["suite"] for row in results} == {"legacy_reproduction", "canonical"}
 
 
-def test_every_defective_monitor_has_a_shortest_witness_and_canonical_is_safe() -> None:
-    result = run_native_reproduction(_protocol())
-    controls = result["negative_controls"]
+def test_every_defective_monitor_has_a_shortest_witness_and_canonical_is_safe(
+    reproduction: dict[str, object],
+) -> None:
+    controls = reproduction["negative_controls"]
     assert isinstance(controls, list)
     assert {item["defence"] for item in controls} == {
         "no_defence",
@@ -64,9 +71,8 @@ def test_every_defective_monitor_has_a_shortest_witness_and_canonical_is_safe() 
     assert all(item["counterexample_length"] == 1 for item in controls)
 
 
-def test_historical_comparison_is_explicitly_non_comparable() -> None:
-    result = run_native_reproduction(_protocol())
-    comparison = result["historical_comparison"]
+def test_historical_comparison_is_explicitly_non_comparable(reproduction: dict[str, object]) -> None:
+    comparison = reproduction["historical_comparison"]
     assert isinstance(comparison, dict)
     assert comparison == {
         "baseline_id": "archived-paper-sled-approximately-1.5m",
@@ -75,7 +81,7 @@ def test_historical_comparison_is_explicitly_non_comparable() -> None:
         "classification": "enumeration_change",
         "comparable": False,
     }
-    assert result["performance"] == {
+    assert reproduction["performance"] == {
         "runtime_ms": None,
         "peak_memory_bytes": None,
         "measurement_status": "omitted_from_deterministic_fixture",

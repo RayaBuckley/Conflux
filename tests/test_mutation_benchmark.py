@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import json
+from typing import Any
+
+import pytest
 
 from scripts.generate_mutation_benchmark import (
     _delegation_ir_mutants,
@@ -13,31 +16,33 @@ from scripts.generate_mutation_benchmark import (
 )
 
 
+@pytest.fixture(scope="module")
+def bundle() -> dict[str, Any]:
+    """Build the mutation benchmark bundle once; two generations are only for the determinism check."""
+    return generate()
+
+
 class TestMutationBenchmarkBundle:
     """Test the full evidence bundle generation."""
 
-    def test_bundle_has_correct_schema(self) -> None:
-        bundle = generate()
+    def test_bundle_has_correct_schema(self, bundle: dict[str, Any]) -> None:
         assert bundle["schema_version"] == "1"
         assert bundle["id"] == "mutation-benchmark-v1"
 
-    def test_bundle_has_all_families(self) -> None:
-        bundle = generate()
+    def test_bundle_has_all_families(self, bundle: dict[str, Any]) -> None:
         mutants = bundle["mutants"]
         assert "disclosure" in mutants
         assert "delegation" in mutants
         assert "delegation_ir" in mutants
         assert "synthesis" in mutants
 
-    def test_total_mutants_meets_target(self) -> None:
+    def test_total_mutants_meets_target(self, bundle: dict[str, Any]) -> None:
         """Must have >=20 mutants across >=4 families."""
-        bundle = generate()
         assert bundle["summary"]["total_mutants"] >= 20
         assert bundle["summary"]["family_count"] >= 4
 
-    def test_all_mutants_killed(self) -> None:
+    def test_all_mutants_killed(self, bundle: dict[str, Any]) -> None:
         """Every mutant must be killed by at least one backend."""
-        bundle = generate()
         assert bundle["summary"]["total_killed"] == bundle["summary"]["total_mutants"]
         assert bundle["summary"]["kill_rate"] == 1.0
 
@@ -46,18 +51,15 @@ class TestMutationBenchmarkBundle:
         b2 = generate()
         assert json.dumps(b1, sort_keys=True) == json.dumps(b2, sort_keys=True)
 
-    def test_claim_boundary_present(self) -> None:
-        bundle = generate()
+    def test_claim_boundary_present(self, bundle: dict[str, Any]) -> None:
         assert "claim_boundary" in bundle
         assert "bound" in bundle["claim_boundary"].lower()
 
-    def test_canonical_results_present(self) -> None:
-        bundle = generate()
+    def test_canonical_results_present(self, bundle: dict[str, Any]) -> None:
         assert "disclosure" in bundle["canonical"]
         assert "delegation" in bundle["canonical"]
 
-    def test_family_summaries(self) -> None:
-        bundle = generate()
+    def test_family_summaries(self, bundle: dict[str, Any]) -> None:
         families = bundle["summary"]["families"]
         for metrics in families.values():
             assert metrics["count"] > 0

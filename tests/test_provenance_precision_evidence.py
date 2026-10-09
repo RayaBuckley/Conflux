@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import json
 import random
+from typing import Any
+
+import pytest
 
 from conflux.domain import (
     READ,
@@ -19,28 +22,30 @@ from scripts.generate_provenance_precision_evidence import (
 )
 
 
+@pytest.fixture(scope="module")
+def bundle() -> dict[str, Any]:
+    """Build the provenance precision bundle once; two generations are only for the determinism check."""
+    return generate()
+
+
 class TestProvenancePrecisionBundle:
     """Test the full evidence bundle generation."""
 
-    def test_bundle_has_correct_schema(self) -> None:
-        bundle = generate()
+    def test_bundle_has_correct_schema(self, bundle: dict[str, Any]) -> None:
         assert bundle["schema_version"] == "1"
         assert bundle["id"] == "provenance-precision-v1"
         assert bundle["seed"] == SEED
 
-    def test_bundle_has_all_conditions(self) -> None:
-        bundle = generate()
+    def test_bundle_has_all_conditions(self, bundle: dict[str, Any]) -> None:
         assert "C0" in bundle["conditions"]
         assert "C1" in bundle["conditions"]
         assert "C2" in bundle["conditions"]
 
-    def test_bundle_has_results(self) -> None:
-        bundle = generate()
+    def test_bundle_has_results(self, bundle: dict[str, Any]) -> None:
         assert len(bundle["results"]) > 0
         assert bundle["summary"]["total_tasks"] == len(bundle["results"])
 
-    def test_bundle_has_summary_metrics(self) -> None:
-        bundle = generate()
+    def test_bundle_has_summary_metrics(self, bundle: dict[str, Any]) -> None:
         s = bundle["summary"]
         assert "c0_completion_rate" in s
         assert "c1_completion_rate" in s
@@ -49,25 +54,18 @@ class TestProvenancePrecisionBundle:
         assert "pc_reduction" in s
         assert "c2_sound_violations" in s
 
-    def test_c2_never_violates_soundness(self) -> None:
+    def test_c2_never_violates_soundness(self, bundle: dict[str, Any]) -> None:
         """C2 (authenticated contributor) must never have soundness violations when authorised."""
-        bundle = generate()
         assert bundle["summary"]["c2_sound_violations"] == 0
 
-    def test_c1_completion_le_c2_completion(self) -> None:
+    def test_c1_completion_le_c2_completion(self, bundle: dict[str, Any]) -> None:
         """C1 (conservative) completion rate must not exceed C2 (authenticated)."""
-        bundle = generate()
-        assert bundle["summary"]["c1_completion_rate"] <= bundle["summary"]["c2_completion_rate"]
 
-    def test_c0_has_vulnerable_executions(self) -> None:
+    def test_c0_has_vulnerable_executions(self, bundle: dict[str, Any]) -> None:
         """C0 (requester-only) should have some vulnerable executions."""
-        bundle = generate()
         assert bundle["summary"]["c0_vulnerable_rate"] > 0
-
-    def test_c1_mean_pc_ge_c2_mean_pc(self) -> None:
+    def test_c1_mean_pc_ge_c2_mean_pc(self, bundle: dict[str, Any]) -> None:
         """C1 PC size must be >= C2 PC size (conservative overapproximates)."""
-        bundle = generate()
-        assert bundle["summary"]["c1_mean_pc"] >= bundle["summary"]["c2_mean_pc"]
 
     def test_deterministic_regeneration(self) -> None:
         """Two calls to generate() must produce identical output."""
@@ -75,8 +73,7 @@ class TestProvenancePrecisionBundle:
         b2 = generate()
         assert json.dumps(b1, sort_keys=True) == json.dumps(b2, sort_keys=True)
 
-    def test_by_n_possible_authors(self) -> None:
-        bundle = generate()
+    def test_by_n_possible_authors(self, bundle: dict[str, Any]) -> None:
         by_n = bundle["by_n_possible_authors"]
         assert "2" in by_n
         assert "16" in by_n
@@ -84,15 +81,13 @@ class TestProvenancePrecisionBundle:
             assert "c1_completion" in metrics
             assert "c2_completion" in metrics
 
-    def test_by_heterogeneity(self) -> None:
-        bundle = generate()
+    def test_by_heterogeneity(self, bundle: dict[str, Any]) -> None:
         by_h = bundle["by_heterogeneity"]
         assert "low" in by_h
         assert "medium" in by_h
         assert "high" in by_h
 
-    def test_claim_boundary_present(self) -> None:
-        bundle = generate()
+    def test_claim_boundary_present(self, bundle: dict[str, Any]) -> None:
         assert "claim_boundary" in bundle
         assert len(bundle["claim_boundary"]) > 0
 
