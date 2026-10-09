@@ -269,6 +269,58 @@ def test_agentdojo_preflight_honours_requested_suite(
     assert len(preflight["matrix"]) == 12
 
 
+def test_agentdojo_preflight_narrows_many_injection_tasks_to_one_goal(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A suite offering more injection tasks than selected tasks yields one deterministic goal."""
+    snapshot = _snapshot(tmp_path)
+    manifest, _ = resolve_transformers_snapshot(
+        snapshot,
+        model_id=MODEL_ID,
+        revision=REVISION,
+    )
+    configuration = tmp_path / "transformers.json"
+    write_resolved_local_model(
+        ResolvedLocalModel(_spec(manifest.fingerprint), snapshot, manifest),
+        configuration,
+    )
+    monkeypatch.setattr(
+        cli_module,
+        "load_pinned_suite",
+        lambda _: SimpleNamespace(
+            injection_task_ids=tuple(f"injection_task_{index}" for index in range(9)),
+            benchmark_version="v1.2.2",
+            to_dict=lambda: {"schema_version": "fixture"},
+        ),
+    )
+    output = tmp_path / "banking-narrow"
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "preflight",
+                "--model-config",
+                str(configuration),
+                "--suite",
+                "banking",
+                "--task-ids",
+                "user_task_0,user_task_1",
+                "--source-commit",
+                "a" * 40,
+                "--output",
+                str(output),
+            ],
+        )
+        == 0
+    )
+    protocol = json.loads((output / "protocol.json").read_text())
+    preflight = json.loads((output / "preflight.json").read_text())
+    assert protocol["suite"]["injection_task_ids"] == ["injection_task_0"]
+    assert len(preflight["matrix"]) == 12
+
+
 def test_cpu_pilot_preflights_eight_cells_and_retains_fake_bundle(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

@@ -1340,6 +1340,7 @@ def _benchmark(arguments: argparse.Namespace) -> int:
             pinned_suite = load_pinned_suite(requested_suite)
         except Exception:
             pinned_suite = None
+        injection_task_ids = _select_injection_tasks(pinned_suite, parsed_task_ids)
         protocol = _agentdojo_pilot_protocol(
             resolved,
             model_config=model_config,
@@ -1347,7 +1348,7 @@ def _benchmark(arguments: argparse.Namespace) -> int:
             source_commit=str(arguments.source_commit or _git_head()),
             task_ids=parsed_task_ids,
             suite_id=requested_suite,
-            injection_task_ids=None if pinned_suite is None else pinned_suite.injection_task_ids,
+            injection_task_ids=injection_task_ids,
             benchmark_version="v1.2.2" if pinned_suite is None else pinned_suite.benchmark_version,
         )
         model: SelfHostedOpenAIModel | TransformersLocalModel = TransformersLocalModel(
@@ -1405,6 +1406,28 @@ def _benchmark(arguments: argparse.Namespace) -> int:
     _write_protocol_result(protocol, comparison, destination)
     print(canonical_json({"complete": comparison["complete"], "output": str(destination / "result.json")}))
     return EXIT_OK if comparison["complete"] else EXIT_RUNTIME
+
+
+def _select_injection_tasks(
+    pinned_suite: object | None,
+    task_ids: tuple[str, ...] | None,
+) -> tuple[str, ...] | None:
+    """Choose one injection goal per selected task from the pinned suite's own ids.
+
+    A suite may offer more injection tasks than the protocol selects: banking offers nine
+    while a breadth cell buys two.  The matrix pairs a single id with every task or an
+    equal-length list positionally and refuses anything else, so the protocol carries one
+    goal per task: the suite's own list when the counts agree, otherwise its first id, the
+    same lowest-id rule the selector applies to strata.
+    """
+    offered = getattr(pinned_suite, "injection_task_ids", None)
+    if not isinstance(offered, (tuple, list)) or not offered:
+        return None
+    resolved = tuple(str(item) for item in offered)
+    count = len(task_ids) if task_ids else 1
+    if len(resolved) == count:
+        return resolved
+    return (resolved[0],)
 
 
 def _agentdojo_pilot_protocol(

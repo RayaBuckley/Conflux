@@ -99,12 +99,23 @@ conflux benchmark agentdojo preflight \
 ```
 
 That command reads the suite's own benchmark tag and injection task ids from the pinned
-package and writes them into the protocol. `suite.injection_task_ids` pairs each selected
-user task with its injection goal: a single id applies to every task, a list of the same
-length pairs positionally, and any other length is refused with
-`agentdojo_injection_task_pairing_mismatch` rather than guessed. The slack and travel
+package and writes one goal per selected task into the protocol.
+`suite.injection_task_ids` pairs each selected user task with its injection goal: a single
+id applies to every task, a list of the same length pairs positionally, and any other length
+is refused with `agentdojo_injection_task_pairing_mismatch` rather than guessed. The
+preflight writes the suite's own list when its length matches the selected tasks and
+otherwise the suite's lowest id, the same rule the selector applies to strata. The slack and travel
 suites tag themselves `v1.2.0` while banking and workspace tag `v1.2.2`; each protocol
 records the tag its own suite reports.
+
+A whole sweep is one command: `python scripts/run_agentdojo_sweep.py --suite all --model-config
+<run>/transformers.json` reads the frozen selection, preflights and runs each requested suite
+(`--suite` repeats, `all` means every suite, and an unknown name is refused), and prints
+`cells=… complete=… failed=… utility=… security=…` per suite. Each suite writes to
+`research/output/runs/agentdojo-stratified-<suite>-v1/`; the bundles retained on 2026-10-09
+(banking, slack, travel, workspace) each carry a `SUMMARY.md`, and
+`docs/evidence/VERIFICATION.md` §27 records what they do and do not show. Run the script from an
+environment that carries the AgentDojo extras, because the preflight loads the pinned package.
 
 The manifest blocks carry no injection task ids, because the frozen body records only the
 strata; take them from the pinned package or from a protocol this command wrote.

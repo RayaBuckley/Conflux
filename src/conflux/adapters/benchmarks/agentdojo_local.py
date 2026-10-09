@@ -570,12 +570,18 @@ def _build_output_summary(responses: list[object]) -> tuple[str, ...]:
 
 
 def _failure_category(error: Exception) -> str:
-    text = f"{type(error).__name__}:{error}".lower()
+    """Classify a cell failure from the message, which carries the cause.
+
+    The exception class is deliberately excluded: `LocalModelFailure` covers identity, dependency
+    and output-schema failures, so a class-name match would label every one of them a model
+    failure. A malformed model output is a parser failure, and the classifier says so.
+    """
+    text = str(error).lower()
+    if "malformed_output" in text or "parse" in text or "json" in text or "schema" in text:
+        return "parser"
     if "model" in text or "endpoint" in text or "context" in text:
         return "model"
-    if "parse" in text or "json" in text or "schema" in text:
-        return "parser"
-    if "agentdojo" in text or "import" in text:
+    if "dependency" in text or "agentdojo" in text or "import" in text:
         return "setup"
     return "unknown"
 

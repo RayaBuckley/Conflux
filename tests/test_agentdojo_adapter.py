@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from conflux.adapters.benchmarks import agentdojo_local
 from conflux.adapters.benchmarks.agentdojo_v1 import (
     BENCHMARK_VERSION,
     AgentDojoFailure,
@@ -14,6 +15,7 @@ from conflux.adapters.benchmarks.agentdojo_v1 import (
     translate_suite,
     write_translation,
 )
+from conflux.adapters.models import LocalModelFailure
 
 pytestmark = pytest.mark.adapter
 
@@ -124,3 +126,14 @@ def test_failure_taxonomy_keeps_policy_security_and_utility_separate() -> None:
         native_security=True,
         native_utility=True,
     ) == (AgentDojoFailure.TOOL,)
+
+
+def test_failure_category_reads_the_message_not_the_exception_class() -> None:
+    category = agentdojo_local._failure_category
+    assert category(LocalModelFailure("malformed_output", "{} is not valid under any schema")) == "parser"
+    assert category(LocalModelFailure("identity", "reported_model_mismatch")) == "model"
+    assert category(LocalModelFailure("dependency", "bitsandbytes is missing")) == "setup"
+    assert category(RuntimeError("context length exceeded")) == "model"
+    assert category(ValueError("output schema drift")) == "parser"
+    assert category(ModuleNotFoundError("agentdojo")) == "setup"
+    assert category(RuntimeError("boom")) == "unknown"
