@@ -9,11 +9,13 @@ from pathlib import Path
 
 import pytest
 
+from scripts import audit_repository as audit_module
 from scripts.audit_repository import (
     ROOT,
     archive_digest,
     check_archived_paper,
     check_docstrings,
+    check_evidence_registry,
     check_report_archive,
     check_report_crosswalk,
     check_repository_governance,
@@ -68,6 +70,7 @@ REPOSITORY_CHECKS: dict[str, Callable[[list[str]], None]] = {
     "report_crosswalk": check_report_crosswalk,
     "repository_governance": check_repository_governance,
     "docstrings": check_docstrings,
+    "evidence_registry": check_evidence_registry,
 }
 
 
@@ -77,6 +80,21 @@ def test_repository_check_reports_no_errors(check: Callable[[list[str]], None]) 
     errors: list[str] = []
     check(errors)
     assert errors == []
+
+
+def test_unregistered_evidence_file_is_reported(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A file in docs/evidence that nobody registered must be named, not ignored."""
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    (evidence / "registered.md").write_text("registered\n", encoding="utf-8")
+    (evidence / "orphan.md").write_text("orphan\n", encoding="utf-8")
+    monkeypatch.setattr(audit_module, "DOCS", tmp_path)
+    monkeypatch.setattr(audit_module, "CANONICAL_DOCS", {"evidence/registered.md"})
+
+    errors: list[str] = []
+    audit_module.check_evidence_registry(errors)
+
+    assert errors == ["unregistered evidence file docs/evidence/orphan.md: add it to CANONICAL_DOCS"]
 
 
 def test_supersession_cycle_detection() -> None:

@@ -37,6 +37,12 @@ CANONICAL_DOCS = {
     "evidence/AUDIT.md",
     "evidence/BASELINE_2026-07.md",
     "evidence/VERIFICATION.md",
+    "evidence/README.md",
+    "evidence/CONTRIBUTION_PROVENANCE.md",
+    "evidence/defence-model-fidelity.json",
+    "evidence/evidence-sources.json",
+    "evidence/guard-mutation-audit-2026-10-09.json",
+    "evidence/task-registry.json",
     "research/RELATED_WORK.md",
     "research/RESEARCH_OVERVIEW.md",
     "research/RESEARCH_QUESTIONS.md",
@@ -253,6 +259,24 @@ def check_docs(errors: list[str]) -> None:
     for path in current_markdown:
         if stale_paths.search(path.read_text(encoding="utf-8")):
             errors.append(f"{path.relative_to(ROOT)} references an obsolete report path")
+
+
+def check_evidence_registry(errors: list[str]) -> None:
+    """Every file in the evidence directory must be a registered document.
+
+    That directory backs the published claims, so a file that is not registered
+    can be deleted without this audit noticing: three of its documents were absent
+    from ``CANONICAL_DOCS`` on 2026-10-09 while each was cited from ``CLAIMS.md`` or
+    ``STATUS.md``. Registration is the deletion guard, because the registry is
+    checked for existence. The registry lists files, so a new evidence artefact
+    needs one deliberate line here.
+    """
+    for path in sorted((DOCS / "evidence").iterdir()):
+        if path.is_dir():
+            continue
+        relative = f"evidence/{path.name}"
+        if relative not in CANONICAL_DOCS:
+            errors.append(f"unregistered evidence file docs/{relative}: add it to CANONICAL_DOCS")
 
 
 def check_repository_governance(errors: list[str]) -> None:
@@ -1079,6 +1103,7 @@ def main() -> int:
     errors: list[str] = []
     check_architecture(errors)
     check_docs(errors)
+    check_evidence_registry(errors)
     check_docstrings(errors)
     check_repository_governance(errors)
     check_workflow_guidance(errors)

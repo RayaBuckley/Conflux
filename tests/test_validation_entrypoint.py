@@ -1,6 +1,7 @@
 """Portable validation diagnostics."""
 
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -87,6 +88,52 @@ def _drive_main(
     monkeypatch.setattr(sys, "argv", ["scripts/validate.py", *tier_arguments])
     exit_code = validate_module.main()
     return recorder, capsys.readouterr().out, exit_code
+
+
+def test_bytecode_purge_deletes_source_caches_and_spares_vendor_trees(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A stale cache must not survive the run; a vendor cache must not be touched."""
+    (tmp_path / "src" / "pkg" / "__pycache__").mkdir(parents=True)
+    (tmp_path / "src" / "pkg" / "__pycache__" / "mod.cpython-312.pyc").write_bytes(b"stale")
+    (tmp_path / "src" / "pkg" / "keep.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "tests" / "__pycache__").mkdir(parents=True)
+    (tmp_path / ".local" / "cache" / "__pycache__").mkdir(parents=True)
+    (tmp_path / ".local" / "cache" / "__pycache__" / "session.pyc").write_bytes(b"session")
+    (tmp_path / ".venv" / "lib" / "__pycache__").mkdir(parents=True)
+    (tmp_path / ".venv" / "lib" / "__pycache__" / "dep.pyc").write_bytes(b"vendor")
+    monkeypatch.setattr(validate_module, "ROOT", tmp_path)
+
+    trees, files = validate_module.purge_bytecode_caches()
+
+    assert (trees, files) == (2, 1)
+    assert not (tmp_path / "src" / "pkg" / "__pycache__").exists()
+    assert not (tmp_path / "tests" / "__pycache__").exists()
+    assert (tmp_path / "src" / "pkg" / "keep.py").exists()
+    assert (tmp_path / ".local" / "cache" / "__pycache__" / "session.pyc").exists()
+    assert (tmp_path / ".venv" / "lib" / "__pycache__" / "dep.pyc").exists()
+
+
+def test_every_tier_purges_bytecode_caches_before_its_first_step(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The purge must run in the same pass as the steps, and say what it removed."""
+    calls: list[str] = []
+
+    def fake_purge() -> tuple[int, int]:
+        calls.append("purged")
+        return (2, 3)
+
+    monkeypatch.setattr(validate_module, "purge_bytecode_caches", fake_purge)
+    _recorder, output, exit_code = _drive_main(monkeypatch, capsys, "--tier", "quick")
+    assert exit_code == 0
+    assert calls == ["purged"]
+    assert "[validate] purged 3 bytecode file(s) from 2 __pycache__ tree(s)" in output
+    # the purge line precedes the first recorded step, not only the summary
+    assert output.index("[validate] purged") < output.index("slower check(s) skipped at this tier")
+    assert _recorder.invoked[0] == "scripts/audit_repository.py"
 
 
 def test_quick_tier_selects_the_fast_subset(

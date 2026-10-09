@@ -15,6 +15,12 @@ pipeline on every edit:
    linting the extensions are cheap next to the coverage run.  This is the CI
    path.
 
+Every tier first deletes the ``__pycache__`` trees under the source
+directories.  A bytecode file can outlive the edit that invalidates it: on
+2026-10-09 a test file went red against a green tree because a module cached
+from an earlier in-place edit was newer than the file restored over it.  The
+purge is cheap and makes every run start from source.
+
 Tiers 1 and 2 stop at the first failing step; tier 3 runs every step and
 reports all failures, which is what CI needs.  Select a tier with
 ``--tier quick|standard|full`` (or ``--tier 1|2|3``); the default is ``full``
@@ -55,6 +61,37 @@ def _validation_environment() -> dict[str, str]:
 
 
 VALIDATION_ENV = _validation_environment()
+
+
+# Source trees whose bytecode caches are deleted before the first step. Vendor
+# and session directories are excluded: they are not ours to rewrite and a
+# stale cache there cannot shadow the source trees.
+BYTECODE_ROOTS = ("src", "tests", "scripts", "research")
+BYTECODE_EXCLUDED = frozenset({".git", ".local", ".venv", "node_modules"})
+
+
+def purge_bytecode_caches() -> tuple[int, int]:
+    """Delete stale ``__pycache__`` trees; return (trees deleted, files deleted).
+
+    See the module docstring: a cached module from an earlier in-place edit can
+    shadow the source file that replaced it, and the test suite then reports a
+    failure the tree does not have.
+    """
+    trees = 0
+    files = 0
+    for name in BYTECODE_ROOTS:
+        root = ROOT / name
+        if not root.is_dir():
+            continue
+        for cache in root.rglob("__pycache__"):
+            if not cache.is_dir():
+                continue
+            if BYTECODE_EXCLUDED & set(cache.relative_to(ROOT).parts[:-1]):
+                continue
+            files += sum(1 for child in cache.iterdir() if child.is_file())
+            rmtree(cache)
+            trees += 1
+    return trees, files
 
 
 TIER_NAMES = {1: "quick", 2: "standard", 3: "full"}
@@ -203,6 +240,10 @@ def main() -> int:
         "use --tier quick|standard|full to change the depth",
         flush=True,
     )
+
+    trees, files = purge_bytecode_caches()
+    if trees:
+        print(f"[validate] purged {files} bytecode file(s) from {trees} __pycache__ tree(s)", flush=True)
 
     _run(1, "scripts/audit_repository.py")
     _run(1, "scripts/validate_schemas.py")
