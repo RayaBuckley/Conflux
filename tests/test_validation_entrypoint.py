@@ -38,10 +38,12 @@ def test_unknown_tier_is_rejected(arguments: list[str]) -> None:
 class _RecordingCheck:
     """Record the checks ``main`` would run without executing any of them."""
 
-    def __init__(self, fail_at: str | None = None) -> None:
+    def __init__(self, fail_at: str | None = None, doctest_returncode: int = 0) -> None:
         self.fail_at = fail_at
+        self.doctest_returncode = doctest_returncode
         self.invoked: list[str] = []
         self.informational: list[str] = []
+        self.doctests: list[str] = []
 
     def run(self, *arguments: str) -> int:
         name = " ".join(arguments)
@@ -52,9 +54,16 @@ class _RecordingCheck:
         self.informational.append(" ".join(arguments))
         return 0
 
+    def run_doctests(self) -> int:
+        self.doctests.append("pytest --doctest-modules src/conflux/domain -q")
+        return self.doctest_returncode
+
 
 class _CompletedStub:
-    returncode = 0
+    def __init__(self, returncode: int = 0, stdout: str = "", stderr: str = "") -> None:
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
 
 
 def _completed(*arguments: object, **keywords: object) -> _CompletedStub:
@@ -66,12 +75,14 @@ def _drive_main(
     capsys: pytest.CaptureFixture[str],
     *tier_arguments: str,
     fail_at: str | None = None,
+    doctest_returncode: int = 0,
 ) -> tuple[_RecordingCheck, str, int]:
     """Run ``main`` with every subprocess replaced by a recorder."""
     validate_module.SESSION_ROOT.mkdir(parents=True, exist_ok=True)
-    recorder = _RecordingCheck(fail_at)
+    recorder = _RecordingCheck(fail_at, doctest_returncode)
     monkeypatch.setattr(validate_module, "run", recorder.run)
     monkeypatch.setattr(validate_module, "run_info", recorder.run_info)
+    monkeypatch.setattr(validate_module, "run_doctests", recorder.run_doctests)
     monkeypatch.setattr("subprocess.run", _completed)
     monkeypatch.setattr(sys, "argv", ["scripts/validate.py", *tier_arguments])
     exit_code = validate_module.main()
@@ -96,9 +107,11 @@ def test_quick_tier_selects_the_fast_subset(
     deep = ("-m build", "validate_wheel.py", "validate_extensions.py", "pip_audit", "-m mypy", "yamllint", "vulture")
     assert not any(step in call for call in recorder.invoked for step in deep)
     assert recorder.informational == []
+    assert recorder.doctests == []
     assert not any("--check" in call for call in recorder.invoked)
     assert "slower check(s) skipped at this tier" in output
     assert "-m mypy . --no-error-summary" in output
+    assert "pytest --doctest-modules src/conflux/domain -q" in output
     assert "tests/test_omitted_coverage.py" in output
     assert "python scripts/validate.py --tier standard" in output
 
@@ -117,6 +130,7 @@ def test_standard_tier_runs_the_whole_suite_with_the_coverage_gate(
     assert "--cov-branch" in suite[0]
     assert "--cov-fail-under=89" in suite[0]
     assert "--ignore=" not in suite[0]
+    assert len(recorder.doctests) == 1
     assert any("generate_smoke_evidence.py" in call and "--check" in call for call in recorder.invoked)
     assert any("audit_repository.py" in call for call in recorder.invoked)
     assert any("validate_schemas.py" in call for call in recorder.invoked)
@@ -177,3 +191,45 @@ def test_full_tier_reports_every_failure(
     assert exit_code == 1
     assert any("validate_extensions.py" in call for call in recorder.invoked)
     assert "not run after the failure" not in output
+
+
+def test_standard_tier_stops_when_the_doctests_fail(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A failing doctest step must be a failure that stops the lower tiers."""
+    recorder, output, exit_code = _drive_main(
+        monkeypatch,
+        capsys,
+        "--tier",
+        "standard",
+        doctest_returncode=1,
+    )
+    assert exit_code == 1
+    assert len(recorder.doctests) == 1
+    assert "pytest --doctest-modules src/conflux/domain -q" in output
+    assert "not run after the failure" in output
+    assert not any("-m mypy" in call for call in recorder.invoked)
+
+
+def test_full_tier_survives_a_failing_doctest_step(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The full tier reports the doctest failure and still runs everything."""
+    recorder, output, exit_code = _drive_main(monkeypatch, capsys, doctest_returncode=1)
+    assert exit_code == 1
+    assert len(recorder.doctests) == 1
+    assert any("validate_extensions.py" in call for call in recorder.invoked)
+    assert "not run after the failure" not in output
+
+
+@pytest.mark.parametrize(("returncode", "expected"), [(0, 0), (5, 0), (1, 1), (2, 2)])
+def test_doctest_step_maps_the_pytest_exit_code(
+    monkeypatch: pytest.MonkeyPatch,
+    returncode: int,
+    expected: int,
+) -> None:
+    """Exit code 5 (no doctests collected) is success; anything else is a failure."""
+    monkeypatch.setattr("subprocess.run", lambda *arguments, **keywords: _CompletedStub(returncode))
+    assert validate_module.run_doctests() == expected

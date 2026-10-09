@@ -127,6 +127,32 @@ def run(*arguments: str) -> int:
     return return_code
 
 
+DOCTEST_TARGET = "src/conflux/domain"
+DOCTEST_CHECK = f"pytest --doctest-modules {DOCTEST_TARGET} -q"
+
+
+def run_doctests() -> int:
+    """Run the domain doctests; pytest exit code 5 (no tests collected) is success.
+
+    This step needs the captured stdout to print only when it fails, so it does
+    not go through :func:`run`; keeping it in its own function lets the wiring
+    tests replace it the same way they replace ``run`` and ``run_info``.
+    """
+    process = subprocess.run(
+        (sys.executable, "-m", "pytest", "--doctest-modules", DOCTEST_TARGET, "-q"),
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        env=VALIDATION_ENV,
+    )
+    if process.returncode and process.returncode != 5:
+        print(f"[validate] {DOCTEST_CHECK}")
+        print(process.stdout, end="")
+        print(process.stderr, end="", file=sys.stderr)
+        return process.returncode
+    return 0
+
+
 def run_info(*arguments: str) -> int:
     """Run a check but never add it to the failure list (informational only)."""
     print(f"[validate] {' '.join(arguments)}", flush=True)
@@ -235,26 +261,14 @@ def main() -> int:
             "--cov-fail-under=89",
             f"--basetemp={SESSION_ROOT / 'pytest'}",
         )
-    doctest_check = "pytest --doctest-modules src/conflux/domain -q"
     if stopped:
-        after_failure.append(doctest_check)
+        after_failure.append(DOCTEST_CHECK)
     elif tier < 2:
-        not_run.append(doctest_check)
-    else:
-        doctest_process = subprocess.run(
-            (sys.executable, "-m", "pytest", "--doctest-modules", "src/conflux/domain", "-q"),
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            env=VALIDATION_ENV,
-        )
-        if doctest_process.returncode and doctest_process.returncode != 5:
-            print(f"[validate] {doctest_check}")
-            print(doctest_process.stdout, end="")
-            print(doctest_process.stderr, end="", file=sys.stderr)
-            failures.append(doctest_check)
-            if tier < 3:
-                stopped = True
+        not_run.append(DOCTEST_CHECK)
+    elif run_doctests():
+        failures.append(DOCTEST_CHECK)
+        if tier < 3:
+            stopped = True
     _run(
         2,
         "-m",
