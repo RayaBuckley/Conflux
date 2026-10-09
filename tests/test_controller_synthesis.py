@@ -19,6 +19,12 @@ from conflux.verification import (
 pytestmark = pytest.mark.security
 
 
+@pytest.fixture(scope="module")
+def experiment() -> dict[str, Any]:
+    """Run the synthesis experiment once; every case inspects the same result."""
+    return run_synthesis_experiment()
+
+
 class TestFiniteInstance:
     """The canonical finite instance used by the synthesis experiment."""
 
@@ -76,28 +82,18 @@ class TestITESSynthesis:
 class TestNegativeControls:
     """Each defective controller must produce a PE counterexample."""
 
-    def test_any_authorised_is_unsafe(self) -> None:
-        result = evaluate_strategy(default_instance(), ControllerStrategy.ANY_AUTHORISED)
-        assert result.verdict == FormalVerdict.UNSAFE
-        assert len(result.counterexample) > 0
-
-    def test_requester_only_is_unsafe(self) -> None:
-        result = evaluate_strategy(default_instance(), ControllerStrategy.REQUESTER_ONLY)
-        assert result.verdict == FormalVerdict.UNSAFE
-        assert len(result.counterexample) > 0
-
-    def test_drop_provenance_is_unsafe(self) -> None:
-        result = evaluate_strategy(default_instance(), ControllerStrategy.DROP_PROVENANCE)
-        assert result.verdict == FormalVerdict.UNSAFE
-        assert len(result.counterexample) > 0
-
-    def test_empty_is_privileged_is_unsafe(self) -> None:
-        result = evaluate_strategy(default_instance(), ControllerStrategy.EMPTY_IS_PRIVILEGED)
-        assert result.verdict == FormalVerdict.UNSAFE
-        assert len(result.counterexample) > 0
-
-    def test_stale_acs_is_unsafe(self) -> None:
-        result = evaluate_strategy(default_instance(), ControllerStrategy.STALE_ACS)
+    @pytest.mark.parametrize(
+        "strategy",
+        [
+            ControllerStrategy.ANY_AUTHORISED,
+            ControllerStrategy.REQUESTER_ONLY,
+            ControllerStrategy.DROP_PROVENANCE,
+            ControllerStrategy.EMPTY_IS_PRIVILEGED,
+            ControllerStrategy.STALE_ACS,
+        ],
+    )
+    def test_defective_strategy_is_unsafe(self, strategy: ControllerStrategy) -> None:
+        result = evaluate_strategy(default_instance(), strategy)
         assert result.verdict == FormalVerdict.UNSAFE
         assert len(result.counterexample) > 0
 
@@ -209,30 +205,24 @@ class TestEnvironmentDerivedInstance:
 class TestExperimentResult:
     """The full experiment result is well-formed."""
 
-    def test_experiment_returns_valid_dict(self) -> None:
-        result = run_synthesis_experiment()
-        assert result["schema_version"] == "1"
-        assert "ites" in result
-        assert "controls" in result
-        assert "summary" in result
+    def test_experiment_returns_valid_dict(self, experiment: dict[str, Any]) -> None:
+        assert experiment["schema_version"] == "1"
+        assert "ites" in experiment
+        assert "controls" in experiment
+        assert "summary" in experiment
 
-    def test_ites_is_pe_safe_in_experiment(self) -> None:
-        result: dict[str, Any] = run_synthesis_experiment()
-        assert result["summary"]["ites_pe_safe"] is True
+    def test_ites_is_pe_safe_in_experiment(self, experiment: dict[str, Any]) -> None:
+        assert experiment["summary"]["ites_pe_safe"] is True
 
-    def test_ites_matches_synthesis_in_experiment(self) -> None:
-        result: dict[str, Any] = run_synthesis_experiment()
-        assert result["summary"]["ites_matches_synthesis"] is True
+    def test_ites_matches_synthesis_in_experiment(self, experiment: dict[str, Any]) -> None:
+        assert experiment["summary"]["ites_matches_synthesis"] is True
 
-    def test_all_controls_unsafe(self) -> None:
-        result: dict[str, Any] = run_synthesis_experiment()
-        assert result["summary"]["all_controls_unsafe"] is True
+    def test_all_controls_unsafe(self, experiment: dict[str, Any]) -> None:
+        assert experiment["summary"]["all_controls_unsafe"] is True
 
-    def test_control_count(self) -> None:
-        result: dict[str, Any] = run_synthesis_experiment()
-        assert result["summary"]["control_count"] == 5
+    def test_control_count(self, experiment: dict[str, Any]) -> None:
+        assert experiment["summary"]["control_count"] == 5
 
-    def test_experiment_has_fingerprint(self) -> None:
-        result: dict[str, Any] = run_synthesis_experiment()
-        assert "fingerprint" in result
-        assert len(result["fingerprint"]) == 64
+    def test_experiment_has_fingerprint(self, experiment: dict[str, Any]) -> None:
+        assert "fingerprint" in experiment
+        assert len(experiment["fingerprint"]) == 64
