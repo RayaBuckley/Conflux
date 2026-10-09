@@ -561,6 +561,32 @@ def test_ledger_trust_ignores_finished_and_stale_entries(tmp_path: Path) -> None
     assert guard.classify(stale_outsider, ledger.trusted_ids())[0] is False
 
 
+def test_ledger_trust_window_edge_is_inclusive_at_the_window_and_not_one_second_past(
+    tmp_path: Path,
+) -> None:
+    """Pin the edge of TRUST_WINDOW_DAYS with an injected clock.
+
+    Without an injected `now` the edge is unobservable: the entry is written a few
+    microseconds before it is read, so an age of exactly seven days is always just over.
+    """
+    created = datetime(2026, 10, 2, 12, 0, tzinfo=UTC)
+    window = timedelta(days=guard.TRUST_WINDOW_DAYS)
+    edge = entry(run_id="edge", pod_id="pod-edge")
+    edge.created_at = created.isoformat()
+    past = entry(run_id="past", pod_id="pod-past")
+    past.created_at = (created - timedelta(seconds=1)).isoformat()
+    ledger = guard.Ledger(tmp_path / "ledger.json")
+    ledger.add(edge)
+    ledger.add(past)
+
+    at_the_edge = ledger.trusted_ids(now=created + window)
+    assert "pod-edge" in at_the_edge, "an entry exactly at the window edge is still live"
+
+    one_second_past = ledger.trusted_ids(now=created + window + timedelta(seconds=1))
+    assert "pod-edge" not in one_second_past, "past the window nothing is trusted"
+    assert "pod-past" not in one_second_past
+
+
 def test_trusted_ledger_id_still_requires_the_name_convention() -> None:
     for bad_name in ("tenant-c-h100-pcie", "conflux-Bad_Name", "conflux-Bad-Name", "conflux-bad name"):
         pod = mk_pod(bad_name, "pod-known", env={})
