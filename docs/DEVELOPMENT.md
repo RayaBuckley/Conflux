@@ -53,6 +53,21 @@ checked in an environment that has the solver:
 
 That command passed 29 tests on 2026-10-09 with z3-solver 5.1.0.
 
+Retained bundles that carry solver results follow the same rule. They are
+regenerated in the environment that has the solver, so `--check` reports them
+stale under the gate by construction: `scripts/generate_coi_scaling.py --check`,
+`scripts/generate_defence_evidence.py --check`, and
+`scripts/generate_sledv_scaling_evidence.py --check` exit 1 in `.venv` and 0 in
+`.local/venv-z3` (measured 2026-10-09). `scripts/validate.py` therefore does not
+run those checks, and the compensating control is the in-process reproducibility
+tests (`tests/test_coi_scaling_evidence.py`,
+`tests/test_defence_model_evidence.py`), which regenerate the bundle and assert
+the recorded provenance in either environment. Do not add a solver-carrying
+`--check` step to the gate. A host without an optional backend records the
+unavailability marker and keeps the last measured values with their source
+revision, so the boundary stays visible in the bundle instead of disappearing
+from it.
+
 ## Rationale
 
 Focused tests provide fast diagnosis; the full gate detects cross-boundary
