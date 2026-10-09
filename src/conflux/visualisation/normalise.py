@@ -20,11 +20,6 @@ def sorted_artifacts(artifacts: Iterable[str]) -> list[str]:
     return sorted(set(artifacts))
 
 
-def sorted_node_ids(ids: Iterable[str]) -> list[str]:
-    """Return node IDs in canonical (alphabetical) order."""
-    return sorted(set(ids))
-
-
 def truncate_label(text: str, max_length: int = 60) -> str:
     """Truncate a label to ``max_length`` characters with an ellipsis."""
     if len(text) <= max_length:
