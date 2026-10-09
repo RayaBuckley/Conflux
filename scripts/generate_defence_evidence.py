@@ -3,6 +3,12 @@
 Runs all defence model IRs through Z3 BMC and retains a deterministic
 JSON evidence bundle at ``research/output/runs/defence-models-v1/``.
 
+Z3 is an optional dependency: each property result records the verdict *and* the
+solver error, and every summary counter covers only the models the solver
+answered.  UNKNOWN results get their own counters and are never counted as safe,
+so a missing solver reports ``pe_safe: 0`` with ``formal_backends`` unavailable
+instead of converting UNKNOWN into a safety claim.
+
 Usage::
 
     python scripts/generate_defence_evidence.py
@@ -47,16 +53,39 @@ def _verify(ir_fn: Any) -> dict[str, Any]:
     nuxmv_result = _nuxmv.verify(ir)
     return {
         "verdict": result.verdict.value,
-        "counterexample": result.counterexample is not None,
+        "error": result.error,
+        "counterexample": bool(result.counterexample),
         "counterexample_length": len(result.counterexample) if result.counterexample else 0,
         "reference_verdict": ref.verdict.value,
         "reference_states": ref.states,
         "nuxmv_verdict": nuxmv_result.verdict.value,
+        "nuxmv_error": nuxmv_result.error,
     }
 
 
+SAFE_VERDICTS = ("safe", "bounded_safe")
+UNSAFE_VERDICTS = ("unsafe",)
+
+
+def _measured(property_result: dict[str, Any] | None) -> bool:
+    """True when the optional solver answered this property query."""
+    return property_result is not None and property_result["error"] is None
+
+
+def _count(rows: list[dict[str, Any]], verdicts: tuple[str, ...]) -> int:
+    return sum(1 for row in rows if row["verdict"] in verdicts)
+
+
+def _backend(available: bool) -> dict[str, Any]:
+    return {"available": available, "reason": None if available else "unavailable"}
+
+
 def generate() -> dict[str, Any]:
-    """Generate the defence model verification evidence bundle."""
+    """Generate the defence model verification evidence bundle.
+
+    Counters cover only the models the optional solver measured; UNKNOWN results
+    are counted in their own fields and never as safe.
+    """
     models: list[dict[str, Any]] = [
         {
             "name": "Dual-LLM",
@@ -89,15 +118,29 @@ def generate() -> dict[str, Any]:
             "native_property": None,
         },
     ]
+    pe_measured = [m["pe_property"] for m in models if _measured(m["pe_property"])]
+    native_measured = [m["native_property"] for m in models if _measured(m["native_property"])]
+    nuxmv_available = any(m["pe_property"]["nuxmv_error"] is None for m in models)
+    pe_safe = _count(pe_measured, SAFE_VERDICTS)
+    pe_unsafe = _count(pe_measured, UNSAFE_VERDICTS)
+    native_satisfied = _count(native_measured, SAFE_VERDICTS)
     return {
         "schema_version": "1",
         "id": "defence-models-v1",
         "models": models,
+        "formal_backends": {"z3": _backend(bool(pe_measured)), "nuxmv": _backend(nuxmv_available)},
+        "available_formal_backends": [
+            name for name, available in (("z3", bool(pe_measured)), ("nuxmv", nuxmv_available)) if available
+        ],
         "summary": {
             "total_models": len(models),
-            "pe_unsafe": sum(1 for m in models if m["pe_property"]["verdict"] == "unsafe"),
-            "pe_safe": sum(1 for m in models if m["pe_property"]["verdict"] != "unsafe"),
-            "native_satisfied": sum(1 for m in models if m["native_property"] and m["native_property"]["verdict"] != "unsafe"),
+            "pe_measured": len(pe_measured),
+            "pe_safe": pe_safe,
+            "pe_unsafe": pe_unsafe,
+            "pe_unknown": len(pe_measured) - pe_safe - pe_unsafe,
+            "native_measured": len(native_measured),
+            "native_satisfied": native_satisfied,
+            "native_unknown": len(native_measured) - native_satisfied - _count(native_measured, UNSAFE_VERDICTS),
         },
     }
 

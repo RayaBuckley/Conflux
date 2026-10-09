@@ -4,6 +4,11 @@ Creates safe-noise-N and unsafe-control-N fixtures for N = 0, 1, 2, 4, 8, 16,
 runs COI reduction and Z3 BMC on each, and retains a deterministic JSON
 evidence bundle at ``research/output/runs/coi-scaling-v1/``.
 
+Z3 is an optional dependency: each row records the Z3 verdicts *and* their
+errors, and the Z3 summary values (``z3_measured``, ``z3_all_agree``) cover only
+the rows the solver answered.  With no Z3 installed ``z3_all_agree`` is ``null``
+and ``formal_backends`` reports Z3 as unavailable instead of claiming agreement.
+
 Usage::
 
     python scripts/generate_coi_scaling.py
@@ -154,13 +159,25 @@ def _run_fixture(fixture: dict[str, Any]) -> dict[str, Any]:
         "z3": {
             "original_verdict": z3_orig.verdict.value,
             "reduced_verdict": z3_red.verdict.value,
+            "original_error": z3_orig.error,
+            "reduced_error": z3_red.error,
         },
         "witness_length": len(comp.reduced.counterexample) if comp.reduced.counterexample else 0,
     }
 
 
+def _z3_measured(row: dict[str, Any]) -> bool:
+    """True when the optional solver answered both the original and reduced query."""
+    return row["z3"]["original_error"] is None and row["z3"]["reduced_error"] is None
+
+
 def generate() -> dict[str, Any]:
-    """Generate the full scaling evidence bundle."""
+    """Generate the full scaling evidence bundle.
+
+    Z3 verdicts are only summarised over the rows the solver answered.  When no
+    row was measured, ``z3_all_agree`` is ``None`` with ``z3_measured`` ``0``, so
+    an absent solver cannot read as agreement.
+    """
     rows: list[dict[str, Any]] = []
     for n in NOISE_COUNTS:
         safe_fixture = _safe_noise_fixture(n)
@@ -168,15 +185,23 @@ def generate() -> dict[str, Any]:
     for n in NOISE_COUNTS:
         unsafe_fixture = _unsafe_control_fixture(n)
         rows.append(_run_fixture(unsafe_fixture))
+    measured = [row for row in rows if _z3_measured(row)]
+    z3_measured = len(measured)
+    z3_all_agree = (
+        all(row["z3"]["original_verdict"] == row["z3"]["reduced_verdict"] for row in measured) if z3_measured else None
+    )
     return {
         "schema_version": "1",
         "id": "coi-scaling-v1",
         "noise_counts": list(NOISE_COUNTS),
         "fixtures": rows,
+        "formal_backends": {"z3": {"available": z3_measured > 0, "reason": None if z3_measured else "unavailable"}},
+        "available_formal_backends": ["z3"] if z3_measured else [],
         "summary": {
             "total_fixtures": len(rows),
             "all_equivalent": all(r["reference"]["equivalent"] for r in rows),
-            "z3_all_agree": all(r["z3"]["original_verdict"] == r["z3"]["reduced_verdict"] for r in rows),
+            "z3_measured": z3_measured,
+            "z3_all_agree": z3_all_agree,
         },
     }
 
