@@ -129,6 +129,45 @@ def pod_env_keys(pod: Mapping[str, Any]) -> tuple[str, ...]:
     return ()
 
 
+def verify_created_pod(
+    expected_name: str,
+    expected_image: str,
+    refreshed: Mapping[str, Any],
+) -> tuple[bool, str]:
+    """Confirm a freshly created pod is the pod we asked for.
+
+    ``classify`` cannot carry this check. The id of a pod we just created is in
+    our hands, so passing it to ``classify`` as a trusted id makes the ledger
+    clause true whatever the API returned; only the naming convention would
+    remain. This check compares the values we sent instead:
+
+    * the name must equal the name we asked for, exactly;
+    * the image must equal the requested image, when the listing reports one;
+    * if the listing carries our environment namespace at all, the management
+      marker must be present, because a Conflux-named pod without it is not
+      ours to spend on.
+
+    A listing that omits ``env`` entirely is accepted, and the returned evidence
+    says so, because the vendor listing does not always echo the environment.
+    """
+    name = pod_name(refreshed)
+    if name != expected_name:
+        return False, f"the API returned name {name!r} instead of {expected_name!r}"
+    image = str(refreshed.get("imageName") or "")
+    if image and expected_image and image != expected_image:
+        return False, f"the API returned image {image!r} instead of {expected_image!r}"
+    env = refreshed.get("env")
+    if isinstance(env, Mapping):
+        namespace = f"{MARKER_KEY.split('_', maxsplit=1)[0]}_"
+        carries_ours = any(str(key).startswith(namespace) for key in env)
+        if carries_ours and str(env.get(MARKER_KEY, "")).strip() != MARKER_VALUE:
+            return False, "an environment block came back without the management marker"
+        if carries_ours:
+            return True, "exact name, requested image, management marker"
+        return True, "exact name, requested image (no Conflux environment keys reported)"
+    return True, "exact name, requested image (no environment block reported)"
+
+
 def classify(pod: Mapping[str, Any], trusted_ids: Iterable[str] = ()) -> tuple[bool, str]:
     """Return (is_conflux_pod, evidence). Fails closed: name is mandatory."""
     name = pod_name(pod).strip()
@@ -821,8 +860,14 @@ def cmd_create(args: argparse.Namespace) -> int:
         # No raw vendor body: it can echo other account data into our logs.
         raise GuardError(f"create returned no pod id (response keys: {sorted(str(k) for k in created)})")
     # Re-read the pod: confirm identity, take the real rate, and enforce the cap.
-    refreshed = next((pod for pod in api.list_pods() if pod_id(pod) == created_id), created)
-    ok, evidence = classify(refreshed, trusted | {created_id})
+    # The recheck compares the fields we sent. Handing our own new id to classify()
+    # would have satisfied its ledger clause by construction and left the naming
+    # convention as the only real check.
+    listed = next((pod for pod in api.list_pods() if pod_id(pod) == created_id), None)
+    refreshed = listed if listed is not None else created
+    ok, evidence = verify_created_pod(name, args.image, refreshed)
+    if ok and listed is None:
+        evidence = f"{evidence}; id was not visible in a fresh listing yet"
     if not ok:
         api.stop_pod(created_id)
         raise GuardError(f"created pod {created_id} failed the identity check ({evidence}); stopped it")

@@ -11,7 +11,10 @@ import hashlib
 import importlib
 import json
 import math
+import pathlib
+import shutil
 import sys
+import tempfile
 from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -23,9 +26,41 @@ from scripts.runpod import guard
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-# Tokens that mean "this file can act on a pod by itself". Only guard.py may
-# contain them: every other path must go through the guard's identity gate.
-DESTRUCTIVE_TOKENS = ("pod stop", "pod delete", "pod remove", "pod terminate")
+# Tokens that mean "this file can act on a pod by itself". Only the guard may
+# contain them: every other path must go through the guard's identity gate. The
+# list holds both orders and the vendor CLI, because an earlier version only knew
+# "pod stop" and would have missed "stop pod" and "runpodctl stop".
+DESTRUCTIVE_TOKENS = (
+    "pod stop",
+    "pod delete",
+    "pod remove",
+    "pod terminate",
+    "stop pod",
+    "delete pod",
+    "remove pod",
+    "terminate pod",
+    "runpodctl stop",
+    "runpodctl delete",
+    "runpodctl remove",
+    "runpodctl terminate",
+    "runpodctl pod stop",
+    "podstop",
+    "poddelete",
+    "podterminate",
+    ".stop_pod(",
+    ".delete_pod(",
+)
+
+# Any file that builds a pod endpoint request and names a mutating verb can act on
+# a pod; the vendor's own REST paths and GraphQL mutations both land here.
+POD_ENDPOINT_TOKENS = ("/pods/", "/v1/pods", "graphql")
+POD_MUTATING_VERBS = ("stop", "delete", "terminate", "remove")
+
+# Paths that may hold a destructive token, relative to the repository root. This
+# is an allow-list by path, not by file name: an exemption for any file called
+# guard.py would let a second guard.py in another directory act on pods.
+DESTRUCTIVE_TOKEN_ALLOWED = ("scripts/runpod/guard.py",)
+DESTRUCTIVE_TOKEN_SOURCE_ROOTS = ("scripts", "src")
 
 
 def mk_pod(
@@ -810,14 +845,17 @@ def test_report_excludes_foreign_pods_from_output_and_from_the_file(
 class RogueApi(FakeApi):
     """Creates a pod that fails the identity check, as a compromised API could."""
 
-    def __init__(self, *, rogue_name: str, rogue_rate: float) -> None:
+    def __init__(self, *, rogue_name: str = "", rogue_rate: float = 1.79) -> None:
         super().__init__([])
         self.rogue_name = rogue_name
         self.rogue_rate = rogue_rate
 
     def create_pod(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
-        self.calls.append(("create", str(payload.get("name"))))
-        pod = mk_pod(self.rogue_name, "pod-rogue", env={}, rate=self.rogue_rate)
+        # An empty rogue_name echoes the name we asked for, so a test can vary one
+        # field only (the rate, here) instead of two.
+        name = self.rogue_name or str(payload.get("name") or "")
+        self.calls.append(("create", name))
+        pod = mk_pod(name, "pod-rogue", env={}, rate=self.rogue_rate)
         self.pods.append(pod)
         return pod
 
@@ -837,11 +875,130 @@ def test_post_create_identity_recheck_stops_a_rogue_pod(
     assert "auto-stop" not in [record["action"] for record in audit_log]
 
 
+class FieldRogueApi(FakeApi):
+    """Creates a pod that keeps our name but fails a field-level recheck."""
+
+    def __init__(self, *, env: Mapping[str, str] | None = None, image: str = "", rate: float = 1.79) -> None:
+        super().__init__([])
+        self.rogue_env = dict(env or {})
+        self.rogue_image = image
+        self.rogue_rate = rate
+
+    def create_pod(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+        name = str(payload.get("name") or "")
+        self.calls.append(("create", name))
+        pod = mk_pod(name, "pod-substitute", env=self.rogue_env, rate=self.rogue_rate)
+        if self.rogue_image:
+            pod["imageName"] = self.rogue_image
+        self.pods.append(pod)
+        return pod
+
+
+def test_post_create_recheck_refuses_a_markerless_pod_with_our_name(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+) -> None:
+    # The id of a pod we just created is not proof of identity. A pod that comes back
+    # with our name, inside our environment namespace, but without the marker is not
+    # ours to spend on: it is stopped and never recorded in the ledger.
+    api = FieldRogueApi(env={"CONFLUX_RUN_ID": "pilot-1"})
+    wire(monkeypatch, api)
+    code = guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"])
+    assert code == guard.EXIT_API_ERROR
+    assert api.mutating_calls() == [("create", api.calls[0][1]), ("stop", "pod-substitute")]
+    assert guard.Ledger(state_dir / "ledger.json").entries == []
+    assert [record["action"] for record in audit_log] == ["create"]
+
+
+def test_post_create_recheck_refuses_a_substituted_image(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+) -> None:
+    api = FieldRogueApi(
+        env={guard.MARKER_KEY: guard.MARKER_VALUE, "CONFLUX_RUN_ID": "pilot-1"},
+        image="not-ours/image:latest",
+    )
+    wire(monkeypatch, api)
+    code = guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"])
+    assert code == guard.EXIT_API_ERROR
+    assert api.mutating_calls() == [("create", api.calls[0][1]), ("stop", "pod-substitute")]
+    assert guard.Ledger(state_dir / "ledger.json").entries == []
+
+
+def test_post_create_recheck_accepts_a_listing_without_environment_details(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+) -> None:
+    # The vendor listing does not always echo the environment, so a listing with no
+    # environment block is accepted and the ledger note records that it was.
+    class NoEnvListingApi(FakeApi):
+        def list_pods(self) -> list[Mapping[str, Any]]:
+            return [{key: value for key, value in pod.items() if key != "env"} for pod in self.pods]
+
+    api = NoEnvListingApi([])
+    wire(monkeypatch, api)
+    assert guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"]) == 0
+    entry = guard.Ledger(state_dir / "ledger.json").entries[0]
+    assert "no environment block reported" in entry.note
+    assert "pod-substitute" not in entry.note
+
+
+def test_post_create_recheck_notes_a_pod_that_is_not_listed_yet(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+) -> None:
+    class NotYetVisibleApi(FakeApi):
+        def list_pods(self) -> list[Mapping[str, Any]]:
+            return []
+
+    api = NotYetVisibleApi([])
+    wire(monkeypatch, api)
+    assert guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"]) == 0
+    entry = guard.Ledger(state_dir / "ledger.json").entries[0]
+    assert "not visible in a fresh listing yet" in entry.note
+
+
+def test_create_reports_a_missing_pod_id_without_echoing_the_body(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    class NoIdApi(FakeApi):
+        def create_pod(self, payload: Mapping[str, Any]) -> Mapping[str, Any]:
+            self.calls.append(("create", str(payload.get("name") or "")))
+            return {"error": "insufficient funds for account 1234"}
+
+    api = NoIdApi([])
+    wire(monkeypatch, api)
+    code = guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"])
+    assert code == guard.EXIT_API_ERROR
+    captured = capsys.readouterr()
+    assert "insufficient funds" not in captured.err
+    assert "1234" not in captured.err
+    assert "error" in captured.err  # the key names are reported; the values are not
+
+
+def test_cli_stop_reports_and_records_the_pod_it_stopped(
+    monkeypatch: pytest.MonkeyPatch,
+    state_dir: Path,
+    audit_log: list[dict[str, object]],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    api = FakeApi([conflux_pod()])
+    wire(monkeypatch, api)
+    assert guard.main(["stop", "--run-id", "pilot-1", "--yes"]) == 0
+    assert api.mutating_calls() == [("stop", "pod-conflux1")]
+    captured = capsys.readouterr()
+    assert "stop: conflux-pilot-1-20261009-120000 [pod-conflux1]" in captured.out
+    assert [record["action"] for record in audit_log] == ["stop"]
+
+
 def test_an_unreported_real_rate_is_never_recorded_as_observed(
     monkeypatch: pytest.MonkeyPatch,
     state_dir: Path,
 ) -> None:
-    api = RogueApi(rogue_name="conflux-pilot-1-20261009-120000", rogue_rate=0.0)
+    api = RogueApi(rogue_rate=0.0)
     wire(monkeypatch, api)
     assert guard.main(["create", "--run-id", "pilot-1", "--hours", "2", "--assume-rate", "1.79", "--yes"]) == 0
     ledger = guard.Ledger(state_dir / "ledger.json")
@@ -884,18 +1041,65 @@ def test_stop_pod_shim_keeps_the_confirmation_requirement(monkeypatch: pytest.Mo
     assert api.mutating_calls() == []
 
 
+def _offending_destructive_tokens(path: Path) -> list[str]:
+    """Return the destructive tokens a single source file contains."""
+    lowered = path.read_text(encoding="utf-8", errors="replace").lower()
+    hits = [token for token in DESTRUCTIVE_TOKENS if token in lowered]
+    # A bare '"delete",' is a permission action in the domain model, not a pod
+    # mutation, so it only counts when the same file also builds a pod request.
+    endpoint = [token for token in POD_ENDPOINT_TOKENS if token in lowered]
+    verb = [token for token in POD_MUTATING_VERBS if token in lowered]
+    if endpoint and verb:
+        hits.append(f"pod request ({endpoint[0]}) with a mutating verb ({verb[0]})")
+    return hits
+
+
 def test_no_other_script_can_stop_or_delete_a_pod() -> None:
+    """Every source tree, and an allow-list by path rather than by file name."""
     offenders: dict[str, list[str]] = {}
-    for path in sorted((REPO_ROOT / "scripts").rglob("*")):
-        if path.suffix not in {".py", ".sh"} or path.name == "guard.py" or not path.is_file():
-            continue
-        lowered = path.read_text(encoding="utf-8", errors="replace").lower()
-        hits = [token for token in DESTRUCTIVE_TOKENS if token in lowered]
-        if '"delete",' in lowered and "/pods/" in lowered:
-            hits.append("DELETE /pods")
-        if hits:
-            offenders[str(path.relative_to(REPO_ROOT))] = hits
+    for root in DESTRUCTIVE_TOKEN_SOURCE_ROOTS:
+        for path in sorted((REPO_ROOT / root).rglob("*")):
+            if path.suffix not in {".py", ".sh"} or not path.is_file():
+                continue
+            relative = str(path.relative_to(REPO_ROOT))
+            if relative in DESTRUCTIVE_TOKEN_ALLOWED:
+                continue
+            hits = _offending_destructive_tokens(path)
+            if hits:
+                offenders[relative] = hits
     assert offenders == {}, f"these files bypass the guard: {offenders}"
+
+
+def test_the_destructive_token_scan_detects_a_reversed_verb() -> None:
+    """Guard against a scan that only knows one word order."""
+    samples = {
+        "stop pod": "runpodctl stop pod --id x\n",
+        "pod stop": "runpodctl pod stop --id x\n",
+        "runpodctl delete": "runpodctl delete pod --id x\n",
+        "podterminate": 'payload = {"query": "mutation { podTerminate(input: $input) }"}\n',
+        ".stop_pod(": "client.stop_pod(pod_id)\n",
+        "pod request (/pods/) with a mutating verb (stop)": (
+            "self._request(\"POST\", f\"/pods/{pod_id}/stop\", b\"{}\") # stop\n"
+        ),
+    }
+    tmp = pathlib.Path(tempfile.mkdtemp(prefix="destructive-scan-"))
+    try:
+        for index, (expected, text) in enumerate(samples.items()):
+            probe = tmp / f"probe{index}.py"
+            probe.write_text(text, encoding="utf-8")
+            assert expected in _offending_destructive_tokens(probe), text
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def test_the_allow_list_is_by_path_and_only_covers_the_guard() -> None:
+    assert DESTRUCTIVE_TOKEN_ALLOWED == ("scripts/runpod/guard.py",)
+    second_guard = pathlib.Path(tempfile.mkdtemp(prefix="second-guard-")) / "guard.py"
+    try:
+        second_guard.write_text('run_command("stop pod --id {pod_id}")\n', encoding="utf-8")
+        assert "stop pod" in _offending_destructive_tokens(second_guard)
+    finally:
+        shutil.rmtree(second_guard.parent, ignore_errors=True)
 
 
 def test_run_all_routes_every_stop_through_the_guard() -> None:

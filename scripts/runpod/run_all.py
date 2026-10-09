@@ -106,6 +106,10 @@ def _assert_conflux_pod(pod: Mapping[str, str]) -> None:
 
     This runs before any ssh or scp, so a mix-up in the create response cannot
     send commands to another user's pod. It fails closed.
+
+    The ledger clause of the identity gate is acceptable here because the ledger
+    entry was written by the guard only after its post-create check compared the
+    pod that came back against the name, image and marker we asked for.
     """
     pod_id_value = pod["pod_id"]
     api = guard.api_from_env()
