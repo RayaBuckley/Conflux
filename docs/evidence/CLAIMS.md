@@ -23,7 +23,7 @@
 | The optional operational code adapter cannot exceed its declared envelope | Implemented at adapter boundary | container arguments, mount/path checks, and fail-closed sandbox tests; host/container implementation remains in the TCB and is not used by the planning comparison |
 | Solver results match the supported runtime subset | Bounded evidence | serialisable IR, interpreter differential tests, optional Z3 backend |
 | COI reduction preserves the selected fixture verdicts | Bounded evidence | `research/output/runs/sled-coi-reduction-v1/`: two finite IR fixtures agree under the independent reference interpreter; both reduce variables, rules, or reachable states, and the unsafe witness lifts; Z3 BMC with COI reduction confirms equivalence on both fixtures (safe: bounded safe, unsafe: counterexample found and lifted) |
-| Z3 bounded model checking agrees with the reference interpreter | Bounded evidence | `research/output/runs/sled-coi-reduction-v1/`, `research/output/runs/z3-agreement-v1/`, `research/output/runs/coi-scaling-v1/`: Z3 BMC with COI reduction on safe and unsafe IR fixtures; safe models bounded safe, unsafe models produce counterexamples; original and reduced verdicts agree in all cases; scaling to 16 noise variables preserves all verdicts |
+| Z3 bounded model checking agrees with the reference interpreter | Bounded evidence | `research/output/runs/sled-coi-reduction-v1/`, `research/output/runs/z3-agreement-v1/`, `research/output/runs/coi-scaling-v1/`: Z3 BMC with COI reduction on safe and unsafe IR fixtures; safe models bounded safe, unsafe models produce counterexamples; original and reduced verdicts agree in all cases where the optional Z3 backend is available (`coi-scaling-v1` records `z3_measured` per row and sets `z3_all_agree` to null when no solver answered); scaling to 16 noise variables preserves all verdicts |
 | The Cedar adapter is ready for a pinned differential run | Evaluation ready | `research/output/runs/cedar-differential-preflight-v1/` validates the bundle and corpus, translates PARC requests, and records oracle decisions; Cedar cells are explicitly unavailable and establish no parity |
 | Cedar decisions match the in-memory oracle | Not yet evidenced | the exact 4.12.0 binary has not completed the retained differential matrix |
 | Conflux is secure for unbounded deployments | Not claimed | finite bounds and abstractions do not prove unbounded deployments |
@@ -80,6 +80,19 @@ sources of truth. `research/reports/analysis/` reconciles them without promoting
 snapshot claims.
 The M3 smoke result is pipeline-readiness evidence only; it is not promoted to
 a deployment-security or external-utility claim.
+
+## Solver-boundary claims
+
+Rows 26 and 37–42 depend on the optional Z3 backend. `coi-scaling-v1` and
+`defence-models-v1` record per-row solver provenance and count their summary
+values over measured rows only: `z3_measured`, with `z3_all_agree` null when no
+row was measured; and `pe_measured`, `pe_unknown`, `native_measured`,
+`native_unknown`, with `pe_safe`, `pe_unsafe` and `native_satisfied` covering
+measured verdicts only. A run without Z3 records the backend as unavailable and
+makes no agreement or satisfaction claim, and an UNKNOWN verdict is never counted
+as safe or satisfied. The retained bundles record Z3 as available and measured;
+`defence-models-v1` records nuXmv as unavailable on the regeneration host, so its
+`nuxmv_verdict` fields are UNKNOWN and no claim here rests on nuXmv.
 
 ## Rationale
 
