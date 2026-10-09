@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import tomllib
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -61,36 +62,23 @@ def test_unknown_archive_mode_fails_closed(tmp_path: Path) -> None:
         archive_digest(path, "platform_default")
 
 
-def test_current_paper_manifest_matches_content_and_index() -> None:
+REPOSITORY_CHECKS: dict[str, Callable[[list[str]], None]] = {
+    "archived_paper_manifest": check_archived_paper,
+    "report_archive_manifest": check_report_archive,
+    "report_crosswalk": check_report_crosswalk,
+    "repository_governance": check_repository_governance,
+    "docstrings": check_docstrings,
+}
+
+
+@pytest.mark.parametrize("check", list(REPOSITORY_CHECKS.values()), ids=list(REPOSITORY_CHECKS))
+def test_repository_check_reports_no_errors(check: Callable[[list[str]], None]) -> None:
+    """Every repository check must leave its error list empty on this checkout."""
     errors: list[str] = []
-    check_archived_paper(errors)
-    assert errors == []
-
-
-def test_current_report_archive_matches_manifest_and_index() -> None:
-    errors: list[str] = []
-    check_report_archive(errors)
-    assert errors == []
-
-
-def test_report_crosswalk_covers_every_source_task() -> None:
-    errors: list[str] = []
-    check_report_crosswalk(errors)
-    assert errors == []
-
-
-def test_repository_governance_accepts_only_registered_owners() -> None:
-    errors: list[str] = []
-    check_repository_governance(errors)
+    check(errors)
     assert errors == []
 
 
 def test_supersession_cycle_detection() -> None:
     assert not supersession_has_cycle({"new": {"old"}, "old": set()})
     assert supersession_has_cycle({"first": {"second"}, "second": {"first"}})
-
-
-def test_docstring_check_passes_on_current_codebase() -> None:
-    errors: list[str] = []
-    check_docstrings(errors)
-    assert errors == []
