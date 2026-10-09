@@ -889,6 +889,57 @@ def check_cedar_preflight_evidence(errors: list[str]) -> None:
         errors.append("Cedar preflight overstates unavailable parity evidence")
 
 
+PLANNING_MODES = ("reactive", "static", "dynamic", "dynamic_code")
+PLANNING_SUITE = ROOT / "research" / "experiments" / "suites" / "planning-diagnostic-v1.yaml"
+LAPTOP_PLANNING_PLAN = ROOT / "research" / "experiments" / "manifests" / "planning-laptop-smoke-v1.json"
+AGENTDOJO_PREFLIGHT_CELLS = 4
+
+
+def _top_level_id_list(text: str, key: str) -> list[str]:
+    """Read ``- id:`` values at the first indent level under ``key:`` without a YAML dependency."""
+
+    identifiers: list[str] = []
+    inside = False
+    for line in text.splitlines():
+        if not inside:
+            inside = line.startswith(f"{key}:")
+            continue
+        if line and not line.startswith(" "):
+            break
+        match = re.match(r"^ {2}- id:\s*(\S+)\s*$", line)
+        if match:
+            identifiers.append(match.group(1).strip("\"'"))
+    return identifiers
+
+
+def _expected_direction_cells(errors: list[str]) -> dict[str, int]:
+    """Derive preflight matrix sizes from the tracked suite and plan inputs.
+
+    The literal counts drifted when the planning diagnostic suite grew to 21
+    scenarios, so the expectations follow the same inputs the generators read.
+    """
+
+    try:
+        plan: Any = json.loads(LAPTOP_PLANNING_PLAN.read_text(encoding="utf-8"))
+        suite_text = PLANNING_SUITE.read_text(encoding="utf-8")
+    except (OSError, json.JSONDecodeError) as error:
+        errors.append(f"unreadable direction preflight input: {error}")
+        return {}
+    modes = tuple(plan.get("modes") or ())
+    backends = tuple(plan.get("backends") or ())
+    laptop_scenarios = tuple(plan.get("scenario_ids") or ())
+    seeds = tuple(plan.get("seeds") or (plan.get("seed"),))
+    repetitions = int(plan.get("repetitions") or 1)
+    if modes != PLANNING_MODES:
+        errors.append("laptop planning manifest modes differ from the four planning modes")
+    laptop_cells = len(backends) * len(laptop_scenarios) * len(modes) * len(seeds) * repetitions
+    return {
+        "laptop-planning-preflight.json": laptop_cells,
+        "planning-preflight.json": len(_top_level_id_list(suite_text, "scenarios")) * len(modes),
+        "agentdojo-preflight.json": AGENTDOJO_PREFLIGHT_CELLS,
+    }
+
+
 def check_direction_evidence(errors: list[str]) -> None:
     if not DIRECTION_EVIDENCE.exists():
         return
@@ -918,11 +969,7 @@ def check_direction_evidence(errors: list[str]) -> None:
             errors.append(f"direction evidence checksum changed: {name}")
     if indexed != required - {"CHECKSUMS.sha256"}:
         errors.append("direction evidence checksum index is incomplete")
-    expected_cells = {
-        "laptop-planning-preflight.json": 16,
-        "planning-preflight.json": 32,
-        "agentdojo-preflight.json": 4,
-    }
+    expected_cells = _expected_direction_cells(errors)
     for name, count in expected_cells.items():
         result: Any = json.loads((DIRECTION_EVIDENCE / name).read_text(encoding="utf-8"))
         matrix = result.get("matrix", []) if isinstance(result, dict) else []
