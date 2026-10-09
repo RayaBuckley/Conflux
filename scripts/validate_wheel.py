@@ -13,6 +13,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Smoke expectations for the installed CLI.  The planning matrix is the shipped
+# diagnostic suite (21 scenarios in research/experiments/suites/planning-diagnostic-v1.yaml)
+# times the four planning modes; the AgentDojo smoke protocol covers one user
+# task, two case kinds, and three defences.
+EXPECTED_PLANNING_CELLS = 84
+EXPECTED_AGENTDOJO_CELLS = 6
+
 
 def _write_protocol(path: Path, track: str, output: Path) -> None:
     model: dict[str, object] | None = None
@@ -213,7 +220,7 @@ def main() -> int:
             text=True,
             env=smoke_environment,
         )
-        if len(json.loads(planning.stdout)["matrix"]) != 32:
+        if len(json.loads(planning.stdout)["matrix"]) != EXPECTED_PLANNING_CELLS:
             raise RuntimeError("installed planning preflight matrix is incomplete")
         if not (planning_preflight_output / "preflight.json").is_file():
             raise RuntimeError("installed planning preflight was not retained")
@@ -238,7 +245,7 @@ def main() -> int:
             text=True,
             env=smoke_environment,
         )
-        if len(json.loads(agentdojo.stdout)["matrix"]) != 6:
+        if len(json.loads(agentdojo.stdout)["matrix"]) != EXPECTED_AGENTDOJO_CELLS:
             raise RuntimeError("installed AgentDojo preflight matrix is incomplete")
         if not (agentdojo_output / "preflight.json").is_file():
             raise RuntimeError("installed AgentDojo preflight was not retained")
