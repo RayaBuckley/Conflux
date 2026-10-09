@@ -135,8 +135,19 @@ def _write_json(path: Path, payload: object) -> None:
     path.write_text(canonical_json(payload) + "\n", encoding="utf-8", newline="\n")
 
 
+def _checksum_order(path: Path, root: Path) -> tuple[str, ...]:
+    """Order entries by case-insensitive path parts so every host writes the same bundle."""
+
+    return tuple(part.casefold() for part in path.relative_to(root).parts)
+
+
 def _write_checksums(output: Path) -> None:
-    paths = tuple(sorted(path for path in output.iterdir() if path.is_file() and path.name != "CHECKSUMS.sha256"))
+    paths = tuple(
+        sorted(
+            (path for path in output.iterdir() if path.is_file() and path.name != "CHECKSUMS.sha256"),
+            key=lambda path: _checksum_order(path, output),
+        ),
+    )
     (output / "CHECKSUMS.sha256").write_text(
         "".join(f"{_file_sha256(path)}  {path.name}\n" for path in paths),
         encoding="utf-8",
