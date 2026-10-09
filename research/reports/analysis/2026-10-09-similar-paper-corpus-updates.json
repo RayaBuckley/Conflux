@@ -1,0 +1,877 @@
+{
+ "schema_version": "2",
+ "generated": "2026-10-09",
+ "source_corpus": "research/reports/analysis/literature_corpus.json",
+ "analysis_report": "research/reports/analysis/2026-10-09-similar-paper-analysis.md",
+ "selection": "top 24 non-self entries by novelty risk, adoption priority, reading status (see report section 1.1; snapshot .local/selection-snapshot.json)",
+ "notes": [
+  "Proposed values only: nothing here is written into literature_corpus.json.",
+  "Each entry carries the external evidence used: arXiv abstracts, Crossref/OpenAlex records, or recorded failed fetches (biba1977).",
+  "risk_level changes versus the corpus: pact medium -> high (direct 2026 argument-level precedent on A6, A15(3)); agentrfc none -> medium (A9/A15(4)); solverpolicy none -> medium (A6/A9); agentguardian, autoformpolicy, contextualmanipulation, symbolicguardrails none -> low (positioning or scope constraints). Other entries keep their corpus risk level.",
+  "Evidence depth: 21 of 24 entries abstract-level; 2 metadata-only (declassificationsurvey, robustdeclassification); 1 corpus-level (biba1977, both external sources HTTP 403).",
+  "Statements marked \"(corpus-level)\" are not externally verified in this session and must not be quoted as fetched facts.",
+  "Corpus identifier defects to fix: myersliskov DOI (404), declassificationsurvey DOI + pages, attackercontrol DOI, nonmalleableifc DOI + venue + pages, forge/progent/symbolicguardrails/cedarpaper titles (version differences)."
+ ],
+ "entries": [
+  {
+   "key": "lomac",
+   "title": "LOMAC: Low-Water-Mark Integrity Protection for COTS Environments",
+   "evidence": [
+    {
+     "url": "https://api.crossref.org/works/10.1109/SECPRI.2000.848460",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-lomac.json"
+    },
+    {
+     "url": "https://api.openalex.org/works/doi:10.1109/secpri.2000.848460",
+     "kind": "openalex-record",
+     "fetched": "2026-10-09",
+     "cache": "openalex-lomac.json"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Classical structural ancestor: low-water-mark contamination reduces a subject's effective integrity after it observes lower-integrity data, restricting later high-integrity effects; it is the ancestor of A1, but with scalar labels and no principal- or action-level authority relation.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A1",
+      "A8"
+     ],
+     "risk_level": "high",
+     "qualification_needed": "A1 novelty is unsafe: state monotonic authority reduction as an instance of low-water-mark contamination enriched by principal-sensitive provenance (the intersection is a standard meet in the powerset lattice, as the audit says). A8 must be stated as an instantiation for nested agent execution, not as a new idea. Cite LOMAC (IEEE S&P 2000, DOI 10.1109/SECPRI.2000.848460) for the classical mechanism; its fetched abstract does not itself state an intersection-over-influencers rule, so the lattice reading must be attributed as a reading, not as a quotation."
+    },
+    "relevance": {
+     "key_findings": [
+      "Implements low-water-mark integrity protection as a dynamically loadable extension to commercial off-the-shelf Linux kernels (fetched abstract).",
+      "Classifies access-control models by compatibility with COTS practice and argues that low-water-mark-like models are especially compatible (fetched abstract).",
+      "Reports practical strategies for the model's pathological cases, including a small extension of the model (fetched abstract).",
+      "Kernel-resident enforcement; label creep treated as an accepted engineering cost (corpus-level)."
+     ],
+     "limitations": [
+      "Scalar, system-wide integrity labels: no principal identities, no organisational ACS, no per-action or per-argument authority (fetched abstract adds no principal model).",
+      "Mediation only at the OS boundary; no delegation, consent or argument-role semantics (corpus-level).",
+      "No bounded verification of the monitor (corpus-level)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "myersliskov",
+   "title": "Protecting Privacy Using the Decentralized Label Model",
+   "evidence": [
+    {
+     "url": "https://api.crossref.org/works/10.1145/363516.363526",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-fix-myersliskov.json"
+    },
+    {
+     "url": "https://api.crossref.org/works/10.1145/363516.363524",
+     "kind": "corpus-identifier-check",
+     "fetched": "2026-10-09",
+     "cache": null,
+     "status": "http-404"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Decentralized IFC with principal-labelled data and decentralized declassification: the nearest theoretical neighbour for A2 and A11, complementary in kind (flow constraint inside a program versus exercised-authority bound for an execution).",
+    "novelty_impact": {
+     "affected_claims": [
+      "A2",
+      "A11"
+     ],
+     "risk_level": "high",
+     "qualification_needed": "A2 and A11 need the decentralized-IFC comparison: DLM already labels data with principals and supports decentralized declassification and fine-grained sharing, so 'retaining principal identities rather than scalar labels' cannot be presented as new. The defensible content is the derivation of action authority from an organisation's *existing* ACS for each influencing principal, plus fail-closed semantics, not the label model itself. The corpus DOI 10.1145/363516.363524 returns HTTP 404 at both OpenAlex and Crossref; cite the corrected DOI 10.1145/363516.363526 (TOSEM 9(4):410-442, 2000)."
+    },
+    "relevance": {
+     "key_findings": [
+      "The decentralized label model supports mutual distrust and decentralized authority; users can declassify information in a decentralized way with fine-grained data sharing (fetched abstract).",
+      "Supports static program analysis so programs can be certified to permit only acceptable information flows (fetched abstract).",
+      "End-to-end information-flow control for programs containing untrusted code, motivated by the observation that such programs are the rule rather than the exception (fetched abstract)."
+     ],
+     "limitations": [
+      "Constrains information flow inside a program; it is not an authority relation for effect-time tool mediation (fetched abstract scope; corpus-level addition).",
+      "No notion of an untrusted model proposing actions, no execution authority certificate, no organisational ACS as the policy source (corpus-level)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "biba1977",
+   "title": "Integrity Considerations for Secure Computer Systems (Biba)",
+   "evidence": [
+    {
+     "url": "https://apps.dtic.mil/sti/citations/ADA039301",
+     "kind": "attempted-fetch-failed",
+     "fetched": "2026-10-09",
+     "cache": null,
+     "status": "HTTP 403"
+    },
+    {
+     "url": "https://www.researchgate.net/publication/241153465",
+     "kind": "attempted-fetch-failed",
+     "fetched": "2026-10-09",
+     "cache": null,
+     "status": "HTTP 403"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Earliest structural ancestor of A1/A2/A8 (low-water-mark contamination and domination), with scalar integrity levels and no principal identities; its corpus citation is unverified.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A1",
+      "A2",
+      "A8"
+     ],
+     "risk_level": "high",
+     "qualification_needed": "A1/A2/A8 must be presented as instances of low-water-mark/domination contamination with principal-sensitive provenance; the corpus entry also needs a citation fix. No identifier could be verified in this session (no DOI or arXiv id in the corpus; DTIC and ResearchGate both returned HTTP 403), so the entry must stay marked UNVERIFIED and the 1977 MITRE report must be checked from a library copy before it is cited. Do not present 'consuming untrusted information should reduce future authority' as new (the audit lists this formulation as unsafe)."
+    },
+    "relevance": {
+     "key_findings": [
+      "(corpus-level, externally UNVERIFIED) Low-water-mark integrity model: a subject's effective integrity falls when it reads lower-integrity data, restricting later higher-integrity effects.",
+      "(corpus-level) Integrity levels form a domination lattice; high-integrity objects may only be modified by subjects at or above their level.",
+      "(corpus-level) The earliest statement of the monotonic authority-reduction structure that A1 generalises."
+     ],
+     "limitations": [
+      "(corpus-level, UNVERIFIED) Mandatory policy over a fixed lattice with no authentication or provenance infrastructure, no named principals, no ACS, no argument-level authority.",
+      "No external verification was possible in this session: both candidate external pages returned HTTP 403 and no DOI/arXiv identifier exists in the corpus."
+     ]
+    }
+   }
+  },
+  {
+   "key": "declassificationsurvey",
+   "title": "Dimensions and Principles of Declassification",
+   "evidence": [
+    {
+     "url": "https://api.crossref.org/works/10.3233/JCS-2009-0352",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-fix-declassificationsurvey.json"
+    },
+    {
+     "url": "https://api.crossref.org/works/10.3233/JCS-2009-0357",
+     "kind": "corpus-identifier-check",
+     "fetched": "2026-10-09",
+     "cache": null,
+     "status": "different-paper"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Declassification taxonomy that frames the proposed visibility/disclosure levels; it supports A10 and supplies the vocabulary, not the mechanism.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A10"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A10 is an explicit non-claim and needs no wording change. For the proposed visibility/disclosure levels, the wording must present them as instantiations of a classical declassification taxonomy (what/who/where/when) with explicit release authority and robust-influence conditions, not as new disclosure semantics. Corpus defects to fix: DOI 10.3233/JCS-2009-0357 resolves to a different article (corrected 10.3233/JCS-2009-0352) and the corpus page range 609-655 is wrong (corrected 517-548)."
+    },
+    "relevance": {
+     "key_findings": [
+      "(corpus-level; identity verified, abstract not available key-free) Provides a taxonomy of declassification in terms of what, who, where and when information may be released.",
+      "(corpus-level) Organises the design space for relaxing confidentiality policies and the corresponding security conditions."
+     ],
+     "limitations": [
+      "(corpus-level) A taxonomy rather than an enforcement mechanism: it does not supply agent-specific enforcement, principal provenance or an authority relation.",
+      "No abstract was obtainable for the corrected DOI in this session, so content claims are corpus-level."
+     ]
+    }
+   }
+  },
+  {
+   "key": "attackercontrol",
+   "title": "Attacker Control and Impact for Confidentiality and Integrity",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/1107.5594",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-attackercontrol.xml"
+    },
+    {
+     "url": "https://api.crossref.org/works/10.2168/LMCS-7(3:17)2011",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-fix-attackercontrol.json"
+    },
+    {
+     "url": "https://api.crossref.org/works/10.1109/CSF.2007.22",
+     "kind": "corpus-identifier-check",
+     "fetched": "2026-10-09",
+     "cache": null,
+     "status": "different-paper"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Semantic framework for attacker influence over declassification and endorsement: the classical statement of the influence-robustness idea behind A1/A8, and a supporting source for the A14 distinction.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A1",
+      "A8",
+      "A14"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A1 and A8: the framework already characterises security in terms of attacker influence over declassification and endorsement decisions, so Conflux must apply such influence conditions to principal authority from an existing ACS and must not present robust release/endorsement conditions as its own idea. A14 is supported (endorsement changes information integrity, delegation changes authority). Corps identifier fix: DOI 10.1109/CSF.2007.22 resolves to a different paper; the arXiv id 1107.5594 is correct and the journal version is DOI 10.2168/LMCS-7(3:17)2011."
+    },
+    "relevance": {
+     "key_findings": [
+      "Security is characterised by the influence that declassification and endorsement allow the attacker; the framework defines attacker control and attacker impact (fetched abstract).",
+      "Conditions for checked endorsement and robust integrity are expressed in the same framework, relating it to robustness and qualified robustness (fetched abstract).",
+      "Type-system enforcement of the resulting policies for a language (fetched abstract)."
+     ],
+     "limitations": [
+      "Language-level, static enforcement: no organisational ACS, no principal provenance over an execution, no tool or agent model (fetched abstract scope).",
+      "No bounded model checking of an enforcement layer; correctness rests on the type system for the modelled language (fetched abstract)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "sabelfeld2003",
+   "title": "Language-Based Information-Flow Security",
+   "evidence": [
+    {
+     "url": "https://api.crossref.org/works/10.1109/JSAC.2002.806121",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-sabelfeld2003.json"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Canonical reference for the information-flow tradition that Conflux cites in A11 and for the conservative-propagation practice behind A8; it anticipates neither principal-context authority nor effect-time mediation.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A8",
+      "A11"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A8: conservative label and flow propagation is standard practice, so state A8 as an instantiation for nested LLM/plan/tool execution with authenticated principals and a named trusted-argument-role exception. A11: the survey is the canonical citation for 'ITES is inspired by information-flow tracking' and belongs in the positioning paragraph, but the IFC-versus-provenance distinction must also be checked against decentralized IFC (act-for hierarchies)."
+    },
+    "relevance": {
+     "key_findings": [
+      "(corpus-level; identity verified via Crossref, no abstract fetched) Survey of language-based information-flow security: security-type systems, noninterference and the theory underlying conservative label propagation.",
+      "(corpus-level) Documents the standard practice that labels are propagated conservatively and never silently dropped."
+     ],
+     "limitations": [
+      "(corpus-level) No agent model, no notion of an untrusted model whose proposals must be confined at effect time, and no organisational ACS as the policy source.",
+      "The survey's attacker model has no equivalent of a model that may be arbitrarily malicious while the enforcement layer stays sound (analysis note)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "denning1976",
+   "title": "A Lattice Model of Secure Information Flow",
+   "evidence": [
+    {
+     "url": "https://api.crossref.org/works/10.1145/360051.360056",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-denning1976.json"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Lattice-theoretic foundation for information flow: the algebraic ancestor of the intersection rule, but with information classes rather than authenticated principals and ACS permissions.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A1",
+      "A2"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A1 and A2: the lattice/meet structure is classical and the provenance-union step is standard, so the novelty statement must be the principal-level, ACS-based, fail-closed construction. The audit's remaining search question (does any prior system take the meet over permission sets derived from authenticated principal identities?) is partly answered by FLAM and PBAC (see report section 3); the paper should cite them and keep A15(2) as a hypothesis. Corpus DOI is correct (10.1145/360051.360056)."
+    },
+    "relevance": {
+     "key_findings": [
+      "(corpus-level; identity verified via Crossref, abstract fetched is not available key-free) Introduces the lattice model of secure information flow, with information classes and a partial order as the basic structure.",
+      "(corpus-level) Establishes the meet/join algebra that Conflux's permission-set intersection mirrors."
+     ],
+     "limitations": [
+      "(corpus-level) No principal identities, no policy source, no execution model with untrusted proposal generation: the lattice is an information-classification device.",
+      "No enforcement architecture for agent effects (corpus-level)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "camel",
+   "title": "Defeating Prompt Injections by Design (CaMeL)",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2503.18813",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-camel.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Closest agent-side architectural neighbour: capability-based mediation of an untrusted model's plan, which fixes the reference-monitor framing and makes A4/A13 positioning claims the load-bearing ones.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A4",
+      "A13",
+      "A9"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A4: the reference-monitor-with-untrusted-model architecture is standard, so position ITES as the principal-sensitive instantiation. A13: do not claim the reframing of injection as a first; CaMeL and the capability literature already frame the failure as unauthorised data flow or tool use. A9 is not threatened (CaMeL is a defence abstraction, SLED a bounded checker)."
+    },
+    "relevance": {
+     "key_findings": [
+      "CaMeL extracts control and data flows from a query and enforces capability policies over the resulting plan, giving a model-independent guarantee under strong assumptions about the trusted query and policy layer (fetched abstract).",
+      "Reports solving 77% of AgentDojo tasks while provably enforcing policies, demonstrating feasibility of mediation around an untrusted model (fetched abstract)."
+     ],
+     "limitations": [
+      "Assumes a trusted query parser, plan extractor and policy layer; the guarantee is relative to those trusted components (fetched abstract).",
+      "No organisational ACS as the authority source, no per-execution principal set, no argument-role policy checks derived from existing permissions (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "forge",
+   "title": "Policy Compiler for Secure Agentic Systems / FORGE",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2602.16708",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-forge.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Formal policy-enforcement architecture for agentic systems (Datalog over execution facts plus an observability contract): directly occupies the 'formal enforcement' position, so Conflux must differentiate on the authority source and on principal-sensitive decisions.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A4",
+      "A9",
+      "A15"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A4 and A9: history-sensitive deterministic enforcement with a reference monitor is prior art, so ITES is the principal-sensitive instance and SLED must be positioned by its property semantics and defence-model reductions, not by the enforcement architecture. A15(2) (authority derived from the organisation's current ACS) is the load-bearing distinction against FORGE and must be stated explicitly. Corpus title/venue differ from the fetched version (title now 'Formal Policy Enforcement for Real-World Agentic Systems')."
+    },
+    "relevance": {
+     "key_findings": [
+      "Policies expressed as Datalog over abstract predicates describing execution context, enforced at every policy-relevant decision by a reference monitor (fetched abstract).",
+      "An observability service under a formal assume/guarantee contract maintains the predicates; when the contract holds, enforcement decisions coincide with the intended policy semantics (fetched abstract).",
+      "Motivated by the absence of formal enforcement guarantees for system-prompt policies and by the need for history-dependent policies (fetched abstract)."
+     ],
+     "limitations": [
+      "The guarantee is conditional on complete observability and on a correct extracted policy; policy intent stays external (fetched abstract).",
+      "No authority relation derived from an organisation's existing ACS and no authenticated-influence model (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "pact",
+   "title": "The Granularity Mismatch in Agent Security: Argument-Level Provenance Solves Enforcement and Isolates the LLM Reasoning Bottleneck (PACT)",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2605.11039",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-pact.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Direct 2026 neighbour on argument-level authority: semantic argument roles, cross-step provenance and role-specific trust contracts; it forces A6 and removes A15(3) from the candidate-distinction list.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A6",
+      "A15"
+     ],
+     "risk_level": "high",
+     "qualification_needed": "A6: argument-level enforcement with role contracts is prior art, so the novelty statement must be the pointwise Principal check against the existing ACS plus fail-closed missing-role/missing-policy semantics recorded in a certificate. A15(3) (argument-sensitive authority as a candidate distinction) should be removed from the candidate list: this 2026 paper is a direct neighbour, and the corpus already treats the pointwise fourth-year mechanism as the concrete contribution. Risk raised from medium to high because the paper touches a claim the dissertation presents as implemented."
+    },
+    "relevance": {
+     "key_findings": [
+      "Assigns semantic roles to tool arguments and tracks argument-value provenance across replanning steps, checking origin against role-specific trust contracts (fetched abstract).",
+      "Reports 100% utility and 100% security on mixed-trust diagnostic suites with oracle provenance, where flat invocation-level monitors incur false positives or false negatives (fetched abstract).",
+      "Reports 100% security on the three strongest models in AgentDojo across five models, with lower utility/security on weaker models (fetched abstract)."
+     ],
+     "limitations": [
+      "Provenance inference, role/contract synthesis and semantic ambiguity remain bottlenecks; not every harm is an argument-provenance harm; strongest diagnostic result assumes oracle provenance (fetched abstract).",
+      "Contracts are per-role local policy artefacts, not the organisation's existing ACS; no principal-degree influence model (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "progent",
+   "title": "Progent: Programmable Privilege Control for LLM Agents",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2504.11703",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-progent.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Privilege-control framework with symbolic argument-sensitive rules and SMT-classified policy updates: prior art for the enforcement technique and for the least-privilege framing of injection.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A4",
+      "A6",
+      "A13"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A4/A6: deterministic argument-sensitive privilege control for tool calls is prior art; the defensible claims are the authority source (existing ACS, not a generated policy) and the pointwise intersection over influencing principals. A13: do not claim firstness for treating injection as privilege escalation; Progent frames injection as a least-privilege violation and enforces privilege control per call. Corpus title differs from the fetched version ('Progent: Securing AI Agents with Privilege Control')."
+    },
+    "relevance": {
+     "key_findings": [
+      "Represents privilege as symbolic rules over tool names and arguments and checks every tool call deterministically, enforcing least privilege (fetched abstract).",
+      "An LLM generates the initial policy from the user's task and updates it during execution; an SMT solver classifies each update as narrowing (auto-applied) or expansion (requires explicit approval) (fetched abstract)."
+     ],
+     "limitations": [
+      "The generated policy can be semantically wrong; allowed-but-harmful calls and natural-language harms remain possible (fetched abstract scope).",
+      "No authenticated principal provenance and no organisational ACS as the authority source; policy origin is the model plus task text (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "agentdojo",
+   "title": "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2406.13352",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-agentdojo.xml"
+    },
+    {
+     "url": "docs/evidence/CLAIMS.md",
+     "kind": "local-repo-file",
+     "fetched": "2026-10-09",
+     "cache": null
+    }
+   ],
+   "updates": {
+    "closest_relation": "Empirical benchmark infrastructure for prompt-injection attacks and defences: complementary evidence (utility/security statistics), not a test of PE.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A9"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "No wording change to the core claims; the constraint is rhetorical. Do not cite AgentDojo security rates as validation of PE, and record that the Conflux integration adds provenance/ACS annotations (additional assumptions) rather than preserving upstream benchmark semantics."
+    },
+    "relevance": {
+     "key_findings": [
+      "Extensible evaluation framework with 97 realistic tasks (email, banking, travel), 629 security test cases, and implementations of attack and defence paradigms from the literature (fetched abstract).",
+      "State-of-the-art LLMs fail many tasks even without attacks, and existing attacks break some security properties but not all (fetched abstract)."
+     ],
+     "limitations": [
+      "Finite tasks and attacks cannot prove universal security; results depend on task construction and on the specific attack implementations (fetched abstract).",
+      "The upstream benchmark does not represent a principal context or pointwise ACS decisions, so Conflux's annotated integration rests on additional assumptions (local CLAIMS.md row; analysis)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "nonmalleableifc",
+   "title": "Nonmalleable Information Flow Control",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/1708.08596",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-nonmalleableifc.xml"
+    },
+    {
+     "url": "https://api.crossref.org/works/10.1145/3133956.3134054",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-fix-nonmalleableifc.json"
+    },
+    {
+     "url": "https://api.crossref.org/works/10.1145/3009837.3009843",
+     "kind": "corpus-identifier-check",
+     "fetched": "2026-10-09",
+     "cache": null,
+     "status": "different-paper"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Classical condition for coordinated downgrades of confidentiality and integrity: it supplies the precise requirement any Conflux exception mechanism must satisfy, and it supports the A14 distinction.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A14"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "A14 is supported: keep the delegation-versus-endorsement distinction and cite the classical downgrade family (robust declassification, transparent endorsement, nonmalleability). Corpus fixes required: DOI 10.1145/3009837.3009843 resolves to a different paper (ProbNetKAT), venue 'POPL 2017' and pages 257-270 are wrong; the correct publication is CCS 2017, pp. 1875-1891, DOI 10.1145/3133956.3134054, and the corpus arXiv id 1708.08596 is correct (technical report). Any future exception mechanism (delegation, trusted transformation) must be positioned against this line."
+    },
+    "relevance": {
+     "key_findings": [
+      "Introduces nonmalleable information flow, generalising noninterference to permit controlled downgrading of both confidentiality and integrity (fetched abstract).",
+      "Key insight: transparent endorsement downgrades integrity while preventing adversarial exploitation; the property subsumes robust declassification and transparent endorsement (fetched abstract).",
+      "Enforced by a simple security type system (fetched abstract); implemented via the Flame GHC plugin (corpus-level)."
+     ],
+     "limitations": [
+      "Program-level IFC with no named principals, no organisational ACS and no agent or tool model (fetched abstract scope).",
+      "Conflux has not implemented any nonmalleability or endorsement check for its monotonicity exceptions (local SECURITY_MODEL.md, ADR-025)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "robustdeclassification",
+   "title": "Robust Declassification",
+   "evidence": [
+    {
+     "url": "https://api.crossref.org/works/10.1109/CSFW.2001.930133",
+     "kind": "crossref-record",
+     "fetched": "2026-10-09",
+     "cache": "crossref-fix-robustdeclassification.json"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Classical requirement for release decisions: it constrains the proposed visibility/disclosure levels (Level 3) and supports the A10 non-claim; it is not an authority mechanism.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A10"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "A10 is an explicit non-claim and needs no change. For the proposed Level 3 disclosure work, the wording must treat robust declassification as the classical requirement (release must not be attacker-influenced) and must not present influence-controlled release as new. Corpus entry has no identifier; the verified publication is CSFW 2001, pp. 15-23, DOI 10.1109/CSFW.2001.930133 (Zdancewic & Myers)."
+    },
+    "relevance": {
+     "key_findings": [
+      "(corpus-level; identity verified, abstract not available key-free) Defines robust declassification: an attacker must not be able to influence what confidential information is released.",
+      "(corpus-level) Makes release security depend on the integrity/control of the release decision, not only on the confidentiality of the data."
+     ],
+     "limitations": [
+      "Targets declassification of information, not tool or action authority, and has no principal identities (corpus-level).",
+      "No abstract was obtainable for the corrected DOI in this session; content claims remain corpus-level."
+     ]
+    }
+   }
+  },
+  {
+   "key": "designpatterns",
+   "title": "Design Patterns for Securing LLM Agents against Prompt Injections",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2506.08837",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-designpatterns.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Architectural taxonomy that fixes the vocabulary for positioning Conflux inside the mediation/isolation pattern family.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A4"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "A4: the untrusted-model-plus-mediation architecture is a catalogued design pattern, so ITES must be positioned as an instantiation with principal-sensitive authority; no claim should present the architecture itself as new."
+    },
+    "relevance": {
+     "key_findings": [
+      "Presents principled architectural design patterns for agents with provable resistance to prompt injection under stated assumptions (fetched abstract).",
+      "Analyses utility/security trade-offs systematically and studies real-world applicability (fetched abstract)."
+     ],
+     "limitations": [
+      "Guarantees hold only under each pattern's assumptions and correct implementation; policy origin is a separate problem (fetched abstract; corpus-level addition).",
+      "A taxonomy rather than a mechanism with a proof for a specific system (fetched abstract scope)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "spotlighting",
+   "title": "Defending Against Indirect Prompt Injection Attacks With Spotlighting",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2403.14720",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-spotlighting.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Model-level prompt-injection defence; supports A5 by showing that model-side assurance is probabilistic and complementary to enforcement.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A5"
+     ],
+     "risk_level": "none",
+     "qualification_needed": "A5 is supported: this is a model-level control with probabilistic assurance, consistent with the Security Model's two-layer statement. No wording change; it is a complementary baseline."
+    },
+    "relevance": {
+     "key_findings": [
+      "Transforms untrusted inputs (encoding, delimiting) so the model receives a continuous signal of an input's provenance (fetched abstract).",
+      "Reports improved attack resistance for indirect prompt injection with minimal degradation on underlying NLP tasks (fetched abstract)."
+     ],
+     "limitations": [
+      "Security is empirical and model-dependent; an adversarially adapted or arbitrary model can ignore the cue (fetched abstract scope).",
+      "No system-level enforcement of effects (corpus-level addition)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "struq",
+   "title": "StruQ: Defending Against Prompt Injection with Structured Queries",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2402.06363",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-struq.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Structured-query model-level defence; strengthens the A5 two-layer statement but does not constrain system-level claims.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A5"
+     ],
+     "risk_level": "none",
+     "qualification_needed": "A5 is supported: channel separation is a probabilistic model-level control. No wording change; complementary baseline."
+    },
+    "relevance": {
+     "key_findings": [
+      "A secure front-end formats instructions and data into two separate channels, and a specially fine-tuned LLM follows only instructions in the instruction channel (fetched abstract).",
+      "The training strategy converts a base LLM into a structured instruction-tuned model (fetched abstract)."
+     ],
+     "limitations": [
+      "Depends on trained model behaviour and fixed channel assumptions; no system-level enforcement of effects (fetched abstract; corpus-level addition)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "agentguardian",
+   "title": "AgentGuardian: Learning Access Control Policies to Govern AI Agent Behavior",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2601.10440",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-agentguardian.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Learned, context-sensitive tool-call governance: prior art for history/context-dependent policy, and the concrete contrast case for A15(2)'s authority-source distinction.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A15"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "No claim is undermined; the positioning requirement is A15(2): do not describe trace-learned or context-aware tool-call governance as novel. The defensible distinction is the authority source (the organisation's existing ACS) and the model-independent guarantee; learned-policy assurance belongs to the policy-adequacy layer that Conflux places outside the core guarantee."
+    },
+    "relevance": {
+     "key_findings": [
+      "A staging phase monitors execution traces to learn legitimate behaviours and input patterns, from which adaptive policies are derived (fetched abstract).",
+      "Policies regulate tool calls using real-time input context and the control-flow dependencies of multi-step actions; evaluated on two real-world applications, also mitigating hallucination-driven orchestration errors (fetched abstract)."
+     ],
+     "limitations": [
+      "Coverage and generalisation limits of learned policies; rare benign behaviour can be blocked; free-form arguments are hard to constrain; poisoned or unrepresentative staging traces can corrupt the policy (corpus-level additions).",
+      "No formal guarantee and no organisational ACS as the authority source (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "agentrfc",
+   "title": "AgentRFC: Security Design Principles and Conformance Testing for Agent Protocols",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2603.23801",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-agentrfc.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Direct methodological neighbour for SLED: formal agent-security principles plus conformance checking with counterexample replay against implementations; it narrows the A9/A15(4) novelty wording.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A9",
+      "A15"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A9: the model-check-then-replay workflow is prior art, so SLED's novelty must be the PE/ITS defence-property semantics, the shared finite transition kernel across defence abstractions, the non-implication results, and minimal counterexamples. A15(4) stays a hypothesis and must be narrowed accordingly. Also note that AgentRFC independently names consent enforcement and credential lifecycle as gap areas, which supports the Conflux emphasis there."
+    },
+    "relevance": {
+     "key_findings": [
+      "Defines the Agent Protocol Stack (six layers), the Agent-Agnostic Security Model (eleven principles as TLA+ invariants with a property taxonomy), and AgentConform (a two-phase conformance checker) (fetched abstract).",
+      "AgentConform extracts normative clauses into a typed Protocol IR with explicit Protocol/Environment/Adversary separation, compiles it to TLA+, model-checks it, then replays counterexample traces against live SDK implementations (fetched abstract).",
+      "Introduces a Composition Safety principle demonstrated with five composition patterns; reports recurrent gaps in credential lifecycle, consent enforcement, audit completeness and composition safety (fetched abstract)."
+     ],
+     "limitations": [
+      "Checks protocol specifications rather than agent authorisation semantics; correctness depends on clause extraction and modelling; the application is preliminary with full evaluation deferred and some findings under coordinated disclosure (fetched abstract).",
+      "No principal-provenance or ACS-derived authority model; no per-execution authority invariant (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "autoformpolicy",
+   "title": "Autoformalization of Agent Instructions into Policy-as-Code",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2606.26649",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-autoformpolicy.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Policy-source layer above an authorization engine: it constrains how Conflux should describe the provenance of its ACS facts (A15(2)).",
+    "novelty_impact": {
+     "affected_claims": [
+      "A15"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "No core claim is undermined; add the A15(2) boundary sentence about who produced the ACS facts, because an LLM-generated Cedar policy set is exactly the kind of ACS input a reviewer will question. Citing this paper also strengthens the argument that policy generation and policy enforcement are separate layers."
+    },
+    "relevance": {
+     "key_findings": [
+      "Translates agent prompts, MCP tool descriptions and natural-language policy documents into formally verified Cedar policies with an LLM generator-critic loop (fetched abstract).",
+      "On MedAgentBench the autoformalized policies cover substantially more of the source natural-language specification than hand-coded symbolic enforcement in prior work (fetched abstract)."
+     ],
+     "limitations": [
+      "The generated artefact is analyzable Cedar; the analysis does not establish semantic equivalence between prose and policy, and coverage is reported on one benchmark (fetched abstract scope).",
+      "No influence history or principal provenance: Cedar decisions are point-in-time over request/entity facts (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "contextualmanipulation",
+   "title": "AI Agents May Always Fall for Prompt Injections",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2605.17634",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-contextualmanipulation.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Negative/impossibility result for norm-compliance defences: it justifies Conflux's choice of a narrow authority objective (A13) and marks the boundary of the hard guarantee.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A13"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "A13 is supported: the paper's impossibility-style trade-off argues against making contextual appropriateness a hard property, which is why Conflux confines itself to a narrow authority invariant. Add one explicit sentence that authority confinement does not imply contextual appropriateness (already the ADR-025 / Security Model position)."
+    },
+    "relevance": {
+     "key_findings": [
+      "Recasts prompt injection through Contextual Integrity and argues that data-instruction separation fails to detect contextual manipulation while degrading contextually appropriate behaviour (fetched abstract).",
+      "Constructs benign and attack scenarios that violate norms by misrepresenting the flow, manipulating norms, or mixing multiple flows (fetched abstract).",
+      "Derives an impossibility-style trade-off: an adversary can construct a context making a blocked flow look legitimate, while a defender who tightens norms blocks legitimate flows (fetched abstract)."
+     ],
+     "limitations": [
+      "Provides no deterministic enforcement of arbitrary contextual norms; it is an evaluative framework (fetched abstract scope; corpus-level addition)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "solverpolicy",
+   "title": "Solver-Aided Verification of Policy Compliance in Tool-Augmented LLM Agents",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2603.20449",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-solverpolicy.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "Solver-aided policy compliance checking with argument-level preconditions: prior art for the enforcement technique used in Conflux's argument layer; the surviving distinction is the authority source and the influence-parameterised decision.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A6",
+      "A9",
+      "A15"
+     ],
+     "risk_level": "medium",
+     "qualification_needed": "A6/A9/A15(2)-(3): autoformalisation plus argument-level SMT preconditions plus deterministic runtime enforcement is now a published combination, so Conflux's novelty statement must drop the enforcement technique and rest on the ACS-derived authority invariant and on the bounded verification of defence semantics. The A15(2) wording must also say that the policy source is the organisation's existing ACS, not an SMT encoding authored for the task."
+    },
+    "relevance": {
+     "key_findings": [
+      "Translates natural-language tool-use policies into SMT-LIB constraints over agent-observable state and tool arguments with an LLM-assisted, human-guided process (fetched abstract).",
+      "At runtime planned tool calls are intercepted and checked with Z3 as a precondition; violating calls are blocked; on TauBench the approach reports fewer policy violations while maintaining task accuracy (fetched abstract)."
+     ],
+     "limitations": [
+      "Guarantees apply to the encoded constraints and modelled state, not to the fidelity of the prose-to-SMT translation; incomplete observability or omitted tool effects weaken correct constraints; evaluation is benchmark-based (fetched abstract scope).",
+      "State-only preconditions cannot express non-escalation relative to an influence history and existing ACS permissions (analysis against Conflux's model)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "symbolicguardrails",
+   "title": "Symbolic Guardrails for Domain-Specific Agents: Stronger Safety and Security Guarantees Without Sacrificing Utility",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2604.15579",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-symbolicguardrails.xml"
+    }
+   ],
+   "updates": {
+    "closest_relation": "External quantification of the enforceable-policy subset: it constrains the scope of any Conflux policy-coverage claim and supports the hard/soft layer split.",
+    "novelty_impact": {
+     "affected_claims": [
+      "A4",
+      "A5"
+     ],
+     "risk_level": "low",
+     "qualification_needed": "Scoping constraint rather than a novelty threat: only a subset of security/safety requirements is symbolically enforceable, so no Conflux sentence may present ITES as enforcing organisational policy in general. The defensible scope is the machine-readable authority relation (and the audit-style policy checks), with semantic judgement and policy adequacy outside the hard guarantee."
+    },
+    "relevance": {
+     "key_findings": [
+      "Systematic review of 80 agent security/safety benchmarks: 85% state no verifiable requirements (61% none, 24% high-level goals only) (fetched abstract).",
+      "Applicability analysis on tau-squared-Bench, CAR-bench and MedAgentBench: 74% of requirements are symbolically enforceable, and 95% of those need only simple low-cost checks (fetched abstract).",
+      "Empirical evaluation on the same benchmarks: symbolic guardrails improve security/safety without sacrificing utility, often improving it (fetched abstract)."
+     ],
+     "limitations": [
+      "Only specified and observable policies are amenable; many benchmarks lack concrete policies; remaining requirements need model judgement or human review and are not hard guarantees (fetched abstract; corpus-level addition)."
+     ]
+    }
+   }
+  },
+  {
+   "key": "cedarpaper",
+   "title": "Cedar: A New Language for Expressive, Fast, Safe, and Analyzable Authorization",
+   "evidence": [
+    {
+     "url": "https://arxiv.org/abs/2403.04651",
+     "kind": "arxiv-abstract",
+     "fetched": "2026-10-09",
+     "cache": "arxiv-cedarpaper.xml"
+    },
+    {
+     "url": "docs/evidence/CLAIMS.md",
+     "kind": "local-repo-file",
+     "fetched": "2026-10-09",
+     "cache": null
+    }
+   ],
+   "updates": {
+    "closest_relation": "Authorization engine and language that Conflux can use as its ACS substrate; it supplies analysis of the policy layer, not of the influence-parameterised enforcement layer.",
+    "novelty_impact": {
+     "affected_claims": [],
+     "risk_level": "none",
+     "qualification_needed": "No claim conflict. Citation hygiene only: citing Cedar must not imply that the Conflux monitor has been shown to agree with a real Cedar engine, because the pinned differential matrix has not run (local CLAIMS.md records 'Cedar decisions match the in-memory oracle - not yet evidenced')."
+    },
+    "relevance": {
+     "key_findings": [
+      "Cedar is an authorization policy language supporting role-, attribute- and relation-based use cases, with fast evaluation and an optional-type validator (fetched abstract).",
+      "The design admits a sound and complete logical encoding for precise analysis (for example, checking that refactoring preserves authorised permissions); properties are modelled and machine-checked in Lean and implemented in Rust, benchmarked against OpenFGA and Rego (fetched abstract)."
+     ],
+     "limitations": [
+      "Engine correctness does not prove policy completeness or fidelity to organisational intent; history-dependent conditions require explicit external state (fetched abstract; corpus-level addition).",
+      "Cedar decisions are point-in-time and have no notion of which principals influenced an execution (analysis against Conflux's model)."
+     ]
+    }
+   }
+  }
+ ]
+}
