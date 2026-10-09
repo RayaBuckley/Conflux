@@ -21,6 +21,20 @@ PAPERS_DIR = Path(__file__).resolve().parents[1] / "research" / "literature" / "
 
 VALID_CLAIM_IDS = {f"A{i}" for i in range(1, 16)}
 
+
+def _load_corpus_entries() -> list[dict[str, Any]]:
+    """Read the corpus entries, asserting the list shape every caller indexes."""
+    corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
+    entries = corpus["entries"]
+    assert isinstance(entries, list)
+    return entries
+
+
+def _load_corpus_keys() -> set[str]:
+    """Read the corpus entry keys used by the cross-reference checks."""
+    return {str(entry["key"]) for entry in _load_corpus_entries()}
+
+
 pytestmark = pytest.mark.integration
 
 
@@ -36,48 +50,36 @@ class TestLiteratureCorpusSchema:
 
 
 class TestCorpusIntegrity:
-    def _load(self) -> list[dict[str, Any]]:
-        corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
-        entries = corpus["entries"]
-        assert isinstance(entries, list)
-        return entries
-
     def test_keys_are_unique(self) -> None:
-        entries = self._load()
+        entries = _load_corpus_entries()
         keys = [str(entry["key"]) for entry in entries]
         assert len(keys) == len(set(keys))
 
     def test_all_entries_have_last_checked(self) -> None:
-        for entry in self._load():
+        for entry in _load_corpus_entries():
             assert entry["last_checked"], f"entry {entry['key']} missing last_checked"
 
     def test_all_entries_have_verification(self) -> None:
-        for entry in self._load():
+        for entry in _load_corpus_entries():
             verified = entry["verified"]
             assert isinstance(verified, dict)
             assert str(verified["method"]) in ("primary_source", "scholar_metadata", "unverified")
             assert verified["date"]
 
     def test_no_duplicate_arxiv_ids(self) -> None:
-        arxiv_ids = [str(entry["arxiv_id"]) for entry in self._load() if entry.get("arxiv_id")]
+        arxiv_ids = [str(entry["arxiv_id"]) for entry in _load_corpus_entries() if entry.get("arxiv_id")]
         assert len(arxiv_ids) == len(set(arxiv_ids))
 
     def test_no_duplicate_dois(self) -> None:
-        dois = [str(entry["doi"]) for entry in self._load() if entry.get("doi")]
+        dois = [str(entry["doi"]) for entry in _load_corpus_entries() if entry.get("doi")]
         assert len(dois) == len(set(dois))
 
 
 class TestVerificationCompleteness:
     """Enforce verification requirements per priority tier."""
 
-    def _load(self) -> list[dict[str, Any]]:
-        corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
-        entries = corpus["entries"]
-        assert isinstance(entries, list)
-        return entries
-
     def test_priority_a_entries_have_verification(self) -> None:
-        for entry in self._load():
+        for entry in _load_corpus_entries():
             priority = entry.get("reading_priority") or entry.get("adoption_priority")
             if priority == "A":
                 verified = entry["verified"]
@@ -89,7 +91,7 @@ class TestVerificationCompleteness:
                 assert verified["date"], f"entry {entry['key']} missing verification date"
 
     def test_read_entries_have_findings_and_limitations(self) -> None:
-        for entry in self._load():
+        for entry in _load_corpus_entries():
             if entry.get("reading_status") == "read":
                 relevance = entry.get("relevance")
                 assert relevance is not None, f"entry {entry['key']} marked read but has no relevance"
@@ -99,7 +101,7 @@ class TestVerificationCompleteness:
                 assert isinstance(limitations, list) and len(limitations) > 0, f"entry {entry['key']} marked read but has no limitations"
 
     def test_novelty_impact_claims_are_valid(self) -> None:
-        for entry in self._load():
+        for entry in _load_corpus_entries():
             novelty = entry.get("novelty_impact")
             if novelty is not None:
                 claims = novelty.get("affected_claims", [])
@@ -107,7 +109,7 @@ class TestVerificationCompleteness:
                     assert str(claim) in VALID_CLAIM_IDS, f"entry {entry['key']} has invalid claim ref: {claim}"
 
     def test_priority_a_b_have_snowball_status(self) -> None:
-        for entry in self._load():
+        for entry in _load_corpus_entries():
             priority = entry.get("reading_priority") or entry.get("adoption_priority")
             if priority in ("A", "B"):
                 snowball = entry.get("snowball_status")
@@ -119,16 +121,12 @@ class TestVerificationCompleteness:
 class TestBibliographyCrossReference:
     """Cross-check references.bib and REFERENCES.md against the corpus."""
 
-    def _load_corpus_keys(self) -> set[str]:
-        corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
-        return {str(e["key"]) for e in corpus["entries"]}
-
     def test_bib_entries_exist_in_corpus(self) -> None:
         if not BIB_PATH.exists():
             pytest.skip("references.bib not found")
         text = BIB_PATH.read_text(encoding="utf-8")
         bib_keys = set(re.findall(r"@\w+\{([^,]+),", text))
-        corpus_keys = self._load_corpus_keys()
+        corpus_keys = _load_corpus_keys()
         missing = bib_keys - corpus_keys
         assert not missing, f"BibTeX keys not in corpus: {missing}"
 
@@ -137,7 +135,7 @@ class TestBibliographyCrossReference:
             pytest.skip("REFERENCES.md not found")
         text = REFS_MD_PATH.read_text(encoding="utf-8")
         ref_keys = set(re.findall(r"`(\w+)`", text))
-        corpus_keys = self._load_corpus_keys()
+        corpus_keys = _load_corpus_keys()
         missing = ref_keys - corpus_keys
         assert not missing, f"REFERENCES.md keys not in corpus: {missing}"
 
@@ -145,19 +143,13 @@ class TestBibliographyCrossReference:
 class TestNoveltyAuditConsistency:
     """Cross-check the novelty audit against the corpus."""
 
-    def _load_corpus(self) -> list[dict[str, Any]]:
-        corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
-        entries = corpus["entries"]
-        assert isinstance(entries, list)
-        return entries
-
     # Claims that require external source evidence (not "survives" or "non-claim").
     CLAIMS_REQUIRING_SOURCES = {"A1", "A2", "A4", "A6", "A8", "A9", "A10", "A11", "A13", "A14"}
 
     def test_all_claims_have_source_references(self) -> None:
         if not NOVELTY_AUDIT_PATH.exists():
             pytest.skip("novelty audit not found")
-        entries = self._load_corpus()
+        entries = _load_corpus_entries()
         # Build map: claim ID -> list of source keys that reference it
         claim_sources: dict[str, list[str]] = {f"A{i}": [] for i in range(1, 16)}
         for entry in entries:
@@ -175,10 +167,6 @@ class TestNoveltyAuditConsistency:
 class TestLocalLiteratureCopies:
     """Verify local paper copies and fetch manifest consistency."""
 
-    def _load_corpus_keys(self) -> set[str]:
-        corpus = json.loads(CORPUS_PATH.read_text(encoding="utf-8"))
-        return {str(e["key"]) for e in corpus["entries"]}
-
     def _load_manifest(self) -> dict[str, Any]:
         data: dict[str, Any] = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
         return data
@@ -195,7 +183,7 @@ class TestLocalLiteratureCopies:
             pytest.skip("manifest.json not found")
         manifest = self._load_manifest()
         manifest_keys = {str(e["key"]) for e in manifest["entries"]}
-        corpus_keys = self._load_corpus_keys()
+        corpus_keys = _load_corpus_keys()
         assert manifest_keys == corpus_keys, (
             f"manifest/corpus key mismatch: "
             f"missing from manifest: {corpus_keys - manifest_keys}; "
