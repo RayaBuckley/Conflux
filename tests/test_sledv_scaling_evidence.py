@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 from typing import Any
 
@@ -25,6 +26,28 @@ from scripts.generate_sledv_scaling_evidence import (
 def bundle() -> dict[str, Any]:
     """Build the scaling bundle once; a single generation re-runs every fixture."""
     return generate()
+
+
+UNAVAILABLE_Z3 = "optional_dependency_unavailable:z3"
+
+
+def _assert_z3_agreement(bundle: dict[str, Any], measured: list[dict[str, Any]], flag: str) -> None:
+    """Assert a z3 agreement flag, or the unavailable marker where nothing was measured.
+
+    Without the optional solver every row records ``optional_dependency_unavailable:z3``,
+    so the ``all(...)`` behind the flag is vacuously true.  Asserting the flag alone
+    would report a guarantee nobody measured, which the optional-evidence rule
+    forbids; assert the documented marker instead, and require at least one
+    measured row before trusting the flag.
+    """
+    assert bundle["fixtures"], "the bundle must contain fixtures"
+    if importlib.util.find_spec("z3") is None:
+        assert not measured, "no row may report a z3 measurement while the solver is absent"
+        assert {row["z3_original"]["error"] for row in bundle["fixtures"]} == {UNAVAILABLE_Z3}
+        assert {row["z3_reduced"]["error"] for row in bundle["fixtures"]} == {UNAVAILABLE_Z3}
+        return
+    assert measured, "z3 is installed but no fixture produced a measurement"
+    assert bundle["summary"][flag] is True
 
 
 class TestSledvScalingBundle:
@@ -57,11 +80,13 @@ class TestSledvScalingBundle:
 
     def test_z3_all_agree(self, bundle: dict[str, Any]) -> None:
         """Z3 on original and reduced IR must agree where both succeed."""
-        assert bundle["summary"]["z3_all_agree"] is True
+        measured = [row for row in bundle["fixtures"] if row["z3_original"]["error"] is None and row["z3_reduced"]["error"] is None]
+        _assert_z3_agreement(bundle, measured, "z3_all_agree")
 
     def test_ref_z3_agree(self, bundle: dict[str, Any]) -> None:
         """Reference and Z3 verdicts must agree where Z3 is available."""
-        assert bundle["summary"]["ref_z3_agree"] is True
+        measured = [row for row in bundle["fixtures"] if row["z3_original"]["error"] is None]
+        _assert_z3_agreement(bundle, measured, "ref_z3_agree")
 
     def test_deterministic_regeneration(self, bundle: dict[str, Any]) -> None:
         regenerated = generate()
