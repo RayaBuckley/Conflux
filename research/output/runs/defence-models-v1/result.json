@@ -135,6 +135,42 @@
       }
     }
   ],
+  "nuxmv_evidence": {
+    "available_here": false,
+    "recorded": {
+      "note": "not reproducible without a nuXmv binary on this host",
+      "origin": "nuXmv-capable host",
+      "reproducible_here": false,
+      "source_revision": "bbd59a2",
+      "verdicts": {
+        "CaMeL": {
+          "native": "safe",
+          "pe": "unsafe"
+        },
+        "Dual-LLM": {
+          "native": "safe",
+          "pe": "unsafe"
+        },
+        "ITES": {
+          "native": null,
+          "pe": "safe"
+        },
+        "PACT": {
+          "native": "safe",
+          "pe": "unsafe"
+        },
+        "Progent": {
+          "native": "safe",
+          "pe": "unsafe"
+        },
+        "Requester-only": {
+          "native": null,
+          "pe": "unsafe"
+        }
+      }
+    },
+    "unavailable_reason": "optional_binary_unavailable:nuXmv"
+  },
   "schema_version": "1",
   "summary": {
     "native_measured": 4,
