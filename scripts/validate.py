@@ -8,7 +8,8 @@ pipeline on every edit:
 2. ``standard`` - adds the full test suite with the coverage threshold, the
    evidence reproductions, doctests, mypy, yamllint and vulture; measured at
    1.8 min, of which the branch-coverage run is 104 s (a plain suite run of
-   the same 1331 tests takes 33 s).  Use before committing.
+   the same tests takes 33 s; the suite held 1331 tests when this was measured).
+   Use before committing.
 3. ``full`` - adds the wheel build with the installed-CLI smoke test, the
    markdownlint and cspell extension checks, and the informational pip-audit;
    measured at 2 min, only 13 s more than ``standard`` because packaging and
@@ -21,6 +22,9 @@ directories.  A bytecode file can outlive the edit that invalidates it: on
 from an earlier in-place edit was newer than the file restored over it.  The
 purge is cheap and makes every run start from source.
 
+Every run prints its five slowest steps and their total, so the numbers quoted here
+can be re-checked instead of trusted.
+
 Tiers 1 and 2 stop at the first failing step; tier 3 runs every step and
 reports all failures, which is what CI needs.  Select a tier with
 ``--tier quick|standard|full`` (or ``--tier 1|2|3``); the default is ``full``
@@ -32,7 +36,9 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import time
 from collections import deque
+from collections.abc import Sequence
 from pathlib import Path
 from shutil import rmtree
 from uuid import uuid4
@@ -164,6 +170,23 @@ def run(*arguments: str) -> int:
     return return_code
 
 
+def print_timings(durations: Sequence[tuple[str, float]], *, limit: int = 5) -> None:
+    """Name the slowest steps, so the tier choice is made on measured cost.
+
+    The owner shares this laptop with the validation runs, so which step costs the
+    minutes matters: the coverage pytest is the expensive one, the static checks are
+    not.  Printing the numbers keeps the tier docstring honest over time.
+    """
+    if not durations:
+        return
+    slowest = sorted(durations, key=lambda item: item[1], reverse=True)[:limit]
+    print(
+        "[validate] slowest steps: "
+        + ", ".join(f"{name} {seconds:.1f} s" for name, seconds in slowest)
+        + f" (total {sum(seconds for _, seconds in durations):.1f} s)",
+    )
+
+
 DOCTEST_TARGET = "src/conflux/domain"
 DOCTEST_CHECK = f"pytest --doctest-modules {DOCTEST_TARGET} -q"
 
@@ -219,6 +242,7 @@ def main() -> int:
     failures: list[str] = []
     not_run: list[str] = []
     after_failure: list[str] = []
+    durations: list[tuple[str, float]] = []
     stopped = False
 
     def _run(step_tier: int, *arguments: str) -> None:
@@ -230,7 +254,10 @@ def main() -> int:
         if step_tier > tier:
             not_run.append(name)
             return
-        if run(*arguments):
+        started = time.perf_counter()
+        return_code = run(*arguments)
+        durations.append((name, time.perf_counter() - started))
+        if return_code:
             failures.append(name)
             if tier < 3:
                 stopped = True
@@ -282,6 +309,7 @@ def main() -> int:
             "research/output/runs/direction-readiness-v1",
             "--check",
         )
+    _run(2, "scripts/generate_flmsec_tables.py", "--check")
     if tier == 1:
         _run(
             1,
@@ -337,6 +365,7 @@ def main() -> int:
     _run(3, "scripts/validate_wheel.py")
     _run(3, "scripts/validate_extensions.py")
     if failures:
+        print_timings(durations)
         print(f"[validate] tier {tier} ({TIER_NAMES[tier]}): {len(failures)} check(s) failed:")
         for name in failures:
             print(f"  - {name}")
@@ -346,6 +375,7 @@ def main() -> int:
                 print(f"  - {name}")
         return 1
     rmtree(SESSION_ROOT)
+    print_timings(durations)
     print(f"[validate] tier {tier} ({TIER_NAMES[tier]}): all checks passed")
     if not_run:
         print(f"[validate] {len(not_run)} slower check(s) skipped at this tier:")

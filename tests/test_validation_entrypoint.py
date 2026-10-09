@@ -1,6 +1,7 @@
 """Portable validation diagnostics."""
 
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -189,6 +190,77 @@ def test_standard_tier_runs_the_whole_suite_with_the_coverage_gate(
     assert recorder.informational == []
     assert "pip_audit" in output
     assert "python scripts/validate.py --tier full" in output
+
+
+class _Clock:
+    """A monotonic stand-in for time.perf_counter that the recorder advances."""
+
+    def __init__(self) -> None:
+        self.now = 0.0
+
+    def __call__(self) -> float:
+        return self.now
+
+
+class _CostlyCheck(_RecordingCheck):
+    """Advance the clock so the slowest step is known without running it."""
+
+    def __init__(self, clock: _Clock) -> None:
+        super().__init__()
+        self.clock = clock
+
+    def run(self, *arguments: str) -> int:
+        name = " ".join(arguments)
+        self.clock.now += 104.0 if "--cov=conflux" in name else 0.5
+        return super().run(*arguments)
+
+
+def test_the_summary_names_the_step_that_cost_the_most(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The tier choice is about cost, so the run must report where the seconds went."""
+    validate_module.SESSION_ROOT.mkdir(parents=True, exist_ok=True)
+    clock = _Clock()
+    recorder = _CostlyCheck(clock)
+    monkeypatch.setattr(validate_module, "run", recorder.run)
+    monkeypatch.setattr(validate_module, "run_info", recorder.run_info)
+    monkeypatch.setattr(validate_module, "run_doctests", recorder.run_doctests)
+    monkeypatch.setattr(time, "perf_counter", clock)
+    monkeypatch.setattr("subprocess.run", _completed)
+    monkeypatch.setattr(sys, "argv", ["scripts/validate.py", "--tier", "standard"])
+
+    assert validate_module.main() == 0
+    output = capsys.readouterr().out
+    line = next(text for text in output.splitlines() if text.startswith("[validate] slowest steps:"))
+    assert "--cov=conflux" in line.split(",")[0]
+    assert "total" in line
+    assert "104.0 s" in line
+
+
+def test_the_paper_tables_are_checked_and_a_drift_fails_the_tier(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The manuscript's tables are generated from evidence; a gate must watch them.
+
+    ``generate_flmsec_tables.py --check`` was green for weeks while nothing ran it,
+    so a regeneration that moved a published number would have gone unnoticed.
+    """
+    recorder, _, exit_code = _drive_main(monkeypatch, capsys, "--tier", "standard")
+    assert exit_code == 0
+    assert "scripts/generate_flmsec_tables.py --check" in recorder.invoked
+
+    failing, output, exit_code = _drive_main(
+        monkeypatch,
+        capsys,
+        "--tier",
+        "standard",
+        fail_at="scripts/generate_flmsec_tables.py --check",
+    )
+    assert exit_code == 1
+    assert "generate_flmsec_tables.py --check" in output
+    assert "scripts/generate_flmsec_tables.py --check" in failing.invoked
 
 
 def test_full_tier_runs_the_packaging_and_extension_checks(
