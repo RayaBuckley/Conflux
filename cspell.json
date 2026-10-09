@@ -774,7 +774,8 @@
     "xiao",
     "raya",
     "unrefereed",
-    "hermeticity"
+    "hermeticity",
+    "controllednl"
   ],
   "ignorePaths": [
     "research/reports/archive/**",
