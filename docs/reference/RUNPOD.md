@@ -10,6 +10,37 @@ Per supervisor guidance:
 - Let the supervisor know if you anticipate needing more than this; the main
   consideration is keeping accounts topped up, not a hard resource constraint.
 
+## Cost guard and shared-account safety
+
+`scripts/runpod/guard.py` is the only supported way to create or stop a pod from
+this repository. A single H100 and one pod at a time are enforced in code.
+
+```bash
+python scripts/runpod/guard.py status          # Conflux pods, burn rate, budget
+python scripts/runpod/guard.py preflight --hours 2
+python scripts/runpod/guard.py create --run-id pilot-1 --hours 2 --yes
+python scripts/runpod/guard.py stop --run-id pilot-1 --yes
+python scripts/runpod/guard.py stop-all --yes  # panic switch
+python scripts/runpod/guard.py watch           # stop pods whose TTL has passed
+python scripts/runpod/guard.py report --days 7
+```
+
+The account is shared with other students. The guard identifies a Conflux pod by
+its name (`^conflux-...`) plus the `CONFLUX_MANAGED=1` environment marker, or by
+a pod id in the local ledger written at creation time. Anything else is treated
+as someone else's pod: it is never named, stopped, started or terminated, and it
+appears only as an aggregate count and hourly cost. Destructive subcommands
+resolve their targets through that check and refuse the whole command if any
+target is foreign.
+
+Caps live in `.local/runpod/budget.json` (created on first use, gitignored).
+Configuration may lower them but never raise them past the absolute limits in the
+module: one GPU, H100 family only, one Conflux pod at a time, 12 hours per pod,
+USD 50 per pod, USD 100 per day. Every mutating action needs `--yes` and is
+appended to `.local/runpod/audit.jsonl` before the API call. After creation the
+guard re-reads the pod, records the real hourly rate, and stops it immediately if
+the real rate exceeds the per-pod cap.
+
 ## Bypassing the RunPod proxy via SSH key injection
 
 You can bypass the RunPod proxy by embedding your public key directly into the
