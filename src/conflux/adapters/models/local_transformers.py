@@ -168,7 +168,7 @@ class TransformersLocalModel:
         except (OSError, ValueError) as error:
             raise LocalModelFailure("artifact", str(error)) from error
         source = str(self.snapshot_path)
-        tokenizer = AutoTokenizer.from_pretrained(  # type: ignore[no-untyped-call]
+        tokenizer = AutoTokenizer.from_pretrained(  # type: ignore[no-untyped-call, unused-ignore]
             source,
             local_files_only=True,
             trust_remote_code=False,
@@ -181,7 +181,7 @@ class TransformersLocalModel:
                 raise LocalModelFailure("dependency", "optional_dependency_unavailable:transformers") from error
             import torch
 
-            quantization_config = _BnBConfig(  # type: ignore[no-untyped-call]
+            quantization_config = _BnBConfig(  # type: ignore[no-untyped-call, unused-ignore]
                 load_in_4bit=True,
                 bnb_4bit_quant_type="nf4",
                 bnb_4bit_compute_dtype=torch.bfloat16,
