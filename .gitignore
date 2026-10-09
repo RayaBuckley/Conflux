@@ -214,6 +214,11 @@ data/
 dist/
 build/
 
+# Local CLI output directory. `conflux plan demo` and other commands default
+# to runs/; root-anchored so the research/output/runs allow-list below is
+# unaffected.
+/runs/
+
 # Experiment definitions are tracked; local run output is not.
 research/experiments/local-runs/
 
