@@ -1,6 +1,8 @@
 [CmdletBinding()]
 param(
-    [string] $Python = ""
+    [string] $Python = "",
+    [ValidateSet("quick", "standard", "full")]
+    [string] $Tier = "full"
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,7 +13,7 @@ if (-not (Test-Path -LiteralPath $venvPython)) {
     throw "Conflux Python not found. Run .\scripts\setup.ps1 or pass -Python."
 }
 
-& $venvPython (Join-Path $PSScriptRoot "validate.py")
+& $venvPython (Join-Path $PSScriptRoot "validate.py") --tier $Tier
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
