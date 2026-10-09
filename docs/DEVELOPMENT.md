@@ -39,13 +39,14 @@ offline contract and failure tests, but their live results belong in explicit
 optional workflows with retained manifests and logs. Missing optional access
 is recorded as unavailable, not converted into a passing empirical claim.
 
-The solver boundary is the sharpest example. The gate environment installs
-`.[dev,visualisation]` and has no z3, so `verify_plan` returns the documented
-`UNKNOWN` verdict there and the positive `BOUNDED_SAFE`/`UNSAFE` results,
-including the counterexample trace, are only produced where the solver exists.
-A z3-dependent assertion must therefore accept the documented unavailable
-verdict instead of failing, and changes to the verification paths should be
-checked in an environment that has the solver:
+The solver boundary is the sharpest example, because it moves with the host. The
+declared gate environment installs `.[dev,visualisation]` and carries no solver,
+`scripts/validate.py` deliberately does not run solver-carrying `--check` steps,
+and the positive `BOUNDED_SAFE`/`UNSAFE` results, including the counterexample
+trace, appear only where a solver exists. A solver-dependent assertion must
+therefore accept the documented unavailable verdict instead of failing, and
+changes to the verification paths should be checked in an environment that has
+the solver:
 
 ```bash
 .local/venv-z3/bin/python -m pytest tests/test_plan_ir_extensions.py tests/test_verification_ir.py -q
@@ -53,20 +54,30 @@ checked in an environment that has the solver:
 
 That command passed 29 tests on 2026-10-09 with z3-solver 5.1.0.
 
-Retained bundles that carry solver results follow the same rule. They are
-regenerated in the environment that has the solver, so `--check` reports them
-stale under the gate by construction: `scripts/generate_coi_scaling.py --check`,
-`scripts/generate_defence_evidence.py --check`, and
-`scripts/generate_sledv_scaling_evidence.py --check` exit 1 in `.venv` and 0 in
-`.local/venv-z3` (measured 2026-10-09). `scripts/validate.py` therefore does not
-run those checks, and the compensating control is the in-process reproducibility
-tests (`tests/test_coi_scaling_evidence.py`,
-`tests/test_defence_model_evidence.py`), which regenerate the bundle and assert
-the recorded provenance in either environment. Do not add a solver-carrying
-`--check` step to the gate. A host without an optional backend records the
-unavailability marker and keeps the last measured values with their source
-revision, so the boundary stays visible in the bundle instead of disappearing
-from it.
+Retained bundles that carry solver results follow the same rule, and the
+measurements below show the boundary moving as this host gained the optional
+backends during 2026-10-09:
+
+| Environment | `generate_coi_scaling.py --check` | `generate_defence_evidence.py --check` | `generate_sledv_scaling_evidence.py --check` |
+| --- | --- | --- | --- |
+| `.venv`, no solver (baseline) | 1 | 1 | 1 |
+| `.venv`, z3-solver 5.1.0.0 present | 0 | 0 | 0 |
+| `.venv`, z3 and nuXmv 2.2.0 on `PATH` | 0 | 1 | 0 |
+
+The last row is the one to keep in mind: the defence-model bundle records nuXmv
+availability, so a bundle that says "nuXmv unavailable" is only reproducible on a
+host where nuXmv is absent. Installing an optional backend is a change of
+measurement environment, not just of tooling; record the environment with the
+bundle instead of letting a local install silently change a `--check` outcome.
+
+The compensating control holds in every one of those environments, because the
+reproducibility tests branch on availability rather than assuming it:
+`tests/test_defence_model_evidence.py`, `tests/test_coi_scaling_evidence.py` and
+`tests/test_verification_ir.py` pass with both backends present (41 tests,
+2026-10-09). Do not add a solver-carrying `--check` step to the gate. A host
+without an optional backend records the unavailability marker and keeps the last
+measured values with their source revision, so the boundary stays visible in the
+bundle instead of disappearing from it.
 
 ## Rationale
 
@@ -107,6 +118,71 @@ returns `UNKNOWN` with exit code 3. Install with `pip install z3-solver`.
 
 AgentDojo (`agentdojo`) is optional. Without it, `benchmark agentdojo`
 preflight reports `not_installed`. Install with `pip install agentdojo`.
+
+nuXmv is optional and licence-gated. It has no package on PyPI or in the apt
+index, so it cannot be installed like the two above. FBK publishes it directly
+at <https://nuxmv.fbk.eu/download.html>, and the bundled `LICENSE.txt` permits
+academic and non-commercial research use only while forbidding modification and
+redistribution. Never vendor the tarball, bake it into an image, or ship it in
+the artefact bundle; install it per host.
+
+The backend finds nuXmv through `shutil.which("nuXmv")`, runs `nuXmv -h` for the
+version line and `nuXmv -int model.smv` for the IC3 query, and reports
+`optional_binary_unavailable:nuXmv` when the binary is absent. It uses the
+version line as the recorded solver fingerprint, so the install must not emit
+loader warnings: machine-local paths in a fingerprint would not reproduce.
+
+Installed on this host on 2026-10-09 against version 2.2.0 (4 June 2026), from
+the vendor URL with the published SHA-256 verified:
+
+```bash
+# Fetch the tarball and the vendor's digest, then check them.
+curl -fsSO https://nuxmv.fbk.eu/downloads/2.2.0/nuXmv-2.2.0-linux64.tar.xz
+curl -fsSO https://nuxmv.fbk.eu/downloads/2.2.0/nuXmv-2.2.0-linux64.tar.xz.sha256sum
+sha256sum -c nuXmv-2.2.0-linux64.tar.xz.sha256sum
+
+# Unpack into a user prefix, never into the repository.
+mkdir -p ~/.local/opt/nuxmv-2.2.0
+tar -xf nuXmv-2.2.0-linux64.tar.xz -C ~/.local/opt/nuxmv-2.2.0 --strip-components=1
+```
+
+Two compatibility libraries are then needed on a current Ubuntu host. The
+vendor's own `usr/local/bin/nuXmv.sh` cannot be used as-is, because it puts the
+whole bundled library directory first on the search path: that directory holds an
+older `libc.so.6`, which the system `libstdc++.so.6` rejects, and a
+`libxml2.so.2` built against ICU 70, which Ubuntu 26.04 no longer ships (it has
+`libxml2.so.16` and ICU 78). Keeping the vendor's `libxml2.so.2` and supplying
+ICU 70 beside it avoids the symbol-version warning that the system `libxml2.so.16`
+would produce:
+
+```bash
+# The vendor's libxml2.so.2, plus the ICU 70 runtime it was built against
+# (Ubuntu 22.04 libicu70, unpacked locally with dpkg-deb -x).
+mkdir -p ~/.local/opt/nuxmv-compat
+ln -sf ~/.local/opt/nuxmv-2.2.0/usr/local/lib/x86_64-linux-gnu/libxml2.so.2 ~/.local/opt/nuxmv-compat/libxml2.so.2
+ln -sf libicuuc.so.70.1 ~/.local/opt/nuxmv-compat/libicuuc.so.70
+ln -sf libicudata.so.70.1 ~/.local/opt/nuxmv-compat/libicudata.so.70
+
+# A launcher that prepends only that directory, then execs the real binary.
+mkdir -p ~/.local/opt/nuxmv-bin
+cat > ~/.local/opt/nuxmv-bin/nuXmv <<'EOF'
+#!/bin/sh
+root="$HOME/.local/opt/nuxmv-2.2.0/usr/local"
+LD_LIBRARY_PATH="$HOME/.local/opt/nuxmv-compat${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH
+exec "$root/bin/nuXmv" "$@"
+EOF
+chmod 755 ~/.local/opt/nuxmv-bin/nuXmv
+ln -sf ~/.local/opt/nuxmv-bin/nuXmv ~/.local/bin/nuXmv
+```
+
+Then `conflux verify --model model.json --backend nuxmv` reaches the IC3 path.
+
+Installing an optional backend also moves the evidence boundary described under
+"Offline and optional evidence": bundles record backend availability, so a
+bundle that says "nuXmv unavailable" is only reproducible on a host where nuXmv
+is absent. Record the environment that produced a bundle, and re-measure
+deliberately rather than letting a local install change `--check` outcomes.
 
 ### CRLF / LF normalisation
 

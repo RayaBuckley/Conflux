@@ -775,7 +775,11 @@
     "raya",
     "unrefereed",
     "hermeticity",
-    "controllednl"
+    "controllednl",
+    "libc",
+    "libstdc",
+    "dpkg",
+    "libicuuc"
   ],
   "ignorePaths": [
     "research/reports/archive/**",
