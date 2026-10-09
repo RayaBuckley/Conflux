@@ -1,0 +1,786 @@
+{
+  "schema_version": "2",
+  "generated_date": "2026-10-09",
+  "generator": "scripts/snowball_literature.py",
+  "status": "proposal",
+  "note": "Proposed corpus entries from the snowball pass. The corpus, its manifest and fetch_status.json are unchanged; admission is a separate reviewed step.",
+  "selection_rule": "top 25 candidates with dedupe verdict 'new', a non-null year, a DOI/arXiv/OpenAlex identity, ranked by the snowball score; adoption_priority B when score >= 25 else C",
+  "admission_checklist": [
+    "add the entry to research/reports/analysis/literature_corpus.json",
+    "add the matching manifests entry to research/literature/manifest.json (key parity is enforced by tests)",
+    "write research/literature/papers/<key>/fetch_status.json when a local copy is fetched",
+    "run python scripts/validate.py --tier quick after the edit and --tier standard before committing",
+    "promote verified.method only after primary-source verification"
+  ],
+  "entries": [
+    {
+      "key": "notwhatyou",
+      "title": "Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection",
+      "year": 2023,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) agentrfc (backward), agentthread (backward), cillm (backward), contextualmanipulation (backward); semanticscholar identity doi:10.1145/3605764.3623985. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Kai Greshake",
+        "Sahar Abdelnabi",
+        "Shailesh Mishra",
+        "C. Endres",
+        "Thorsten Holz",
+        "Mario Fritz"
+      ],
+      "venue": "AISec@CCS",
+      "doi": "10.1145/3605764.3623985",
+      "arxiv_id": "2302.12173",
+      "source_url": "https://doi.org/10.1145/3605764.3623985"
+    },
+    {
+      "key": "whenagentbecomes",
+      "title": "When the Agent Becomes the Kernel: A Systematization of Security on the Path to AI-Native Operating Systems",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) agentguardian (forward), contextualmanipulation (forward), flume (forward), histar (forward); semanticscholar identity arxiv:2609.23700. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Systems security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Li Zhang",
+        "Yang Sun",
+        "Jie Shi"
+      ],
+      "arxiv_id": "2609.23700",
+      "source_url": "https://arxiv.org/abs/2609.23700"
+    },
+    {
+      "key": "securitypublickey",
+      "title": "On the security of public key protocols",
+      "year": 1981,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) agentrfc (backward), agentthread (backward); semanticscholar identity doi:10.1109/tit.1983.1056650. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Multi-agent systems",
+      "source_type": "primary_paper",
+      "authors": [
+        "D. Dolev",
+        "A. Yao"
+      ],
+      "venue": "22nd Annual Symposium on Foundations of Computer Science (sfcs 1981)",
+      "doi": "10.1109/tit.1983.1056650",
+      "source_url": "https://doi.org/10.1109/tit.1983.1056650"
+    },
+    {
+      "key": "firewallssecuredynamic",
+      "title": "Firewalls to Secure Dynamic LLM Agentic Networks",
+      "year": 2025,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) ciframework (forward), cillm (forward), contextualmanipulation (backward); semanticscholar identity doi:10.48550/arxiv.2502.01822. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Sahar Abdelnabi",
+        "Amr Gomaa",
+        "Eugene Bagdasarian",
+        "P. O. Kristensson",
+        "Reza Shokri"
+      ],
+      "venue": "Trans. Mach. Learn. Res.",
+      "doi": "10.48550/arxiv.2502.01822",
+      "arxiv_id": "2502.01822",
+      "source_url": "https://doi.org/10.48550/arxiv.2502.01822"
+    },
+    {
+      "key": "rifreactiveinformation",
+      "title": "RIF: Reactive information flow labels",
+      "year": 2020,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) executionhistory (forward), flume (forward), goguenmeseguer (forward), lio (forward); semanticscholar identity doi:10.3233/jcs-191316. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Information flow control",
+      "source_type": "primary_paper",
+      "authors": [
+        "Elisavet Kozyri",
+        "F. Schneider"
+      ],
+      "venue": "Journal of computing and security",
+      "doi": "10.3233/jcs-191316",
+      "source_url": "https://doi.org/10.3233/jcs-191316"
+    },
+    {
+      "key": "transparentdifcharnessing",
+      "title": "Transparent DIFC: Harnessing Innate Application Event Logging for Fine-Grained Decentralized Information Flow Control",
+      "year": 2022,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) flume (forward), histar (forward), lio (forward), lomac (forward); semanticscholar identity doi:10.1109/eurosp53844.2022.00037. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Information flow control",
+      "source_type": "primary_paper",
+      "authors": [
+        "Jason Liu",
+        "Anant Kandikuppa",
+        "Adam Bates"
+      ],
+      "venue": "European Symposium on Security and Privacy",
+      "doi": "10.1109/eurosp53844.2022.00037",
+      "source_url": "https://doi.org/10.1109/eurosp53844.2022.00037"
+    },
+    {
+      "key": "rethinkingagentsecurity",
+      "title": "Rethinking Agent Security as a Networking Problem",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) cillm (forward), contextualintegrity (forward), flume (forward), histar (forward); semanticscholar identity arxiv:2608.12172. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Van Tran",
+        "Taveesh Sharma",
+        "T. S. Dhesi",
+        "Nick Feamster"
+      ],
+      "arxiv_id": "2608.12172",
+      "source_url": "https://arxiv.org/abs/2608.12172"
+    },
+    {
+      "key": "boundarystatecontrol",
+      "title": "Boundary-State Control for Tool-Using Language-Model Agents: Commit-Time Consistency under State Drift",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) accesscalculus (forward), delegationlogic (forward), policymaker (forward), uconabc (forward); semanticscholar identity arxiv:2609.37475. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "W. Shu"
+      ],
+      "arxiv_id": "2609.37475",
+      "source_url": "https://arxiv.org/abs/2609.37475"
+    },
+    {
+      "key": "governeddeductionpolicy",
+      "title": "Governed Deduction: Policy-Grounded Premise Authorization Beyond Relevance",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) accesscalculus (forward), delegationlogic (forward), rtframework (forward), uconabc (forward); semanticscholar identity arxiv:2609.31029. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Access control",
+      "source_type": "primary_paper",
+      "authors": [
+        "W. Shu",
+        "Hsiang Lin"
+      ],
+      "arxiv_id": "2609.31029",
+      "source_url": "https://arxiv.org/abs/2609.31029"
+    },
+    {
+      "key": "proofcontinuitytemporal",
+      "title": "Proof-of-Continuity: A Temporal Model for Authority Propagation in Distributed Systems and AI Agents",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) capabilitymyths (forward), confuseddeputy (forward), executionhistory (forward), pbac (forward); semanticscholar identity doi:10.48550/arxiv.2607.08906. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Delegation and authority",
+      "source_type": "primary_paper",
+      "authors": [
+        "N. Gallo"
+      ],
+      "venue": "arXiv.org",
+      "doi": "10.48550/arxiv.2607.08906",
+      "arxiv_id": "2607.08906",
+      "source_url": "https://doi.org/10.48550/arxiv.2607.08906"
+    },
+    {
+      "key": "runtimeauthorizationconsiste",
+      "title": "Runtime Authorization Consistency Checking for MCP-based Agentic Workflows",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) confuseddeputy (forward), delegationlogic (forward), flume (forward), histar (forward); semanticscholar identity arxiv:2609.23498. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Access control",
+      "source_type": "primary_paper",
+      "authors": [
+        "Ai-Yao Zhang",
+        "Xiao-Dong Lee",
+        "Zhi-Xian Zhuang",
+        "Bo-Tao Peng"
+      ],
+      "arxiv_id": "2609.23498",
+      "source_url": "https://arxiv.org/abs/2609.23498"
+    },
+    {
+      "key": "llama3herd",
+      "title": "The Llama 3 Herd of Models",
+      "year": 2024,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) cillm (backward); semanticscholar identity arxiv:2407.21783. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Contextual integrity / model alignment",
+      "source_type": "primary_paper",
+      "authors": [
+        "Aaron Grattafiori",
+        "Abhimanyu Dubey",
+        "Abhinav Jauhri",
+        "Abhinav Pandey",
+        "Abhishek Kadian",
+        "Ahmad Al-Dahle",
+        "Aiesha Letman",
+        "Akhil Mathur",
+        "A. Schelten",
+        "Alex Vaughan",
+        "Amy Yang",
+        "Angela Fan"
+      ],
+      "arxiv_id": "2407.21783",
+      "source_url": "https://arxiv.org/abs/2407.21783"
+    },
+    {
+      "key": "keywordsuse",
+      "title": "Key words for use in RFCs to Indicate Requirement Levels",
+      "year": 1997,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) agentrfc (backward), agentthread (backward); semanticscholar identity doi:10.17487/rfc2119. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Agent protocol formal verification / conformance",
+      "source_type": "primary_paper",
+      "authors": [
+        "S. Bradner"
+      ],
+      "venue": "Request for Comments",
+      "doi": "10.17487/rfc2119",
+      "source_url": "https://doi.org/10.17487/rfc2119"
+    },
+    {
+      "key": "privacylensevaluatingprivacy",
+      "title": "PrivacyLens: Evaluating Privacy Norm Awareness of Language Models in Action",
+      "year": 2024,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) ciframework (forward), cillm (backward), contextualmanipulation (backward); semanticscholar identity doi:10.48550/arxiv.2409.00138. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Yijia Shao",
+        "Tian-Shi Li",
+        "Weiyan Shi",
+        "Yanchen Liu",
+        "Diyi Yang"
+      ],
+      "venue": "Neural Information Processing Systems",
+      "doi": "10.48550/arxiv.2409.00138",
+      "arxiv_id": "2409.00138",
+      "source_url": "https://doi.org/10.48550/arxiv.2409.00138"
+    },
+    {
+      "key": "cibenchbenchmarking",
+      "title": "CI-Bench: Benchmarking Contextual Integrity of AI Assistants on Synthetic Data",
+      "year": 2024,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) ciframework (forward), cillm (backward), contextualmanipulation (backward); semanticscholar identity doi:10.48550/arxiv.2409.13903. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Integrity models",
+      "source_type": "primary_paper",
+      "authors": [
+        "Zhao Cheng",
+        "Diane Wan",
+        "Matthew Abueg",
+        "Sahra Ghalebikesabi",
+        "Ren Yi",
+        "Eugene Bagdasarian",
+        "Borja Balle",
+        "S. Mellem",
+        "Shawn O'Banion"
+      ],
+      "venue": "arXiv.org",
+      "doi": "10.48550/arxiv.2409.13903",
+      "arxiv_id": "2409.13903",
+      "source_url": "https://doi.org/10.48550/arxiv.2409.13903"
+    },
+    {
+      "key": "flowlimitedauthorization",
+      "title": "Flow-Limited Authorization",
+      "year": 2015,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) accesscalculus (forward), flac (backward), flac (forward), lio (forward), rtframework (forward); semanticscholar identity doi:10.1109/csf.2015.42. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Access control",
+      "source_type": "primary_paper",
+      "authors": [
+        "Owen Arden",
+        "Jed Liu",
+        "A. Myers"
+      ],
+      "venue": "IEEE Computer Security Foundations Symposium",
+      "doi": "10.1109/csf.2015.42",
+      "source_url": "https://doi.org/10.1109/csf.2015.42"
+    },
+    {
+      "key": "conversebenchmarkingcontextu",
+      "title": "ConVerse: Benchmarking Contextual Safety in Agent-to-Agent Conversations",
+      "year": 2025,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) ciframework (forward), cillm (forward), contextualmanipulation (backward); semanticscholar identity doi:10.48550/arxiv.2511.05359. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Amr Gomaa",
+        "Ahmed Salem",
+        "Sahar Abdelnabi"
+      ],
+      "venue": "Conference of the European Chapter of the Association for Computational Linguistics",
+      "doi": "10.48550/arxiv.2511.05359",
+      "arxiv_id": "2511.05359",
+      "source_url": "https://doi.org/10.48550/arxiv.2511.05359"
+    },
+    {
+      "key": "extractingformalspecificatio",
+      "title": "Extracting Formal Specifications From Documents Using LLMS for Test Automation",
+      "year": 2025,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) agentthread (backward), fret (forward), text2policy (forward); semanticscholar identity doi:10.1109/icpc66645.2025.00039. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Hui Li",
+        "Zhen Dong",
+        "Siao Wang",
+        "Hui Zhang",
+        "Li-Wei Shen",
+        "Xin Peng",
+        "Dong-Dong She"
+      ],
+      "venue": "IEEE International Conference on Program Comprehension",
+      "doi": "10.1109/icpc66645.2025.00039",
+      "source_url": "https://doi.org/10.1109/icpc66645.2025.00039"
+    },
+    {
+      "key": "contextexecutionintegrity",
+      "title": "Context-to-Execution Integrity for LLM Agents",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) confuseddeputy (forward), flume (forward), histar (forward); semanticscholar identity doi:10.48550/arxiv.2607.06000. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Igor Santos-Grueiro"
+      ],
+      "venue": "arXiv.org",
+      "doi": "10.48550/arxiv.2607.06000",
+      "arxiv_id": "2607.06000",
+      "source_url": "https://doi.org/10.48550/arxiv.2607.06000"
+    },
+    {
+      "key": "governingdynamiccapabilities",
+      "title": "Governing Dynamic Capabilities: Cryptographic Binding and Reproducibility Verification for AI Agent Tool Use",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) confuseddeputy (forward), keynote (forward), policymaker (forward); semanticscholar identity doi:10.48550/arxiv.2603.14332. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Zilin Zhou"
+      ],
+      "venue": "arXiv.org",
+      "doi": "10.48550/arxiv.2603.14332",
+      "arxiv_id": "2603.14332",
+      "source_url": "https://doi.org/10.48550/arxiv.2603.14332"
+    },
+    {
+      "key": "delegationwithouttrust",
+      "title": "Delegation Without Trust: An Empirical Gap Analysis of Identity, Authorization, and Runtime Governance in Multi-Agent LLM Systems",
+      "year": 2026,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) capabilitymyths (forward), confuseddeputy (forward), contextualmanipulation (forward); semanticscholar identity arxiv:2609.00267. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "LLM agent security",
+      "source_type": "primary_paper",
+      "authors": [
+        "Panduranga Sai Varma Dantuluri",
+        "Jyotirmoy Sundi"
+      ],
+      "arxiv_id": "2609.00267",
+      "source_url": "https://arxiv.org/abs/2609.00267"
+    },
+    {
+      "key": "sokcredentialtrust",
+      "title": "SoK: Credential-Based Trust Management in Decentralized Ledger Systems",
+      "year": 2025,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) delegationlogic (forward), policymaker (forward), rtframework (forward); semanticscholar identity doi:10.1109/trustcom66490.2025.00197. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Delegation and authority",
+      "source_type": "primary_paper",
+      "authors": [
+        "Yan-Na Jiang",
+        "Haiyu Deng",
+        "Qin Wang",
+        "Guang-Sheng Yu",
+        "Xu Wang",
+        "Yilin Sai",
+        "Shi-Ping Chen",
+        "Wei Ni",
+        "Ren-Ping Liu"
+      ],
+      "venue": "International Conference on Trust, Security and Privacy in Computing and Communications",
+      "doi": "10.1109/trustcom66490.2025.00197",
+      "arxiv_id": "2602.07572",
+      "source_url": "https://doi.org/10.1109/trustcom66490.2025.00197"
+    },
+    {
+      "key": "sciffsenablingsecure",
+      "title": "SCIFFS: Enabling Secure Third-Party Security Analytics using Serverless Computing",
+      "year": 2021,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) camflow (forward), flume (forward), histar (forward), lio (forward); semanticscholar identity doi:10.1145/3450569.3463567. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Access control",
+      "source_type": "primary_paper",
+      "authors": [
+        "Isaac Polinsky",
+        "Pubali Datta",
+        "Adam Bates",
+        "W. Enck"
+      ],
+      "venue": "ACM Symposium on Access Control Models and Technologies",
+      "doi": "10.1145/3450569.3463567",
+      "source_url": "https://doi.org/10.1145/3450569.3463567"
+    },
+    {
+      "key": "pifthoncompiletime",
+      "title": "Pifthon: A Compile-Time Information Flow Analyzer For An Imperative Language",
+      "year": 2021,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) flam (forward), flume (forward), histar (forward), lio (forward); semanticscholar identity arxiv:2103.06039. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Information flow control",
+      "source_type": "primary_paper",
+      "authors": [
+        "Sandip Ghosal",
+        "R. Shyamasundar"
+      ],
+      "venue": "arXiv.org",
+      "arxiv_id": "2103.06039",
+      "source_url": "https://arxiv.org/abs/2103.06039"
+    },
+    {
+      "key": "privacycontexttechnology",
+      "title": "Privacy in Context: Technology, Policy, and the Integrity of Social Life",
+      "year": 2009,
+      "verified": {
+        "method": "unverified",
+        "depth": "unverified",
+        "date": "2026-10-09",
+        "notes": "Snowball candidate from seed(s) cillm (backward), contextualmanipulation (backward); semanticscholar identity doi:10.1515/9780804772891. Metadata only - primary-source verification and a landscape pass are still required before admission.",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-09",
+      "adoption_priority": "C",
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "not_started",
+      "reading_priority": "C",
+      "stream": "Integrity models",
+      "source_type": "primary_paper",
+      "authors": [
+        "H. Nissenbaum"
+      ],
+      "doi": "10.1515/9780804772891",
+      "source_url": "https://doi.org/10.1515/9780804772891"
+    }
+  ]
+}
