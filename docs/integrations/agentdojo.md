@@ -76,6 +76,39 @@ tool result. AgentDojo has no organisational Principal Context or access-
 control data, so Conflux annotations are a declared benchmark augmentation,
 not upstream ground truth. No live comparative result is currently claimed.
 
+## Task selection
+
+Breadth runs execute a frozen selection instead of an ad-hoc task list:
+`research/experiments/manifests/agentdojo-stratified-selection-v1.json`, written by
+`python scripts/select_agentdojo_tasks.py` and checked by `--check` against the
+installed benchmark. It takes the lowest user-task id per (suite, injection vector)
+stratum, records which suite defaults no task offers, and carries one protocol
+`suite` block per suite. The five workspace task ids of the retained pilot cells are
+excluded, so a sweep never counts a pair twice.
+
+A protocol's suite comes from the prefix of `suite.id` before the first colon, so
+`banking:stratified-v1` produces banking cells and a prefixless id keeps the historical
+workspace behaviour. Build a protocol for any pinned suite from the resolved local model:
+
+```bash
+conflux benchmark agentdojo preflight \
+    --model-config research/output/runs/<run>/transformers.json \
+    --suite banking \
+    --task-ids user_task_0,user_task_1 \
+    --output research/output/runs/<run>
+```
+
+That command reads the suite's own benchmark tag and injection task ids from the pinned
+package and writes them into the protocol. `suite.injection_task_ids` pairs each selected
+user task with its injection goal: a single id applies to every task, a list of the same
+length pairs positionally, and any other length is refused with
+`agentdojo_injection_task_pairing_mismatch` rather than guessed. The slack and travel
+suites tag themselves `v1.2.0` while banking and workspace tag `v1.2.2`; each protocol
+records the tag its own suite reports.
+
+The manifest blocks carry no injection task ids, because the frozen body records only the
+strata; take them from the pinned package or from a protocol this command wrote.
+
 ## Rationale
 
 One exact upstream version and translation is easier to audit than permissive

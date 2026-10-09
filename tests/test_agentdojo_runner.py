@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import pytest
 
@@ -108,6 +108,65 @@ def test_preflight_identity_and_failure_taxonomy_fail_closed() -> None:
     cell = agentdojo_matrix(_protocol())[0]
     with pytest.raises(ValueError, match="unknown_agentdojo_failure"):
         AgentDojoCellResult(cell, "incomplete", None, None, None, None, (), ("invented",), 0, None, None, 0)
+
+
+def test_matrix_reads_the_suite_from_the_protocol_id() -> None:
+    """The suite id prefix selects the suite, so banking protocols produce banking cells."""
+    protocol = replace(_protocol(), suite={"id": "banking:stratified-v1", "version": "v1.2.2"})
+    matrix = agentdojo_matrix(protocol)
+    assert {cell.suite_id for cell in matrix} == {"banking"}
+
+
+def test_prefixless_protocol_ids_still_yield_workspace_cells() -> None:
+    """A protocol whose id carries no prefix keeps the historical workspace behaviour."""
+    protocol = replace(_protocol(), suite={"id": "legacy", "version": "v1.2.2"})
+    matrix = agentdojo_matrix(protocol)
+    assert {cell.suite_id for cell in matrix} == {"workspace"}
+
+
+def test_matrix_pairs_injection_task_ids_positionally() -> None:
+    """A list of injection task ids pairs each selected user task with its own goal."""
+    protocol = replace(
+        _protocol(),
+        suite={
+            "id": "travel:stratified-v1",
+            "version": "v1.2.0",
+            "task_ids": ["user_task_0", "user_task_1"],
+            "injection_task_ids": ["injection_task_3", "injection_task_4"],
+        },
+    )
+    attacked = {cell.user_task_id: cell.injection_task_id for cell in agentdojo_matrix(protocol) if cell.attacked}
+    assert attacked == {"user_task_0": "injection_task_3", "user_task_1": "injection_task_4"}
+
+
+def test_matrix_expands_a_single_injection_task_id() -> None:
+    """One injection task id applies to every selected user task."""
+    protocol = replace(
+        _protocol(),
+        suite={
+            "id": "slack:stratified-v1",
+            "version": "v1.2.0",
+            "task_ids": ["user_task_0", "user_task_1"],
+            "injection_task_ids": ["injection_task_2"],
+        },
+    )
+    matrix = agentdojo_matrix(protocol)
+    assert {cell.injection_task_id for cell in matrix} == {"injection_task_2"}
+
+
+def test_matrix_refuses_an_unpaired_injection_task_list() -> None:
+    """A length that matches neither one nor the task count is refused, never guessed."""
+    protocol = replace(
+        _protocol(),
+        suite={
+            "id": "banking:stratified-v1",
+            "version": "v1.2.2",
+            "task_ids": ["user_task_0", "user_task_1"],
+            "injection_task_ids": ["injection_task_0", "injection_task_1", "injection_task_2"],
+        },
+    )
+    with pytest.raises(ValueError, match="agentdojo_injection_task_pairing_mismatch"):
+        agentdojo_matrix(protocol)
 
 
 def test_matrix_requires_model_protocol() -> None:

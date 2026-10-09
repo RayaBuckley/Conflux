@@ -12,3 +12,6 @@ result, generated summary, checksums, and one rerun command.
   pointwise-authority semantics. Results from the two suites are not directly
   comparable without an explicit semantic-difference analysis.
 - `manifests/` records immutable run parameters and source commits.
+- `manifests/agentdojo-stratified-selection-v1.json` freezes which (suite, user
+  task, injection vector) pairs an AgentDojo breadth sweep executes; regenerate and
+  check it with `python scripts/select_agentdojo_tasks.py [--check]`.

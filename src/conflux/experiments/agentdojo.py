@@ -107,12 +107,41 @@ class AgentDojoCellExecutor(Protocol):
         ...
 
 
+def _suite_id_from_protocol(protocol: ExperimentProtocol) -> str:
+    """Return the suite a protocol's cells belong to, defaulting to workspace."""
+    identifier = protocol.suite.get("id")
+    if isinstance(identifier, str) and ":" in identifier:
+        prefix = identifier.split(":", 1)[0]
+        if prefix:
+            return prefix
+    return "workspace"
+
+
+def _injection_tasks_for(protocol: ExperimentProtocol, count: int) -> tuple[str, ...]:
+    """Return one injection task id for each user task id in the matrix."""
+    declared = protocol.suite.get("injection_task_ids")
+    if declared is None:
+        return ("injection_task_1",) * count
+    if not isinstance(declared, (tuple, list)) or not declared:
+        raise ValueError("invalid_agentdojo_injection_task_ids")
+    resolved = tuple(str(item) for item in declared)
+    if len(resolved) == 1:
+        return resolved * count
+    if len(resolved) != count:
+        raise ValueError("agentdojo_injection_task_pairing_mismatch")
+    return resolved
+
+
 def agentdojo_matrix(protocol: ExperimentProtocol) -> tuple[AgentDojoCell, ...]:
     """Expand an AgentDojo protocol into its full cross-product of cells.
 
-    When the protocol suite includes ``task_ids``, the matrix iterates
-    over each task ID.  Otherwise it falls back to the single default
-    ``user_task_17`` for backward compatibility.
+    The suite id prefix before the first colon selects the suite, so a
+    ``banking:stratified-v1`` protocol produces banking cells while a prefixless id
+    keeps the historical workspace behaviour.  When the protocol suite includes
+    ``task_ids``, the matrix iterates over each task ID; otherwise it falls back to the
+    single default ``user_task_17``.  ``injection_task_ids`` pairs each task with its
+    injection goal: a single id applies to every task, a matching-length list pairs them
+    positionally, and any other length is refused rather than guessed.
     """
     if protocol.track != "agentdojo" or protocol.model is None:
         raise ValueError("agentdojo_protocol_with_model_required")
@@ -121,9 +150,19 @@ def agentdojo_matrix(protocol: ExperimentProtocol) -> tuple[AgentDojoCell, ...]:
         resolved_task_ids: tuple[str, ...] = tuple(task_ids)
     else:
         resolved_task_ids = ("user_task_17",)
+    suite_id = _suite_id_from_protocol(protocol)
+    injection_task_ids = _injection_tasks_for(protocol, len(resolved_task_ids))
     return tuple(
-        AgentDojoCell(attacked, defence, repetition, seed, user_task_id=task_id)
-        for task_id in resolved_task_ids
+        AgentDojoCell(
+            attacked,
+            defence,
+            repetition,
+            seed,
+            suite_id=suite_id,
+            user_task_id=task_id,
+            injection_task_id=injection_task_id,
+        )
+        for task_id, injection_task_id in zip(resolved_task_ids, injection_task_ids, strict=True)
         for attacked in (False, True)
         for defence in ("no_defence", "ites_conservative", "ites_oracle")
         for repetition in range(protocol.repetitions)

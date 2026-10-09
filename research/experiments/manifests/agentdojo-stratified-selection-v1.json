@@ -1,0 +1,509 @@
+{
+  "schema_version": 1,
+  "selection_id": "agentdojo-stratified-v1",
+  "generated_utc": "2026-10-09T19:16:09Z",
+  "command": "python scripts/select_agentdojo_tasks.py --per-stratum 1",
+  "source": {
+    "agentdojo_package": "0.1.35",
+    "benchmark_pin": "v1.2.2",
+    "candidate_source": "agentdojo.attacks.base_attacks.BaseAttack.get_injection_candidates"
+  },
+  "rule": "per (suite, injection vector) stratum take the lowest user-task id that offers the vector, skipping task ids excluded as already executed",
+  "per_stratum": 1,
+  "excluded_task_ids": {
+    "workspace": [
+      "user_task_14",
+      "user_task_16",
+      "user_task_17",
+      "user_task_22",
+      "user_task_39"
+    ]
+  },
+  "suites": {
+    "banking": {
+      "benchmark_version": "v1.2.2",
+      "user_tasks": 16,
+      "injection_vectors": [
+        "injection_address_change",
+        "injection_bill_text",
+        "injection_incoming_transaction",
+        "injection_landloard_notice"
+      ],
+      "default_vectors": [
+        "injection_address_change",
+        "injection_bill_text",
+        "injection_incoming_transaction",
+        "injection_landloard_notice"
+      ],
+      "unreachable_default_vectors": [],
+      "strata": [
+        {
+          "vector": "injection_address_change",
+          "task_id": "user_task_13"
+        },
+        {
+          "vector": "injection_bill_text",
+          "task_id": "user_task_0"
+        },
+        {
+          "vector": "injection_incoming_transaction",
+          "task_id": "user_task_1"
+        },
+        {
+          "vector": "injection_landloard_notice",
+          "task_id": "user_task_12"
+        }
+      ],
+      "selected_task_vectors": {
+        "user_task_0": [
+          "injection_bill_text"
+        ],
+        "user_task_1": [
+          "injection_incoming_transaction"
+        ],
+        "user_task_12": [
+          "injection_landloard_notice"
+        ],
+        "user_task_13": [
+          "injection_address_change"
+        ]
+      }
+    },
+    "slack": {
+      "benchmark_version": "v1.2.0",
+      "user_tasks": 21,
+      "injection_vectors": [
+        "injection_dora_0",
+        "injection_web_0",
+        "prompt_injection_channel",
+        "prompt_injection_eve_blog",
+        "prompt_injection_restaurant"
+      ],
+      "default_vectors": [
+        "injection_dora_0",
+        "injection_phishing_1",
+        "injection_web_0",
+        "prompt_injection_channel",
+        "prompt_injection_eve_blog",
+        "prompt_injection_restaurant"
+      ],
+      "unreachable_default_vectors": [
+        "injection_phishing_1"
+      ],
+      "strata": [
+        {
+          "vector": "injection_dora_0",
+          "task_id": "user_task_11"
+        },
+        {
+          "vector": "injection_web_0",
+          "task_id": "user_task_0"
+        },
+        {
+          "vector": "prompt_injection_channel",
+          "task_id": "user_task_10"
+        },
+        {
+          "vector": "prompt_injection_eve_blog",
+          "task_id": "user_task_16"
+        },
+        {
+          "vector": "prompt_injection_restaurant",
+          "task_id": "user_task_15"
+        }
+      ],
+      "selected_task_vectors": {
+        "user_task_0": [
+          "injection_web_0"
+        ],
+        "user_task_10": [
+          "prompt_injection_channel"
+        ],
+        "user_task_11": [
+          "injection_dora_0"
+        ],
+        "user_task_15": [
+          "injection_web_0",
+          "prompt_injection_restaurant"
+        ],
+        "user_task_16": [
+          "injection_dora_0",
+          "prompt_injection_eve_blog"
+        ]
+      }
+    },
+    "travel": {
+      "benchmark_version": "v1.2.0",
+      "user_tasks": 20,
+      "injection_vectors": [
+        "injection_cars_0",
+        "injection_cars_1",
+        "injection_cars_2",
+        "injection_hotels_0",
+        "injection_hotels_1",
+        "injection_hotels_2",
+        "injection_hotels_3",
+        "injection_hotels_4",
+        "injection_hotels_5",
+        "injection_restaurants_0",
+        "injection_restaurants_1",
+        "injection_restaurants_2",
+        "injection_restaurants_3"
+      ],
+      "default_vectors": [
+        "injection_cars_0",
+        "injection_cars_1",
+        "injection_cars_2",
+        "injection_hotels_0",
+        "injection_hotels_1",
+        "injection_hotels_2",
+        "injection_hotels_3",
+        "injection_hotels_4",
+        "injection_hotels_5",
+        "injection_restaurants_0",
+        "injection_restaurants_1",
+        "injection_restaurants_2",
+        "injection_restaurants_3"
+      ],
+      "unreachable_default_vectors": [],
+      "strata": [
+        {
+          "vector": "injection_cars_0",
+          "task_id": "user_task_13"
+        },
+        {
+          "vector": "injection_cars_1",
+          "task_id": "user_task_14"
+        },
+        {
+          "vector": "injection_cars_2",
+          "task_id": "user_task_16"
+        },
+        {
+          "vector": "injection_hotels_0",
+          "task_id": "user_task_0"
+        },
+        {
+          "vector": "injection_hotels_1",
+          "task_id": "user_task_1"
+        },
+        {
+          "vector": "injection_hotels_2",
+          "task_id": "user_task_12"
+        },
+        {
+          "vector": "injection_hotels_3",
+          "task_id": "user_task_11"
+        },
+        {
+          "vector": "injection_hotels_4",
+          "task_id": "user_task_19"
+        },
+        {
+          "vector": "injection_hotels_5",
+          "task_id": "user_task_19"
+        },
+        {
+          "vector": "injection_restaurants_0",
+          "task_id": "user_task_17"
+        },
+        {
+          "vector": "injection_restaurants_1",
+          "task_id": "user_task_11"
+        },
+        {
+          "vector": "injection_restaurants_2",
+          "task_id": "user_task_10"
+        },
+        {
+          "vector": "injection_restaurants_3",
+          "task_id": "user_task_12"
+        }
+      ],
+      "selected_task_vectors": {
+        "user_task_0": [
+          "injection_hotels_0"
+        ],
+        "user_task_1": [
+          "injection_hotels_1"
+        ],
+        "user_task_10": [
+          "injection_restaurants_2"
+        ],
+        "user_task_11": [
+          "injection_hotels_0",
+          "injection_hotels_3",
+          "injection_restaurants_1"
+        ],
+        "user_task_12": [
+          "injection_hotels_0",
+          "injection_hotels_2",
+          "injection_hotels_3",
+          "injection_restaurants_1",
+          "injection_restaurants_3"
+        ],
+        "user_task_13": [
+          "injection_cars_0"
+        ],
+        "user_task_14": [
+          "injection_cars_1"
+        ],
+        "user_task_16": [
+          "injection_cars_2"
+        ],
+        "user_task_17": [
+          "injection_hotels_0",
+          "injection_hotels_2",
+          "injection_hotels_3",
+          "injection_restaurants_0",
+          "injection_restaurants_1",
+          "injection_restaurants_2",
+          "injection_restaurants_3"
+        ],
+        "user_task_19": [
+          "injection_cars_2",
+          "injection_hotels_0",
+          "injection_hotels_2",
+          "injection_hotels_3",
+          "injection_hotels_4",
+          "injection_hotels_5",
+          "injection_restaurants_0",
+          "injection_restaurants_1",
+          "injection_restaurants_2",
+          "injection_restaurants_3"
+        ]
+      }
+    },
+    "workspace": {
+      "benchmark_version": "v1.2.2",
+      "user_tasks": 40,
+      "injection_vectors": [
+        "calendar_dinner_with_clients_injection",
+        "calendar_introductory_meeting_injection",
+        "calendar_moving_event_reason_injection",
+        "calendar_networking_event_injection_email",
+        "calendar_project_kickoff_description",
+        "calendar_sports_and_yoga_class_injection",
+        "drive_feedback_injection",
+        "drive_keywords_stuffing_injection",
+        "drive_recipe_injection",
+        "drive_team_building_injection",
+        "email_events_injection",
+        "email_facebook_injection",
+        "email_hiking_injection",
+        "email_password_reset_injection"
+      ],
+      "default_vectors": [
+        "calendar_dinner_with_clients_injection",
+        "calendar_fake_deadline_description",
+        "calendar_introductory_meeting_injection",
+        "calendar_moving_event_reason_injection",
+        "calendar_networking_event_injection_email",
+        "calendar_project_kickoff_description",
+        "calendar_sports_and_yoga_class_injection",
+        "drive_feedback_injection",
+        "drive_keywords_stuffing_injection",
+        "drive_recipe_injection",
+        "drive_team_building_injection",
+        "email_events_follow_up_injection",
+        "email_events_injection",
+        "email_facebook_injection",
+        "email_hiking_injection",
+        "email_password_reset_injection"
+      ],
+      "unreachable_default_vectors": [
+        "calendar_fake_deadline_description",
+        "email_events_follow_up_injection"
+      ],
+      "strata": [
+        {
+          "vector": "calendar_dinner_with_clients_injection",
+          "task_id": "user_task_3"
+        },
+        {
+          "vector": "calendar_introductory_meeting_injection",
+          "task_id": "user_task_1"
+        },
+        {
+          "vector": "calendar_moving_event_reason_injection",
+          "task_id": "user_task_7"
+        },
+        {
+          "vector": "calendar_networking_event_injection_email",
+          "task_id": "user_task_0"
+        },
+        {
+          "vector": "calendar_project_kickoff_description",
+          "task_id": "user_task_12"
+        },
+        {
+          "vector": "calendar_sports_and_yoga_class_injection",
+          "task_id": "user_task_2"
+        },
+        {
+          "vector": "drive_feedback_injection",
+          "task_id": "user_task_13"
+        },
+        {
+          "vector": "drive_keywords_stuffing_injection",
+          "task_id": "user_task_25"
+        },
+        {
+          "vector": "drive_recipe_injection",
+          "task_id": "user_task_26"
+        },
+        {
+          "vector": "drive_team_building_injection",
+          "task_id": "user_task_13"
+        },
+        {
+          "vector": "email_events_injection",
+          "task_id": "user_task_15"
+        },
+        {
+          "vector": "email_facebook_injection",
+          "task_id": "user_task_24"
+        },
+        {
+          "vector": "email_hiking_injection",
+          "task_id": "user_task_18"
+        },
+        {
+          "vector": "email_password_reset_injection",
+          "task_id": "user_task_23"
+        }
+      ],
+      "selected_task_vectors": {
+        "user_task_0": [
+          "calendar_networking_event_injection_email"
+        ],
+        "user_task_1": [
+          "calendar_introductory_meeting_injection"
+        ],
+        "user_task_12": [
+          "calendar_project_kickoff_description"
+        ],
+        "user_task_13": [
+          "drive_feedback_injection",
+          "drive_team_building_injection"
+        ],
+        "user_task_15": [
+          "email_events_injection"
+        ],
+        "user_task_18": [
+          "email_hiking_injection"
+        ],
+        "user_task_2": [
+          "calendar_sports_and_yoga_class_injection"
+        ],
+        "user_task_23": [
+          "calendar_introductory_meeting_injection",
+          "email_password_reset_injection"
+        ],
+        "user_task_24": [
+          "email_events_injection",
+          "email_facebook_injection"
+        ],
+        "user_task_25": [
+          "drive_keywords_stuffing_injection"
+        ],
+        "user_task_26": [
+          "drive_feedback_injection",
+          "drive_keywords_stuffing_injection",
+          "drive_recipe_injection",
+          "drive_team_building_injection"
+        ],
+        "user_task_3": [
+          "calendar_dinner_with_clients_injection"
+        ],
+        "user_task_7": [
+          "calendar_moving_event_reason_injection"
+        ]
+      }
+    }
+  },
+  "totals": {
+    "suites": 4,
+    "strata": 36,
+    "pairs": 36,
+    "selected_tasks": 32,
+    "candidate_pairs": 153,
+    "unreachable_default_vectors": 3,
+    "default_vectors": 39
+  },
+  "protocol_suite_blocks": {
+    "banking": {
+      "id": "banking:stratified-v1",
+      "version": "v1.2.2",
+      "task_ids": [
+        "user_task_0",
+        "user_task_1",
+        "user_task_12",
+        "user_task_13"
+      ],
+      "case_ids": [
+        "benign",
+        "attacked"
+      ]
+    },
+    "slack": {
+      "id": "slack:stratified-v1",
+      "version": "v1.2.0",
+      "task_ids": [
+        "user_task_0",
+        "user_task_10",
+        "user_task_11",
+        "user_task_15",
+        "user_task_16"
+      ],
+      "case_ids": [
+        "benign",
+        "attacked"
+      ]
+    },
+    "travel": {
+      "id": "travel:stratified-v1",
+      "version": "v1.2.0",
+      "task_ids": [
+        "user_task_0",
+        "user_task_1",
+        "user_task_10",
+        "user_task_11",
+        "user_task_12",
+        "user_task_13",
+        "user_task_14",
+        "user_task_16",
+        "user_task_17",
+        "user_task_19"
+      ],
+      "case_ids": [
+        "benign",
+        "attacked"
+      ]
+    },
+    "workspace": {
+      "id": "workspace:stratified-v1",
+      "version": "v1.2.2",
+      "task_ids": [
+        "user_task_0",
+        "user_task_1",
+        "user_task_12",
+        "user_task_13",
+        "user_task_15",
+        "user_task_18",
+        "user_task_2",
+        "user_task_23",
+        "user_task_24",
+        "user_task_25",
+        "user_task_26",
+        "user_task_3",
+        "user_task_7"
+      ],
+      "case_ids": [
+        "benign",
+        "attacked"
+      ]
+    }
+  },
+  "body_digest": "sha256:3b2e5479b6e92d4281cad5dbeb67e82b534b391bf5c5d552c4d4645f0f9b0901"
+}

@@ -1803,6 +1803,36 @@ records its own tag; a minor-level difference raises exactly as before).
 Consequence for the breadth plan: travel and slack runs are unblocked, so the pre-run check
 recorded for the parked stratified-selection work is satisfied rather than outstanding.
 
+### 26.12 A stratified selection for the AgentDojo breadth runs
+
+Breadth needs a frozen answer to "which (suite, user task, injection vector) pairs does a
+sweep execute?", so the choice cannot be re-made per run. Measured 2026-10-09 with the pinned
+package 0.1.35 through the adapter's own loader and
+`agentdojo.attacks.base_attacks.BaseAttack.get_injection_candidates`:
+
+| suite | tag | user tasks | default vectors | vectors a task offers | unreachable defaults | candidate pairs |
+| --- | --- | --- | --- | --- | --- | --- |
+| banking | v1.2.2 | 16 | 4 | 4 | 0 | 16 |
+| slack | v1.2.0 | 21 | 6 | 5 | 1 (`injection_phishing_1`) | 28 |
+| travel | v1.2.0 | 20 | 13 | 13 | 0 | 49 |
+| workspace | v1.2.2 | 40 | 16 | 14 | 2 | 60 |
+
+Three suite defaults are not reachable as injection candidates, so a suite-level default is not
+by itself an available injection point. The selection takes the lowest user-task id per
+(suite, vector) stratum, skips the five workspace task ids the retained pilot cells already ran
+(so a sweep never counts a pair twice), and freezes 36 pairs over 36 covered strata out of a
+153-pair candidate pool.
+
+`scripts/select_agentdojo_tasks.py` measures and writes
+`research/experiments/manifests/agentdojo-stratified-selection-v1.json`, which carries the rule,
+the per-suite strata, the vectors each selected task offers, the unreachable defaults, one
+protocol `suite` block per suite, and a sha256 over the digest-covered body. `--check`
+re-measures and compares, so drift in the installed benchmark fails loudly. The gate needs no
+benchmark package: `tests/test_agentdojo_selection.py` (21 tests) validates the frozen manifest
+and every refusal path through the pure module `conflux.experiments.agentdojo_selection`.
+Boundary: the selection stratifies attack surface, not difficulty or utility, and
+`--per-stratum k` only widens it.
+
 Tests in `tests/test_verification_ir.py` render a bounded counter with a stub runner
 (`step : 0..2;`, the integer `INIT` clause, `next(step) = (step + 1)` and the comparison),
 prove the safe counter and refute its violating twin with the real binary (skipped only when

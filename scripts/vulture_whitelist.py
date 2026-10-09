@@ -50,6 +50,13 @@ ir_to_graph
 verdict_to_graph
 reduction_to_graph
 
+# Stratified AgentDojo selection: scripts/select_agentdojo_tasks.py measures
+# upstream and the gate's tests validate the frozen manifest, so the gate's
+# vulture scan - which sees only src/conflux - reports this surface as unused.
+build_manifest
+validate_manifest
+selection_drift
+
 # Fixed enumerations: layout directions and the node/edge kind vocabulary
 # are part of the documented visualisation data model.
 LEFT_TO_RIGHT

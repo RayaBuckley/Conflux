@@ -225,6 +225,11 @@ def _parser() -> argparse.ArgumentParser:
         default=None,
         help="comma-separated user task IDs for expanded matrix (default: user_task_17)",
     )
+    agentdojo_preflight.add_argument(
+        "--suite",
+        default="workspace",
+        help="pinned AgentDojo suite to build the protocol for (default: workspace)",
+    )
     agentdojo_run = agentdojo_commands.add_parser("run", help="deliberately run the pinned six-cell local comparison")
     agentdojo_run.add_argument("--config", type=Path, required=True)
     agentdojo_run.add_argument("--model-config", type=Path)
@@ -1330,12 +1335,20 @@ def _benchmark(arguments: argparse.Namespace) -> int:
         parsed_task_ids: tuple[str, ...] | None = None
         if raw_task_ids:
             parsed_task_ids = tuple(t.strip() for t in raw_task_ids.split(",") if t.strip())
+        requested_suite = str(getattr(arguments, "suite", "workspace") or "workspace")
+        try:
+            pinned_suite = load_pinned_suite(requested_suite)
+        except Exception:
+            pinned_suite = None
         protocol = _agentdojo_pilot_protocol(
             resolved,
             model_config=model_config,
             output=output,
             source_commit=str(arguments.source_commit or _git_head()),
             task_ids=parsed_task_ids,
+            suite_id=requested_suite,
+            injection_task_ids=None if pinned_suite is None else pinned_suite.injection_task_ids,
+            benchmark_version="v1.2.2" if pinned_suite is None else pinned_suite.benchmark_version,
         )
         model: SelfHostedOpenAIModel | TransformersLocalModel = TransformersLocalModel(
             resolved.spec,
@@ -1361,7 +1374,7 @@ def _benchmark(arguments: argparse.Namespace) -> int:
     if command == "preflight":
         suite_error: str | None = None
         try:
-            suite = load_pinned_suite("workspace")
+            suite = load_pinned_suite(matrix[0].suite_id if matrix else "workspace")
             suite_identity: dict[str, object] | None = suite.to_dict()
         except Exception as error:
             suite_identity = None
@@ -1401,18 +1414,23 @@ def _agentdojo_pilot_protocol(
     output: Path,
     source_commit: str,
     task_ids: tuple[str, ...] | None = None,
+    suite_id: str = "workspace",
+    injection_task_ids: tuple[str, ...] | None = None,
+    benchmark_version: str = "v1.2.2",
 ) -> ExperimentProtocol:
-    """Build a pinned AgentDojo pilot protocol from a resolved local-model configuration."""
+    """Build a pinned AgentDojo protocol from a resolved local-model configuration."""
     schemas = Path("research/experiments/suites/agentdojo-tool-schemas-v1.json")
     exceptions = Path("research/experiments/suites/agentdojo-annotation-exceptions-v1.json")
     suite: dict[str, object] = {
-        "id": "workspace:user_task_17:injection_task_1",
-        "version": "v1.2.2",
+        "id": f"{suite_id}:user_task_17:injection_task_1",
+        "version": benchmark_version,
         "case_ids": ["benign", "attacked"],
     }
     if task_ids:
         suite["task_ids"] = list(task_ids)
-        suite["id"] = f"workspace:expanded:{task_ids[0]}"
+        suite["id"] = f"{suite_id}:expanded:{task_ids[0]}"
+    if injection_task_ids:
+        suite["injection_task_ids"] = list(injection_task_ids)
     return ExperimentProtocol(
         id="agentdojo-local-pilot-v2",
         track="agentdojo",

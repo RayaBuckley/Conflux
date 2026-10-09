@@ -183,7 +183,11 @@ def test_agentdojo_preflight_builds_six_cell_protocol_from_resolved_model(
     monkeypatch.setattr(
         cli_module,
         "load_pinned_suite",
-        lambda _: SimpleNamespace(to_dict=lambda: {"schema_version": "fixture"}),
+        lambda _: SimpleNamespace(
+            injection_task_ids=("injection_task_1",),
+            benchmark_version="v1.2.2",
+            to_dict=lambda: {"schema_version": "fixture"},
+        ),
     )
     output = tmp_path / "agentdojo"
     assert (
@@ -208,6 +212,61 @@ def test_agentdojo_preflight_builds_six_cell_protocol_from_resolved_model(
     assert protocol["seeds"] == [0]
     assert len(preflight["matrix"]) == 6
     assert preflight["annotation_profiles"] == ["conservative", "oracle"]
+
+
+def test_agentdojo_preflight_honours_requested_suite(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A requested suite reaches the protocol, its tag, its injection ids and the matrix."""
+    snapshot = _snapshot(tmp_path)
+    manifest, _ = resolve_transformers_snapshot(
+        snapshot,
+        model_id=MODEL_ID,
+        revision=REVISION,
+    )
+    configuration = tmp_path / "transformers.json"
+    write_resolved_local_model(
+        ResolvedLocalModel(_spec(manifest.fingerprint), snapshot, manifest),
+        configuration,
+    )
+    monkeypatch.setattr(
+        cli_module,
+        "load_pinned_suite",
+        lambda _: SimpleNamespace(
+            injection_task_ids=("injection_task_2",),
+            benchmark_version="v1.2.0",
+            to_dict=lambda: {"schema_version": "fixture"},
+        ),
+    )
+    output = tmp_path / "banking"
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "preflight",
+                "--model-config",
+                str(configuration),
+                "--suite",
+                "banking",
+                "--task-ids",
+                "user_task_0,user_task_1",
+                "--source-commit",
+                "a" * 40,
+                "--output",
+                str(output),
+            ],
+        )
+        == 0
+    )
+    protocol = json.loads((output / "protocol.json").read_text())
+    preflight = json.loads((output / "preflight.json").read_text())
+    assert protocol["suite"]["id"] == "banking:expanded:user_task_0"
+    assert protocol["suite"]["version"] == "v1.2.0"
+    assert protocol["suite"]["injection_task_ids"] == ["injection_task_2"]
+    assert {cell["suite_id"] for cell in preflight["matrix"]} == {"banking"}
+    assert len(preflight["matrix"]) == 12
 
 
 def test_cpu_pilot_preflights_eight_cells_and_retains_fake_bundle(

@@ -803,6 +803,8 @@
     "research/publications/flmsec_2026/generated/**",
     ".ae3code/**",
     "node_modules/**",
+    "build/**",
+    "dist/**",
     ".local/**",
     "*.lock",
     "package-lock.json",
