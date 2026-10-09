@@ -1903,3 +1903,39 @@ suite plumbing and the local executor. They make no defence claim, and the 0.5B 
 vacuous in the same way as the earlier workspace pilots: a model that completes no task cannot be
 shown to be protected by a defence. Utility-bearing breadth needs the 7B-plus configuration, which
 the retained runs took on rented pods rather than on this laptop.
+
+## 28. Three-way verdict agreement on the delegation IR family (2026-10-09, author-run)
+
+The delegation IR family had a two-tool agreement record: `scripts/generate_backend_cross_validation.py`
+compares the reference interpreter with the Z3 encoding on the `delegation_ir` variants, and the IC3
+backend landed later against its own fixtures. §24 and §25 moved the nuXmv evidence, but no artefact
+recorded all three tools deciding the same delegation IR variants, so the strongest claim the
+repository could make about that family was two-way.
+
+`scripts/generate_three_way_agreement.py` closes that gap and retains
+`research/output/runs/three-way-agreement-v1/`:
+
+- eleven variants from `all_delegation_ir_variants()`: the canonical one plus ten mutations;
+- every variant decided by the reference interpreter, `verify_with_z3` and `NuXmvBackend.verify`;
+- agreement compared by verdict class (`safe` and `bounded_safe` are one class with different scopes
+  of guarantee), with the raw verdict strings retained per variant and the two copies of the class
+  pair pinned equal by a test, so they cannot drift apart;
+- a control: ten of the eleven variants are refuted, and a run whose battery holds no refuted variant
+  exits 1, because a battery that produces no violation proves nothing;
+- `--check` re-runs the measurement and compares it against the retained bundle without writing, so
+  the bundle is verifiable wherever `nuXmv` is installed. Where it is not, the run records
+  `nuxmv_measured` 0 and `all_agree` null instead of claiming agreement.
+
+Result: agreement on all eleven variants. The canonical variant is `safe` (reference), `bounded_safe`
+(Z3) and `safe` (nuXmv 2.2.0, the real binary, not vendored into the repository and installed
+user-locally, its version folded into
+`solver_hash` on every row); the ten mutations are `unsafe` in all three. A second invocation under
+`--check` reproduced every verdict.
+
+What this establishes: three independent implementations, reading one IR, do not disagree on the
+enumerated family, and the family is not a set of trivially safe cases.
+
+What this does not establish: agreement is evidence about the encodings, not a proof of the IR
+semantics. All three tools read the same IR, so a misreading shared by all three is invisible to this
+measurement, and the Z3 result is bounded. Coverage is the eleven enumerated variants, not every IR
+the schema admits.

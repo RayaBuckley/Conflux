@@ -66,8 +66,8 @@
     {
       "ids": ["SLEDV-004"],
       "status": "implemented",
-      "evidence": ["src/conflux/verification/nuxmv_backend.py", "tests/test_verification_ir.py", "research/output/runs/defence-models-v1/result.json"],
-      "gap": "nuXmv is not installed in either standard environment (.venv, .local/venv-z3), so the adapter's binary-backed evidence is host-scoped: research/output/runs/defence-models-v1/result.json records nuxmv_verdict unknown with optional_binary_unavailable:nuXmv and preserves the last measured verdicts (safe/unsafe, source revision bbd59a2, measured on a nuXmv-capable host) under nuxmv_evidence.recorded; the adapter's safe/unsafe/unknown and hash paths stay covered by the stubbed-runner tests in tests/test_verification_ir.py"
+      "evidence": ["src/conflux/verification/nuxmv_backend.py", "tests/test_verification_ir.py", "research/output/runs/defence-models-v1/result.json", "research/output/runs/three-way-agreement-v1/result.json"],
+      "gap": "nuXmv is not vendored into the repository and is absent from both standard environments (.venv, .local/venv-z3); it is installed user-locally (2.2.0), so binary-backed evidence is host-scoped: research/output/runs/defence-models-v1/result.json was recorded without a binary and preserves its earlier measurements (safe/unsafe, source revision bbd59a2) under nuxmv_evidence.recorded, while research/output/runs/three-way-agreement-v1/result.json records real-binary IC3 verdicts beside the reference interpreter and Z3, and records nuxmv_measured 0 on a host without the binary; the adapter's safe/unsafe/unknown and hash paths stay covered by the stubbed-runner tests in tests/test_verification_ir.py"
     },
     {
       "ids": ["PLAN-001", "PLAN-002", "PLAN-003"],
