@@ -201,10 +201,20 @@ def load_pinned_suite(suite_id: str) -> AgentDojoSuite:
 
 
 def translate_suite(upstream: _UpstreamSuite) -> AgentDojoSuite:
-    """Convert an upstream suite object into the immutable Conflux wrapper."""
+    """Convert an upstream suite object into the immutable Conflux wrapper.
+
+    Upstream tags each suite with its own benchmark version, and the tags are not all
+    equal to the pinned benchmark: under package 0.1.35, ``get_suite("v1.2.2", ...)``
+    reports ``(1, 2, 2)`` for banking and workspace and ``(1, 2, 0)`` for slack and
+    travel. The integration requires the pinned major.minor - the API surface it was
+    written against - and records the suite's own tag, so a run record never claims a
+    version its suite does not report.
+    """
+    suite_version = tuple(upstream.benchmark_version)
     expected_version = tuple(int(part) for part in BENCHMARK_VERSION.removeprefix("v").split("."))
-    if upstream.benchmark_version != expected_version:
-        raise ValueError(f"unsupported_agentdojo_benchmark:{upstream.benchmark_version!r}")
+    if suite_version[:2] != expected_version[:2]:
+        raise ValueError(f"unsupported_agentdojo_benchmark:{suite_version!r}")
+    suite_benchmark_version = "v" + ".".join(str(part) for part in suite_version)
     tools = tuple(
         AgentDojoTool(
             upstream_id=tool.name,
@@ -215,7 +225,7 @@ def translate_suite(upstream: _UpstreamSuite) -> AgentDojoSuite:
     )
     return AgentDojoSuite(
         upstream_package_version=PACKAGE_VERSION,
-        benchmark_version=BENCHMARK_VERSION,
+        benchmark_version=suite_benchmark_version,
         suite_id=upstream.name,
         user_task_ids=tuple(sorted(upstream.user_tasks)),
         injection_task_ids=tuple(sorted(upstream.injection_tasks)),

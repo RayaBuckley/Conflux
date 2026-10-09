@@ -59,7 +59,10 @@ The offline result-ready path is implemented:
 
 The pinned AgentDojo `0.1.35` / benchmark `v1.2.2` boundary translates exact
 upstream suite and trace structures, preserves IDs and native metrics, retains
-a raw upstream fixture, and rejects schema/version drift. Its six-cell local
+a raw upstream fixture, and rejects schema drift plus any suite whose tag
+differs from the pin in major.minor. Upstream tags suites individually
+(measured 2026-10-09: banking and workspace `(1, 2, 2)`, slack and travel
+`(1, 2, 0)`), so a translated suite records its own tag. Its six-cell local
 runner compares benign/attacked input under no defence, conservative ITES, and
 an explicitly non-deployable oracle profile. Fake-backed conformance passes,
 but an operator has not retained a model result, so efficacy is not claimed.

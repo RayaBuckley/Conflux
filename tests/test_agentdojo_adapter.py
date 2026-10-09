@@ -77,6 +77,8 @@ def test_suite_translation_is_explicit_stable_and_versioned() -> None:
     translated = translate_suite(suite)
     assert translated.user_task_ids == ("user_task_1", "user_task_2")
     assert [tool.upstream_id for tool in translated.tools] == ["a_tool", "z_tool"]
+    older_patch = translate_suite(_Suite("travel", (1, 2, 0), [], {}, {}))
+    assert older_patch.benchmark_version == "v1.2.0"
     with pytest.raises(ValueError, match="unsupported_agentdojo_benchmark"):
         translate_suite(_Suite("workspace", (1, 0, 0), [], {}, {}))
 

@@ -1775,6 +1775,34 @@ output lands under the ignored `research/output/runs/` like the other generator 
 script is the reproduction step rather than a retained bundle. A host without nuXmv records the
 missing-backend unknown in the same block instead.
 
+### 26.11 The pinned benchmark does not tag every suite the same way
+
+`translate_suite()` required an upstream suite's `benchmark_version` to equal the pinned
+benchmark version `(1, 2, 2)`. Measured 2026-10-09 with the pinned package 0.1.35 and tag
+`v1.2.2`, in one process with the repository on `PYTHONPATH` and through the adapter's own
+`load_pinned_suite`:
+
+| suite | `TaskSuite.benchmark_version` | adapter before | adapter after |
+| --- | --- | --- | --- |
+| banking | (1, 2, 2) | loaded (11 tools, 16 user tasks) | loaded, records `v1.2.2` |
+| workspace | (1, 2, 2) | loaded (24 tools, 40 user tasks) | loaded, records `v1.2.2` |
+| slack | (1, 2, 0) | `ValueError: unsupported_agentdojo_benchmark:(1, 2, 0)` | loaded, records `v1.2.0` (11 tools, 21 user tasks, 5 injection tasks) |
+| travel | (1, 2, 0) | `ValueError: unsupported_agentdojo_benchmark:(1, 2, 0)` | loaded, records `v1.2.0` (28 tools, 20 user tasks, 7 injection tasks) |
+
+Two of the four suites - 41 of the 97 user tasks - could not load at all, and the pilot baseline
+never noticed because it only ever ran workspace. Upstream tags suites individually: the pin is
+the benchmark release, not a per-suite tag.
+
+The check now requires the suite to share the pinned major.minor - the API surface the
+integration was written against - and the translated record carries the suite's own tag, so a
+record never claims a version its suite does not report. banking and workspace keep `v1.2.2`.
+A suite tagged with a different major.minor is still refused by name, and
+`tests/test_agentdojo_adapter.py` covers both sides (a patch-level difference translates and
+records its own tag; a minor-level difference raises exactly as before).
+
+Consequence for the breadth plan: travel and slack runs are unblocked, so the pre-run check
+recorded for the parked stratified-selection work is satisfied rather than outstanding.
+
 Tests in `tests/test_verification_ir.py` render a bounded counter with a stub runner
 (`step : 0..2;`, the integer `INIT` clause, `next(step) = (step + 1)` and the comparison),
 prove the safe counter and refute its violating twin with the real binary (skipped only when

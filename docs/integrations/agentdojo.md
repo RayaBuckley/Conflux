@@ -18,7 +18,7 @@ other version.
 | Upstream 0.1.35 structure | Conflux integration value |
 |---|---|
 | `TaskSuite.name` | immutable `suite_id` |
-| `TaskSuite.benchmark_version` | required to equal `(1, 2, 2)` |
+| `TaskSuite.benchmark_version` | required to share the pinned major.minor; the suite's own tag is recorded |
 | `TaskSuite.user_tasks` keys | sorted, preserved `user_task_ids` |
 | `TaskSuite.injection_tasks` keys | sorted, preserved `injection_task_ids` |
 | `Function.name` | preserved authenticated tool ID |
