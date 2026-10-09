@@ -13,7 +13,7 @@ from typing import Protocol
 
 from conflux.domain import fingerprint
 
-from .ir import Expression, ExpressionKind, Sort, VerificationIR
+from .ir import Expression, ExpressionKind, Sort, StateVariable, VerificationIR
 from .results import FormalVerdict, FormalVerificationResult
 
 
@@ -196,7 +196,7 @@ def default_runner(binary: str) -> NuXmvRunner:
 
 @dataclass(frozen=True, slots=True)
 class NuXmvBackend:
-    """Optional nuXmv IC3 backend for the supported Boolean IR subset."""
+    """Optional nuXmv IC3 backend for the supported finite-domain IR subset."""
 
     binary: str | None = None
     runner: NuXmvRunner | None = None
@@ -215,13 +215,7 @@ class NuXmvBackend:
         return self.runner if self.runner is not None else default_runner(self.resolved_binary())
 
     def verify(self, ir: VerificationIR) -> FormalVerificationResult:
-        """Verify Boolean IR invariants using nuXmv IC3, returning a formal result."""
-        unsupported = tuple(variable.name for variable in ir.variables if variable.sort != Sort.BOOLEAN)
-        if unsupported:
-            return self._unknown(
-                ir,
-                f"unsupported_integer_variables:{','.join(unsupported)}",
-            )
+        """Verify finite-domain IR invariants using nuXmv IC3, returning a formal result."""
         if not ir.invariants:
             return self._unknown(ir, "no_safety_invariants")
         binary = self.resolved_binary()
@@ -308,9 +302,31 @@ class NuXmvBackend:
         )
 
 
+def _domain(variable: StateVariable) -> str:
+    """Return the SMV type of a state variable, or fail closed on an unsupported sort."""
+    if variable.sort == Sort.BOOLEAN:
+        return "boolean"
+    if variable.sort == Sort.INTEGER:
+        if variable.minimum is None or variable.maximum is None:
+            raise ValueError(f"integer state variable {variable.name} requires a bounded domain")
+        return f"{variable.minimum}..{variable.maximum}"
+    raise ValueError(f"nuXmv subset does not support sort {variable.sort.value}")
+
+
+def _initial(variable: StateVariable) -> str:
+    """Return the SMV initial condition for a state variable."""
+    if variable.sort == Sort.BOOLEAN:
+        return variable.name if variable.initial is True else f"!{variable.name}"
+    if variable.sort == Sort.INTEGER:
+        if not isinstance(variable.initial, int) or isinstance(variable.initial, bool):
+            raise ValueError(f"integer state variable {variable.name} requires an integer initial value")
+        return f"{variable.name} = {variable.initial}"
+    raise ValueError(f"nuXmv subset does not support sort {variable.sort.value}")
+
+
 def _smv(ir: VerificationIR) -> str:
-    variables = "\n".join(f"  {variable.name} : boolean;" for variable in ir.variables)
-    initial = " & ".join((variable.name if variable.initial is True else f"!{variable.name}") for variable in ir.variables)
+    variables = "\n".join(f"  {variable.name} : {_domain(variable)};" for variable in ir.variables)
+    initial = " & ".join(_initial(variable) for variable in ir.variables)
     transition_terms: list[str] = []
     for rule in sorted(ir.transitions, key=lambda item: item.id):
         assignments = {item.variable: item.expression for item in rule.assignments}
@@ -329,9 +345,11 @@ def _smv(ir: VerificationIR) -> str:
 
 def _render(expression: Expression) -> str:
     if expression.kind == ExpressionKind.CONSTANT:
-        if not isinstance(expression.value, bool):
-            raise ValueError("nuXmv subset supports Boolean constants only")
-        return "TRUE" if expression.value else "FALSE"
+        if isinstance(expression.value, bool):
+            return "TRUE" if expression.value else "FALSE"
+        if isinstance(expression.value, int):
+            return str(expression.value)
+        raise ValueError("nuXmv subset supports Boolean and integer constants only")
     if expression.kind == ExpressionKind.VARIABLE:
         if not isinstance(expression.value, str):
             raise TypeError(f"expected str variable name, got {type(expression.value).__name__}")
@@ -347,6 +365,16 @@ def _render(expression: Expression) -> str:
         return f"({values[0]} = {values[1]})"
     if expression.kind == ExpressionKind.IMPLIES:
         return f"({values[0]} -> {values[1]})"
+    if expression.kind == ExpressionKind.LESS_EQUAL:
+        return f"({values[0]} <= {values[1]})"
+    if expression.kind == ExpressionKind.GREATER_EQUAL:
+        return f"({values[0]} >= {values[1]})"
+    if expression.kind == ExpressionKind.LESS_THAN:
+        return f"({values[0]} < {values[1]})"
+    if expression.kind == ExpressionKind.GREATER_THAN:
+        return f"({values[0]} > {values[1]})"
+    if expression.kind == ExpressionKind.ADD:
+        return f"({values[0]} + {values[1]})"
     raise ValueError(f"nuXmv subset does not support {expression.kind.value}")
 
 

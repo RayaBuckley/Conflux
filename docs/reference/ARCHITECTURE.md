@@ -30,7 +30,7 @@ flowchart LR
     GREATER_EQUAL, GREATER_THAN, LESS_THAN, DIFFERENCE).
   - `interpreter` — reference interpreter for IR evaluation.
   - `z3_backend` — optional Z3 bounded-model-checking backend.
-  - `nuxmv_backend` — optional nuXmv SMV backend (Boolean subset).
+  - `nuxmv_backend` — optional nuXmv SMV backend (Boolean and bounded-integer subset).
   - `reduction` — COI reduction and reference safety checking.
   - `self_composition` — product IR construction for observational
     confidentiality.

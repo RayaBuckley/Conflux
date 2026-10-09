@@ -77,6 +77,35 @@ def security_ir(*, authorised: bool = True) -> VerificationIR:
     )
 
 
+def counted_ir(*, runaway: bool = False) -> VerificationIR:
+    """A bounded counter that advances under its bound, and optionally violates the invariant."""
+    step = Expression.variable("step")
+    guard = Expression.operator(ExpressionKind.LESS_THAN, step, Expression.constant(2))
+    advance = Assignment("step", Expression.operator(ExpressionKind.ADD, step, Expression.constant(1)))
+    if runaway:
+        rule = TransitionRule(
+            "advance",
+            Expression.constant(True),
+            (advance, Assignment("violated", Expression.constant(True))),
+        )
+    else:
+        rule = TransitionRule("advance", guard, (advance,))
+    return VerificationIR(
+        "counted",
+        (
+            StateVariable("step", Sort.INTEGER, 0, 0, 2),
+            StateVariable("violated", Sort.BOOLEAN, False),
+        ),
+        (rule,),
+        (
+            SafetyInvariant(
+                "never_violated",
+                Expression.operator(ExpressionKind.NOT, Expression.variable("violated")),
+            ),
+        ),
+        2,
+    )
+
 def test_ir_round_trip_schema_and_interpreter_are_deterministic() -> None:
     ir = security_ir()
     payload = ir.to_dict()
@@ -174,25 +203,14 @@ def test_nuxmv_adapter_safe_unsafe_unknown_and_hashes() -> None:
     assert missing.verdict == FormalVerdict.UNKNOWN
     assert missing.error == "optional_binary_unavailable:nuXmv"
 
-    integer = VerificationIR(
-        "integer",
-        (StateVariable("count", Sort.INTEGER, 0, 0, 2),),
-        (),
-        (
-            SafetyInvariant(
-                "bounded",
-                Expression.operator(
-                    ExpressionKind.LESS_EQUAL,
-                    Expression.variable("count"),
-                    Expression.constant(2),
-                ),
-            ),
-        ),
-        2,
-    )
-    unsupported = NuXmvBackend(availability=lambda _: True).verify(integer)
-    assert unsupported.verdict == FormalVerdict.UNKNOWN
-    assert "unsupported_integer_variables" in (unsupported.error or "")
+    integer_runner = Runner(NuXmvOutcome(0, "-- invariant never_violated is true\n", "", "2.2.0"))
+    counted = NuXmvBackend(runner=integer_runner, availability=lambda _: True).verify(counted_ir())
+    assert counted.verdict == FormalVerdict.SAFE
+    model = integer_runner.models[0]
+    assert "step : 0..2;" in model
+    assert "INIT step = 0 & !violated;" in model
+    assert "next(step) = (step + 1)" in model
+    assert "(step < 2)" in model
 
 
 @dataclass
@@ -480,3 +498,50 @@ def test_evaluate_type_errors_for_invalid_constants_and_variables() -> None:
     object.__setattr__(bad_variable, "arguments", ())
     with pytest.raises(TypeError, match="expected str variable name"):
         evaluate(bad_variable, {})
+
+
+def test_the_nuxmv_subset_fails_closed_on_unsupported_sorts() -> None:
+    """Set-valued and unbounded variables are refused by name, never rendered approximately."""
+    set_ir = VerificationIR(
+        "sets",
+        (StateVariable("holders", Sort.SET, frozenset({"alice"})),),
+        (),
+        (SafetyInvariant("never", Expression.constant(True)),),
+        1,
+    )
+    refusal = NuXmvBackend(availability=lambda _: True).verify(set_ir)
+    assert refusal.verdict == FormalVerdict.UNKNOWN
+    assert refusal.error == "unsupported_ir:nuXmv subset does not support sort set"
+
+    unbounded = VerificationIR(
+        "unbounded",
+        (StateVariable("count", Sort.INTEGER, 0),),
+        (),
+        (SafetyInvariant("never", Expression.constant(True)),),
+        1,
+    )
+    refusal = NuXmvBackend(availability=lambda _: True).verify(unbounded)
+    assert refusal.verdict == FormalVerdict.UNKNOWN
+    assert refusal.error == "unsupported_ir:integer state variable count requires a bounded domain"
+
+
+@pytest.mark.skipif(shutil.which("nuXmv") is None, reason="nuXmv is absent, so the finite-domain encoding is unverified here")
+def test_live_ic3_proves_the_bounded_counter_and_refutes_its_twin() -> None:
+    """With the real binary, IC3 proves the safe counter and finds the violating one."""
+    backend = NuXmvBackend()
+    safe = backend.verify(counted_ir())
+    assert safe.verdict == FormalVerdict.SAFE, safe.error
+    unsafe = backend.verify(counted_ir(runaway=True))
+    assert unsafe.verdict == FormalVerdict.UNSAFE, unsafe.error
+
+
+def test_the_bounded_and_unbounded_backends_do_not_disagree() -> None:
+    """Where both backends can run, the bounded answer must match the IC3 answer."""
+    if importlib.util.find_spec("z3") is None:
+        pytest.skip("z3 is absent, so the differential comparison is unverified here")
+    assert verify_with_z3(counted_ir()).verdict == FormalVerdict.BOUNDED_SAFE
+    assert verify_with_z3(counted_ir(runaway=True)).verdict == FormalVerdict.UNSAFE
+    if shutil.which("nuXmv") is None:
+        return
+    assert NuXmvBackend().verify(counted_ir()).verdict == FormalVerdict.SAFE
+    assert NuXmvBackend().verify(counted_ir(runaway=True)).verdict == FormalVerdict.UNSAFE

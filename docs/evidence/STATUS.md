@@ -203,12 +203,17 @@ Unreleased — 8 September 2026:
     all `security_violations=0`; structured JSON output including
     `dynamic_code` mode succeeds.
 - Key findings from gap audit:
-  - IC3/PDR is already wired in the nuXmv backend
-    (`src/conflux/verification/nuxmv_backend.py:197`) but the backend
-    supports Boolean-only IR variables and a limited expression subset.
-    The binary-backed path was re-measured for the six defence-model
-    abstractions on 2026-10-09 (`defence-models-v1`), so the gap is now
-    expressiveness, not availability.
+  - IC3/PDR is wired in the nuXmv backend
+    (`src/conflux/verification/nuxmv_backend.py`), and the renderer now
+    covers Boolean variables plus bounded integers with comparisons and
+    addition, so the plan abstraction - which always carries `step` and
+    `authority_set` - verifies with a real IC3 proof instead of
+    `unsupported_integer_variables`. Set-valued variables and integers
+    without declared bounds are refused by name. The binary-backed path
+    was re-measured for the six defence-model abstractions on 2026-10-09
+    (`defence-models-v1`), and the plan abstraction on the same day
+    (VERIFICATION.md 26.10), so the gap is now expressiveness, not
+    availability.
   - All four external defence model abstractions (Dual-LLM, CaMeL,
     Progent, PACT) remain unvalidated in
     `docs/evidence/defence-model-fidelity.json`.

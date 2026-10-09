@@ -221,7 +221,7 @@
       "ids": ["EXP-V1", "EXP-V2", "EXP-V3", "EXP-C1", "EXP-C2", "EXP-A1", "EXP-A2", "EXP-P1", "EXP-P2", "EXP-S1", "EXP-S2", "EXP-S3"],
       "status": "deferred",
       "evidence": ["research/reports/analysis/2026-09-08-experiment-program/", "research/reports/analysis/2026-09-08-experiment-program/gap-audit.md"],
-      "gap": "Experiment programme defined and gap-audited; IC3/PDR already wired in nuXmv backend but Boolean-only; H100 Qwen3-4B-2507 AgentDojo results show 0% utility (formatting issue); all 4 defence model abstractions unvalidated; symmetry reduction is self-composition-only; POR and authority-aware subsumption not implemented; no runtime-to-IR projection layer"
+      "gap": "Experiment programme defined and gap-audited; IC3/PDR wired in the nuXmv backend, which now renders Boolean and bounded-integer variables but still refuses set-valued variables; H100 Qwen3-4B-2507 AgentDojo results show 0% utility (formatting issue); all 4 defence model abstractions unvalidated; symmetry reduction is self-composition-only; POR and authority-aware subsumption not implemented; no runtime-to-IR projection layer"
     }
   ],
   "deferred_research": [

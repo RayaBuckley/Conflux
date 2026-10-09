@@ -28,7 +28,7 @@ from conflux.planning import (
     Plan,
     TemplateArgument,
 )
-from conflux.verification import EffectSummary, abstract_plan
+from conflux.verification import EffectSummary, NuXmvBackend, abstract_plan, verify_with_z3
 from conflux.verification.reduction import reference_safety_check
 
 OUTPUT_DIR = Path("research/output/runs/plan_ir")
@@ -76,6 +76,8 @@ def main() -> int:
 
     ir = abstraction.ir
     ref_result = reference_safety_check(ir)
+    z3_result = verify_with_z3(ir)
+    nuxmv_result = NuXmvBackend().verify(ir)
 
     evidence = {
         "generated_at": datetime.now(UTC).isoformat(),
@@ -91,6 +93,10 @@ def main() -> int:
         "reference_verdict": ref_result.verdict.value,
         "reference_states": ref_result.states,
         "reference_transitions": ref_result.transitions,
+        "formal_verification": {
+            "z3": z3_result.to_dict(),
+            "nuxmv": nuxmv_result.to_dict(),
+        },
     }
     output_path = OUTPUT_DIR / "evidence.json"
     output_path.write_text(json.dumps(evidence, indent=2), encoding="utf-8")
@@ -100,6 +106,8 @@ def main() -> int:
     print(f"  Variables: {var_count}")
     print(f"  Invariants: {inv_count}")
     print(f"  Verdict: {ref_result.verdict.value}")
+    print(f"  z3: {z3_result.verdict.value} (bound {z3_result.bound})")
+    print(f"  nuXmv: {nuxmv_result.verdict.value} ({nuxmv_result.error or 'no error'})")
     return 0
 
 

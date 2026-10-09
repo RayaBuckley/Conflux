@@ -67,5 +67,12 @@ probed only when the binary cannot be resolved locally.
 `NuXmvBackend().resolved_binary()` returns the binary and
 `NuXmvBackend().selected_runner()` the runner that will be used.
 
+The renderer covers Boolean variables and bounded integers
+(`<minimum>..<maximum>` domains, with comparisons and addition), which
+is what the plan abstraction emits. Set-valued variables and integers
+without declared bounds are refused with an
+`unsupported_ir:<reason>` unknown verdict, so an unsupported model never
+reads as a proof.
+
 Without nuXmv installed, symbolic model-checking calls return a
 missing-backend result.

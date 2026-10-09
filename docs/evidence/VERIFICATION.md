@@ -1726,3 +1726,57 @@ The third row is the point of the change: an override that is set but unusable f
 closed instead of letting a property pass. Six new tests cover the override, its
 precedence, the runner order (a local binary must not make the host probe WSL) and the
 resolution this host performs.
+
+### 26.10 Finite domains in the nuXmv backend: the IC3 path the plan abstraction needed
+
+The gap audit of 2026-09-08 recorded this limit precisely: the nuXmv backend rendered every
+state variable as `boolean` and `_render()` supported only `CONSTANT`, `VARIABLE`, `NOT`,
+`AND`, `OR`, `EQUAL` and `IMPLIES`, so an IR with an integer variable was refused with
+`unsupported_integer_variables`. The plan abstraction always carries two of them (`step` and
+`authority_set`), so `verify_plan(..., backend="nuxmv")` could not produce an IC3 verdict at
+the level the authority-confinement properties are stated at.
+
+Feasibility was measured first with the installed nuXmv 2.2.0 and a hand-written finite-domain
+model (`step : 0..4`): `check_invar_ic3` alone refuses ("The boolean model must be built
+before"), while `go` + `build_boolean_model` + `check_invar_ic3` proves the safe model
+("invariant !violated is true") and returns a counterexample trace for the violating twin.
+The command string the backend already sends is the working one, so no command changed.
+
+What changed in `src/conflux/verification/nuxmv_backend.py`:
+
+- `_domain()` renders `boolean` for `Sort.BOOLEAN` and `<minimum>..<maximum>` for
+  `Sort.INTEGER`, and raises for any other sort; `_initial()` renders `name`/`!name` for
+  booleans and `name = <value>` for bounded integers.
+- `_render()` accepts integer constants and adds `LESS_EQUAL`, `GREATER_EQUAL`, `LESS_THAN`,
+  `GREATER_THAN` and `ADD`, which is the operator set the plan abstraction emits.
+- `verify()` no longer pre-rejects non-Boolean variables. The subset now has one source of
+  truth, `_smv()`, and anything it cannot render - a set-valued variable, an integer without
+  declared bounds - fails closed through the existing `unsupported_ir:<reason>` path, so an
+  unsupported model is still a named UNKNOWN and never a pass.
+
+Measured on this host with the committed fixtures, `nuXmv` on `PATH`:
+
+| plan | bound | z3 backend | nuXmv backend |
+| --- | --- | --- | --- |
+| delegation fixture (`plan-with-delegation`) | 3 | `bounded_safe` | `safe` |
+| simple write plan (`verified-plan`) | 4 | `bounded_safe` | `safe` |
+
+Before the change both nuXmv rows were `unknown` with
+`unsupported_integer_variables:step,authority_set`; the z3 rows are unchanged. The difference
+is the claim boundary: z3 answers for the first `bound` steps, IC3 answers for every run of
+the bounded abstraction - the abstraction's node bound stays declared input, and set-valued
+variables stay outside the subset.
+
+The same two rows are reproducible in one command: `scripts/generate_plan_ir_evidence.py`,
+run from the repository root, now writes a `formal_verification` block carrying both backends'
+`FormalVerificationResult` records next to the reference verdict. Measured that way on
+2026-10-09 - reference interpreter `safe`, z3 `bounded_safe` at bound 4, nuXmv `safe` - and the
+output lands under the ignored `research/output/runs/` like the other generator outputs, so the
+script is the reproduction step rather than a retained bundle. A host without nuXmv records the
+missing-backend unknown in the same block instead.
+
+Tests in `tests/test_verification_ir.py` render a bounded counter with a stub runner
+(`step : 0..2;`, the integer `INIT` clause, `next(step) = (step + 1)` and the comparison),
+prove the safe counter and refute its violating twin with the real binary (skipped only when
+nuXmv is absent), refuse set-valued and unbounded variables by name, and check that the
+bounded and unbounded backends do not disagree where both can run.
