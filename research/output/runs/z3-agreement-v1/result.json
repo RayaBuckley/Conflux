@@ -6,13 +6,15 @@
       "reduced_verdict": "safe",
       "reference_verdict": "safe",
       "z3_original": {
-        "counterexample": true,
+        "counterexample": false,
         "counterexample_length": 0,
+        "measured": true,
         "verdict": "bounded_safe"
       },
       "z3_reduced": {
-        "counterexample": true,
+        "counterexample": false,
         "counterexample_length": 0,
+        "measured": true,
         "verdict": "bounded_safe"
       }
     },
@@ -24,11 +26,13 @@
       "z3_original": {
         "counterexample": true,
         "counterexample_length": 2,
+        "measured": true,
         "verdict": "unsafe"
       },
       "z3_reduced": {
         "counterexample": true,
         "counterexample_length": 2,
+        "measured": true,
         "verdict": "unsafe"
       }
     }
@@ -36,7 +40,9 @@
   "id": "z3-agreement-v1",
   "schema_version": "1",
   "summary": {
-    "all_agree": false,
-    "total_fixtures": 2
+    "all_agree": true,
+    "raw_verdict_agreement": false,
+    "total_fixtures": 2,
+    "z3_measured": 2
   }
 }

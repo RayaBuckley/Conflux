@@ -3,6 +3,12 @@
 Runs Z3 BMC on the two original COI fixtures and their reduced
 counterparts, retaining a deterministic JSON evidence bundle.
 
+``all_agree`` compares verdict classes, so the bounded model checker's
+``bounded_safe`` agrees with the reference interpreter's ``safe`` while the raw
+strings are kept per fixture and summarised separately in
+``raw_verdict_agreement``.  With no solver installed nothing is measured and
+``all_agree`` is ``null``: an unmeasured flag must never claim agreement.
+
 Usage::
 
     python scripts/generate_z3_agreement.py
@@ -20,6 +26,7 @@ from typing import Any
 
 from conflux.verification.ir import VerificationIR
 from conflux.verification.reduction import compare_cone_of_influence
+from conflux.verification.results import FormalVerdict
 from conflux.verification.z3_backend import verify_with_z3
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,12 +34,28 @@ OUTPUT = ROOT / "research" / "output" / "runs" / "z3-agreement-v1"
 SUITES = ROOT / "research" / "experiments" / "suites" / "sled-coi-v1"
 
 
+SAFE_FAMILY = frozenset({"safe", "bounded_safe"})
+"""Verdicts that mean "no violation found within the stated bounds".
+
+The reference interpreter reports ``safe`` and the bounded model checker reports
+``bounded_safe``: same class, different scope of guarantee. The raw strings are
+retained in every fixture so the two are never conflated in the artefact itself.
+"""
+
+
+def verdict_class(verdict: str) -> str:
+    """Map a verdict onto its class for cross-backend comparison."""
+    return "safe" if verdict in SAFE_FAMILY else verdict
+
+
 def _verify(ir: VerificationIR) -> dict[str, Any]:
     result = verify_with_z3(ir)
+    counterexample = result.counterexample or ()
     return {
         "verdict": result.verdict.value,
-        "counterexample": result.counterexample is not None,
-        "counterexample_length": len(result.counterexample) if result.counterexample else 0,
+        "measured": result.verdict is not FormalVerdict.UNKNOWN,
+        "counterexample": bool(counterexample),
+        "counterexample_length": len(counterexample),
     }
 
 
@@ -52,16 +75,28 @@ def generate() -> dict[str, Any]:
                 "z3_reduced": _verify(comp.reduction.reduced_ir),
             },
         )
+    measured = [f for f in fixtures if f["z3_original"]["measured"] and f["z3_reduced"]["measured"]]
+    agree = [
+        f
+        for f in measured
+        if verdict_class(f["z3_original"]["verdict"])
+        == verdict_class(f["z3_reduced"]["verdict"])
+        == verdict_class(f["reference_verdict"])
+    ]
+    raw_agree = [
+        f
+        for f in measured
+        if f["z3_original"]["verdict"] == f["z3_reduced"]["verdict"] == f["reference_verdict"]
+    ]
     return {
         "schema_version": "1",
         "id": "z3-agreement-v1",
         "fixtures": fixtures,
         "summary": {
             "total_fixtures": len(fixtures),
-            "all_agree": all(
-                f["z3_original"]["verdict"] == f["z3_reduced"]["verdict"] and f["z3_original"]["verdict"] == f["reference_verdict"]
-                for f in fixtures
-            ),
+            "z3_measured": len(measured),
+            "all_agree": (len(agree) == len(measured)) if measured else None,
+            "raw_verdict_agreement": (len(raw_agree) == len(measured)) if measured else None,
         },
     }
 
