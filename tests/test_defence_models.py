@@ -7,10 +7,13 @@ implementation-conformance evidence for the published systems.  See
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import pytest
 
 from conflux.verification import (
     FormalVerdict,
+    VerificationIR,
     camel_ir,
     camel_native_property_ir,
     dual_llm_baseline_ir,
@@ -29,51 +32,89 @@ pytestmark = pytest.mark.security
 
 VALIDATION_STATUS = "unvalidated_external_abstraction"
 
+ModelFactory = Callable[[], VerificationIR]
 
-class TestDualLLMBaselinePE:
-    """Dual-LLM candidate abstraction: satisfies Q but admits PE counterexample."""
+# Candidate abstractions that satisfy their own intended property Q but admit a PE
+# counterexample.  The ``executes_action`` flag marks the model whose counterexample must
+# also show that the unauthorised action ran (the Dual-LLM planner consumes attacker data).
+UNSAFE_PE_MODELS: dict[str, tuple[ModelFactory, bool]] = {
+    "dual_llm": (dual_llm_baseline_ir, True),
+    "ites_requester_only": (ites_defective_requester_only_ir, False),
+    "camel": (camel_ir, False),
+    "progent": (progent_ir, False),
+    "pact": (pact_ir, False),
+}
 
-    def test_pe_property_is_unsafe(self) -> None:
-        """The Dual-LLM model admits a PE violation.
+# Candidate abstractions that satisfy their own intended property Q.
+NATIVE_PROPERTY_MODELS: dict[str, ModelFactory] = {
+    "dual_llm": dual_llm_native_property_ir,
+    "camel": camel_native_property_ir,
+    "progent": progent_native_property_ir,
+    "pact": pact_native_property_ir,
+}
 
-        The planner consumes attacker data and executes an action.
-        Since the attacker is not authorised, PE is violated.
-        """
-        ir = dual_llm_baseline_ir()
-        result = reference_safety_check(ir)
+
+class TestUnsafePEModels:
+    """Unvalidated candidate abstractions that admit a PE counterexample."""
+
+    @pytest.mark.parametrize(
+        "factory",
+        [factory for factory, _executes_action in UNSAFE_PE_MODELS.values()],
+        ids=list(UNSAFE_PE_MODELS),
+    )
+    def test_pe_property_is_unsafe(self, factory: ModelFactory) -> None:
+        """The model admits a PE violation when attacker data reaches the effect."""
+        result = reference_safety_check(factory())
         assert result.verdict == FormalVerdict.UNSAFE
 
-    def test_counterexample_exists(self) -> None:
-        ir = dual_llm_baseline_ir()
-        result = reference_safety_check(ir)
-        assert len(result.counterexample) > 0
+    @pytest.mark.parametrize(
+        ("factory", "executes_action"),
+        list(UNSAFE_PE_MODELS.values()),
+        ids=list(UNSAFE_PE_MODELS),
+    )
+    def test_counterexample_shows_pe_violation(self, factory: ModelFactory, executes_action: bool) -> None:
+        """The counterexample records the PE violation, and the executed action for Dual-LLM."""
+        result = reference_safety_check(factory())
+        final_state = result.counterexample[-1]["state"]
+        assert isinstance(final_state, dict)
+        assert final_state.get("pe_violation") is True
+        if executes_action:
+            assert final_state.get("action_executed") is True
 
-    def test_counterexample_shows_pe_violation(self) -> None:
-        ir = dual_llm_baseline_ir()
-        result = reference_safety_check(ir)
+    def test_dual_llm_counterexample_shows_the_action_executed(self) -> None:
+        """Dual-LLM: the counterexample must show the unauthorised action ran.
+
+        Asserted directly, not through the ``executes_action`` flag, so that changing
+        the table cannot silently stop this guarantee from being checked.
+        """
+        result = reference_safety_check(dual_llm_baseline_ir())
         final_state = result.counterexample[-1]["state"]
         assert isinstance(final_state, dict)
         assert final_state.get("pe_violation") is True
         assert final_state.get("action_executed") is True
 
+    def test_dual_llm_counterexample_exists(self) -> None:
+        """The Dual-LLM model has a non-empty counterexample."""
+        result = reference_safety_check(dual_llm_baseline_ir())
+        assert len(result.counterexample) > 0
 
-class TestDualLLMNativeProperty:
-    """Dual-LLM candidate abstraction: satisfies its own intended property Q."""
 
-    def test_native_property_is_safe(self) -> None:
-        """Q: the quarantined processor never directly executes effects.
+class TestNativePropertyModels:
+    """Candidate abstractions that satisfy their own intended property Q."""
 
-        This is the Dual-LLM's own guarantee.  It holds, demonstrating that
-        satisfying Q does not imply satisfying PE.
-        """
-        ir = dual_llm_native_property_ir()
-        result = reference_safety_check(ir)
+    @pytest.mark.parametrize(
+        "factory",
+        list(NATIVE_PROPERTY_MODELS.values()),
+        ids=list(NATIVE_PROPERTY_MODELS),
+    )
+    def test_native_property_is_safe(self, factory: ModelFactory) -> None:
+        """Satisfying the model's own guarantee Q does not imply satisfying PE."""
+        result = reference_safety_check(factory())
         assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
 
-    def test_processor_never_executes(self) -> None:
-        ir = dual_llm_native_property_ir()
-        result = reference_safety_check(ir)
-        # No counterexample should exist
+    def test_dual_llm_processor_never_executes(self) -> None:
+        """Q for Dual-LLM: the quarantined processor never directly executes effects."""
+        result = reference_safety_check(dual_llm_native_property_ir())
         assert len(result.counterexample) == 0
 
 
@@ -96,99 +137,6 @@ class TestITESReferencePE:
         assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
 
 
-class TestDefectiveRequesterOnly:
-    """REQUESTER_ONLY negative control: checks only the requester."""
-
-    def test_pe_property_is_unsafe(self) -> None:
-        """The requester-only check violates PE because it ignores the
-        attacker's influence on the planner."""
-        ir = ites_defective_requester_only_ir()
-        result = reference_safety_check(ir)
-        assert result.verdict == FormalVerdict.UNSAFE
-
-    def test_counterexample_shows_pe_violation(self) -> None:
-        ir = ites_defective_requester_only_ir()
-        result = reference_safety_check(ir)
-        final_state = result.counterexample[-1]["state"]
-        assert isinstance(final_state, dict)
-        assert final_state.get("pe_violation") is True
-
-
-class TestCaMeLBaselinePE:
-    """CaMeL candidate abstraction: satisfies Q but admits PE counterexample."""
-
-    def test_pe_property_is_unsafe(self) -> None:
-        ir = camel_ir()
-        result = reference_safety_check(ir)
-        assert result.verdict == FormalVerdict.UNSAFE
-
-    def test_counterexample_shows_pe_violation(self) -> None:
-        ir = camel_ir()
-        result = reference_safety_check(ir)
-        final_state = result.counterexample[-1]["state"]
-        assert isinstance(final_state, dict)
-        assert final_state.get("pe_violation") is True
-
-
-class TestCaMeLNativeProperty:
-    """CaMeL candidate abstraction: satisfies its own property Q (processor never executes)."""
-
-    def test_native_property_is_safe(self) -> None:
-        ir = camel_native_property_ir()
-        result = reference_safety_check(ir)
-        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
-
-
-class TestProgentBaselinePE:
-    """Progent candidate abstraction: satisfies Q but admits PE counterexample."""
-
-    def test_pe_property_is_unsafe(self) -> None:
-        ir = progent_ir()
-        result = reference_safety_check(ir)
-        assert result.verdict == FormalVerdict.UNSAFE
-
-    def test_counterexample_shows_pe_violation(self) -> None:
-        ir = progent_ir()
-        result = reference_safety_check(ir)
-        final_state = result.counterexample[-1]["state"]
-        assert isinstance(final_state, dict)
-        assert final_state.get("pe_violation") is True
-
-
-class TestProgentNativeProperty:
-    """Progent candidate abstraction: satisfies its own property Q (all calls satisfy policy)."""
-
-    def test_native_property_is_safe(self) -> None:
-        ir = progent_native_property_ir()
-        result = reference_safety_check(ir)
-        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
-
-
-class TestPACTBaselinePE:
-    """PACT candidate abstraction: satisfies Q but admits PE counterexample."""
-
-    def test_pe_property_is_unsafe(self) -> None:
-        ir = pact_ir()
-        result = reference_safety_check(ir)
-        assert result.verdict == FormalVerdict.UNSAFE
-
-    def test_counterexample_shows_pe_violation(self) -> None:
-        ir = pact_ir()
-        result = reference_safety_check(ir)
-        final_state = result.counterexample[-1]["state"]
-        assert isinstance(final_state, dict)
-        assert final_state.get("pe_violation") is True
-
-
-class TestPACTNativeProperty:
-    """PACT candidate abstraction: satisfies its own property Q (argument provenance preserved)."""
-
-    def test_native_property_is_safe(self) -> None:
-        ir = pact_native_property_ir()
-        result = reference_safety_check(ir)
-        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
-
-
 class TestITESWithReadCheck:
     """ITES with read-check ablation: PE-safe but stricter than plain ITES."""
 
@@ -197,23 +145,12 @@ class TestITESWithReadCheck:
         result = reference_safety_check(ir)
         assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
 
-    def test_read_check_model_round_trips(self) -> None:
-        ir = ites_with_read_check_ir()
-        restored = type(ir).from_dict(ir.to_dict())
-        assert restored.fingerprint == ir.fingerprint
-
     def test_read_check_model_uses_set_sorts(self) -> None:
         ir = ites_with_read_check_ir()
         from conflux.verification import Sort
 
         set_vars = [v for v in ir.variables if v.sort == Sort.SET]
         assert len(set_vars) >= 2
-
-    def test_all_models_round_trip_includes_read_check(self) -> None:
-        """The read-check model is included in the round-trip test."""
-        ir = ites_with_read_check_ir()
-        restored = type(ir).from_dict(ir.to_dict())
-        assert restored.fingerprint == ir.fingerprint
 
 
 class TestDefenceModelStructure:
