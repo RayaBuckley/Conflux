@@ -226,6 +226,12 @@ exclude = ["build/", "scripts/vulture_whitelist\\.py", "research/reports/archive
 [[tool.mypy.overrides]]
 module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*", "graphviz"]
 ignore_missing_imports = true
+# Sibling scripts are imported by path: the documented invocation
+# `python scripts/<name>.py` puts the script directory first on sys.path,
+# so these modules are not resolvable as packages.
+[[tool.mypy.overrides]]
+module = ["create_pod", "generate_partb_reproduction", "stop_pod"]
+ignore_missing_imports = true
 [tool.setuptools]
 package-dir = { "" = "src" }
 [tool.setuptools.packages.find]

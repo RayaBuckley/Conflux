@@ -89,7 +89,7 @@ def _scp(key: Path, ip: str, port: str, src: str, dst: str, timeout: int = 120) 
 
 
 def _start_auto_stop_timer(pod_id: str, max_minutes: int) -> threading.Timer:
-    def _stop():
+    def _stop() -> None:
         print(f"\n!!! MAX RUNTIME ({max_minutes} min) REACHED — FORCE-STOPPING POD {pod_id} !!!", file=sys.stderr)
         from stop_pod import stop_pod
 
