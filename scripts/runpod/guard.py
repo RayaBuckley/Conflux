@@ -20,7 +20,8 @@ Safety model (fail closed):
     names, lists, stops, starts or terminates them, and it does not repeat a foreign
     pod id, name or environment value anywhere - not on stdout, not on stderr and not
     in the audit log, including in a refusal. They appear only as aggregate counts and
-    hourly cost.
+    hourly cost. A vendor error body is summarised - status code, body size and JSON
+    key names - and never quoted, because it can carry another tenant's pod identity.
   * Caps enforced before any API mutation: one GPU, H100 family only, one Conflux pod
     at a time, per-pod hour and spend caps, per-day spend cap. Configuration may lower
     these; the absolute limits in this module can never be raised, and a non-finite
@@ -623,6 +624,28 @@ def audit(action: str, target: str, detail: Mapping[str, object], path: Path | N
         handle.write(json.dumps(record, sort_keys=True) + "\n")
 
 
+def describe_error_body(body: bytes) -> str:
+    """Summarise a vendor error body without repeating what it contains.
+
+    The message a refusal carries reaches stderr and ``audit.jsonl``, and the account
+    is shared, so a raw error body is never quoted: it can name or identify another
+    tenant's pod. The status code and the shape of the body are what an operator needs
+    to tell a stale key from a missing permission; the text itself stays out of our
+    logs.
+    """
+    text = body.decode("utf-8", errors="replace").strip()
+    if not text:
+        return ": empty response body"
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        return f": non-JSON response body of {len(text)} characters"
+    if isinstance(parsed, Mapping):
+        keys = ", ".join(sorted(str(key) for key in parsed))
+        return f": JSON response body with key(s) {keys}"
+    return f": JSON {type(parsed).__name__} response body"
+
+
 class RunPodApi:
     """Minimal REST client. Only ever called with Conflux pod ids."""
 
@@ -643,8 +666,7 @@ class RunPodApi:
             with urlopen(request, timeout=self._timeout) as response:
                 raw = response.read().decode("utf-8")
         except HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")[:300]
-            raise GuardError(f"{method} {path} failed with HTTP {exc.code}: {detail}") from exc
+            raise GuardError(f"{method} {path} failed with HTTP {exc.code}{describe_error_body(exc.read())}") from exc
         except URLError as exc:
             raise GuardError(f"{method} {path} failed: {exc.reason}") from exc
         return json.loads(raw) if raw.strip() else None
