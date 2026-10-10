@@ -2042,6 +2042,11 @@ IR family and now retains the result as `research/output/runs/backend-cross-vali
   nothing can refute, and z3 returned a verdict for every variant (`unmeasured` is empty).
 - Each row keeps its witness flag honest: `z3_counterexample` is true only when the result carries
   counterexample steps, and the step count is recorded next to it.
+- The family covers ten distinct bodies, not eleven: `redelegation` and `redelegation_chain` build the
+  same variables, transitions and invariants and differ only in `id`, so the ten refuted variants are
+  nine distinct refuted bodies. Eleven is a count of variants, and the sibling readings in §28 inherit
+  the same limit. `tests/test_delegation_ir.py` pins both numbers, so an edit that makes the pair
+  distinct fails that test instead of quietly changing what the bundles mean.
 
 What this does not prove: that the IR semantics are correct, or that they hold beyond this family.
 Agreement is between two encodings, and the reference interpreter is the definition the encoding is

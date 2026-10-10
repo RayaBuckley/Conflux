@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from conflux.verification.delegation_ir import (
@@ -119,3 +121,21 @@ def test_multi_grant_ir_scales_exponentially() -> None:
     r2 = reference_safety_check(ir2)
     r3 = reference_safety_check(ir3)
     assert r3.states > r2.states
+
+
+def test_the_eleven_variants_cover_ten_distinct_bodies() -> None:
+    """Eleven variants, ten behaviours: redelegation and redelegation_chain share one body.
+
+    The cross-validation bundle and the paper both count eleven variants, and a reader
+    who reads eleven as eleven distinct behaviours over-reads the evidence. This test
+    keeps the two numbers apart. If a later change makes the pair distinct, update this
+    test, the note in VERIFICATION.md section 29 and the sentence in the manuscript
+    together.
+    """
+    bodies: dict[str, list[str]] = {}
+    for result in all_delegation_ir_variants():
+        body = repr((result.ir.variables, result.ir.transitions, result.ir.invariants))
+        bodies.setdefault(hashlib.sha256(body.encode()).hexdigest(), []).append(result.mutation.value)
+    shared = sorted(names for names in bodies.values() if len(names) > 1)
+    assert len(bodies) == 10
+    assert shared == [["redelegation", "redelegation_chain"]]
