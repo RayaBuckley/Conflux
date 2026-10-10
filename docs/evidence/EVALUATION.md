@@ -167,6 +167,18 @@ decisions, and certificate bindings are stored in a separate augmentation
 stream. Setup, model, parser, policy, security, tool, utility, and bound
 failures are counted independently.
 
+The RunPod bundles extend that matrix to a 14B model:
+[`research/output/runs/runpod-h100-14b-v1/`](../../research/output/runs/runpod-h100-14b-v1/)
+re-runs the five-task pilot against Qwen2.5-14B-Instruct NF4 on an H100 (30 cells,
+18/30 utility, 30/30 security), and
+[`research/output/runs/runpod-h100-14b-stratified/`](../../research/output/runs/runpod-h100-14b-stratified/)
+carries the frozen stratified selection for the two suites that fitted the pod window.
+Both are bounds: no attack succeeded in any cell at either model size, so the observed
+attack-success rate stays zero and the defence comparison stays flat. The stratified 14B
+bundles also measure mediation coverage directly: the mediator annotates two operations,
+so every other tool call is refused as `unsupported_tool` (workspace 156 blocks across 78
+cells, utility 1/78; banking 192 blocks across 24 cells, utility 0/24).
+
 Planning compares `reactive`, `static`, `dynamic`, and `dynamic_code` across
 eight diagnostics. `dynamic_code` emits a validated `ModeledProgram`: an inert
 graph of existing typed actions and declared read/write effects. It is never

@@ -1,0 +1,1 @@
+conflux benchmark agentdojo run --config research/output/runs/runpod-eval/protocol.json --model-config research/output/runs/runpod-Qwen-Qwen2.5-14B-Instruct/transformers.json --output research/output/runs/runpod-eval --execute-local

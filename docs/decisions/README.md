@@ -36,3 +36,4 @@ documentation.
 | [024](024-external-provenance-and-authority-bounds.md) | adr | External provenance non-escalation and authority bounds |
 | [025](025-authority-confinement-semantic-judgement-delegation.md) | adr | Authority confinement, semantic judgement, and explicit scoped delegation |
 | [026](026-continuation-and-contribution-provenance.md) | adr | Continuation of the Part B project and contribution provenance |
+| [027](027-complete-agentdojo-coverage.md) | adr | Complete AgentDojo coverage and the full benchmark run |

@@ -213,6 +213,10 @@ data/
 !research/output/runs/agentdojo-qwen3-4b-v4/**
 !research/output/runs/runpod-h100-7b-v1/
 !research/output/runs/runpod-h100-7b-v1/**
+!research/output/runs/runpod-h100-14b-v1/
+!research/output/runs/runpod-h100-14b-v1/**
+!research/output/runs/runpod-h100-14b-stratified/
+!research/output/runs/runpod-h100-14b-stratified/**
 !research/output/runs/agentdojo-0b5-v1/
 !research/output/runs/agentdojo-0b5-v1/**
 !research/output/runs/agentdojo-lfm2-1b2-v1/
