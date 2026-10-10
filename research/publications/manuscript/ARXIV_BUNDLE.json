@@ -1,0 +1,32 @@
+{
+  "schema": "conflux-arxiv-bundle/1",
+  "manuscript": "research/publications/manuscript/conflux_fourth_year_2026.tex",
+  "archive_root": "research/publications/manuscript",
+  "source": "https://info.arxiv.org/help/submit_tex.html (read 2026-10-10)",
+  "notes": [
+    "arXiv compiles from the root of the submission directory, so this tree is the archive root.",
+    "The manifest digest of every shipped file is checked before packaging."
+  ],
+  "files": [
+    {
+      "path": "conflux_fourth_year_2026.tex",
+      "bytes": 18769,
+      "sha256": "18f69f3721261803ff809a2de543775b999bcd99c7058f0ecd6c75d91e619608"
+    },
+    {
+      "path": "generated/tables/agentdojo_breadth_table.tex",
+      "bytes": 3221,
+      "sha256": "786c35bba04f14dc6550ceba4a1f009142bb329d503a038d7e635e80fc06af72"
+    },
+    {
+      "path": "generated/tables/agentdojo_fingerprints_table.tex",
+      "bytes": 3283,
+      "sha256": "cf8eb365b84397c6f53833ece2d1f7c866181d3a7b2c3b8f3ec5a26795486a0c"
+    },
+    {
+      "path": "references.bib",
+      "bytes": 6963,
+      "sha256": "1dd6e67feaf91bbf170edca1dcf08f7afc2843ba7873e9340718b43e5a01ecc6"
+    }
+  ]
+}
