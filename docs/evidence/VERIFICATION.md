@@ -2082,3 +2082,24 @@ retained as `research/output/runs/delegation-defect-sweep-v1/`:
   three encodings of one IR, the reference interpreter is the definition the encodings are checked
   against, and the space is a closed set of edits to one consumption rule rather than every way a
   delegation system can go wrong. Agreement inside the space says nothing about hypotheses outside it.
+
+## 31. Plan IR grid: agreement over plans, effect summaries and bounds (2026-10-10, author-run)
+
+The plan IR carries its own encoding in the bounded model checker and in nuXmv, but its retained bundle
+was a single reading of a single plan. `scripts/generate_plan_ir_evidence.py` now measures a structured
+population instead: two plan shapes (one action node, and a pair of action nodes), two effect summaries
+(every node authorised, and the first action node executed while unauthorised) and bounds one to four, so
+sixteen readings, each appearing once. The bundle is retained as `research/output/runs/plan_ir/` and the
+standard validation tier runs its `--check` mode:
+
+- 16 of 16 readings agree by verdict class across the reference interpreter, Z3 and nuXmv, and the
+  encodings are measured rather than assumed: a row records `unknown` if either binary cannot answer.
+- 8 of the 16 readings carry an unsafe reference verdict - the ones whose first action executes
+  unauthorised - and every one of them is refuted by all three backends at every bound. The eight
+  authorised readings are not refuted, and the bundle names them by id (`unrefuted`), so the control is
+  countable rather than implied. The generator refuses to write a bundle in which nothing is refuted.
+- The grid costs about a second to re-measure, which is why the tier can afford to run it on every
+  standard validation pass.
+- Limits, carried in the bundle's `boundary` field and repeated in its SUMMARY: the grid covers one plan
+  shape, one operation catalogue and one effect-summary pattern, and the space of plans is open. Agreement
+  inside the grid says nothing about a plan outside it.

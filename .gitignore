@@ -71,6 +71,8 @@ research/output/runs/*
 !research/output/runs/backend-cross-validation-v1/**
 !research/output/runs/delegation-defect-sweep-v1/
 !research/output/runs/delegation-defect-sweep-v1/**
+!research/output/runs/plan_ir/
+!research/output/runs/plan_ir/**
 !research/output/runs/native-sled-partb-reproduction-v1/
 !research/output/runs/native-sled-partb-reproduction-v1/**
 !research/output/runs/agentdojo-7b-v1/

@@ -310,6 +310,7 @@ def main() -> int:
     _run(2, "scripts/generate_flmsec_tables.py", "--check")
     _run(2, "scripts/generate_fourth_year_tables.py", "--check")
     _run(2, "scripts/generate_delegation_defect_sweep.py", "--check")
+    _run(2, "scripts/generate_plan_ir_evidence.py", "--check")
     _run(2, "scripts/build_arxiv_bundle.py", "--check")
     if tier == 1:
         _run(
