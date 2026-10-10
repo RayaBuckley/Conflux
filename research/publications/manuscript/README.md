@@ -44,6 +44,9 @@ so the bundle is checked for completeness rather than compiled, and no `.bbl`
 is pre-generated here, because arXiv runs `bibtex` on the shipped
 `references.bib`.
 
+[ARXIV_SUBMISSION.md](ARXIV_SUBMISSION.md) lists the submission rules, what the
+script enforces, and the steps only the owner can take.
+
 Use the [claim ledger](../../../docs/evidence/CLAIMS.md) for claim strength, the
 [task registry](../../../docs/evidence/task-registry.json) for current programme status, and
 the [report analysis](../../../research/reports/analysis/PROJECT_ANALYSIS.md) for historical
