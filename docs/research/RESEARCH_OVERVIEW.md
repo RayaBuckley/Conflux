@@ -327,6 +327,20 @@ The project should produce evidence at several levels:
 6. **Granularity ablations** — quantify utility recovered by finer provenance without weakening the PE invariant.
 7. **Implementation conformance** — relate production traces/transitions to the verified semantics.
 
+### What the breadth evidence already measures
+
+- **Real-model evaluation (level 5)**: the frozen stratified selection
+  (`research/experiments/manifests/agentdojo-stratified-selection-v1.json`, 36 strata over a 153-pair
+  pool) runs on all four AgentDojo suites with one command, and the four retained bundles under
+  `research/output/runs/` hold 192 cells, 186 complete. At the 0.5B floor model every completed cell
+  awards zero utility, so those security counts are vacuous, and the six incomplete cells are parser
+  failures at that scale (`docs/evidence/VERIFICATION.md` section 27).
+- **Repeatability**: a retained run repeats protocol-exactly through the command in its own `RERUN.txt`,
+  and the banking repeat reproduced the protocol fingerprint with zero cell differences.
+- **Semantic verification and negative controls (levels 1-2)**: eleven delegation-IR variants agree
+  across the reference interpreter, Z3 and nuXmv by verdict class, and ten deliberately refuted variants
+  are refused (`docs/evidence/VERIFICATION.md` sections 28 and 29).
+
 ## 10. What is not yet established
 
 Do not infer from this overview that:
@@ -334,7 +348,9 @@ Do not infer from this overview that:
 - every richer Conflux extension has a completed proof;
 - every external defence has been faithfully formalised;
 - a current symbolic backend already proves all ITES behaviour unboundedly;
-- AgentDojo results have been fully validated and committed;
+- AgentDojo results carry utility: at the 0.5B floor model utility is zero, so the security
+  counts of those runs are vacuous, and single-run utility deltas need repetitions before they mean
+  anything;
 - implementation conformance has been established.
 
 Those are research/evidence tasks.
