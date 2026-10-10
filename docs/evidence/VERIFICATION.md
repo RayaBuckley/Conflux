@@ -2059,24 +2059,26 @@ boundary instead of being read as a proof of the semantics.
 
 ## 30. Defect sweep: agreement over the whole combination space, not a chosen list (2026-10-10, author-run)
 
-Section 29 measured the z3 encoding against the reference interpreter on eleven hand-built variants, so
+Section 29 measured the Z3 encoding against the reference interpreter on eleven hand-built variants, so
 its claim could only be about those variants. `scripts/generate_delegation_defect_sweep.py` closes the
 population instead: the nine independent defects in `DELEGATION_IR_DEFECTS` have 512 subsets, every
-subset is built with `build_combined_delegation_ir` and measured with both backends, and the result is
+subset is built with `build_combined_delegation_ir` and measured with all three backends - the reference
+interpreter, the Z3 bounded checker (`verify_with_z3`) and the nuXmv IC3 backend - and the result is
 retained as `research/output/runs/delegation-defect-sweep-v1/`:
 
-- 512 of 512 subsets agree by verdict class, and the raw strings agree on 511: the one raw difference is
-  the canonical body, `bounded_safe` against `safe` - the same single scope difference of section 29,
-  now shown to be the only one in the space. The sweep uses the same `SAFE_FAMILY` set as the sibling
-  generators, and a test asserts all three sets are equal, so the readings cannot drift apart.
+- 512 of 512 subsets agree by verdict class across all three backends. Against Z3 the raw strings agree
+  on 511: the one raw difference is the canonical body, `bounded_safe` against `safe` - the same single
+  scope difference of section 29, now shown to be the only one in the space. Against nuXmv the raw
+  strings agree on all 512. The sweep uses the same `SAFE_FAMILY` set as the sibling generators, and a
+  test asserts all three sets are equal, so the readings cannot drift apart.
 - 511 of the 512 subsets carry an unsafe reference verdict, so an all-clear cannot come from a space that
   nothing can refute. The one subset that is not refuted is the empty subset, the canonical body, and the
   bundle names it by id (`unrefuted`) instead of leaving it to be counted out by hand.
 - The population is closed by construction: the generator enumerates subsets rather than listing them, so
-  every subset appears exactly once and the SUMMARY can say so. The bundle is one generator run (under
-  four seconds) and `--check` compares a fresh sweep against the retained file, ignoring
-  `generated_at` and `source_commit`; the standard validation tier runs that check.
+  every subset appears exactly once and the SUMMARY can say so. The bundle is one generator run (48
+  seconds measured on this host, mostly nuXmv), and `--check` compares a fresh sweep against the retained
+  file, ignoring `generated_at` and `source_commit`; the standard validation tier runs that check.
 - Limits, carried in the bundle's `boundary` field and repeated in its SUMMARY: the comparison is between
-  two encodings of one IR, the reference interpreter is the definition the encoding is checked against,
-  and the space is a closed set of edits to one consumption rule rather than every way a delegation
-  system can go wrong. Agreement inside the space says nothing about hypotheses outside it.
+  three encodings of one IR, the reference interpreter is the definition the encodings are checked
+  against, and the space is a closed set of edits to one consumption rule rather than every way a
+  delegation system can go wrong. Agreement inside the space says nothing about hypotheses outside it.

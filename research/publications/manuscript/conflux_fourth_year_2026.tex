@@ -31,8 +31,8 @@ influencing principal's own permissions allow it, and an input fetched from
 elsewhere cannot acquire authority it was never granted. Three independent
 bounded analyses agree on all eleven planned variants, ten of which are refuted,
 over ten distinct bodies and nine distinct refuted bodies, since two of the
-variants differ in name only; the Z3 encoding and the reference interpreter
-agree on all 512 combinations of nine independent defects, 511 of them refuted;
+variants differ in name only; the same three analyses agree on all 512 combinations of nine independent defects,
+511 of them refuted;
 the archived prototype reproduces its published trace count under a stated
 enumeration change; and property reduction keeps its documented scaling
 advantage on the fixtures exercised here. This paper distinguishes archived
@@ -301,8 +301,8 @@ variants and agree on every decision, refuted variants included, and the
 negative control still fails as designed. Table~\ref{tab:semantic-conformance}
 counts them. A separate sweep closes the
 population instead of listing it: the nine independent delegation defects have
-512 subsets, and the Z3 encoding reproduces the reference interpreter's verdict
-class on every one of them, with both backends refuting 511. Agreement between
+512 subsets, and the Z3 and nuXmv encodings reproduce the reference interpreter's verdict
+class on every one of them, with all three backends refuting 511. Agreement between
 two encodings of one IR over a closed set of defect combinations is evidence
 about the encoding, not a proof of the delegation semantics.\\
 \textbf{Native SLED:} the retained bounded reproduction recovers all three
