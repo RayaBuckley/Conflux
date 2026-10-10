@@ -65,6 +65,19 @@ $PC(\text{scheduling context})$. Current Conflux execution does not reduce
 Principal Context; any future exception requires a separately accepted
 semantics and proof obligation.
 
+This paper contributes four things. First, a fail-closed security kernel with
+one tested semantics: an action is allowed only when every influencing
+principal's own permissions allow it, provenance grows monotonically, and no
+proposal can assert or narrow its own context. Second, an argument-aware
+disclosure and attribution design in which visibility and consent are separate
+decisions, so a release is a recorded decision rather than a side effect.
+Third, bounded evidence over that kernel: an explicit-state evaluator, a
+property-reduced verification path with two independent backends, and a
+reproduction of the archived prototype under a stated enumeration change.
+Fourth, a reproduction discipline: every number this paper states is generated
+from a retained bundle whose protocol and per-cell results are checked in the
+repository, and the rows without such evidence say so.
+
 \section{Previous-year contribution and archived evidence}
 The previous prototype accumulated authorship provenance and intersected
 permissions. Its bounded SLED results apply to that implementation and model.
