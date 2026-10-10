@@ -2181,7 +2181,7 @@ The mediation-coverage limit, measured rather than assumed:
 - `AgentDojoLocalProvider.supported_tools` returns the frozen pilot annotation set, which contains
   exactly `search_emails` and `delete_file` (`src/conflux/adapters/benchmarks/agentdojo_annotations.py`,
   pinned as two operations in `research/experiments/suites/agentdojo-tool-schemas-v1.json`). Every other
-  tool call is refused at `src/conflux/adapters/benchmarks/agentdojo_local.py:97` with outcome `blocked`
+  tool call is refused at `src/conflux/adapters/benchmarks/agentdojo_local.py:188` with outcome `blocked`
   and reason `unsupported_tool`.
 - The suites expose 69 distinct tools (workspace 24, banking 11, slack 11, travel 28), so the stratified
   bundles outside the pilot tools measure adapter coverage, not model behaviour. The same cause explains the
@@ -2196,16 +2196,22 @@ The mediation-coverage limit, measured rather than assumed:
 owner's decisions and the size arithmetic for that work are recorded in
 `docs/decisions/027-complete-agentdojo-coverage.md`.
 
-Two further defects surfaced while auditing that limit, and both are recorded in the extension plan.
-`failure_counts.policy` is appended whenever any mediator record is blocked
-(`src/conflux/adapters/benchmarks/agentdojo_local.py:501-502`), so the policy counts above mix
-out-of-scope refusals with policy denials and must not be read as denials alone. And the two-operation
-set has two sources of truth: the run-time truth is `pilot_annotations()` in code, while
+Two further defects surfaced while auditing that limit, and both are now fixed.
+`failure_counts.policy` was appended whenever any mediator record was blocked
+(`cell_failures()` fills the categories at `src/conflux/adapters/benchmarks/agentdojo_local.py:591`), so the
+policy counts above mix
+out-of-scope refusals with policy denials and must not be read as denials alone. `refusal_failures()`
+in the same module now separates the two: a cell whose blocks are all out-of-scope refusals is counted
+as `adapter`, and only a cell that met a genuine denial is counted as `policy`. The counts in the
+bundles above predate that fix, and `scripts/run_agentdojo_sweep.py` prints an out-of-scope warning
+when every blocked call in a suite is an `unsupported_tool` refusal. The two-operation set also had two
+sources of truth: the run-time truth is `pilot_annotations()` in code, while
 `research/experiments/suites/agentdojo-tool-schemas-v1.json` is hashed into the protocol inputs
-(`src/conflux/cli.py:1460-1461` declares both paths and `:1479-1483` records their digests) and is
-otherwise read only by the equality test at
-`tests/test_agentdojo_mediation.py:109-120`. A drift between the two is therefore caught by that test
-alone, not by the run path.
+(`AGENTDOJO_ANNOTATION_SCHEMAS` and `AGENTDOJO_ANNOTATION_EXCEPTIONS` at `src/conflux/cli.py:93-94`
+declare both paths, and `:1484-1485` records their digests). A drift is
+now refused by the run path itself, which compares both files with the code and raises
+`mediation_annotations_drift` before a protocol is written, in addition to the equality test at
+`tests/test_agentdojo_mediation.py:118-129`.
 
 Cache-layout note (guard defect, not a model problem): the pod's Hugging Face cache stores blobs in the
 shared `hub/blobs/<prefix>/<hash>` layout, and the local-artifact guard refused it with

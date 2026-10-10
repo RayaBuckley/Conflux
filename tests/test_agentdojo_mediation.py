@@ -12,7 +12,16 @@ from conflux.adapters.benchmarks.agentdojo_annotations import (
     AnnotationProfile,
     pilot_annotations,
 )
-from conflux.adapters.benchmarks.agentdojo_local import AgentDojoActionMediator
+from conflux.adapters.benchmarks.agentdojo_local import (
+    UNSUPPORTED_ARGUMENTS,
+    UNSUPPORTED_TOOL,
+    AgentDojoActionMediator,
+    cell_failures,
+    pinned_annotation_drift,
+    refusal_category,
+    refusal_failures,
+    require_pinned_annotations,
+)
 from conflux.domain import Action
 from conflux.ports import ProviderResult
 
@@ -118,3 +127,88 @@ def test_reviewed_annotations_match_checked_experiment_inputs() -> None:
         for name, schema in sorted(annotations.operations.items())
     }
     assert exceptions["reviewed_values"] == {key: list(values) for key, values in annotations.reviewed_values.items()}
+
+def test_out_of_scope_refusals_are_adapter_not_policy() -> None:
+    """A suite outside the annotated scope must not read as a suite whose policy denied every call."""
+    out_of_scope = {"outcome": "blocked", "reason": UNSUPPORTED_TOOL}
+    unknown_arguments = {"outcome": "blocked", "reason": UNSUPPORTED_ARGUMENTS}
+    policy_denial = {"outcome": "blocked", "report": {"authorised_branches": []}}
+    executed = {"outcome": "executed"}
+    provider_failed = {"outcome": "provider_failed"}
+    assert refusal_category(out_of_scope) == "adapter"
+    assert refusal_category(unknown_arguments) == "adapter"
+    assert refusal_category(policy_denial) == "policy"
+    assert refusal_category(executed) is None
+    assert refusal_category(provider_failed) is None
+    assert refusal_failures([out_of_scope, executed]) == ("adapter",)
+    assert refusal_failures([unknown_arguments]) == ("adapter",)
+    assert refusal_failures([policy_denial]) == ("policy",)
+    assert refusal_failures([out_of_scope, policy_denial]) == ("policy",)
+    assert refusal_failures([executed, provider_failed]) == ()
+
+def test_cell_failures_classify_records_and_outcome() -> None:
+    """The fold that fills failure_counts must keep adapter refusals out of the policy count."""
+    out_of_scope = {"outcome": "blocked", "reason": UNSUPPORTED_TOOL}
+    policy_denial = {"outcome": "blocked", "report": {"authorised_branches": []}}
+    assert cell_failures([out_of_scope], attacked=True, security=False, utility=False) == ["adapter", "utility"]
+    assert cell_failures([out_of_scope, policy_denial], attacked=True, security=False, utility=True) == ["policy"]
+    assert cell_failures([out_of_scope], attacked=False, security=True, utility=True) == ["adapter"]
+    assert cell_failures([], attacked=True, security=True, utility=True) == ["security"]
+    assert cell_failures([{"outcome": "executed"}], attacked=False, security=False, utility=True) == []
+
+
+def test_require_pinned_annotations_refuses_any_drift(tmp_path: Path) -> None:
+    """A same-size value drift, not only a key-set drift, must stop the run."""
+    schemas = json.loads((ROOT / "research/experiments/suites/agentdojo-tool-schemas-v1.json").read_text(encoding="utf-8"))
+    exceptions = json.loads(
+        (ROOT / "research/experiments/suites/agentdojo-annotation-exceptions-v1.json").read_text(encoding="utf-8"),
+    )
+
+    def write(path: Path, payload: object) -> Path:
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        return path
+
+    schema_path = write(tmp_path / "schemas.json", schemas)
+    exceptions_path = write(tmp_path / "exceptions.json", exceptions)
+    require_pinned_annotations(schema_path, exceptions_path)
+    tool = next(iter(schemas["operations"]))
+    role_drift = json.loads(json.dumps(schemas))
+    role_name = next(iter(role_drift["operations"][tool]["arguments"]))
+    current = role_drift["operations"][tool]["arguments"][role_name]
+    role_drift["operations"][tool]["arguments"][role_name] = "resource" if current != "resource" else "content"
+    version_drift = json.loads(json.dumps(schemas))
+    version_drift["operations"][tool]["version"] = "drifted-version"
+    with pytest.raises(ValueError, match="mediation_annotations_drift:tool_schemas"):
+        require_pinned_annotations(write(schema_path, role_drift), exceptions_path)
+    with pytest.raises(ValueError, match="mediation_annotations_drift:tool_schemas"):
+        require_pinned_annotations(write(schema_path, version_drift), exceptions_path)
+    reviewed_drift = json.loads(json.dumps(exceptions))
+    reviewed_drift["reviewed_values"] = {}
+    write(schema_path, schemas)
+    with pytest.raises(ValueError, match="mediation_annotations_drift:annotation_exceptions"):
+        require_pinned_annotations(schema_path, write(exceptions_path, reviewed_drift))
+
+
+
+def test_mediator_blocks_carry_the_classified_reasons() -> None:
+    mediator = AgentDojoActionMediator(attacked=False, defence="ites_conservative")
+    executor = _Executor([])
+    assert mediator.mediate("run_shell", {"command": "whoami"}, executor).error == UNSUPPORTED_TOOL
+    assert mediator.mediate("search_emails", {"query": "x", "recipient": "y"}, executor).error == UNSUPPORTED_ARGUMENTS
+    assert [refusal_category(record) for record in mediator.records] == ["adapter", "adapter"]
+    assert refusal_failures(mediator.records) == ("adapter",)
+    assert not executor.calls
+
+
+def test_pinned_annotation_files_are_compared_with_the_code() -> None:
+    schemas = json.loads((ROOT / "research/experiments/suites/agentdojo-tool-schemas-v1.json").read_text(encoding="utf-8"))
+    exceptions = json.loads(
+        (ROOT / "research/experiments/suites/agentdojo-annotation-exceptions-v1.json").read_text(encoding="utf-8"),
+    )
+    assert pinned_annotation_drift(schemas, exceptions) is None
+    drifted = {"operations": dict(schemas["operations"])}
+    drifted["operations"].pop(next(iter(drifted["operations"])))
+    assert pinned_annotation_drift(drifted, exceptions) == "tool_schemas"
+    assert pinned_annotation_drift({"operations": {}}, exceptions) == "tool_schemas"
+    assert pinned_annotation_drift(schemas, {"reviewed_values": {}}) == "annotation_exceptions"
+

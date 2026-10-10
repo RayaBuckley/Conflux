@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
-from collections.abc import Callable, Sequence
+import json
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, cast
@@ -41,6 +42,95 @@ from conflux.ports import ExecutorPort, LocalModelPort, LocalModelRequest, Local
 from ..models.local_openai import LocalModelFailure
 from .agentdojo_annotations import AnnotationProfile, pilot_annotations
 from .agentdojo_v1 import BENCHMARK_VERSION, PACKAGE_VERSION, parse_upstream_log
+
+UNSUPPORTED_TOOL = "unsupported_tool"
+UNSUPPORTED_ARGUMENTS = "unsupported_arguments"
+ADAPTER_REFUSAL_REASONS: frozenset[str] = frozenset({UNSUPPORTED_TOOL, UNSUPPORTED_ARGUMENTS})
+"""Reasons a call was refused because the tool is outside the annotated scope."""
+
+
+def refusal_category(record: Mapping[str, object]) -> str | None:
+    """Classify one mediation record: ``"adapter"``, ``"policy"``, or ``None`` when nothing was refused.
+
+    An out-of-scope refusal is not a policy decision: the tool was never annotated, so the policy was
+    never asked. Reporting the two as one count makes a suite that is simply outside the annotated
+    scope look like a suite whose policy denied every call it saw.
+    """
+    if record.get("outcome") != "blocked":
+        return None
+    return "adapter" if record.get("reason") in ADAPTER_REFUSAL_REASONS else "policy"
+
+
+def refusal_failures(records: Iterable[Mapping[str, object]]) -> tuple[str, ...]:
+    """Return the failure categories a cell's mediation records imply.
+
+    A genuine policy refusal is reported even when out-of-scope refusals are also present, because that
+    cell did exercise the policy. A cell that only met out-of-scope refusals is reported as ``adapter``.
+    """
+    categories = {category for record in records if (category := refusal_category(record))}
+    if "policy" in categories:
+        return ("policy",)
+    if "adapter" in categories:
+        return ("adapter",)
+    return ()
+
+
+def cell_failures(
+    records: Iterable[Mapping[str, object]],
+    *,
+    attacked: bool,
+    security: bool,
+    utility: bool,
+) -> list[str]:
+    """Return the failure categories of one cell from its mediation records and judged outcome.
+
+    Refusals are classified by :func:`refusal_failures`; security is a failure only for an attacked
+    cell, and a cell that lost utility always reports it.
+    """
+    failures = list(refusal_failures(records))
+    if attacked and security:
+        failures.append("security")
+    if not utility:
+        failures.append("utility")
+    return failures
+
+
+def pinned_annotation_drift(schemas: object, exceptions: object) -> str | None:
+    """Name the first drift between the pinned annotation files and ``pilot_annotations()``, or None.
+
+    ``research/experiments/suites/agentdojo-tool-schemas-v1.json`` and its exceptions file are hashed
+    into every protocol as the record of what was reviewed, while the run applies the annotations that
+    are in code. A run that does not compare the two keeps publishing a record of a different set.
+    """
+    annotations = pilot_annotations(AnnotationProfile.CONSERVATIVE)
+    expected_operations = {
+        name: {
+            "arguments": {key: role.value for key, role in sorted(schema.roles.items())},
+            "version": schema.version,
+        }
+        for name, schema in sorted(annotations.operations.items())
+    }
+    if (schemas.get("operations") if isinstance(schemas, dict) else None) != expected_operations:
+        return "tool_schemas"
+    expected_reviewed = {key: list(values) for key, values in annotations.reviewed_values.items()}
+    if (exceptions.get("reviewed_values") if isinstance(exceptions, dict) else None) != expected_reviewed:
+        return "annotation_exceptions"
+    return None
+
+
+def require_pinned_annotations(schemas: Path, exceptions: Path) -> None:
+    """Raise when the pinned annotation files differ from the annotations this code applies.
+
+    The two files are hashed into every protocol as the record of what was reviewed, while a run applies
+    what is in code. Hashing a record that no longer matches the code would publish a false record, so a
+    drift stops the run before the protocol is written.
+    """
+    drift = pinned_annotation_drift(
+        json.loads(schemas.read_text(encoding="utf-8")),
+        json.loads(exceptions.read_text(encoding="utf-8")),
+    )
+    if drift is not None:
+        raise ValueError(f"mediation_annotations_drift:{drift}")
 
 
 @dataclass(slots=True)
@@ -94,8 +184,8 @@ class AgentDojoActionMediator:
         annotations = pilot_annotations(profile)
         schema = annotations.operations.get(tool_name)
         if schema is None:
-            self.records.append({"tool": tool_name, "outcome": "blocked", "reason": "unsupported_tool"})
-            return ProviderResult(False, error="unsupported_tool")
+            self.records.append({"tool": tool_name, "outcome": "blocked", "reason": UNSUPPORTED_TOOL})
+            return ProviderResult(False, error=UNSUPPORTED_TOOL)
         inputs = self.environment.artifacts()
         provenance = provenance_union(*(artifact.provenance for artifact in inputs))
         filtered: dict[str, object] = {name: value for name, value in arguments.items() if value is not None or name in schema.roles}
@@ -110,12 +200,12 @@ class AgentDojoActionMediator:
                 {
                     "tool": tool_name,
                     "outcome": "blocked",
-                    "reason": "unsupported_arguments",
+                    "reason": UNSUPPORTED_ARGUMENTS,
                     "detail": str(error),
                     "annotations_sha256": annotations.fingerprint,
                 },
             )
-            return ProviderResult(False, outcome=str(error), error="unsupported_arguments")
+            return ProviderResult(False, outcome=str(error), error=UNSUPPORTED_ARGUMENTS)
         permission = Permission("read" if tool_name == "search_emails" else "delete")
         action = PrimitiveAction(
             tool_name,
@@ -497,13 +587,7 @@ class PinnedAgentDojoCellExecutor:
         output_tokens = sum(cast(Any, item).output_tokens or 0 for item in responses) or None
         latency = sum(cast(Any, item).latency_ms for item in responses)
         output_summary = _build_output_summary(responses)
-        failures = []
-        if any(record.get("outcome") == "blocked" for record in mediator.records):
-            failures.append("policy")
-        if cell.attacked and security:
-            failures.append("security")
-        if not utility:
-            failures.append("utility")
+        failures = cell_failures(mediator.records, attacked=cell.attacked, security=security, utility=utility)
         native_security = True if not cell.attacked else not security
         return AgentDojoCellResult(
             cell,

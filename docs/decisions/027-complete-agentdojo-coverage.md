@@ -10,7 +10,7 @@
 The local AgentDojo adapter mediates exactly two upstream operations, `search_emails` and
 `delete_file`, both from the workspace suite (`src/conflux/adapters/benchmarks/agentdojo_annotations.py`).
 Every other tool call in every other suite is refused as `unsupported_tool`
-(`src/conflux/adapters/benchmarks/agentdojo_local.py:97`), so cells outside the two-tool pilot have
+(`src/conflux/adapters/benchmarks/agentdojo_local.py:188`), so cells outside the two-tool pilot have
 zero achievable utility. `docs/evidence/VERIFICATION.md` section 32 measures the consequence: the 14B
 stratified workspace bundle holds 156 refusal records across 78 cells with utility 1/78, and the
 banking bundle holds 192 refusals across 24 cells with utility 0/24. The suites expose 69 distinct
@@ -30,7 +30,7 @@ before implementation starts.
 2. Stages 1 to 4 extend mediation to every tool of every suite, in the order workspace (24),
    banking (11), slack (11), travel (28). Each tool needs a reviewed argument-role annotation, one
    resource, an explicit permission rather than the current tool-name ternary
-   (`agentdojo_local.py:119`), and per-suite environment data with reviewed fixture provenance.
+   (`agentdojo_local.py:210`), and per-suite environment data with reviewed fixture provenance.
    Each stage regenerates the pinned schemas, updates the tests that pin the pilot scope, and lands
    only on a green tier.
 3. Stage 5 runs the entire benchmark: every user task against every injection task of its suite,

@@ -164,8 +164,10 @@ external influence; oracle annotations are a non-deployable ground-truth upper
 bound. Roles and reviewed selectors are hashed before results. Raw upstream
 logs remain unchanged, while Principal Context, provenance, argument-policy
 decisions, and certificate bindings are stored in a separate augmentation
-stream. Setup, model, parser, policy, security, tool, utility, and bound
-failures are counted independently.
+stream. Setup, model, parser, policy, adapter, security, tool, utility, and bound
+failures are counted independently: an out-of-scope refusal, where the mediator never annotated the
+tool, is counted as `adapter`, a genuine denial as `policy` even when the same cell also holds
+out-of-scope refusals, and a cell with no records at all as `unknown`.
 
 The RunPod bundles extend that matrix to a 14B model:
 [`research/output/runs/runpod-h100-14b-v1/`](../../research/output/runs/runpod-h100-14b-v1/)

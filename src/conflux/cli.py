@@ -18,7 +18,7 @@ from jsonschema import Draft202012Validator, ValidationError
 if TYPE_CHECKING:
     from conflux.ites.state import ITESReport
 
-from conflux.adapters.benchmarks.agentdojo_local import PinnedAgentDojoCellExecutor
+from conflux.adapters.benchmarks.agentdojo_local import PinnedAgentDojoCellExecutor, require_pinned_annotations
 from conflux.adapters.benchmarks.agentdojo_v1 import (
     load_pinned_suite,
     parse_upstream_log,
@@ -89,6 +89,9 @@ from conflux.verification import (
     compare_cone_of_influence,
     verify_with_z3,
 )
+
+AGENTDOJO_ANNOTATION_SCHEMAS = Path("research/experiments/suites/agentdojo-tool-schemas-v1.json")
+AGENTDOJO_ANNOTATION_EXCEPTIONS = Path("research/experiments/suites/agentdojo-annotation-exceptions-v1.json")
 
 EXIT_OK = 0
 EXIT_USAGE = 2
@@ -1457,8 +1460,9 @@ def _agentdojo_pilot_protocol(
     resolves the model from the protocol alone has no local artifact manifest to
     verify and fails closed with ``artifact_resolution_required``.
     """
-    schemas = Path("research/experiments/suites/agentdojo-tool-schemas-v1.json")
-    exceptions = Path("research/experiments/suites/agentdojo-annotation-exceptions-v1.json")
+    schemas = AGENTDOJO_ANNOTATION_SCHEMAS
+    exceptions = AGENTDOJO_ANNOTATION_EXCEPTIONS
+    require_pinned_annotations(schemas, exceptions)
     suite: dict[str, object] = {
         "id": f"{suite_id}:user_task_17:injection_task_1",
         "version": benchmark_version,

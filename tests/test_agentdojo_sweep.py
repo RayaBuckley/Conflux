@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -108,6 +109,77 @@ def test_summarise_counts_cells_utility_and_security(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert sweep.summarise(result) == "cells=3 complete=2 failed=1 utility=1 security=2"
+
+def test_mediated_scope_note_flags_a_suite_outside_the_annotated_scope() -> None:
+    out_of_scope = {"outcome": "blocked", "reason": "unsupported_tool"}
+    policy_denial = {"outcome": "blocked", "report": {"authorised_branches": []}}
+    assert sweep.mediated_scope_note([{"augmentation": [out_of_scope, out_of_scope]}]) is not None
+    assert "outside the annotated tool scope" in str(sweep.mediated_scope_note([{"augmentation": [out_of_scope]}]))
+    assert sweep.mediated_scope_note([{"augmentation": [out_of_scope, policy_denial]}]) == (
+        "note: 1 of 2 blocked calls are out-of-scope refusals"
+    )
+    assert sweep.mediated_scope_note([{"augmentation": [policy_denial]}]) is None
+    assert sweep.mediated_scope_note([{"augmentation": [{"outcome": "executed"}]}]) is None
+    assert sweep.mediated_scope_note([{}]) is None
+
+def test_mediated_scope_note_reads_retained_bundles() -> None:
+    """The note must read the retained bundles the way their own block counts do."""
+    runs = Path("research/output/runs")
+
+    def cells(*parts: str) -> list[dict[str, object]]:
+        payload = json.loads(runs.joinpath(*parts, "result.json").read_text(encoding="utf-8"))
+        return cast("list[dict[str, object]]", payload["cells"])
+
+    workspace_14b = cells("runpod-h100-14b-stratified", "agentdojo-stratified-workspace-v1")
+    assert sweep.mediated_scope_note(workspace_14b) == "note: 156 of 177 blocked calls are out-of-scope refusals"
+    banking_14b = cells("runpod-h100-14b-stratified", "agentdojo-stratified-banking-v1")
+    assert "all 192 blocked calls are unsupported_tool refusals" in str(sweep.mediated_scope_note(banking_14b))
+    travel_05b = cells("agentdojo-stratified-travel-v1")
+    assert "all 90 blocked calls are unsupported_tool refusals" in str(sweep.mediated_scope_note(travel_05b))
+    workspace_05b = cells("agentdojo-stratified-workspace-v1")
+    assert sweep.mediated_scope_note(workspace_05b) == "note: 6 of 20 blocked calls are out-of-scope refusals"
+
+
+def test_run_suite_prints_the_out_of_scope_note(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """A computed note that is never printed would hide an out-of-scope suite."""
+    output = tmp_path / "run"
+
+    def runner(command: list[str]) -> subprocess.CompletedProcess[str]:
+        if "preflight" in command:
+            return _completed(0)
+        output.joinpath("result.json").write_text(
+            json.dumps(
+                {
+                    "cells": [
+                        {
+                            "status": "complete",
+                            "native_utility": False,
+                            "native_security": None,
+                            "augmentation": [{"outcome": "blocked", "reason": "unsupported_tool"}],
+                        },
+                    ],
+                },
+            ),
+            encoding="utf-8",
+        )
+        return _completed(0)
+
+    ok = sweep.run_suite(
+        "banking",
+        "banking:stratified-v1",
+        ("user_task_0",),
+        Path("cfg.json"),
+        output,
+        "a" * 40,
+        Path("/venv/bin/conflux"),
+        runner,
+    )
+    assert ok is True
+    captured = capsys.readouterr().out
+    assert "banking: run exit 0 | cells=1 complete=1 failed=0 utility=0 security=0" in captured
+    assert "banking: WARNING: suite is outside the annotated tool scope" in captured
+
+
 
 
 def test_run_suite_stops_after_a_failed_preflight(tmp_path: Path) -> None:

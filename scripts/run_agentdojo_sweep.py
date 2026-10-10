@@ -17,8 +17,10 @@ import json
 import shutil
 import subprocess
 import sys
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
+
+from conflux.adapters.benchmarks.agentdojo_local import ADAPTER_REFUSAL_REASONS
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SELECTION = Path("research/experiments/manifests/agentdojo-stratified-selection-v1.json")
@@ -139,6 +141,36 @@ def summarise(result_path: Path) -> str:
     return f"cells={len(cells)} complete={complete} failed={len(cells) - complete} utility={utility} security={security}"
 
 
+def _augmentation(cell: Mapping[str, object]) -> Sequence[object]:
+    """Return a cell's recorded mediation records, empty when the cell carries none."""
+    records = cell.get("augmentation")
+    return records if isinstance(records, Sequence) else ()
+
+
+def mediated_scope_note(cells: Sequence[Mapping[str, object]]) -> str | None:
+    """Warn when a suite's blocked calls are out-of-scope refusals rather than policy decisions.
+
+    A suite whose tools are not annotated cannot measure mediation: every call is refused before the
+    policy sees it, the utility is zero by construction, and the folded failure count reads as policy.
+    This note is what makes that visible in the sweep output instead of leaving it to the reader.
+    """
+    blocked = [
+        record
+        for cell in cells
+        for record in _augmentation(cell)
+        if isinstance(record, Mapping) and record.get("outcome") == "blocked"
+    ]
+    out_of_scope = sum(1 for record in blocked if record.get("reason") in ADAPTER_REFUSAL_REASONS)
+    if not out_of_scope:
+        return None
+    if out_of_scope == len(blocked):
+        return (
+            f"WARNING: suite is outside the annotated tool scope: all {len(blocked)} blocked calls are "
+            "unsupported_tool refusals, so its utility and policy counts do not measure mediation"
+        )
+    return f"note: {out_of_scope} of {len(blocked)} blocked calls are out-of-scope refusals"
+
+
 def run_suite(
     suite_key: str,
     protocol_suite_id: str,
@@ -166,7 +198,11 @@ def run_suite(
         print(f"{suite_key}: preflight failed ({preflight.returncode})")
         return False
     run = runner(local_run_command(output_dir, model_config, conflux))
-    print(f"{suite_key}: run exit {run.returncode} | {summarise(output_dir / 'result.json')}")
+    result_path = output_dir / "result.json"
+    print(f"{suite_key}: run exit {run.returncode} | {summarise(result_path)}")
+    note = mediated_scope_note(json.loads(result_path.read_text(encoding="utf-8"))["cells"])
+    if note is not None:
+        print(f"{suite_key}: {note}")
     return run.returncode == 0
 
 

@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 
@@ -1199,3 +1200,31 @@ def test_native_reproduction_cli_and_version_two_report(
     capsys.readouterr()  # type: ignore[attr-defined]
     assert main(["report", str(output / "result.json")]) == EXIT_OK
     assert "# Conflux native SLED result" in capsys.readouterr().out  # type: ignore[attr-defined]
+
+
+def test_agentdojo_protocol_builder_refuses_drifted_annotations(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The run path must compare the pinned annotation files with the code before it writes a protocol."""
+    drifted = tmp_path / "schemas.json"
+    drifted.write_text(json.dumps({"operations": {}}), encoding="utf-8")
+    monkeypatch.setattr(cli_module, "AGENTDOJO_ANNOTATION_SCHEMAS", drifted)
+    resolved: Any = SimpleNamespace(manifest=SimpleNamespace(fingerprint="0" * 64), spec={})
+    with pytest.raises(ValueError, match="mediation_annotations_drift:tool_schemas"):
+        cli_module._agentdojo_pilot_protocol(
+            resolved,
+            model_config=tmp_path / "cfg.json",
+            output=tmp_path / "out",
+            source_commit="a" * 40,
+        )
+    # The other pinned file must reach the check under its own name, which pins the call's argument order.
+    monkeypatch.setattr(cli_module, "AGENTDOJO_ANNOTATION_SCHEMAS", ROOT / "research/experiments/suites/agentdojo-tool-schemas-v1.json")
+    monkeypatch.setattr(cli_module, "AGENTDOJO_ANNOTATION_EXCEPTIONS", drifted)
+    with pytest.raises(ValueError, match="mediation_annotations_drift:annotation_exceptions"):
+        cli_module._agentdojo_pilot_protocol(
+            resolved,
+            model_config=tmp_path / "cfg.json",
+            output=tmp_path / "out",
+            source_commit="a" * 40,
+        )
