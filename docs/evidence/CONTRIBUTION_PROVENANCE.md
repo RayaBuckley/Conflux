@@ -65,11 +65,12 @@ here so that a later submission can disclose its history honestly.
 
 <!-- BEGIN GENERATED CONTRIBUTION TABLE -->
 
-### Third-year results reproduced here (1 claim)
+### Third-year results reproduced here (2 claims)
 
 | Claim | Status | Evidence and limits |
 | --- | --- | --- |
 | Part B 1.46M trace reproduction | Bounded historical reproduction | `research/output/runs/native-sled-partb-reproduction-v1/result.json`: all three historical environments reproduce exact trace counts (422,535 + 996,451 + 43,621 = 1,462,607) under depth-three bounds; source: archived prototype `research/reports/archive/2026-06-01-original-prototype/main.py`; canonical-state compression: 1,462,607 raw traces → 31 unique canonical states; incomplete count differs from preprint due to simplified criterion; this is reproduction/conformance, not an unbounded security proof |
+| Part B classification counters reproduce under a pinned hash seed | Bounded historical reproduction | `research/output/runs/native-sled-partb-classification-v1/`: the archived prototype classifier walks `frozenset` containers of strings, so its counters depend on `PYTHONHASHSEED`; with the seed pinned the env1 tuple (176,352 secure actions; 352,704 blocked PE; 2,118,454 secure tasks; 75,648 blocked PE tasks; 40,040 incomplete) reproduces at seeds 2 and 13 and the env3 tuple (45,488; 28,852; 141,342; 0; 19,755) at seeds 166 and 299; the env2 tuple is one admissible order sample that was not observed in the retained seeds 0 to 2, while the invariant `6 * incomplete + secure tasks` is constant across every observed seed (2,358,694; 5,710,862; 259,872) and holds for the historical triple; trace totals 1,462,607 match; this is reproduction of an order-dependent counter, not a new measurement |
 
 ### Third-year mechanisms with fourth-year evidence (6 claims)
 
@@ -82,7 +83,7 @@ here so that a later submission can disclose its history honestly.
 | Branches are isolated alternatives | Implemented | one transition kernel and branch-parent tests |
 | ITES preserves PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: ITES reference PE property is bounded\_safe; finite IR model |
 
-### Fourth-year contributions (Part C) (41 claims)
+### Fourth-year contributions (Part C) (42 claims)
 
 | Claim | Status | Evidence and limits |
 | --- | --- | --- |
@@ -122,13 +123,14 @@ here so that a later submission can disclose its history honestly.
 | Model-level defences are genuine empirical security but outside the authority TCB | Documented semantics | ADR-025; model/planner/classifier output cannot grant authority or narrow PC |
 | Effective ACS includes only explicit valid delegation; runtime delegation remains disabled | Specified, runtime disabled | ADR-025; scoped delegation model exists but operational delegation is denied |
 | SLED-V scaling: COI reduction never causes safe-to-unsafe verdict downgrade | Bounded evidence | `research/output/runs/sledv-scaling-v1/`: 28 fixtures across noise/principal/depth scaling families; no COI verdict downgrade on any fixture; Z3 BMC agrees with reference on all fixtures where Z3 is available; 5 fixtures show bounded_safe→safe upgrade from COI reduction |
+| nuXmv IC3 proves the recorded safety invariants on the finite delegation IR subsets | Bounded evidence | `research/output/runs/ic3-unbounded-v1/`: 689 models drawn from the recorded families (rendered at each model's recorded bound) re-rendered to SMV and checked with nuXmv 2.2.0 `check_invar_ic3`; 99 safe and 590 unsafe verdicts, no errors and no timeouts; 663 distinct IR fingerprints and 468 distinct rendered models; refutations keep no witness length (nuXmv reports the abstract trace only) and 23 models are degenerate after rendering (no transition rules), so their `safe` verdict is vacuous and auto-flagged in `trivial_models`; this is a bounded proof over hand-written finite IR, not an unbounded deployment claim |
 | Expanded mutation benchmark: 26 mutants across 4 families, 100% kill rate | Bounded evidence | `research/output/runs/mutation-benchmark-v1/`: 4 disclosure (native SLED), 7 delegation (native SLED), 10 delegation IR (reference BFS + Z3 BMC + COI-reduced Z3 BMC), 5 synthesis (Z3 BMC); all killed within tested bound |
-| Authenticated provenance recovers utility without soundness violations | Bounded evidence | `research/output/runs/provenance-precision-v1/`: 324 tasks across 4×4×3×3 parameter grid; C2 (authenticated) completion ≥ C1 (conservative) completion; C2 has zero enforcement soundness violations; C1 mean PC size > C2 mean PC size (overapproximation confirmed) |
+| Authenticated provenance recovers utility without soundness violations | Bounded evidence | `research/output/runs/provenance-precision-v1/`: 351 tasks across 117 populated cells of the 3×4×3×4 parameter grid (workflow depth × possible authors × heterogeneity × actual contributors), 3 repetitions per cell; C2 (authenticated) completion 0.593 ≥ C1 (conservative) 0.493; C2 has zero enforcement soundness violations; C1 mean PC 8.62 > C2 mean PC 3.08 (overapproximation confirmed) |
 | Planning diagnostic suite covers 22 scenario categories | Implemented | `research/experiments/suites/planning-diagnostic-v1.yaml`: 22 deterministic scenarios across 16 categories; all validated against planning-diagnostic-suite schema; 4 planning modes tested (reactive, static, dynamic, dynamic_code) |
 | Three encodings of the delegation IR agree on every combination of the nine independent defects | Measured | `research/output/runs/delegation-defect-sweep-v1/`: 512 of 512 subsets agree by verdict class across the reference interpreter, Z3 and nuXmv, 511 carry an unsafe reference verdict, one raw difference against Z3 (the canonical body, `bounded_safe` vs `safe`) and none against nuXmv; agreement between three encodings of one IR is not a proof of the delegation semantics |
 | Three encodings of the plan IR agree on a plan x effect-summary x bound grid | Measured | `research/output/runs/plan_ir/`: 36 of 36 readings agree by verdict class across the reference interpreter, Z3 and nuXmv, every reading states an expectation before measurement and meets it, 16 carry an unsafe reference verdict (unauthorised execution, and a capability violation for the code-execution plan) and every cleared reading is named in the bundle; the grid covers three plan shapes and one operation catalogue, not the open space of plans |
 
-Ledger rows: 48 (Part B: 0, Part B, reproduced: 1, Part B concept, Part C evidence: 6, Part C: 41).
+Ledger rows: 50 (Part B: 0, Part B, reproduced: 2, Part B concept, Part C evidence: 6, Part C: 42).
 
 <!-- END GENERATED CONTRIBUTION TABLE -->
 

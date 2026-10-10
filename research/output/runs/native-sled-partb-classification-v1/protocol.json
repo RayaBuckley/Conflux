@@ -1,0 +1,77 @@
+{
+  "archived_source": "research/reports/archive/2026-06-01-original-prototype/main.py",
+  "archived_source_sha256": "7902761ca83b9d62b25d234d3a63dc600e7dcd38c9271c301054b1bba4814267",
+  "check_semantics": "--check recomputes result.json, protocol.json and the sources/ copies and compares them byte for byte. Run timings are printed to stdout only and are never retained, so the check is timing-independent. Source hashes depend on the archived file, not on the repository revision.",
+  "counter_map": {
+    "columns": {
+      "blocked_pe": {
+        "index": 5,
+        "meaning": "not goal and not declared",
+        "name": "BPI"
+      },
+      "blocked_pe_tasks": {
+        "index": 11,
+        "meaning": "not a genuine task and not executed",
+        "name": "BTPI"
+      },
+      "secure_actions": {
+        "index": 0,
+        "meaning": "goal and declared and secure",
+        "name": "PU"
+      },
+      "secure_tasks": {
+        "index": 6,
+        "meaning": "genuine task, executed, secure",
+        "name": "PTU"
+      }
+    },
+    "definitions": "research/reports/archive/2026-06-01-original-prototype/main.py lines 231-245",
+    "depth_bound_counter": {
+      "index": 12,
+      "name": "LLM execution proposals",
+      "note": "index 12 is internal to gen_task and drives the printed incomplete count"
+    },
+    "invariant": "6 * incomplete + counts[6]"
+  },
+  "determinism": "Repeating a run with the same PYTHONHASHSEED returns an identical tuple; varying the seed changes the frozenset iteration order and therefore the counters. The counters are a function of (environment, hash order), not of the environment alone.",
+  "environments": {
+    "env1": "envA",
+    "env2": "envB",
+    "env3": "envC"
+  },
+  "generator": "scripts/generate_partb_classification_evidence.py",
+  "historical_source": "research/publications/flmsec_2026/main.tex lines 651-655, cross-checked against research/publications/paper/iclr2026_conference.tex lines 517-521",
+  "id": "native-sled-partb-classification-v1",
+  "limitations": [
+    "The archived prototype's incomplete-trace criterion differs from the canonical-state reproduction; index 12 drives it.",
+    "A historical tuple that is not observed in the retained seed sweep is still an admissible ordering sample when it satisfies the environment's invariant, which is constant across every observed seed."
+  ],
+  "negated_claims": [
+    "A counter tuple is not a trace-level witness; it counts enumerated paths per environment.",
+    "These counters do not prove any security property; they classify enumerated behaviour in the prototype's model."
+  ],
+  "primary_seed": 0,
+  "schema_version": "1",
+  "sweep_seeds": {
+    "envA": [
+      0,
+      1,
+      2,
+      3,
+      13
+    ],
+    "envB": [
+      0,
+      1,
+      2
+    ],
+    "envC": [
+      0,
+      1,
+      2,
+      3,
+      166,
+      299
+    ]
+  }
+}

@@ -222,7 +222,7 @@ ignore = [
 [tool.mypy]
 python_version = "3.12"
 strict = true
-exclude = ["build/", "scripts/vulture_whitelist\\.py", "research/reports/archive/"]
+exclude = ["build/", "scripts/vulture_whitelist\\.py", "research/reports/archive/", "research/output/runs/.*/sources/"]
 [[tool.mypy.overrides]]
 module = ["agentdojo.*", "transformers.*", "torch", "bitsandbytes", "httpx", "z3", "z3.*", "pdoc", "pdoc.*", "graphviz"]
 ignore_missing_imports = true

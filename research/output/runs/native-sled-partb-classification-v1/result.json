@@ -1,0 +1,629 @@
+{
+  "counter_map": {
+    "columns": {
+      "blocked_pe": {
+        "index": 5,
+        "meaning": "not goal and not declared",
+        "name": "BPI"
+      },
+      "blocked_pe_tasks": {
+        "index": 11,
+        "meaning": "not a genuine task and not executed",
+        "name": "BTPI"
+      },
+      "secure_actions": {
+        "index": 0,
+        "meaning": "goal and declared and secure",
+        "name": "PU"
+      },
+      "secure_tasks": {
+        "index": 6,
+        "meaning": "genuine task, executed, secure",
+        "name": "PTU"
+      }
+    },
+    "definitions": "research/reports/archive/2026-06-01-original-prototype/main.py lines 231-245",
+    "depth_bound_counter": {
+      "index": 12,
+      "name": "LLM execution proposals",
+      "note": "index 12 is internal to gen_task and drives the printed incomplete count"
+    },
+    "invariant": "6 * incomplete + counts[6]"
+  },
+  "environments": [
+    {
+      "block": "envA",
+      "block_file_lines": [
+        554,
+        567
+      ],
+      "description": "4 principals, 5 data items, initial inputs {user prompt, document request}",
+      "env_id": "env1",
+      "historical_row": {
+        "blocked_pe_tasks_match": true,
+        "exact_tuple_observed": true,
+        "exact_tuple_seeds": [
+          2,
+          13
+        ],
+        "expected": {
+          "blocked_pe": 352704,
+          "blocked_pe_tasks": 75648,
+          "incomplete": 40040,
+          "secure_actions": 176352,
+          "secure_tasks": 2118454,
+          "traces": 422535
+        },
+        "historical_incomplete_observed": true,
+        "invariant": 2358694,
+        "invariant_in_observed_set": true,
+        "traces_match": true
+      },
+      "invariant": {
+        "constant_across_seeds": true,
+        "expression": "6 * incomplete + counts[6]",
+        "values": [
+          2358694
+        ]
+      },
+      "primary_run": {
+        "counts": [
+          176856,
+          0,
+          0,
+          0,
+          0,
+          353712,
+          2124118,
+          0,
+          0,
+          0,
+          0,
+          75648
+        ],
+        "incomplete": 39096,
+        "irr_counts": [
+          0,
+          0
+        ],
+        "returncode": 0,
+        "seed": 0,
+        "status": "COMPLETE",
+        "total": 422535
+      },
+      "primary_seed": 0,
+      "runs": [
+        {
+          "counts": [
+            176856,
+            0,
+            0,
+            0,
+            0,
+            353712,
+            2124118,
+            0,
+            0,
+            0,
+            0,
+            75648
+          ],
+          "incomplete": 39096,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 0,
+          "status": "COMPLETE",
+          "total": 422535
+        },
+        {
+          "counts": [
+            175344,
+            0,
+            0,
+            0,
+            0,
+            350688,
+            2107126,
+            0,
+            0,
+            0,
+            0,
+            75648
+          ],
+          "incomplete": 41928,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 1,
+          "status": "COMPLETE",
+          "total": 422535
+        },
+        {
+          "counts": [
+            176352,
+            0,
+            0,
+            0,
+            0,
+            352704,
+            2118454,
+            0,
+            0,
+            0,
+            0,
+            75648
+          ],
+          "incomplete": 40040,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 2,
+          "status": "COMPLETE",
+          "total": 422535
+        },
+        {
+          "counts": [
+            174840,
+            0,
+            0,
+            0,
+            0,
+            349680,
+            2101462,
+            0,
+            0,
+            0,
+            0,
+            75648
+          ],
+          "incomplete": 42872,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 3,
+          "status": "COMPLETE",
+          "total": 422535
+        },
+        {
+          "counts": [
+            176352,
+            0,
+            0,
+            0,
+            0,
+            352704,
+            2118454,
+            0,
+            0,
+            0,
+            0,
+            75648
+          ],
+          "incomplete": 40040,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 13,
+          "status": "COMPLETE",
+          "total": 422535
+        }
+      ],
+      "seed_sensitivity": {
+        "counts_0_range": [
+          174840,
+          176856
+        ],
+        "distinct_signatures": 4,
+        "incomplete_range": [
+          39096,
+          42872
+        ]
+      },
+      "source_file": "sources/envA.py",
+      "source_sha256": "75b901c91a71730cb6bca4d253ef12d0367d4c67de1b76c9ed25d78c94490f61"
+    },
+    {
+      "block": "envB",
+      "block_file_lines": [
+        570,
+        580
+      ],
+      "description": "4 principals, 5 data items, initial input {user prompt}",
+      "env_id": "env2",
+      "historical_row": {
+        "blocked_pe_tasks_match": true,
+        "exact_tuple_observed": false,
+        "exact_tuple_seeds": [],
+        "expected": {
+          "blocked_pe": 878096,
+          "blocked_pe_tasks": 107136,
+          "incomplete": 159112,
+          "secure_actions": 381328,
+          "secure_tasks": 4756190,
+          "traces": 996451
+        },
+        "historical_incomplete_observed": false,
+        "invariant": 5710862,
+        "invariant_in_observed_set": true,
+        "traces_match": true
+      },
+      "invariant": {
+        "constant_across_seeds": true,
+        "expression": "6 * incomplete + counts[6]",
+        "values": [
+          5710862
+        ]
+      },
+      "primary_run": {
+        "counts": [
+          385344,
+          0,
+          0,
+          0,
+          0,
+          894600,
+          4831742,
+          0,
+          0,
+          0,
+          0,
+          107136
+        ],
+        "incomplete": 146520,
+        "irr_counts": [
+          0,
+          0
+        ],
+        "returncode": 0,
+        "seed": 0,
+        "status": "COMPLETE",
+        "total": 996451
+      },
+      "primary_seed": 0,
+      "runs": [
+        {
+          "counts": [
+            385344,
+            0,
+            0,
+            0,
+            0,
+            894600,
+            4831742,
+            0,
+            0,
+            0,
+            0,
+            107136
+          ],
+          "incomplete": 146520,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 0,
+          "status": "COMPLETE",
+          "total": 996451
+        },
+        {
+          "counts": [
+            373352,
+            0,
+            0,
+            0,
+            0,
+            878368,
+            4728062,
+            0,
+            0,
+            0,
+            0,
+            107136
+          ],
+          "incomplete": 163800,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 1,
+          "status": "COMPLETE",
+          "total": 996451
+        },
+        {
+          "counts": [
+            420508,
+            0,
+            0,
+            0,
+            0,
+            865916,
+            4856894,
+            0,
+            0,
+            0,
+            0,
+            107136
+          ],
+          "incomplete": 142328,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 2,
+          "status": "COMPLETE",
+          "total": 996451
+        }
+      ],
+      "seed_sensitivity": {
+        "counts_0_range": [
+          373352,
+          420508
+        ],
+        "distinct_signatures": 3,
+        "incomplete_range": [
+          142328,
+          163800
+        ]
+      },
+      "source_file": "sources/envB.py",
+      "source_sha256": "a189d2519ea393f75f42d80d3961b55b4f540d36c197e842fdcebb6d0643e578"
+    },
+    {
+      "block": "envC",
+      "block_file_lines": [
+        583,
+        589
+      ],
+      "description": "2 principals, 3 data items, initial input {user prompt}",
+      "env_id": "env3",
+      "historical_row": {
+        "blocked_pe_tasks_match": true,
+        "exact_tuple_observed": true,
+        "exact_tuple_seeds": [
+          166,
+          299
+        ],
+        "expected": {
+          "blocked_pe": 28852,
+          "blocked_pe_tasks": 0,
+          "incomplete": 19755,
+          "secure_actions": 45488,
+          "secure_tasks": 141342,
+          "traces": 43621
+        },
+        "historical_incomplete_observed": true,
+        "invariant": 259872,
+        "invariant_in_observed_set": true,
+        "traces_match": true
+      },
+      "invariant": {
+        "constant_across_seeds": true,
+        "expression": "6 * incomplete + counts[6]",
+        "values": [
+          259872
+        ]
+      },
+      "primary_run": {
+        "counts": [
+          44122,
+          0,
+          0,
+          0,
+          0,
+          28282,
+          136662,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "incomplete": 20535,
+        "irr_counts": [
+          0,
+          0
+        ],
+        "returncode": 0,
+        "seed": 0,
+        "status": "COMPLETE",
+        "total": 43621
+      },
+      "primary_seed": 0,
+      "runs": [
+        {
+          "counts": [
+            44122,
+            0,
+            0,
+            0,
+            0,
+            28282,
+            136662,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete": 20535,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 0,
+          "status": "COMPLETE",
+          "total": 43621
+        },
+        {
+          "counts": [
+            44805,
+            0,
+            0,
+            0,
+            0,
+            28567,
+            139002,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete": 20145,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 1,
+          "status": "COMPLETE",
+          "total": 43621
+        },
+        {
+          "counts": [
+            46854,
+            0,
+            0,
+            0,
+            0,
+            29422,
+            146022,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete": 18975,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 2,
+          "status": "COMPLETE",
+          "total": 43621
+        },
+        {
+          "counts": [
+            48903,
+            0,
+            0,
+            0,
+            0,
+            30277,
+            153042,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete": 17805,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 3,
+          "status": "COMPLETE",
+          "total": 43621
+        },
+        {
+          "counts": [
+            45488,
+            0,
+            0,
+            0,
+            0,
+            28852,
+            141342,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete": 19755,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 166,
+          "status": "COMPLETE",
+          "total": 43621
+        },
+        {
+          "counts": [
+            45488,
+            0,
+            0,
+            0,
+            0,
+            28852,
+            141342,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete": 19755,
+          "irr_counts": [
+            0,
+            0
+          ],
+          "returncode": 0,
+          "seed": 299,
+          "status": "COMPLETE",
+          "total": 43621
+        }
+      ],
+      "seed_sensitivity": {
+        "counts_0_range": [
+          44122,
+          48903
+        ],
+        "distinct_signatures": 5,
+        "incomplete_range": [
+          17805,
+          20535
+        ]
+      },
+      "source_file": "sources/envC.py",
+      "source_sha256": "463824414bcbf2b8ba534f72399f5a757b840778d8bd7106c5a77129dab65549"
+    }
+  ],
+  "id": "native-sled-partb-classification-v1",
+  "method": {
+    "hash_seed": "PYTHONHASHSEED is pinned per run; the archived classifier walks frozensets, so its counters depend on string-hash order",
+    "region_substitution": "the environment region is rebuilt in memory; the archived file is never written",
+    "run_timeout_seconds": 300
+  },
+  "schema_version": "1",
+  "source": "research/reports/archive/2026-06-01-original-prototype/main.py",
+  "source_sha256": "7902761ca83b9d62b25d234d3a63dc600e7dcd38c9271c301054b1bba4814267",
+  "totals": {
+    "historical_incomplete": 218907,
+    "historical_total_traces": 1462607,
+    "primary_seed": 0,
+    "total_traces": 1462607,
+    "traces_match": true
+  }
+}

@@ -804,6 +804,7 @@
     "xfail"
   ],
   "ignorePaths": [
+    "research/output/runs/**/sources/**",
     "research/reports/archive/**",
     "research/reports/analysis/**",
     "research/publications/paper/**",

@@ -36,7 +36,7 @@ def test_ledger_has_no_unknown_origin() -> None:
 def test_part_c_claims_are_the_majority_and_part_b_is_visible() -> None:
     rows = parse_ledger(LEDGER.read_text(encoding="utf-8"))
     origins = [row[2] for row in rows]
-    assert origins.count("Part B, reproduced") == 1
+    assert origins.count("Part B, reproduced") == 2
     assert "Part B concept, Part C evidence" in origins
     assert origins.count("Part C") > len(rows) // 2
 

@@ -1,0 +1,37 @@
+{
+  "backend": "conflux.verification.nuxmv_backend.NuXmvBackend",
+  "binary": "nuXmv",
+  "check_semantics": "--check re-runs every model and compares result.json and protocol.json byte for byte. No timing and no outside path is retained, so the comparison is timing independent.",
+  "commands": "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n",
+  "families": [
+    "defence",
+    "delegation-variants",
+    "delegation-defects",
+    "sledv-scaling",
+    "coi-scaling",
+    "sled-coi-reduction",
+    "plan-ir",
+    "plan-ir-coi"
+  ],
+  "generator": "scripts/generate_ic3_unbounded_evidence.py",
+  "id": "ic3-unbounded-v1",
+  "negated_claims": [
+    "This bundle does not prove any unbounded-system property; it reports bounded IC3 verdicts.",
+    "This bundle does not claim a nuXmv witness for any refutation.",
+    "This bundle is not an AgentDojo or benchmark result."
+  ],
+  "no_witness_rule": "IC3 refutations carry no lifted counterexample in this backend, so no witness order and no counterexample length is recorded; a refuted model keeps only its violated invariant properties and the raw nuXmv lines.",
+  "nuXmv_version": [
+    "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)"
+  ],
+  "schema_version": "1",
+  "scope": [
+    "Every model is a finite Boolean IR rendered by _smv and checked with check_invar_ic3.",
+    "ir_bound is retained per model; a verdict covers that bounded model only.",
+    "Families whose bound grows with a scaling parameter are bounded by the recorded parameter value.",
+    "The native-SLED explicit-state families define no IR and are absent from this bundle."
+  ],
+  "timeout_seconds": 300.0,
+  "unavailable_rule": "When nuXmv is missing or a model errors, status is nuxmv_unavailable or error and no verdict is claimed.",
+  "vacuous_rule": "Models with no variables or no transitions are listed in summary.trivial_models: a safety check over such a model proves nothing about the family it names."
+}

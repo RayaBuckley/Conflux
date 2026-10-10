@@ -20,6 +20,7 @@ the repository has accepted, implemented, or deferred.
 | EXP-001..EXP-004 | Manifests, separated suites, negative controls, and current-code smoke | strict manifest tests, six scenarios, five controls, `research/output/runs/smoke/` |
 | SLEDMC-001..SLEDMC-003 | Canonical-state checking and trace/state comparison | checker and deterministic comparison tests |
 | SLEDV-001..SLEDV-003 | Serializable IR, bounded backend, and runtime conformance | verification schemas and differential tests |
+| PARTB-001 | Part B classifier counters retained under a pinned hash seed (the archived prototype walks string `frozenset`s, so its counters depended on `PYTHONHASHSEED`) | `research/output/runs/native-sled-partb-classification-v1/` retains the seed sweep and byte-identical `--check`; `tests/test_partb_classification_evidence.py` |
 | PLAN-001..PLAN-003 | Typed plans, outcome validation, authority-minimising selection | planning and optimisation tests |
 | AGENTDOJO-001, AGENTDOJO-002 | Pinned upstream structures and strict result translation | lock, raw fixture, adapter tests |
 | CLUSTER-001, CLUSTER-002 | Capability discovery and resumable manifest jobs | doctor and resume tests |
@@ -38,7 +39,7 @@ the repository has accepted, implemented, or deferred.
 | FW-001, MCP-001, SUPPLY-001 | Framework, protocol, and supply-chain integration |
 | MODEL-001, MODEL-002, PLAN-DYN-012 | Offline adapters are implemented; credentialed/model-weight evidence remains gated |
 | AGENTDOJO-003 | Pinned manifest and translation exist; live no-defence-versus-ITES result remains gated |
-| SLEDV-004 | nuXmv adapter exists; binary-backed IC3 evidence measured 2026-10-09 (licence-gated binary, installed user-local, never redistributed) |
+| SLEDV-004 | nuXmv adapter exists; binary-backed IC3 evidence measured 2026-10-09 and retained in full on 2026-10-10 (licence-gated binary, installed user-local, never redistributed; 689 models re-checked with `check_invar_ic3`, 99 safe and 590 unsafe, no errors) |
 | PLAN-DYN-016 | Strict four-mode aggregation exists; live observations remain gated |
 | PAPER-002, RW-001 | Generated external-result evidence and continuing related-work revision |
 

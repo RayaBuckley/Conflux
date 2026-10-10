@@ -68,8 +68,10 @@ The comparison must retain upstream JSON and report:
 - native AgentDojo utility and security;
 - Conflux policy blocks, executions, provider failures, context size, and
   provenance annotations;
-- setup, model, parser, policy, security, and utility failures separately, and the
-  failing cell keeps a bounded summary of the message that produced its category.
+- setup, model, parser, policy, adapter, security, tool, utility, and bound failures
+  separately, and the failing cell keeps a bounded summary of the message that produced its
+  category. An out-of-scope refusal, where the mediator never annotated the tool, is counted
+  as `adapter` rather than `policy`.
 
 Benign state begins with only the authenticated human Principal. An injection
 Principal is introduced only when injected content actually affects a retained

@@ -84,6 +84,7 @@ DIRECTION_TASK_IDS = {
     "DIR-GOV-001",
 }
 ADDITIONAL_TASK_IDS = {
+    "PARTB-001",
     "SLEDV-005",
     "COMP-001",
     "COMP-002",
