@@ -161,3 +161,54 @@ def test_non_ascii_metadata_is_refused(tmp_path: Path) -> None:
     manuscript = _fake_manuscript(tmp_path, title="Caf\u00e9 study")
     problems = bundle.metadata_problems(manuscript)
     assert problems and "ASCII" in problems[0]
+
+
+_BIB = """@article{known,
+  author = {A. Author},
+  title = {A title},
+  journal = {A journal},
+  year = {2024}
+}
+"""
+
+
+def test_citation_problems_accepts_a_consistent_pair(tmp_path: Path) -> None:
+    """A cited key with its required fields is clean, and an unused thin entry is left alone."""
+    manuscript = _fake_manuscript(tmp_path)
+    bibliography = manuscript.parent / "references.bib"
+    manuscript.write_text(manuscript.read_text(encoding="utf-8") + "\\cite{known}\n", encoding="utf-8")
+    bibliography.write_text(_BIB, encoding="utf-8")
+    assert bundle.citation_problems(manuscript, bibliography) == []
+
+
+def test_dangling_citation_is_reported(tmp_path: Path) -> None:
+    """A cited key with no entry would print as a question mark, so it is refused."""
+    manuscript = _fake_manuscript(tmp_path)
+    manuscript.write_text(manuscript.read_text(encoding="utf-8") + "\\cite{missing}\n", encoding="utf-8")
+    bibliography = manuscript.parent / "references.bib"
+    bibliography.write_text(_BIB, encoding="utf-8")
+    problems = bundle.citation_problems(manuscript, bibliography)
+    assert len(problems) == 1
+    assert "missing" in problems[0]
+
+
+def test_cited_entry_without_a_required_field_is_reported(tmp_path: Path) -> None:
+    """BibTeX cannot build a bibliography from an entry that lacks a required field."""
+    manuscript = _fake_manuscript(tmp_path)
+    manuscript.write_text(manuscript.read_text(encoding="utf-8") + "\\cite{thin}\n", encoding="utf-8")
+    bibliography = manuscript.parent / "references.bib"
+    bibliography.write_text("@article{thin, title = {T}, journal = {J}, year = {2024}}\n", encoding="utf-8")
+    problems = bundle.citation_problems(manuscript, bibliography)
+    assert len(problems) == 1
+    assert "'author'" in problems[0]
+
+
+def test_duplicate_bibliography_key_is_reported(tmp_path: Path) -> None:
+    """Two entries under one key make the citation ambiguous."""
+    manuscript = _fake_manuscript(tmp_path)
+    manuscript.write_text(manuscript.read_text(encoding="utf-8") + "\\cite{known}\n", encoding="utf-8")
+    bibliography = manuscript.parent / "references.bib"
+    bibliography.write_text(_BIB + _BIB, encoding="utf-8")
+    problems = bundle.citation_problems(manuscript, bibliography)
+    assert len(problems) == 1
+    assert "declared twice" in problems[0]

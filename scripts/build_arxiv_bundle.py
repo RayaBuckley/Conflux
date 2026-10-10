@@ -239,11 +239,102 @@ def metadata_problems(manuscript: Path) -> list[str]:
     return problems
 
 
+CITE = re.compile(r"\\cite[a-zA-Z]*\{([^}]*)\}")
+BIB_ENTRY = re.compile(r"@(\w+)\s*\{")
+BIB_FIELD = re.compile(r"(?:^|,)\s*([A-Za-z]+)\s*=")
+BIB_SPECIAL = ("string", "comment", "preamble")
+
+#: Fields BibTeX needs per entry type; a missing one prints as a question mark or fails the build.
+REQUIRED_FIELDS: dict[str, tuple[str, ...]] = {
+    "article": ("author", "title", "journal", "year"),
+    "book": ("author", "title", "publisher", "year"),
+    "incollection": ("author", "title", "booktitle", "year"),
+    "inproceedings": ("author", "title", "booktitle", "year"),
+    "mastersthesis": ("author", "title", "school", "year"),
+    "misc": ("title", "year"),
+    "phdthesis": ("author", "title", "school", "year"),
+    "techreport": ("author", "title", "institution", "year"),
+}
+
+
+def bibliography_entries(text: str) -> tuple[dict[str, tuple[str, list[str]]], list[str]]:
+    """Return key -> (entry type, field names), plus any key that is declared twice."""
+    entries: dict[str, tuple[str, list[str]]] = {}
+    duplicates: list[str] = []
+    for match in BIB_ENTRY.finditer(text):
+        entry_type = match.group(1).lower()
+        index = match.end()
+        depth = 1
+        while index < len(text) and depth:
+            if text[index] == "{":
+                depth += 1
+            elif text[index] == "}":
+                depth -= 1
+            index += 1
+        body = text[match.end() : index - 1]
+        key = body.split(",", 1)[0].strip()
+        if entry_type in BIB_SPECIAL:
+            continue
+        if key in entries:
+            duplicates.append(key)
+        entries[key] = (entry_type, [field.lower() for field in BIB_FIELD.findall(body)])
+    return entries, duplicates
+
+
+def citation_problems(manuscript: Path, bibliography: Path | None = None) -> list[str]:
+    """Every cited key must resolve, and a cited entry must carry the fields BibTeX needs.
+
+    An entry nothing cites is left alone: BibTeX prints what it is cited for, so a thin
+    entry never reaches a reader.
+    """
+    problems: list[str] = []
+    cited: set[str] = set()
+    pending = [manuscript]
+    seen = {manuscript}
+    while pending:
+        current = pending.pop()
+        text = source_text(current)
+        for group in CITE.findall(text):
+            cited |= {key.strip() for key in group.split(",") if key.strip()}
+        for target in INPUT.findall(text):
+            resolved = next(
+                (item for item in _candidates(current.parent, target, (".tex",)) if item.is_file()),
+                None,
+            )
+            if resolved is not None and resolved not in seen:
+                seen.add(resolved)
+                pending.append(resolved)
+    if bibliography is None:
+        bibliography = next(
+            (item for item in _candidates(manuscript.parent, "references", (".bib",)) if item.is_file()),
+            None,
+        )
+    if bibliography is None:
+        return [f"{manuscript.name}: no references.bib found beside the manuscript"] if cited else []
+    entries, duplicates = bibliography_entries(bibliography.read_text(encoding="utf-8"))
+    for key in dict.fromkeys(duplicates):
+        problems.append(f"{bibliography.name}: bibliography key {key!r} is declared twice")
+    for key in sorted(cited - set(entries)):
+        problems.append(f"{manuscript.name}: citation {key!r} names no entry in {bibliography.name}")
+    for key in sorted(cited & set(entries)):
+        entry_type, fields = entries[key]
+        required = REQUIRED_FIELDS.get(entry_type)
+        if required is None:
+            continue
+        for field in required:
+            if field not in fields:
+                problems.append(
+                    f"{bibliography.name}: the {entry_type} entry {key!r} has no {field!r} field",
+                )
+    return problems
+
+
 def manifest_for(manuscript: Path, root: Path) -> tuple[Manifest, list[str]]:
     """Build the manifest: the ship set keyed by its path below the archive root."""
     paths, problems = dependency_paths(manuscript, root)
     problems.extend(name_problems(paths, root))
     problems.extend(reference_case_problems(manuscript, root))
+    problems.extend(citation_problems(manuscript))
     problems.extend(metadata_problems(manuscript))
     archive_root = manuscript.parent
     files: list[ManifestFile] = []

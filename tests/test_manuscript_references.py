@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from scripts import build_arxiv_bundle as bundle
+
 ROOT = Path(__file__).resolve().parents[1]
 MANUSCRIPT = ROOT / "research/publications/manuscript/conflux_fourth_year_2026.tex"
 
@@ -76,3 +78,11 @@ def test_generated_agentdojo_tables_are_input_by_the_manuscript() -> None:
     cited = {"tab:agentdojo-breadth", "tab:agentdojo-fingerprints"}
     assert cited <= references
     assert cited <= labels
+
+
+def test_citations_resolve_and_entries_carry_required_fields() -> None:
+    """A dangling \\cite or a thin cited entry would reach a reviewer as a question mark.
+
+    The bundle build runs the same check, so a submission cannot ship either.
+    """
+    assert bundle.citation_problems(bundle.MANUSCRIPT) == []
