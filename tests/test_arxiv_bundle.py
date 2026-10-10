@@ -212,3 +212,48 @@ def test_duplicate_bibliography_key_is_reported(tmp_path: Path) -> None:
     problems = bundle.citation_problems(manuscript, bibliography)
     assert len(problems) == 1
     assert "declared twice" in problems[0]
+
+
+def test_a_dead_repository_path_is_reported(tmp_path: Path) -> None:
+    """A reader who follows a path the manuscript names must find something."""
+    manuscript = _fake_manuscript(tmp_path)
+    manuscript.write_text(
+        manuscript.read_text(encoding="utf-8") + "See \\texttt{nowhere/at/all/} for details.\n",
+        encoding="utf-8",
+    )
+    problems = bundle.path_problems(manuscript, tmp_path)
+    assert len(problems) == 1
+    assert "nowhere/at/all/" in problems[0]
+
+
+def test_a_live_repository_path_is_left_alone(tmp_path: Path) -> None:
+    """Paths that resolve, bare file names and suite pairs are all left alone."""
+    manuscript = _fake_manuscript(tmp_path)
+    (tmp_path / "research" / "output" / "runs").mkdir(parents=True)
+    manuscript.write_text(
+        manuscript.read_text(encoding="utf-8")
+        + "Bundles live under \\texttt{research/output/runs/}.\\\n"
+        + "The suites are banking/workspace and slack/travel.\\\n"
+        + "The marker is \\texttt{ARCHIVED.md}.\\\n",
+        encoding="utf-8",
+    )
+    assert bundle.path_problems(manuscript, tmp_path) == []
+
+
+def test_the_old_archive_path_would_have_been_caught(tmp_path: Path) -> None:
+    """The sentence that sent readers to a directory that never existed is now refused.
+
+    The manuscript is copied with only that one path changed, so the test fails if the
+    check stops looking at prose.
+    """
+    manuscript = tmp_path / "manuscript.tex"
+    manuscript.write_text(
+        bundle.source_text(bundle.MANUSCRIPT).replace(
+            "\\texttt{research/publications/paper/}",
+            "\\texttt{paper/}",
+        ),
+        encoding="utf-8",
+    )
+    problems = bundle.path_problems(manuscript, bundle.ROOT)
+    assert len(problems) == 1
+    assert "'paper/'" in problems[0]

@@ -86,3 +86,12 @@ def test_citations_resolve_and_entries_carry_required_fields() -> None:
     The bundle build runs the same check, so a submission cannot ship either.
     """
     assert bundle.citation_problems(bundle.MANUSCRIPT) == []
+
+
+def test_repository_paths_in_the_prose_resolve() -> None:
+    """A directory the manuscript names must exist, or the reader finds nothing.
+
+    The previous-year section once sent readers to paper/ instead of
+    research/publications/paper/, which no other check would have noticed.
+    """
+    assert bundle.path_problems(bundle.MANUSCRIPT, bundle.ROOT) == []

@@ -329,12 +329,62 @@ def citation_problems(manuscript: Path, bibliography: Path | None = None) -> lis
     return problems
 
 
+TEXTTT = re.compile(r"\\texttt\{([^}]*)\}")
+PATH_SUFFIXES = (".md", ".json", ".tex", ".bib", ".py", ".txt", ".yml", ".yaml", ".cff")
+
+
+def repository_paths(manuscript: Path) -> list[str]:
+    """Return the repository paths the manuscript names in \\texttt{} spans.
+
+    Only spans that carry a slash and either end in a slash or in a known file suffix
+    count, so a bare file name, or a suite pair such as banking/workspace, is left
+    alone.
+    """
+    found: list[str] = []
+    pending = [manuscript]
+    seen = {manuscript}
+    while pending:
+        current = pending.pop()
+        text = source_text(current)
+        for span in TEXTTT.findall(text):
+            candidate = span.replace("\\_", "_").replace("\\&", "&").replace("\\%", "%")
+            if "/" not in candidate or any(character.isspace() for character in candidate):
+                continue
+            if not candidate.endswith("/") and not candidate.endswith(PATH_SUFFIXES):
+                continue
+            if candidate not in found:
+                found.append(candidate)
+        for target in INPUT.findall(text):
+            resolved = next(
+                (item for item in _candidates(current.parent, target, (".tex",)) if item.is_file()),
+                None,
+            )
+            if resolved is not None and resolved not in seen:
+                seen.add(resolved)
+                pending.append(resolved)
+    return found
+
+
+def path_problems(manuscript: Path, root: Path) -> list[str]:
+    """Report a repository path the manuscript names that no longer exists.
+
+    A reader who follows a dead path finds nothing, and no other check looks at
+    prose, so a renamed directory would otherwise ship unnoticed.
+    """
+    return [
+        f"the manuscript names {candidate!r}, which does not exist relative to {root}"
+        for candidate in repository_paths(manuscript)
+        if not (root / candidate.rstrip("/")).exists()
+    ]
+
+
 def manifest_for(manuscript: Path, root: Path) -> tuple[Manifest, list[str]]:
     """Build the manifest: the ship set keyed by its path below the archive root."""
     paths, problems = dependency_paths(manuscript, root)
     problems.extend(name_problems(paths, root))
     problems.extend(reference_case_problems(manuscript, root))
     problems.extend(citation_problems(manuscript))
+    problems.extend(path_problems(manuscript, root))
     problems.extend(metadata_problems(manuscript))
     archive_root = manuscript.parent
     files: list[ManifestFile] = []
