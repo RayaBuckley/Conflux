@@ -31,11 +31,11 @@ influencing principal's own permissions allow it, and an input fetched from
 elsewhere cannot acquire authority it was never granted. Three independent
 bounded analyses agree on all eleven planned variants, ten of which are refuted,
 over ten distinct bodies and nine distinct refuted bodies, since two of the
-variants differ in name only; the same three analyses agree on all 512 combinations of nine independent defects,
-511 of them refuted;
-the archived prototype reproduces its published trace count under a stated
-enumeration change; and property reduction keeps its documented scaling
-advantage on the fixtures exercised here. This paper distinguishes archived
+variants differ in name only. The same three analyses agree on all 512
+combinations of nine independent delegation defects, 511 of them refuted. The
+archived prototype reproduces its published trace count under a stated
+enumeration change. Property reduction keeps its documented scaling advantage on
+the fixtures exercised here. This paper distinguishes archived
 evidence, current implementation evidence and planned experiments; numerical
 placeholders are filled only by generated artefacts.
 \end{abstract}
@@ -116,12 +116,12 @@ creates~\citep{myersliskov}, and the language-based survey collects the
 techniques that enforce such policies statically~\citep{sabelfeld2003}. Because
 real systems must disclose something, the declassification literature names the
 dimensions along which a policy may be relaxed and the principles that keep the
-relaxation safe~\citep{declassificationsurvey}; robust declassification demands
+relaxation safe~\citep{declassificationsurvey}. Robust declassification demands
 that an adversary cannot exploit the relaxation
-itself~\citep{robustdeclassification}; nonmalleable information flow control
+itself~\citep{robustdeclassification}. Nonmalleable information flow control
 closes the composition gap that appears when several relaxed components
-meet~\citep{nonmalleableifc}; and attacker control and impact make the
-comparison quantitative by asking what an adversary can still
+meet~\citep{nonmalleableifc}. Attacker control and impact make the comparison
+quantitative by asking what an adversary can still
 influence~\citep{attackercontrol}. Conflux keeps that vocabulary for its
 decision records, but its principals are the parties in an agent session, its
 labels are provenance and consent records, and a disclosure is an explicit
@@ -139,7 +139,8 @@ implement an endorsement or trusted-transformation mechanism.
 Wu, Cecchetti, and Xiao~\citep{fsecure} prevent untrusted inputs from
 reaching privileged planning through a structured IFC pipeline; Conflux
 instead treats all model-visible information as potentially influential and
-derives authority from the intersection of all influencers' ACS permissions.
+derives authority from the intersection of all influencers' access-control
+system (ACS) permissions.
 
 CaMeL isolates control and data flows with a programmable policy interface
 (Python functions over tool name and arguments, with capability/source
@@ -216,8 +217,8 @@ bounded loops and continuations, subplans, mediated code capabilities, outcome
 validation, and authority-minimising selection & Comparative real-model utility
 evidence is not yet retained \\
 Formal subset & Serializable IR, reference interpreter, runtime differential
-tests, optional Z3 BMC, and nuXmv Boolean subset & Solver binaries and unbounded
-runtime equivalence are not established \\
+tests, optional Z3 bounded model checking, and nuXmv Boolean subset & Solver
+binaries and unbounded runtime equivalence are not established \\
 AgentDojo & Exact package 0.1.35 / benchmark v1.2.2 translation with preserved
 IDs, native metrics, failure categories, and raw fixture & The fixture proves
 translation only; a live no-defence-versus-ITES comparison is pending \\
@@ -255,11 +256,11 @@ AgentDojo breadth uses the frozen stratified selection: four pinned suites
 record names the upstream tag, the selected task ids and the injection task
 ids. Every cell runs the same model configuration with seed and temperature
 fixed, and each retained bundle keeps its protocol record, its per-cell result
-JSON and its raw upstream traces. Repeatability is measured, not assumed: a
-retained protocol is re-executed in its own directory and compared cell by
-cell on status, native utility, native security, model-call count and failure
-list, with the raw traces compared after the two timing fields are set aside,
-and the protocol fingerprint must reproduce exactly. A repeated run is restored
+JSON and its raw upstream traces. Repeatability is measured, not assumed. A
+retained protocol is re-executed in its own directory and compared cell by cell
+on status, native utility, native security, model-call count and failure list,
+with the raw traces compared after the two timing fields are set aside. The
+protocol fingerprint must reproduce exactly. A repeated run is restored
 byte-for-byte afterwards, so the retained bundle stays the artefact the tables
 count. Failures are classified from the message that caused them, and each
 cell keeps a bounded summary of that message, so an incomplete cell is
@@ -284,7 +285,7 @@ Authority-constrained planning uses authenticated operation catalogues,
 immutable open-ended plan graphs, explicit bounded loops, typed continuations
 and value bindings. The evaluation's dynamic-code mode emits an inert
 \texttt{ModeledProgram} graph; it is not compiled, evaluated, or sent to an
-executor. Every declared effect is re-authorised at modeled action time.
+executor. Every declared effect is re-authorised at modelled action time.
 Security is a hard selection constraint;
 eligible plans are then ordered by utility, authority footprint, sensitive
 observations, irreversible effects, cost and a deterministic fingerprint.
@@ -301,16 +302,17 @@ variants and agree on every decision, refuted variants included, and the
 negative control still fails as designed. Table~\ref{tab:semantic-conformance}
 counts them. A separate sweep closes the
 population instead of listing it: the nine independent delegation defects have
-512 subsets, and the Z3 and nuXmv encodings reproduce the reference interpreter's verdict
-class on every one of them, with all three backends refuting 511. Agreement between
-two encodings of one IR over a closed set of defect combinations is evidence
-about the encoding, not a proof of the delegation semantics.\\
+512 subsets, and the Z3 and nuXmv encodings reproduce the reference
+interpreter's verdict class on every one of them, with all three backends
+refuting 511. Agreement between the reference interpreter and the two solver
+encodings over a closed set of defect combinations is evidence about the
+encoding, not a proof of the delegation semantics.\\
 \textbf{Native SLED:} the retained bounded reproduction recovers all three
 historical trace counts and their canonical-state compression; the canonical
 fixtures are not directly comparable with the archived prototype, whose
 enumeration differed. Table~\ref{tab:native-sled-reproduction} records both.\\
-\textbf{SLED-MC/SLED-V:} the retained scaling bundle shows how far the COI
-reduction shrinks the finite models and that no verdict is downgraded after
+\textbf{SLED-MC/SLED-V:} the retained scaling bundle shows how far the
+cone-of-influence reduction shrinks the finite models and that no verdict is downgraded after
 reduction; Table~\ref{tab:sledv-scaling} records the sizes and the checks. A
 SLED-V reduction is bounded evidence on the tested finite models, not a proof
 for unbounded deployments.\\
@@ -360,7 +362,7 @@ evidence.
 The next security-model extensions are richer operation-specific argument
 effects, any future activation of scoped attenuating delegation, and
 origin-bound persistent-memory authority. They remain denied or conservative
-until their semantics, revocation behavior, and counterexample properties are
+until their semantics, revocation behaviour, and counterexample properties are
 specified. Formal work should then extend
 the solver subset, relational properties, and independent implementation
 conformance while keeping bounded and unbounded claims distinct.
