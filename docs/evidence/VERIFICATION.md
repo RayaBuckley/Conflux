@@ -2087,19 +2087,26 @@ retained as `research/output/runs/delegation-defect-sweep-v1/`:
 
 The plan IR carries its own encoding in the bounded model checker and in nuXmv, but its retained bundle
 was a single reading of a single plan. `scripts/generate_plan_ir_evidence.py` now measures a structured
-population instead: two plan shapes (one action node, and a pair of action nodes), two effect summaries
-(every node authorised, and the first action node executed while unauthorised) and bounds one to four, so
-sixteen readings, each appearing once. The bundle is retained as `research/output/runs/plan_ir/` and the
-standard validation tier runs its `--check` mode:
+population with a defect space inside it: three plan shapes (one write action, one code-execution action
+and a pair of write actions, each with a delegation node), three effect summaries (every action cleared,
+the first action executed while unauthorised, and the first action executed outside its capability
+envelope) and bounds one to four, so thirty-six readings, each appearing once. The bundle is retained as
+`research/output/runs/plan_ir/` and the standard validation tier runs its `--check` mode:
 
-- 16 of 16 readings agree by verdict class across the reference interpreter, Z3 and nuXmv, and the
+- 36 of 36 readings agree by verdict class across the reference interpreter, Z3 and nuXmv, and the
   encodings are measured rather than assumed: a row records `unknown` if either binary cannot answer.
-- 8 of the 16 readings carry an unsafe reference verdict - the ones whose first action executes
-  unauthorised - and every one of them is refuted by all three backends at every bound. The eight
-  authorised readings are not refuted, and the bundle names them by id (`unrefuted`), so the control is
-  countable rather than implied. The generator refuses to write a bundle in which nothing is refuted.
-- The grid costs about a second to re-measure, which is why the tier can afford to run it on every
+- Each reading states an expectation before it is measured, and all thirty-six are met. The abstraction
+  flags a capability violation only for code execution, so a capability mutant of a write-only plan is
+  expected to stay clear: the bundle records that reading as a documented boundary instead of hiding it,
+  and lists any missed expectation by id.
+- 16 of the 36 readings carry an unsafe reference verdict - the twelve unauthorised readings and the four
+  code-execution capability readings - and every one of them is refuted by all three backends at every
+  bound. The twenty cleared readings are not refuted, and the bundle names them by id (`unrefuted`) and by
+  case pair (`unrefuted_cases`), so the control is countable rather than implied. The generator refuses to
+  write a bundle in which nothing is refuted.
+- The grid costs about three seconds to re-measure, which is why the tier can afford to run it on every
   standard validation pass.
-- Limits, carried in the bundle's `boundary` field and repeated in its SUMMARY: the grid covers one plan
-  shape, one operation catalogue and one effect-summary pattern, and the space of plans is open. Agreement
-  inside the grid says nothing about a plan outside it.
+- Limits, carried in the bundle's `boundary` field and repeated in its SUMMARY: the grid covers three plan
+  shapes, one operation catalogue and one mutant per safety invariant, and the space of plans and mutants
+  is open. Three invariants of the abstraction are not refuted by any mutant here, so the bundle says
+  nothing about them.

@@ -206,7 +206,7 @@ under `research/output/runs/`:
 | SLED environment sweep | `scripts/generate_sled_environment_sweep.py` | Native SLED across varied principal/action/data-item counts |
 | Cross-backend validation | `scripts/generate_backend_cross_validation.py` | Z3 BMC vs. reference interpreter on delegation IR variants, 11/11 verdict classes (bundle `research/output/runs/backend-cross-validation-v1/`) |
 | Delegation defect sweep | `scripts/generate_delegation_defect_sweep.py` | Z3 BMC and nuXmv IC3 vs. reference interpreter on every subset of the nine independent delegation defects, 512/512 verdict classes across all three (bundle `research/output/runs/delegation-defect-sweep-v1/`) |
-| Plan IR grid | `scripts/generate_plan_ir_evidence.py` | Z3 BMC and nuXmv IC3 vs. reference interpreter on a 2 x 2 x 4 plan x effect-summary x bound grid, 16/16 verdict classes across all three (bundle `research/output/runs/plan_ir/`) |
+| Plan IR grid | `scripts/generate_plan_ir_evidence.py` | Z3 BMC and nuXmv IC3 vs. reference interpreter on a 3 x 3 x 4 plan x effect-summary x bound grid that carries a defect space inside it, 36/36 verdict classes and 36/36 expectations met across all three (bundle `research/output/runs/plan_ir/`) |
 
 Key findings:
 

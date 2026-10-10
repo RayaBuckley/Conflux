@@ -1,11 +1,16 @@
 """Generate plan IR verification evidence.
 
 The extended plan IR invariants - delegation, monotonic confinement, revocation and liveness - are
-encoded once for the bounded model checker and once for nuXmv. This script measures a small structured
-population rather than a single plan: two plans (one action node, and a pair of action nodes) x two
-effect summaries (every node authorised, and the first node executed while unauthorised) x bounds 1 to 4.
-The authorised readings say the encodings agree and find nothing; the unauthorised readings are the
-positive control, because a reading that nothing can refute would prove nothing.
+encoded once for the bounded model checker and once for nuXmv. This script measures a structured
+population and the defect space inside it: three plan shapes (one write action, one code-execution
+action, and a pair of write actions, each with a delegation node) x three effect summaries (every action
+authorised and inside its envelope, the first action executed while unauthorised, and the first action
+executed outside its capability envelope) x bounds 1 to 4, so thirty-six readings.
+
+Every reading carries an expectation, because the capability check is modelled only for code execution:
+a capability mutant of a write-only plan is expected to stay clear, and the bundle records that instead of
+hiding it. The unauthorised and code-capability readings are the positive control, because a grid that
+nothing can refute would prove nothing.
 
 The reference interpreter, the Z3 encoding and the nuXmv backend are all measured, so the bundle records
 three-way agreement by verdict class. `--check` re-measures the grid and compares it with the retained
@@ -38,6 +43,7 @@ from conflux.planning import (
     OperationSchema,
     Plan,
     TemplateArgument,
+    code_operation_permission,
 )
 from conflux.verification import EffectSummary, NuXmvBackend, abstract_plan, verify_with_z3
 from conflux.verification.reduction import reference_safety_check
@@ -45,8 +51,23 @@ from conflux.verification.reduction import reference_safety_check
 OUTPUT_DIR = Path("research/output/runs/plan_ir")
 
 BOUNDS = (1, 2, 3, 4)
-PLAN_CASES = ("single", "pair")
-EFFECT_CASES = ("authorised", "unauthorised")
+PLAN_CASES = ("single", "code", "pair")
+EFFECT_CASES = ("authorised", "unauthorised", "capability")
+
+# The abstraction flags a capability violation only for code execution, so a capability mutant of a
+# write-only plan is expected to stay clear: each reading states its expectation and the bundle counts
+# whether measurement met it.
+EXPECTATIONS: dict[tuple[str, str], str] = {
+    ("single", "authorised"): "clear",
+    ("single", "unauthorised"): "refuted",
+    ("single", "capability"): "clear",
+    ("code", "authorised"): "clear",
+    ("code", "unauthorised"): "refuted",
+    ("code", "capability"): "refuted",
+    ("pair", "authorised"): "clear",
+    ("pair", "unauthorised"): "refuted",
+    ("pair", "capability"): "clear",
+}
 
 # The reference interpreter and nuXmv both report `safe`, the bounded checker reports `bounded_safe`:
 # same class, two scopes of guarantee. A test pins this set equal to the sibling generators' set.
@@ -55,10 +76,16 @@ SAFE_FAMILY = frozenset({"safe", "bounded_safe"})
 VOLATILE_FIELDS = ("generated_at", "source_commit")
 
 BOUNDARY = (
-    "Agreement between the two encodings on sixteen readings of two plans up to bound four is not a claim "
-    "that the plan IR is safe in general: the grid covers one plan shape, one operation catalogue and one "
-    "effect-summary pattern, and the space of plans is open."
+    "Agreement between the two encodings on thirty-six readings of three plans up to bound four is not a "
+    "claim that the plan IR is safe in general: the grid covers three plan shapes, one operation catalogue "
+    "and one mutant per lever, so invariants that no mutant here exercises are unmeasured, and the space of "
+    "plans and levers is open."
 )
+
+
+def row_id(row: dict[str, Any]) -> str:
+    """Return the unique id of a reading: plan shape, effect case and bound."""
+    return f"{row['plan_case']}:{row['effect_case']}:b{row['bound']}"
 
 
 def verdict_class(verdict: str) -> str:
@@ -66,58 +93,23 @@ def verdict_class(verdict: str) -> str:
     return "safe" if verdict in SAFE_FAMILY else "unsafe"
 
 
-def _build_plan(case: str, principal: Principal, source: Provenance, operation: OperationSchema) -> Plan:
-    """Build the protected plan shape for *case*: one action node, or a pair of action nodes."""
-    nodes: list[ActionTemplateNode | DelegationNode] = [
-        ActionTemplateNode(
-            "write",
-            ActionTemplate(
-                "write",
-                operation.id,
-                operation.version,
-                (
-                    TemplateArgument("path", LiteralBinding("safe.txt", source)),
-                    TemplateArgument("content", LiteralBinding("safe", source)),
-                ),
-            ),
-            source,
+def _action(node_id: str, operation: OperationSchema, source: Provenance, **bindings: str) -> ActionTemplateNode:
+    """Return an action node that binds *operation*'s declared arguments to literals."""
+    return ActionTemplateNode(
+        node_id,
+        ActionTemplate(
+            node_id,
+            operation.id,
+            operation.version,
+            tuple(TemplateArgument(name, LiteralBinding(value, source)) for name, value in bindings.items()),
         ),
-    ]
-    if case == "pair":
-        nodes.append(
-            ActionTemplateNode(
-                "append",
-                ActionTemplate(
-                    "append",
-                    operation.id,
-                    operation.version,
-                    (
-                        TemplateArgument("path", LiteralBinding("notes.txt", source)),
-                        TemplateArgument("content", LiteralBinding("more", source)),
-                    ),
-                ),
-                source,
-            ),
-        )
-    nodes.append(DelegationNode("delegate", "scope-text", source, ()))
-    return Plan(f"evidence-plan-{case}", "repair", tuple(nodes), source)
+        source,
+    )
 
 
-def _summaries(case: str, plan: Plan, effect_case: str) -> tuple[EffectSummary, ...]:
-    """Return effect summaries for *plan*: every node authorised, or the first action unauthorised."""
-    rows = []
-    for node in plan.nodes:
-        if isinstance(node, ActionTemplateNode):
-            unauthorised = effect_case == "unauthorised" and node is plan.nodes[0]
-            rows.append(EffectSummary(node.id, not unauthorised, True))
-    return tuple(rows)
-
-
-def _row(case: str, effect_case: str, bound: int, backend: NuXmvBackend) -> dict[str, Any]:
-    """Measure one reading of the grid with all three backends and return its row."""
-    principal = Principal("alice", "Alice")
-    source = Provenance.from_principal(principal, source="evidence")
-    operation = OperationSchema(
+def _operations() -> tuple[OperationSchema, OperationSchema]:
+    """Return the two operations the grid uses: a write action and a code-execution action."""
+    write = OperationSchema(
         "filesystem.write",
         "1",
         "filesystem",
@@ -127,10 +119,57 @@ def _row(case: str, effect_case: str, bound: int, backend: NuXmvBackend) -> dict
         (ArgumentSpec("path", ArgumentType.STRING), ArgumentSpec("content", ArgumentType.STRING)),
         "path",
     )
-    plan = _build_plan(case, principal, source, operation)
+    code = OperationSchema(
+        "shell.execute",
+        "1",
+        "shell",
+        "code",
+        "execute_code",
+        code_operation_permission(),
+        (ArgumentSpec("command", ArgumentType.STRING),),
+        "command",
+    )
+    return write, code
+
+
+def _build_plan(case: str, source: Provenance, write: OperationSchema, code: OperationSchema) -> Plan:
+    """Build the plan shape for *case*: a write action, a code action, or a pair of write actions."""
+    nodes: list[ActionTemplateNode | DelegationNode] = []
+    if case == "code":
+        nodes.append(_action("execute", code, source, command="true"))
+    else:
+        nodes.append(_action("write", write, source, path="safe.txt", content="safe"))
+        if case == "pair":
+            nodes.append(_action("append", write, source, path="notes.txt", content="more"))
+    nodes.append(DelegationNode("delegate", "scope-text", source, ()))
+    return Plan(f"evidence-plan-{case}", "repair", tuple(nodes), source)
+
+
+def _summaries(case: str, plan: Plan, effect_case: str) -> tuple[EffectSummary, ...]:
+    """Return effect summaries for *plan*: every action cleared, or the first action defective."""
+    rows = []
+    for node in plan.nodes:
+        if not isinstance(node, ActionTemplateNode):
+            continue
+        first = node is plan.nodes[0]
+        if effect_case == "unauthorised" and first:
+            rows.append(EffectSummary(node.id, False, True))
+        elif effect_case == "capability" and first:
+            rows.append(EffectSummary(node.id, True, True, False))
+        else:
+            rows.append(EffectSummary(node.id, True, True))
+    return tuple(rows)
+
+
+def _row(case: str, effect_case: str, bound: int, backend: NuXmvBackend) -> dict[str, Any]:
+    """Measure one reading of the grid with all three backends and return its row."""
+    principal = Principal("alice", "Alice")
+    source = Provenance.from_principal(principal, source="evidence")
+    write, code = _operations()
+    plan = _build_plan(case, source, write, code)
     abstraction = abstract_plan(
         plan,
-        catalogue=OperationCatalogue((operation,)),
+        catalogue=OperationCatalogue((write, code)),
         effect_summaries=_summaries(case, plan, effect_case),
         bound=bound,
     )
@@ -167,6 +206,8 @@ def _row(case: str, effect_case: str, bound: int, backend: NuXmvBackend) -> dict
         "verdicts_agree_class": verdict_class(reference_verdict) == verdict_class(z3_verdict),
         "nuxmv_agrees_class": verdict_class(reference_verdict) == verdict_class(nuxmv_verdict),
         "all_three_agree_class": (verdict_class(reference_verdict) == verdict_class(z3_verdict) == verdict_class(nuxmv_verdict)),
+        "expectation": EXPECTATIONS[(case, effect_case)],
+        "expectation_met": EXPECTATIONS[(case, effect_case)] == ("refuted" if verdict_class(reference_verdict) == "unsafe" else "clear"),
     }
 
 
@@ -184,9 +225,13 @@ def rows_for(
 def build(rows: Sequence[dict[str, Any]] | None = None, backend: NuXmvBackend | None = None) -> dict[str, Any]:
     """Return the bundle for *rows*, measuring the full grid when rows are not supplied."""
     measured = list(rows) if rows is not None else rows_for(backend=backend)
-    disagreements = [row["ir_id"] + f":b{row['bound']}" for row in measured if not row["all_three_agree_class"]]
+    disagreements = [row_id(row) for row in measured if not row["all_three_agree_class"]]
     refuted = [row for row in measured if verdict_class(str(row["reference_verdict"])) == "unsafe"]
-    unrefuted = [row["ir_id"] + f":b{row['bound']}" for row in measured if verdict_class(str(row["reference_verdict"])) == "safe"]
+    unrefuted = [row_id(row) for row in measured if verdict_class(str(row["reference_verdict"])) == "safe"]
+    cleared_cases = sorted(
+        {f"{row['plan_case']}:{row['effect_case']}" for row in measured if verdict_class(str(row["reference_verdict"])) == "safe"},
+    )
+    missed = [row_id(row) for row in measured if not row.get("expectation_met", True)]
     baseline = next(
         (row for row in measured if row["plan_case"] == "single" and row["effect_case"] == "authorised" and row["bound"] == max(BOUNDS)),
         None,
@@ -199,12 +244,16 @@ def build(rows: Sequence[dict[str, Any]] | None = None, backend: NuXmvBackend | 
         "plans": list(PLAN_CASES),
         "effect_cases": list(EFFECT_CASES),
         "bounds": list(BOUNDS),
+        "expectations": {f"{case}:{effect}": verdict for (case, effect), verdict in sorted(EXPECTATIONS.items())},
         "boundary": BOUNDARY,
         "total_readings": len(measured),
         "three_way_agreements": len(measured) - len(disagreements),
         "three_way_disagreement_ids": disagreements,
+        "expectations_met": len(measured) - len(missed),
+        "expectations_missed": missed,
         "positive_control": len(refuted),
         "unrefuted": unrefuted,
+        "unrefuted_cases": cleared_cases,
         "all_agree": not disagreements,
         "baseline": baseline,
         "results": measured,
@@ -216,27 +265,38 @@ def summarise(evidence: dict[str, Any]) -> str:
     unrefuted = evidence["unrefuted"]
     return "\n".join(
         [
-            "# Plan IR evidence: a plan x effect x bound grid, not a single reading",
+            "# Plan IR evidence: a plan x effect x bound grid with a defect space inside it",
             "",
             f"Suite: {evidence['suite']} ({len(evidence['plans'])} plan shapes x "
             f"{len(evidence['effect_cases'])} effect summaries x {len(evidence['bounds'])} bounds), "
             f"{evidence['total_readings']} readings.",
             f"Source commit: `{evidence['source_commit']}`.",
             "",
-            "The population is structured, not selected: every combination of the two plan shapes, the two "
-            "effect summaries and the four bounds appears exactly once, and the bound is a parameter of the "
+            "The population is structured, not selected: every combination of the three plan shapes, the "
+            "three effect summaries (cleared, first action unauthorised, first action outside its capability "
+            "envelope) and the four bounds appears exactly once, and the bound is a parameter of the "
             "abstraction rather than a chosen reading.",
             "",
+            "Each reading states an expectation before it is measured. The abstraction flags a capability "
+            "violation only for code execution, so a capability mutant of a write-only plan is expected to "
+            "stay clear; the bundle records that instead of hiding it, and misses are listed by id.",
+            "",
+            f"Expectations met: {evidence['expectations_met']} of {evidence['total_readings']} readings "
+            f"({len(evidence['expectations_missed'])} missed).",
             f"The three backends agree by verdict class on {evidence['three_way_agreements']} of "
             f"{evidence['total_readings']} readings ({len(evidence['three_way_disagreement_ids'])} class "
             "disagreements).",
             "",
-            f"Positive control: {evidence['positive_control']} readings carry an unsafe reference verdict, so "
-            "the agreement cannot come from a grid that nothing can refute. The readings that are not "
-            f"refuted are recorded by id ({', '.join(f'`{item}`' for item in unrefuted)}).",
+            f"Positive control: {evidence['positive_control']} of {evidence['total_readings']} readings carry "
+            "an unsafe reference verdict, so the agreement cannot come from a grid that nothing can refute. "
+            f"The {len(unrefuted)} readings that stay clear are the {len(evidence['unrefuted_cases'])} case "
+            f"pairs ({', '.join(f'`{item}`' for item in evidence['unrefuted_cases'])}) at every bound, and the "
+            "bundle records their ids.",
             "",
             "What this shows: on every reading of the grid the Z3 and nuXmv encodings reproduce the reference "
-            "interpreter's verdict class, and the unauthorised readings are refuted at every bound from 1 to 4.",
+            "interpreter's verdict class; the unauthorised readings are refuted at every bound from 1 to 4; "
+            "and the code-capability reading is refuted while the same mutant on a write-only plan is not, "
+            "which is the abstraction's documented boundary rather than a lost mutant.",
             "",
             f"What this does not show: {evidence['boundary']}",
             "",
