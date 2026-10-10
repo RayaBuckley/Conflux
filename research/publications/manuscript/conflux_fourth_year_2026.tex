@@ -135,6 +135,18 @@ independently. The ITES kernel is pure: model proposals cannot assert or narrow
 their Principal Context, alternative branches share an immutable parent, and
 effect execution requires the exact decision certificate.
 
+The code keeps one dependency direction: immutable domain values, policy and
+provider ports that declare protocols without choosing implementations, an
+application layer that composes decisions, and adapters that translate external
+systems without redefining security decisions. The kernel owns the only
+mediation boundary, and planning routes every effect back through it at action
+time rather than at plan time. Verification is separate from execution: a
+callback-free intermediate representation, a reference interpreter, and optional
+solver backends that never replace the operational exploration. Open-ended plans
+use authenticated operation catalogues, typed bindings, explicit loops and
+continuations, and visible resource bounds, so a plan cannot name an operation
+the catalogue does not authenticate.
+
 \subsection{Proposal semantics}
 A versioned proposal batch declares either \texttt{ALTERNATIVES} or
 \texttt{ORDERED\_PLAN}. Alternatives are independently explored from one
