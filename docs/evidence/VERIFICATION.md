@@ -1921,8 +1921,7 @@ model, same seed and same temperature, and the repeats answer the question direc
   recorded `protocol_fingerprint` equals the retained `54781fe7e475522b...` exactly. The earlier
   repeat, written into `.local/`, did not: see the first trap below.
 
-Two traps found while doing this (both fixed or made explicit) and a third, found while repeating the
-two remaining suites on 2026-10-10 and not yet fixed:
+Three traps found while doing this, each fixed or made explicit:
 
 - `ExperimentProtocol.fingerprint` covers the whole record, including `output_directory` and
   `rerun_command`, so the same measurement written to a different directory carries a different
@@ -1933,14 +1932,18 @@ two remaining suites on 2026-10-10 and not yet fixed:
 - the first repeat recorded the short spelling `1127281` while the retained bundle records the full
   SHA, so two records of one commit did not compare equal. `scripts/run_agentdojo_sweep.py` now
   resolves `--source-commit` to a full commit SHA and refuses a value that does not resolve.
-- every retained AgentDojo bundle's `RERUN.txt` records
-  `conflux benchmark agentdojo run --config <bundle>/protocol.json --output <bundle> --execute-local`,
-  and that command exits 2 with `artifact_resolution_required`: the protocol names its local artifact
-  manifest under `inputs`, but the run path resolves the model only from `--model-config`, which the
-  rendered command omits. Following a bundle's own recorded instruction therefore does not reproduce
-  the run; adding `--model-config <bundle>/transformers.json` does, and that is the form used for all
-  four repeats recorded here. The fix is a behaviour change in the run path or in the renderer, and it
-  is filed as a queue item rather than applied silently to retained bundles.
+- every retained AgentDojo bundle's `RERUN.txt` records `conflux benchmark agentdojo run --config
+  <bundle>/protocol.json --output <bundle> --execute-local`, and that command exits 2 with
+  `artifact_resolution_required`: the protocol names its local artifact manifest under `inputs`, but
+  the run path resolves the model only from `--model-config`, which the rendered command omitted.
+  Following a bundle's own recorded instruction therefore did not reproduce the run; the four
+  repeats recorded here were run with `--model-config <bundle>/transformers.json` added.
+  `_agentdojo_pilot_protocol` now records `--model-config` in `rerun_command`, and a regression test
+  fails against the previous renderer. A pilot recorded after that fix was re-run by executing its
+  own recorded command verbatim, apart from the launcher path: six of six cells completed, the
+  process exited 0, and `result.json` records the fingerprint of the protocol it ran. The retained
+  bundles keep the command they were published with, so the added flag is still required to repeat
+  them.
 
 What this changes above: travel's counts are repeatable, cell by cell, on this host and this model.
 What it does not change: 0.5B utility is zero everywhere, so this measures repeatability of the

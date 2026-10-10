@@ -1451,7 +1451,12 @@ def _agentdojo_pilot_protocol(
     injection_task_ids: tuple[str, ...] | None = None,
     benchmark_version: str = "v1.2.2",
 ) -> ExperimentProtocol:
-    """Build a pinned AgentDojo protocol from a resolved local-model configuration."""
+    """Build a pinned AgentDojo protocol from a resolved local-model configuration.
+
+    The recorded rerun command carries ``--model-config``, because a run path that
+    resolves the model from the protocol alone has no local artifact manifest to
+    verify and fails closed with ``artifact_resolution_required``.
+    """
     schemas = Path("research/experiments/suites/agentdojo-tool-schemas-v1.json")
     exceptions = Path("research/experiments/suites/agentdojo-annotation-exceptions-v1.json")
     suite: dict[str, object] = {
@@ -1494,6 +1499,8 @@ def _agentdojo_pilot_protocol(
             "run",
             "--config",
             str(output / "protocol.json"),
+            "--model-config",
+            str(model_config),
             "--output",
             str(output),
             "--execute-local",

@@ -574,6 +574,72 @@ def test_live_agentdojo_gate_reports_missing_optional_package(
     assert preflight["classification"] == "partial"
     assert "agentdojo_setup_failure:not_installed" in preflight["suite_error"]
 
+def test_agentdojo_pilot_protocol_records_a_runnable_rerun_command(tmp_path: Path) -> None:
+    """A recorded rerun command must carry the model configuration it ran with."""
+    import hashlib
+
+    from conflux.adapters.models.artifacts import (
+        LocalArtifactFile,
+        LocalArtifactManifest,
+        ResolvedLocalModel,
+    )
+    from conflux.cli import _agentdojo_pilot_protocol, _parser
+    from conflux.ports.model import LocalModelSpec
+
+    weights = b"weights"
+    snapshot = tmp_path / "snapshot"
+    snapshot.mkdir()
+    (snapshot / "model.safetensors").write_bytes(weights)
+    manifest = LocalArtifactManifest(
+        model_id="Qwen/Qwen2.5-0.5B-Instruct",
+        revision="7ae557604adf67be50417f59c2c2f167def9a775",
+        tokenizer_id="Qwen/Qwen2.5-0.5B-Instruct",
+        tokenizer_revision="7ae557604adf67be50417f59c2c2f167def9a775",
+        files=(
+            LocalArtifactFile(
+                path="model.safetensors",
+                size=len(weights),
+                sha256=hashlib.sha256(weights).hexdigest(),
+            ),
+        ),
+        total_size=len(weights),
+    )
+    spec = LocalModelSpec(
+        backend="transformers",
+        model_id=manifest.model_id,
+        revision=manifest.revision,
+        weight_manifest_sha256=manifest.fingerprint,
+        tokenizer_id=manifest.tokenizer_id,
+        tokenizer_revision=manifest.tokenizer_revision,
+        prompt_template_version="agentdojo_turn_v1",
+        seed=0,
+        temperature=0.0,
+        top_p=1.0,
+        max_output_tokens=256,
+        context_limit=4096,
+        device="cpu",
+        dtype="nf4",
+        runtime_version="0.0.0",
+    )
+    resolved = ResolvedLocalModel(spec=spec, snapshot_path=snapshot, manifest=manifest)
+    config = tmp_path / "transformers.json"
+    config.write_text("{}", encoding="utf-8")
+    output = tmp_path / "pilot"
+    protocol = _agentdojo_pilot_protocol(
+        resolved,
+        model_config=config,
+        output=output,
+        source_commit="0" * 40,
+        task_ids=("user_task_0",),
+    )
+    command = list(protocol.rerun_command)
+    assert command[:4] == ["conflux", "benchmark", "agentdojo", "run"]
+    parsed = _parser().parse_args(command[1:])
+    assert parsed.config == output / "protocol.json"
+    assert parsed.model_config == config
+    assert parsed.output == output
+    assert parsed.execute_local is True
+
 
 def test_model_dependent_commands_preflight_without_model_invocation(
     tmp_path: Path,
