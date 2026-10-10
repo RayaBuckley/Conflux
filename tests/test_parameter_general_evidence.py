@@ -28,7 +28,8 @@ def _generator() -> Any:
 def bundle() -> dict[str, Any]:
     if not BUNDLE_PATH.exists():
         pytest.skip("parameter-general bundle has not been generated")
-    return json.loads(BUNDLE_PATH.read_text(encoding="utf-8"))
+    data: dict[str, Any] = json.loads(BUNDLE_PATH.read_text(encoding="utf-8"))
+    return data
 
 
 def test_rows_name_their_parameter_and_invariant(bundle: dict[str, Any]) -> None:

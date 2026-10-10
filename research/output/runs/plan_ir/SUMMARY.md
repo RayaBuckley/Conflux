@@ -1,7 +1,7 @@
 # Plan IR evidence: a plan x effect x bound grid with a defect space inside it
 
 Suite: plan-ir-grid (3 plan shapes x 3 effect summaries x 4 bounds), 36 readings.
-Source commit: `a61548ab59aecf990e3df46cce7cc733823b6fe3`.
+Source commit: `a93e1ac9b802d47207fa7f2089c879a0a961abb9`.
 
 The population is structured, not selected: every combination of the three plan shapes, the three effect summaries (cleared, first action unauthorised, first action outside its capability envelope) and the four bounds appears exactly once, and the bound is a parameter of the abstraction rather than a chosen reading.
 

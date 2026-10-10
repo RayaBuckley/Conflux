@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T20:51:00.898801+00:00",
+  "generated_at": "2026-10-10T19:23:36.758611+00:00",
   "module": "conflux.verification.reduction + conflux.verification.z3_backend + conflux.verification.nuxmv_backend",
   "summary": {
     "total_variants": 11,
@@ -31,7 +31,7 @@
       "nuxmv": {
         "verdict": "safe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -57,7 +57,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -83,7 +83,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -109,7 +109,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -135,7 +135,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -161,7 +161,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -187,7 +187,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -213,7 +213,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -239,7 +239,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -265,7 +265,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
@@ -291,7 +291,7 @@
       "nuxmv": {
         "verdict": "unsafe",
         "backend": "nuxmv-ic3",
-        "solver_hash": "325369e49abb12e3d92a30c9792e13da2ef8dab99bda7a81ed940472294e71be",
+        "solver_hash": "16d6be1e6218fcfc7b11ec1c3f6c4dcb5a83f9f981bd09a3842e1f4660017841",
         "bound": 4,
         "measured": true,
         "error": null,
