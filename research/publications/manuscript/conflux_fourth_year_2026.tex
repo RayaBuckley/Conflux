@@ -61,9 +61,14 @@ semantics and proof obligation.
 \section{Previous-year contribution and archived evidence}
 The previous prototype accumulated authorship provenance and intersected
 permissions. Its bounded SLED results apply to that implementation and model.
-The archived source and PDF remain under \texttt{paper/} with checksums. They
-are not evidence for the refactored kernel. Current experiments use separately
-named legacy-reproduction and canonical suites.
+The archived source and PDF of the previous-year artefact remain in
+\texttt{research/publications/paper/}. \texttt{ARCHIVED.md} records the commit
+that imported them and states that the submission provenance is unverified, and
+\texttt{ARCHIVE\_MANIFEST.json} holds a SHA-256 hash for every pre-existing
+file, which repository validation checks, so the archive cannot be edited
+silently. Those files describe the previous prototype and its bounded results;
+they are not evidence for the refactored kernel. Current experiments use
+separately named legacy-reproduction and canonical suites.
 This paper is a separate artefact and does not reuse those numbers: its
 results are counted only from the retained bundles under
 \texttt{research/output/runs/}, each of which carries the protocol, per-cell
