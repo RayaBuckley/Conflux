@@ -264,7 +264,7 @@ We treat such benchmarks as complementary: they test finite attack/defence
 combinations, while SLED evaluates whether a defence satisfies its intended
 property under arbitrary model behaviour.
 
-Table~\ref{tab:comparison} compares representative approaches.
+Table~\ref{tab:comparison} compares representative approaches, including two recent planner-level defences. PFI replaces untrusted data with data references before the trusted planner sees it and raises a guardrail alert when untrusted data would reach a privileged call, leaving the decision to the user \citep{pfi2025}. Fides propagates confidentiality and integrity labels through the planner and enforces per-tool policies over them, with an evaluation on AgentDojo \citep{fides2025}.
 
 \begin{table}[t]
 \centering
@@ -279,6 +279,8 @@ CaMeL & Policy/data-flow enforcement; native property $\not\Rightarrow$ PE & Con
 Progent & Privilege-policy enforcement; native property $\not\Rightarrow$ PE & LLM generates initial privilege policy from user task; policy can only narrow without approval & Symbolic/custom policy & Argument/tool metadata \\
 PACT & Argument-sensitive enforcement; native property $\not\Rightarrow$ PE & Argument-level provenance determines if untrusted content influences authority-bearing arguments & Contracts/policies & Argument provenance \\
 FORGE & History-sensitive policy enforcement; native property $\not\Rightarrow$ PE & Observability service maintains execution-context predicates for Datalog enforcement & Datalog policies & Causal/history information \\
+PFI & Unsafe-flow detection with user-approved gating; native property $\not\Rightarrow$ PE & Untrusted results reach the trusted planner only as data references; an unsafe data or control flow raises a guardrail alert and the user approves or denies the operation & Data trust policy over security attributes, plus the user's approval decision & Per-value data identifiers; per-tool security attributes \\
+Fides & Planner-level information-flow control (integrity noninterference, explicit secrecy); native property $\not\Rightarrow$ PE & Labels travel through tool wrappers, and a consequential call proceeds only if the decision to call it rests on trusted inputs alone & Per-tool policies over labels (P-T, P-F) & Confidentiality and integrity labels on a product lattice \\
 ITES & PE prevention under arbitrary influence; PE is native & Any principal's information may arbitrarily determine proposals & Existing organisational ACS & Influencing principals \\
 \bottomrule
 \end{tabular}
@@ -635,8 +637,12 @@ configuration consistent with the threat model of
 Section~\ref{sec:threat-model}. Exploration was limited to a maximum recursive
 execution depth of three. Across all environments, SLED explored
 1{,}462{,}607 execution traces. The current state-based reproduction maps
-these executions to 31 canonical states. Approximately 15\% of traces reached
-the execution-depth bound and were excluded from subsequent analysis. This is a
+these executions to 31 canonical states. The archived prototype reported that
+approximately 15\% of traces reached the execution-depth bound and were
+excluded from subsequent analysis; that share survives in the repository only as
+an approximate figure in a baseline marked unverified, and the retained runs
+apply a different bound criterion that records no trace hitting the bound, so
+the retained evidence cannot recompute it. This is a
 reproduction/conformance exercise under bounded depth; it is not an evaluation
 of an independent implementation against unseen environments, and depth three
 is not a proof of arbitrary-depth behaviour.
@@ -655,8 +661,15 @@ is not a proof of arbitrary-depth behaviour.
 \textbf{Total} & \textbf{1\,462\,607} & \textbf{603\,168} & \textbf{1\,259\,652} & \textbf{7\,015\,986} & \textbf{182\,784} \\
 \bottomrule
 \end{tabular}
-\caption{SLED evaluation results across three environments. No successful
-privilege escalation was observed. Every secure task remained achievable.}
+\caption{SLED evaluation results across three environments, produced by the
+archived prototype and re-derived from retained sources where possible. The
+trace counts and the blocked-privilege-escalation task count are seed-independent
+in the retained classifier. The remaining columns are values that classifier
+reaches at recorded seeds: environment 1 at seeds 2 and 13, and environment 3 at
+seeds 166 and 299, while the environment 2 tuple was not observed in the recorded
+seed sweep. The archived classifier walks hash-ordered sets, so its counters
+depend on the interpreter's string-hash order. No successful privilege
+escalation was observed. Every secure task remained achievable.}
 \label{tab:results}
 \end{table}
 

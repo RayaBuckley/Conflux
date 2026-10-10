@@ -19,6 +19,7 @@ def test_generated_tables_match_the_retained_bundles() -> None:
         "semantic_conformance_table.tex",
         "native_sled_reproduction_table.tex",
         "sledv_scaling_table.tex",
+        "provenance_precision_table.tex",
     }
     assert {path.name for path, _content in outputs} == expected
     for path, content in outputs:
@@ -84,8 +85,22 @@ def test_semantic_conformance_table_counts_the_three_engines() -> None:
 def test_native_sled_table_records_the_reproduced_totals() -> None:
     """The reproduction table carries the historical totals and the comparability caveat."""
     content = (tables.OUT / "native_sled_reproduction_table.tex").read_text(encoding="utf-8")
-    assert "\\textbf{Total} & 1{,}462{,}607 & 1{,}462{,}607 & yes & 31 \\" in content
+    assert "\\textbf{Total} & 1{,}462{,}607 & 1{,}462{,}607 & yes & 31 & 3 & 0 \\" in content
     assert "Directly comparable with the archived trace claim: no" in content
+    # The depth bound is a column, and the retained count of traces that hit it may not be read as a
+    # measurement of the archived share, which survives only as an unverified baseline figure.
+    assert "\\textbf{Bound hits}" in content
+    assert "Archived depth-bound share: 0.15 (baseline status historical\\_unverified)" in content
+    assert "structural zero, not a measurement of the archived share" in content
+
+
+def test_provenance_table_separates_the_three_rules() -> None:
+    """The provenance table holds the four counts per rule and the one-sided caveat."""
+    content = (tables.OUT / "provenance_precision_table.tex").read_text(encoding="utf-8")
+    assert "C0 requester only (negative control) & requester & 1.00 & 208 of 208 & 0 of 208 & 48 of 48 \\" in content
+    assert "C1 may-have-written provenance & possible authors & 8.62 & 173 of 208 & 35 of 208 & 0 of 48 \\" in content
+    assert "C2 authenticated provenance & actual contributors & 3.08 & 208 of 208 & 0 of 208 & 0 of 48 \\" in content
+    assert "no refusal counter and no model" in content
 
 
 def test_sledv_table_records_the_scaling_families() -> None:

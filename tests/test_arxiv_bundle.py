@@ -38,6 +38,7 @@ def test_ship_set_covers_the_tables_and_the_bibliography() -> None:
         "semantic_conformance_table.tex",
         "native_sled_reproduction_table.tex",
         "sledv_scaling_table.tex",
+        "provenance_precision_table.tex",
         "references.bib",
     }
 

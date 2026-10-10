@@ -10,8 +10,8 @@
   "files": [
     {
       "path": "conflux_fourth_year_2026.tex",
-      "bytes": 25322,
-      "sha256": "f6464561f5a7f002ab85784539251e6c130d8ec75474f0184aa7462837fda46e"
+      "bytes": 29539,
+      "sha256": "867c6a2239e7dcda5e0a6aec21f396e2b003f96603c141208ce96ec624419356"
     },
     {
       "path": "generated/tables/agentdojo_breadth_table.tex",
@@ -25,23 +25,28 @@
     },
     {
       "path": "generated/tables/native_sled_reproduction_table.tex",
-      "bytes": 1692,
-      "sha256": "99d3293f5b6d396f6cbb434f1c87ca2b59aefd02ce8dd3ced038e0defa1f6181"
+      "bytes": 2402,
+      "sha256": "fd1474f7141f0e53246c4319bfb7c235671d559185934b23fedf4658262c984b"
+    },
+    {
+      "path": "generated/tables/provenance_precision_table.tex",
+      "bytes": 1638,
+      "sha256": "f2c696ad970c0daf87a168325859787f8622ff408bdd631dba9151e9eb6c5e06"
     },
     {
       "path": "generated/tables/semantic_conformance_table.tex",
       "bytes": 1058,
-      "sha256": "9af02a825c275eb59f7851ca60e7ddb790f0f8b42bd2222a1e2c1ad16cd2e9e7"
+      "sha256": "ed3556972110b22cccd060458870da2884e532e805c9e2ae365868141a4480d6"
     },
     {
       "path": "generated/tables/sledv_scaling_table.tex",
-      "bytes": 1235,
-      "sha256": "0e0471331d4ac87b7800485e5d1fca1ccaff0ba62df4574ffa7559203b259cfd"
+      "bytes": 1720,
+      "sha256": "2fcff77261f2139730e9f1632b501f772935213bee3d5373b1172766b553bbdd"
     },
     {
       "path": "references.bib",
-      "bytes": 6963,
-      "sha256": "1dd6e67feaf91bbf170edca1dcf08f7afc2843ba7873e9340718b43e5a01ecc6"
+      "bytes": 7633,
+      "sha256": "7e59930507acdb769972b13202e604fb2d7e46193545149d10665a3265ef1ef3"
     }
   ]
 }

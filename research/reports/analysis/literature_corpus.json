@@ -5499,6 +5499,53 @@
       }
     },
     {
+      "key": "pfi",
+      "title": "Prompt Flow Integrity to Prevent Privilege Escalation in LLM Agents",
+      "authors": [
+        "Juhee Kim",
+        "Woohyuk Choi",
+        "Byoungyoung Lee"
+      ],
+      "year": 2025,
+      "venue": "implementation",
+      "source_url": "https://arxiv.org/abs/2503.15547",
+      "verified": {
+        "method": "primary_source",
+        "depth": "full_text",
+        "date": "2026-10-10",
+        "notes": "Full text read from the local copy; the arXiv header records arXiv:2503.15547v2 [cs.CR] 21 Apr 2025",
+        "checked_by": "ai_agent"
+      },
+      "last_checked": "2026-10-10",
+      "adoption_priority": "D",
+      "evidence_tier": "B",
+      "closest_relation": "closest privilege-escalation guardrail complement",
+      "stream": "Information-flow agent security",
+      "mechanism": "trusted planner and untrusted worker split, data references and escalation guardrails",
+      "claim_refs": [],
+      "snowball_status": {
+        "backward": "pending",
+        "forward": "pending"
+      },
+      "reading_status": "read",
+      "reading_priority": "D",
+      "source_type": "primary_paper",
+      "arxiv_id": "2503.15547",
+      "relevance": {
+        "useful_parts": "The paper separates the agent into a trusted planner and an untrusted task worker, replaces untrusted results with data references before the planner sees them, routes untrusted content to a privileged call, a prompt or the final answer only through a planner endorsement the user approves, and reports a security-utility trade-off in guardrail alerts on AgentDojo and AgentBench OS.",
+        "conflux_relation": "background",
+        "key_findings": [
+          "Untrusted data is replaced with a data reference rather than handed to the trusted planner directly",
+          "Reaching a privileged call, a prompt or the final answer from untrusted data requires a planner endorsement that the user approves",
+          "The evaluation reports utility loss against guardrail alerts on AgentDojo and AgentBench OS"
+        ],
+        "limitations": [
+          "No per-principal permission or access-control state is consulted: the guardrail detects an unsafe flow and asks the user, so the decision rests on the operator",
+          "The local copy is a two-column extraction whose runs interleave, so quoted spans were verified only where they survive as contiguous text"
+        ]
+      }
+    },
+    {
       "key": "pilandscape2026",
       "title": "The Landscape of Prompt Injection Threats in LLM Agents: From Taxonomy to Analysis",
       "authors": [

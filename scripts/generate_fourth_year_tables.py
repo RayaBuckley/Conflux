@@ -23,8 +23,12 @@ OUT = ROOT / "research" / "publications" / "manuscript" / "generated" / "tables"
 #: Column layout for the breadth table: run, cells, complete, utility, security, incomplete, failures.
 _BREADTH_COLUMNS = "l" * 2 + "r" * 4 + "l"
 
-#: Column layout for the reproduction table: environment, two counts, match, canonical states.
-_REPRODUCTION_COLUMNS = "l" + "r" * 3 + "l"
+#: Column layout for the reproduction table: environment, two counts, match, canonical states,
+#: the depth bound and the retained count of traces that hit it.
+_REPRODUCTION_COLUMNS = "l" + "r" * 3 + "l" + "r" * 2
+
+#: Column layout for the provenance table: rule, provenance set, four counts.
+_PROVENANCE_COLUMNS = "ll" + "r" * 4
 
 #: Column layout for the scaling table: family, fixtures, two sizes, reduction factor.
 _SCALING_COLUMNS = "l" + "r" * 4
@@ -203,6 +207,8 @@ THREE_WAY = RUNS / "three-way-agreement-v1" / "result.json"
 NATIVE_SLED_A = RUNS / "native-sled-reproduction-v1" / "result.json"
 NATIVE_SLED_B = RUNS / "native-sled-partb-reproduction-v1" / "result.json"
 SLEDV = RUNS / "sledv-scaling-v1" / "result.json"
+PROVENANCE = RUNS / "provenance-precision-v1" / "result.json"
+SLED_HISTORICAL = ROOT / "research" / "experiments" / "baselines" / "sled-historical-v1.json"
 
 
 def _count(value: int) -> str:
@@ -258,40 +264,52 @@ def table_native_sled_reproduction() -> list[tuple[Path, str]]:
     """Reproduced historical trace counts and the canonical-versus-archived comparison."""
     part_b, _digest_b = _read_json(NATIVE_SLED_B)
     part_a, _digest_a = _read_json(NATIVE_SLED_A)
+    baseline, _digest_baseline = _read_json(SLED_HISTORICAL)
+    bound = int(part_b["max_depth"])
     rows: list[str] = []
     for environment in part_b["environments"]:
         match = "yes" if environment["trace_count_match"] else "no"
         rows.append(
             f"{_tex_escape(str(environment['env_id']))} & {_count(environment['expected_traces'])} & "
             f"{_count(environment['total_traces'])} & {match} & "
-            f"{_count(environment['unique_canonical_states'])} \\\\",
+            f"{_count(environment['unique_canonical_states'])} & {bound} & "
+            f"{_count(environment['incomplete_traces'])} \\\\",
         )
     totals: dict[str, Any] = part_b["totals"]
     total_match = "yes" if totals["trace_count_match"] else "no"
     rows.append("\\midrule")
     rows.append(
         f"\\textbf{{Total}} & {_count(totals['expected_total'])} & {_count(totals['total_traces'])} & "
-        f"{total_match} & {_count(totals['unique_canonical_states'])} \\\\",
+        f"{total_match} & {_count(totals['unique_canonical_states'])} & {bound} & "
+        f"{_count(totals['incomplete_traces'])} \\\\",
     )
     historical: dict[str, Any] = part_a["historical_comparison"]
     comparable = "yes" if historical["comparable"] else "no"
     controls = part_a["negative_controls"]
     killed = sum(1 for control in controls if control["killed"])
+    share = float(baseline["bound_reached_fraction_approximate"])
     rows.append("\\midrule")
     rows.append(
-        "\\multicolumn{5}{l}{\\emph{Canonical fixtures against the archived prototype}} \\\\",
+        "\\multicolumn{7}{l}{\\emph{Canonical fixtures against the archived prototype}} \\\\",
     )
     rows.append(
-        f"\\multicolumn{{5}}{{l}}{{Pairs compared: {len(part_a['pairs'])}; "
+        f"\\multicolumn{{7}}{{l}}{{Pairs compared: {len(part_a['pairs'])}; "
         f"negative controls killed: {killed} of {len(controls)}}} \\\\",
     )
     rows.append(
-        f"\\multicolumn{{5}}{{l}}{{Directly comparable with the archived trace claim: {comparable} "
+        f"\\multicolumn{{7}}{{l}}{{Directly comparable with the archived trace claim: {comparable} "
         f"({_tex_escape(str(historical['classification']))})}} \\\\",
     )
     rows.append(
-        f"\\multicolumn{{5}}{{l}}{{Reproduced under depth bound {part_b['max_depth']}; "
-        "runtime is omitted from the deterministic fixture}} \\\\",
+        f"\\multicolumn{{7}}{{l}}{{Archived depth-bound share: {share:.2f} "
+        f"(baseline status {_tex_escape(str(baseline['claim_status']))})}} \\\\",
+    )
+    rows.append(
+        "\\multicolumn{7}{l}{The bound-hit count is the retained criterion's structural zero, "
+        "not a measurement of the archived share} \\\\",
+    )
+    rows.append(
+        "\\multicolumn{7}{l}{Runtime is omitted from the deterministic fixture} \\\\",
     )
     body = "\n".join(rows)
     caption = (
@@ -299,16 +317,20 @@ def table_native_sled_reproduction() -> list[tuple[Path, str]]:
         "under the recorded depth bound, and the canonical-state compression collapses the raw "
         "traces to a handful of states. The archived prototype enumerated transitions differently, "
         "so its headline trace count is not directly comparable; this is reproduction and "
-        "conformance, not an unbounded security proof. Counts are read from each bundle's own "
-        "\\texttt{result.json}."
+        "conformance, not an unbounded security proof. The archived share of traces that reached "
+        "the bound survives only as an approximate figure from an unverified baseline: the retained "
+        "runs apply a different criterion and record no trace hitting the bound, so no retained "
+        "bundle recomputes that share. Counts are read from each bundle's own \\texttt{result.json} "
+        "and the archived share from the recorded baseline."
     )
     tex = (
-        _header(_sources(NATIVE_SLED_B, NATIVE_SLED_A))
+        _header(_sources(NATIVE_SLED_B, NATIVE_SLED_A, SLED_HISTORICAL))
         + "\\begin{table}[t]\n\\centering\n\\small\n\\begin{tabular}{"
         + _REPRODUCTION_COLUMNS
         + "}\n\\toprule\n"
         + "\\textbf{Environment} & \\textbf{Expected traces} & \\textbf{Reproduced} & "
-        + "\\textbf{Match} & \\textbf{Canonical states} \\\\\n\\midrule\n"
+        + "\\textbf{Match} & \\textbf{Canonical states} & \\textbf{Depth bound} & "
+        + "\\textbf{Bound hits} \\\\\n\\midrule\n"
         + body
         + "\n\\bottomrule\n\\end{tabular}\n\\caption{"
         + caption
@@ -332,6 +354,17 @@ def table_sledv_scaling() -> list[tuple[Path, str]]:
     summary: dict[str, Any] = result["summary"]
     fixtures = result["fixtures"]
     equivalent = sum(1 for fixture in fixtures if fixture["coi_equivalent"])
+    strengthened = sum(
+        1
+        for fixture in fixtures
+        if fixture["original"]["verdict"] == "bounded_safe" and fixture["reduced"]["verdict"] == "safe"
+    )
+    refuted = sum(1 for fixture in fixtures if fixture["original"]["verdict"] == "unsafe")
+    depth_refuted = sum(
+        1
+        for fixture in fixtures
+        if fixture["family"] == "depth_scaling" and fixture["original"]["verdict"] == "unsafe"
+    )
     downgrade = "none" if summary["no_coi_downgrade"] else "present"
     agree = "yes" if summary["ref_z3_agree"] else "no"
     rows.append("\\midrule")
@@ -339,15 +372,26 @@ def table_sledv_scaling() -> list[tuple[Path, str]]:
         f"\\multicolumn{{5}}{{l}}{{Total fixtures: {_count(summary['total_fixtures'])}; "
         f"COI-equivalent fixtures: {_count(equivalent)}}} \\\\",
     )
+    rows.append(
+        f"\\multicolumn{{5}}{{l}}{{Fixtures the reduction strengthens "
+        f"(bounded safe to safe): {_count(strengthened)}}} \\\\",
+    )
+    rows.append(
+        f"\\multicolumn{{5}}{{l}}{{Refuted fixtures: {_count(refuted)}; "
+        f"of them in the depth family: {_count(depth_refuted)}}} \\\\",
+    )
     rows.append(f"\\multicolumn{{5}}{{l}}{{Verdict downgrades after reduction: {downgrade}}} \\\\")
     rows.append(f"\\multicolumn{{5}}{{l}}{{Reference and Z3 agree: {agree}}} \\\\")
     body = "\n".join(rows)
     caption = (
         "SLED-V reduction over three scaling families. The reduction collapses the finite models by "
         "up to the factor shown, no verdict is downgraded after reduction, and the reference and Z3 "
-        "decisions agree. Sizes and checks are read from the bundle's own \\texttt{result.json}. "
-        "This is bounded evidence on the tested finite models; it is not a proof of security for "
-        "arbitrary or unbounded deployments."
+        "decisions agree. Sizes and checks are read from the bundle's own \\texttt{result.json}. The "
+        "reduction strengthens five fixtures from bounded safe to safe, and every refuted fixture "
+        "comes from the noise or principal family: the five depth fixtures labelled unsafe encode a "
+        "single state and no transition, so they give the reduction no positive control and the "
+        "depth family's evidence is about reduction size alone. This is bounded evidence on the "
+        "tested finite models; it is not a proof of security for arbitrary or unbounded deployments."
     )
     tex = (
         _header(_sources(SLEDV))
@@ -364,6 +408,65 @@ def table_sledv_scaling() -> list[tuple[Path, str]]:
     return [(OUT / "sledv_scaling_table.tex", tex)]
 
 
+def table_provenance_precision() -> list[tuple[Path, str]]:
+    """Capability retention and over-blocking for three provenance rules, from the bundle's rows."""
+    result, _digest = _read_json(PROVENANCE)
+    summary: dict[str, Any] = result["summary"]
+    fixtures: list[dict[str, Any]] = result["results"]
+    achievable = [row for row in fixtures if row["ground_truth"] == "securely_achievable"]
+    blocked = [row for row in fixtures if row["ground_truth"] == "securely_blocked"]
+    vulnerable = [row for row in fixtures if row["ground_truth"] == "vulnerable"]
+    rules = (
+        ("C0", "requester only (negative control)", "requester"),
+        ("C1", "may-have-written provenance", "possible authors"),
+        ("C2", "authenticated provenance", "actual contributors"),
+    )
+    rows: list[str] = []
+    for code, label, provenance_set in rules:
+        key = code.lower()
+        completed = sum(1 for row in achievable if row[f"{key}_outcome"] == "complete")
+        executed = sum(1 for row in vulnerable if row[f"{key}_outcome"] == "vulnerable_execution")
+        rows.append(
+            f"{code} {_tex_escape(label)} & {_tex_escape(provenance_set)} & "
+            f"{float(summary[f'{key}_mean_pc']):.2f} & {completed} of {len(achievable)} & "
+            f"{len(achievable) - completed} of {len(achievable)} & "
+            f"{executed} of {len(vulnerable)} \\\\",
+        )
+    body = "\n".join(rows)
+    violations = int(summary["c2_sound_violations"])
+    caption = (
+        f"Capability retention and over-blocking for three provenance rules over "
+        f"{_count(int(summary['total_tasks']))} symbolic delegation fixtures "
+        f"({len(achievable)} securely achievable, {len(blocked)} securely blocked, "
+        f"{len(vulnerable)} vulnerable), three repetitions per parameter cell. C0 is the negative "
+        "control: it authorises the requester alone, so its row shows what the confinement rule "
+        "costs rather than a capability figure. From the conservative rule to authenticated "
+        f"provenance, denials of securely achievable work fall from "
+        f"{len(achievable) - sum(1 for row in achievable if row['c1_outcome'] == 'complete')} "
+        f"to {len(achievable) - sum(1 for row in achievable if row['c2_outcome'] == 'complete')}, "
+        f"the mean size of the computed provenance set falls from "
+        f"{float(summary['c1_mean_pc']):.2f} to {float(summary['c2_mean_pc']):.2f}, and "
+        f"{_count(violations)} of {_count(int(summary['total_tasks']))} authenticated rows both "
+        "authorise and violate the confinement rule. "
+        "The measurement is one-sided: the rows count the denials the rule produces, and the bundle "
+        "holds no refusal counter and no model, so a refusal an agent would add on top is uncounted."
+    )
+    tex = (
+        _header(_sources(PROVENANCE))
+        + "\\begin{table}[t]\n\\centering\n\\small\n\\begin{tabular}{"
+        + _PROVENANCE_COLUMNS
+        + "}\n\\toprule\n"
+        + "\\textbf{Provenance rule} & \\textbf{Provenance set} & \\textbf{Mean size} & "
+        + "\\textbf{Secure tasks completed} & \\textbf{False denials} & "
+        + "\\textbf{Vulnerable executions} \\\\\n\\midrule\n"
+        + body
+        + "\n\\bottomrule\n\\end{tabular}\n\\caption{"
+        + caption
+        + "}\n\\label{tab:provenance-precision}\n\\end{table}\n"
+    )
+    return [(OUT / "provenance_precision_table.tex", tex)]
+
+
 def generate_all() -> list[tuple[Path, str]]:
     outputs: list[tuple[Path, str]] = []
     outputs.extend(table_agentdojo_breadth())
@@ -371,6 +474,7 @@ def generate_all() -> list[tuple[Path, str]]:
     outputs.extend(table_semantic_conformance())
     outputs.extend(table_native_sled_reproduction())
     outputs.extend(table_sledv_scaling())
+    outputs.extend(table_provenance_precision())
     return outputs
 
 

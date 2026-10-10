@@ -1,0 +1,13 @@
+{
+  "key": "pfi",
+  "source_category": "arxiv",
+  "source_url": "https://arxiv.org/abs/2503.15547",
+  "fetch_status": "fetched",
+  "local_files": [
+    "paper.html",
+    "paper.pdf"
+  ],
+  "content_hash": "7c612549e1499f352e6a89d6f36308d7d8ff2303035867e6ea437e3754f65efe",
+  "fetched_date": "2026-10-10T19:15:59Z",
+  "error_message": ""
+}

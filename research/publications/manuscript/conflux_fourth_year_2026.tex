@@ -141,6 +141,29 @@ reaching privileged planning through a structured IFC pipeline; Conflux
 instead treats all model-visible information as potentially influential and
 derives authority from the intersection of all influencers' access-control
 system (ACS) permissions.
+PFI separates a trusted planner from an untrusted worker, replaces untrusted
+data with a data reference before the planner sees it, and lets that data reach
+a privileged call, a prompt or the final answer only through a planner
+endorsement that the user approves; it reports the utility cost together with
+the guardrail alerts it raises \citep{pfi}. Fides attaches confidentiality and
+integrity labels to everything an agent processes, enforces the resulting policy
+deterministically inside the planner, and characterises within a formal model of
+planners the class of properties that dynamic taint tracking can enforce, with
+its evaluation on AgentDojo \citep{fides}. Planner-level information-flow
+control for agents is therefore already established, and AgentDojo is shared
+evaluation ground rather than a differentiator.
+
+The difference that remains is the decision and where its authority comes from.
+Fides decides from labels carried by data and a policy attached to the
+operation; Conflux decides from the permissions that the organisation's
+existing access-control system already grants to every principal whose
+information influences the action, so authority is derived per action and per
+influencing principal rather than assigned once per object. The intersection of
+those permission sets admits exactly the actions that every influencing
+principal's own permissions allow. PFI detects an unsafe flow and asks the user
+to approve or refuse it, so an operation the operator rejects is the backstop;
+the intersection rule refuses an unauthorised action without asking and without
+depending on the proposal, so no proposal can induce an unauthorised effect.
 
 CaMeL isolates control and data flows with a programmable policy interface
 (Python functions over tool name and arguments, with capability/source
@@ -310,12 +333,39 @@ encoding, not a proof of the delegation semantics.\\
 \textbf{Native SLED:} the retained bounded reproduction recovers all three
 historical trace counts and their canonical-state compression; the canonical
 fixtures are not directly comparable with the archived prototype, whose
-enumeration differed. Table~\ref{tab:native-sled-reproduction} records both.\\
+enumeration differed. Table~\ref{tab:native-sled-reproduction} records both.
+The archived prototype also reported that a share of traces reached the
+execution-depth bound and was excluded from later analysis. That share survives
+only as an approximate figure in a baseline marked unverified, and the retained
+runs apply a different criterion that records no trace hitting the bound, so the
+table reports the bound and the retained count instead of recomputing the
+share. The archived classifier behind the historical per-environment counters
+is itself recovered from retained sources with the hash seed pinned: the
+retained sweep reproduces the first and third environments' tuples exactly, the
+second environment's tuple is one admissible order sample that the sweep did not
+observe, and the invariant six times the incomplete count plus the secure-task
+count is constant across every observed seed.\\
 \textbf{SLED-MC/SLED-V:} the retained scaling bundle shows how far the
 cone-of-influence reduction shrinks the finite models and that no verdict is downgraded after
-reduction; Table~\ref{tab:sledv-scaling} records the sizes and the checks. A
-SLED-V reduction is bounded evidence on the tested finite models, not a proof
-for unbounded deployments.\\
+reduction; Table~\ref{tab:sledv-scaling} records the sizes and the checks. Two
+limits belong with those sizes. The nine fixtures that carry a reference
+\emph{unsafe} verdict come from the noise and principal families, not from the
+depth family: the five depth fixtures labelled unsafe encode a single-state
+model with no transition, and the reference interpreter and Z3 both decide them
+safe, so the depth family contributes no positive control and the scaling
+evidence for it is about reduction size alone. A SLED-V reduction is bounded
+evidence on the tested finite models, not a proof for unbounded deployments.\\
+\textbf{Over-blocking and capability retention:} the retained provenance
+bundle compares three provenance rules over 351 symbolic delegation fixtures.
+The conservative rule denies 35 of the 208 securely achievable fixtures, and the
+authenticated rule denies none of them, while the mean size of the computed
+provenance set falls from 8.62 to 3.08; the requester-only control shows what
+the confinement rule costs rather than a capability figure.
+Table~\ref{tab:provenance-precision} records the counts. The measurement is
+one-sided: the bundle counts the denials the rule produces, holds no refusal
+counter and no model, so a refusal an agent would add on top is uncounted. The
+denials concentrate where provenance heterogeneity is high: 24 of 32 fixtures
+there, against none of 117 at low heterogeneity.\\
 \textbf{Direction security models:} the retained checksummed bundle reports
 safe exhaustion for the canonical finite disclosure and delegation models and
 minimal witnesses for every seeded selector, disclosure, attribution, and
@@ -329,8 +379,13 @@ Table~\ref{tab:agentdojo-fingerprints}. Both tables are generated from the
 retained result and protocol JSON. They record what the floor model did, not a
 defence result: at this model scale utility is zero, so the security counts
 carry no signal, and the standing limitation is stated in the table caption.
-Real-model and AgentDojo claims stay bounded until a capable model completes
-the protocols.
+The two 7B runs in the same ledger share a second, independent limit: their five
+tasks are read-only, their ground truth is \texttt{search\_emails} alone, and
+every retained log made at most that one call, so no effect tool was reached at
+any model size and their security counts carry no signal either. Of the 97 user
+tasks in the four suites, 60 require an effect call, and a new run is selected
+from those. Real-model and AgentDojo claims stay bounded until a capable model
+completes the protocols on effect-bearing tasks.
 
 \input{generated/tables/agentdojo_breadth_table}
 
@@ -341,6 +396,8 @@ the protocols.
 \input{generated/tables/native_sled_reproduction_table}
 
 \input{generated/tables/sledv_scaling_table}
+
+\input{generated/tables/provenance_precision_table}
 
 No numerical claim is entered manually. Tables and figures are generated from
 retained, versioned result JSON and include input checksums.
