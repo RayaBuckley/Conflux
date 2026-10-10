@@ -353,10 +353,20 @@ evidence; the raw upstream AgentDojo fixture validates translation only.
 Conflux now has one tested security semantics, a runnable offline vertical
 slice, argument-aware disclosure and attribution, authenticated bounded
 planning, property-reduced verification, and a disabled scoped-delegation
-foundation. The remaining research contribution is stronger evidence and
-carefully gated activation: real-model, external-benchmark, Cedar-parity and
-formal artefacts whose claims remain tied to explicit assumptions, models, and
-bounds.
+foundation. The claim it defends is narrower than \emph{security for agents}:
+an action is allowed only when every influencing principal's own permissions
+allow it, and an input fetched from elsewhere cannot acquire authority it was
+never granted, whatever the model proposes. The evidence in this paper is
+bounded and reproducible. Eleven planned variants agree three ways under two
+independent backends, the archived prototype reproduces its published trace
+count under a stated enumeration change, and property reduction keeps the
+scaling advantage measured on the fixtures exercised here. The controls hold and
+the ten variants that are false are reported as refuted, which is what the
+method exists to produce: refutation is a result, not a failure of the run. The
+remaining research contribution is stronger evidence and carefully gated
+activation: real-model, external-benchmark, Cedar-parity and formal artefacts
+whose claims remain tied to explicit assumptions, models, and bounds. The
+limitations section states where that evidence does not yet reach.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
