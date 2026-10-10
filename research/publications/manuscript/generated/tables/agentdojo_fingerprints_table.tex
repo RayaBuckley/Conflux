@@ -1,0 +1,29 @@
+% GENERATED FILE -- do not edit by hand.
+% Run: python scripts/generate_fourth_year_tables.py
+% Source: research/output/runs/agentdojo-stratified-banking-v1/result.json SHA-256: 17edd75b1b5e6e03df835154457b60de3dff6c4f963020c7dd38c3bdd57777fa
+% Source: research/output/runs/agentdojo-stratified-banking-v1/protocol.json SHA-256: cbf41d0ae0242311fadf67b2340a723cd06c20a26a3d11b1ec25ca5ade1e8cf1
+% Source: research/output/runs/agentdojo-stratified-slack-v1/result.json SHA-256: 69e60b580d24bf9a28796d267e5434ec5afb9d664fe7dd697019fa47ccff2b15
+% Source: research/output/runs/agentdojo-stratified-slack-v1/protocol.json SHA-256: 9c2ce6e181a17faaf96f061039b3cce5c9c209d965d17cd4951f7819a405946d
+% Source: research/output/runs/agentdojo-stratified-travel-v1/result.json SHA-256: a4e85c02b7533a8ff71f536aca87b5a4594ad6467ff4828f5a99c004fc91a6d1
+% Source: research/output/runs/agentdojo-stratified-travel-v1/protocol.json SHA-256: ee62fbc6ae0fbf0f4dcf6dcddc8e9e57a95db3693b67e8ec37c9498c5135fa5c
+% Source: research/output/runs/agentdojo-stratified-workspace-v1/result.json SHA-256: 810e24057e8b961f49ae88c1b47901049b2443a5116c2057a0c099adcafb70ce
+% Source: research/output/runs/agentdojo-stratified-workspace-v1/protocol.json SHA-256: 1d75d38896dc76d9d0a8071143f67fe0d05ade74acb620a4a8fd2cd80f6a711b
+% Source: research/output/runs/agentdojo-pilot-banking-v1/result.json SHA-256: 7e74dfa894f89d13e1db9e35495b484c6e47eae4ad8bc4195608a79633983ab0
+% Source: research/output/runs/agentdojo-pilot-banking-v1/protocol.json SHA-256: 44904393e0c13f582f1116bc1ed4c3c0227da55c87252ce50d5e7d709b0830a1
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lllll}
+\toprule
+\textbf{Bundle} & \textbf{Protocol suite id} & \textbf{Source commit} & \textbf{Fingerprint} & \textbf{Model} \\
+\midrule
+agentdojo-stratified-banking-v1 & banking:expanded:user\_task\_0 & \texttt{1127281372dc} & \texttt{da3024092bc533e8} & Qwen/Qwen2.5-0.5B-Instruct \\
+agentdojo-stratified-slack-v1 & slack:expanded:user\_task\_0 & \texttt{1127281372dc} & \texttt{936563e1782d1001} & Qwen/Qwen2.5-0.5B-Instruct \\
+agentdojo-stratified-travel-v1 & travel:expanded:user\_task\_0 & \texttt{1127281372dc} & \texttt{54781fe7e475522b} & Qwen/Qwen2.5-0.5B-Instruct \\
+agentdojo-stratified-workspace-v1 & workspace:expanded:user\_task\_0 & \texttt{1127281372dc} & \texttt{cbe8f9ad9a5f1b8b} & Qwen/Qwen2.5-0.5B-Instruct \\
+agentdojo-pilot-banking-v1 & banking:expanded:user\_task\_0 & \texttt{1127281372dc} & \texttt{185539f9d2650759} & Qwen/Qwen2.5-0.5B-Instruct \\
+\bottomrule
+\end{tabular}
+\caption{Protocol identity of the retained bundles. A repeat that changes the suite, task set, bounds, model identity, prompts, or inputs changes the fingerprint, so a matching fingerprint is what makes a rerun comparable; a matching fingerprint also implies the recorded source commit. The fingerprints are truncated to their first 16 hexadecimal digits here and kept whole in each bundle's \texttt{result.json}. The stratified bundles were retained before the sweep passed the selection's own suite id, so their suite ids use the earlier \texttt{<suite>:expanded:<first task>} spelling rather than the selection manifest's \texttt{<suite>:stratified-v1}; every id here is the one the run recorded.}
+\label{tab:agentdojo-fingerprints}
+\end{table}

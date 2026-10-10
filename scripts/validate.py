@@ -137,7 +137,6 @@ def _parse_tier(arguments: list[str]) -> int:
     return tier
 
 
-
 def _workflow_escape(value: str) -> str:
     return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
 
@@ -263,8 +262,7 @@ def main() -> int:
                 stopped = True
 
     print(
-        f"[validate] tier {tier} ({TIER_NAMES[tier]}); "
-        "use --tier quick|standard|full to change the depth",
+        f"[validate] tier {tier} ({TIER_NAMES[tier]}); use --tier quick|standard|full to change the depth",
         flush=True,
     )
 
@@ -310,6 +308,7 @@ def main() -> int:
             "--check",
         )
     _run(2, "scripts/generate_flmsec_tables.py", "--check")
+    _run(2, "scripts/generate_fourth_year_tables.py", "--check")
     if tier == 1:
         _run(
             1,
@@ -383,8 +382,7 @@ def main() -> int:
             print(f"  - {name}")
         if tier < 3:
             print(
-                "[validate] run the next tier before committing: "
-                f"python scripts/validate.py --tier {TIER_NAMES[tier + 1]}",
+                f"[validate] run the next tier before committing: python scripts/validate.py --tier {TIER_NAMES[tier + 1]}",
             )
     return 0
 
