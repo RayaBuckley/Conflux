@@ -13,6 +13,7 @@ from conflux.verification.delegation_ir import (
     build_delegation_ir,
 )
 from conflux.verification.interpreter import evaluate, initial_state, successors
+from conflux.verification.ir import VerificationIR
 from conflux.verification.reduction import reference_safety_check
 
 
@@ -139,3 +140,52 @@ def test_the_eleven_variants_cover_ten_distinct_bodies() -> None:
     shared = sorted(names for names in bodies.values() if len(names) > 1)
     assert len(bodies) == 10
     assert shared == [["redelegation", "redelegation_chain"]]
+
+
+def test_composition_reproduces_every_named_mutation() -> None:
+    """build_combined_delegation_ir({m}) must build exactly what build_delegation_ir(m) builds.
+
+    The combination sweep reads the defect space as composable, so the single-mutation readings have to
+    stay the same objects they always were: a drift here would silently change what the retained bundles
+    mean without touching them.
+    """
+    from conflux.verification.delegation_ir import build_combined_delegation_ir
+
+    def body(ir: VerificationIR) -> tuple[object, ...]:
+        return (ir.variables, ir.transitions, ir.invariants, ir.bound)
+
+    canonical = build_combined_delegation_ir(frozenset())
+    assert body(canonical) == body(build_delegation_ir(DelegationIRMutation.CANONICAL))
+    for mutation in DelegationIRMutation:
+        if mutation is DelegationIRMutation.CANONICAL:
+            continue
+        assert body(build_combined_delegation_ir({mutation})) == body(build_delegation_ir(mutation))
+
+
+def test_the_defect_space_has_nine_entries() -> None:
+    """The composable defects are nine: the tenth mutation duplicates redelegation's body.
+
+    See test_the_eleven_variants_cover_ten_distinct_bodies: counting the duplicate as its own defect
+    would put a body that is already in the population into a combination sweep twice.
+    """
+    from conflux.verification.delegation_ir import DELEGATION_IR_DEFECTS
+
+    assert len(DELEGATION_IR_DEFECTS) == 9
+    assert DelegationIRMutation.REDELEGATION in DELEGATION_IR_DEFECTS
+    assert DelegationIRMutation.REDELEGATION_CHAIN not in DELEGATION_IR_DEFECTS
+    assert DelegationIRMutation.CANONICAL not in DELEGATION_IR_DEFECTS
+
+
+def test_two_defects_compose_and_the_result_is_unsafe() -> None:
+    """A combination keeps both effects, and any defect at all leaves the variant refutable."""
+    from conflux.verification.delegation_ir import build_combined_delegation_ir
+
+    combined = build_combined_delegation_ir(
+        {DelegationIRMutation.REUSE, DelegationIRMutation.STALE_CONTEXT},
+    )
+    consume = next(rule for rule in combined.transitions if rule.id == "attempt_use")
+    assignments = {assignment.variable: assignment.expression.value for assignment in consume.assignments}
+    assert assignments["use_count"] == 2
+    assert assignments["context_verified"] is False
+    assert reference_safety_check(combined).verdict.value == "unsafe"
+    assert reference_safety_check(build_combined_delegation_ir(frozenset())).verdict.value == "safe"

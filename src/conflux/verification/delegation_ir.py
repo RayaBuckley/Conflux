@@ -17,6 +17,7 @@ properties; OpenPort (arXiv:2602.20196) — TOCTOU State Witness.
 
 from __future__ import annotations
 
+from collections.abc import Set
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -134,7 +135,34 @@ def _invariants() -> tuple[SafetyInvariant, ...]:
     )
 
 
-def _transitions(mutation: DelegationIRMutation) -> tuple[TransitionRule, ...]:
+DELEGATION_IR_DEFECTS: tuple[DelegationIRMutation, ...] = (
+    DelegationIRMutation.WIDENED_SCOPE,
+    DelegationIRMutation.WIDENED_SCOPE_CHAIN,
+    DelegationIRMutation.WRONG_BENEFICIARY,
+    DelegationIRMutation.REUSE,
+    DelegationIRMutation.EXPIRY_BYPASS,
+    DelegationIRMutation.REVOCATION_BYPASS,
+    DelegationIRMutation.REDELEGATION,
+    DelegationIRMutation.POST_INFLUENCE_ISSUANCE,
+    DelegationIRMutation.STALE_CONTEXT,
+)
+"""The nine defects that compose into one another.
+
+``redelegation_chain`` is absent because it builds the same variables, transitions and invariants as
+``redelegation`` and differs only in ``id``: counting it as a second defect would put a body that is
+already in the population into a combination sweep a second time.
+"""
+
+
+def _defects_of(mutation: DelegationIRMutation) -> frozenset[DelegationIRMutation]:
+    """The defect set one named mutation stands for; the canonical variant stands for none."""
+    if mutation is DelegationIRMutation.CANONICAL:
+        return frozenset()
+    return frozenset({mutation})
+
+
+def _transitions(defects: Set[DelegationIRMutation]) -> tuple[TransitionRule, ...]:
+    """Build the transition rules for a set of defects present at once."""
     var = Expression.variable
     const = Expression.constant
     step = var("step")
@@ -146,43 +174,43 @@ def _transitions(mutation: DelegationIRMutation) -> tuple[TransitionRule, ...]:
 
     consume_guard_parts: list[Expression] = [step_guard, not_consumed, not_revoked]
 
-    if mutation is not DelegationIRMutation.EXPIRY_BYPASS:
+    if DelegationIRMutation.EXPIRY_BYPASS not in defects:
         not_expired = Expression.operator(ExpressionKind.NOT, var("expired"))
         consume_guard_parts.append(not_expired)
 
-    if mutation is not DelegationIRMutation.POST_INFLUENCE_ISSUANCE:
+    if DelegationIRMutation.POST_INFLUENCE_ISSUANCE not in defects:
         consume_guard_parts.append(var("issued_before_influence"))
 
-    if mutation is not DelegationIRMutation.WRONG_BENEFICIARY:
+    if DelegationIRMutation.WRONG_BENEFICIARY not in defects:
         consume_guard_parts.append(var("beneficiary_valid"))
 
-    if mutation is not DelegationIRMutation.WIDENED_SCOPE:
+    if DelegationIRMutation.WIDENED_SCOPE not in defects:
         consume_guard_parts.append(var("scope_match"))
 
-    if mutation is not DelegationIRMutation.STALE_CONTEXT:
+    if DelegationIRMutation.STALE_CONTEXT not in defects:
         consume_guard_parts.append(var("context_verified"))
 
     consume_guard = Expression.operator(ExpressionKind.AND, *consume_guard_parts)
 
-    use_count_expr = const(2) if mutation is DelegationIRMutation.REUSE else const(1)
+    use_count_expr = const(2) if DelegationIRMutation.REUSE in defects else const(1)
     grant_consumed_expr = const(True)
     redelegated_expr = (
         const(True)
-        if mutation
-        in (
+        if {
             DelegationIRMutation.REDELEGATION,
             DelegationIRMutation.REDELEGATION_CHAIN,
-        )
+        }
+        & defects
         else const(False)
     )
 
     scope_match_expr = (
         const(False)
-        if mutation
-        in (
+        if {
             DelegationIRMutation.WIDENED_SCOPE,
             DelegationIRMutation.WIDENED_SCOPE_CHAIN,
-        )
+        }
+        & defects
         else const(True)
     )
 
@@ -194,19 +222,19 @@ def _transitions(mutation: DelegationIRMutation) -> tuple[TransitionRule, ...]:
         Assignment("scope_match", scope_match_expr),
     ]
 
-    if mutation is DelegationIRMutation.WRONG_BENEFICIARY:
+    if DelegationIRMutation.WRONG_BENEFICIARY in defects:
         consume_assignments.append(Assignment("beneficiary_valid", const(False)))
 
-    if mutation is DelegationIRMutation.POST_INFLUENCE_ISSUANCE:
+    if DelegationIRMutation.POST_INFLUENCE_ISSUANCE in defects:
         consume_assignments.append(Assignment("issued_before_influence", const(False)))
 
-    if mutation is DelegationIRMutation.REVOCATION_BYPASS:
+    if DelegationIRMutation.REVOCATION_BYPASS in defects:
         consume_assignments.append(Assignment("grant_revoked", const(True)))
 
-    if mutation is DelegationIRMutation.EXPIRY_BYPASS:
+    if DelegationIRMutation.EXPIRY_BYPASS in defects:
         consume_assignments.append(Assignment("expired", const(True)))
 
-    if mutation is DelegationIRMutation.STALE_CONTEXT:
+    if DelegationIRMutation.STALE_CONTEXT in defects:
         consume_assignments.append(Assignment("context_verified", const(False)))
         consume_assignments.append(Assignment("context_preserved", const(False)))
 
@@ -235,12 +263,12 @@ def _transitions(mutation: DelegationIRMutation) -> tuple[TransitionRule, ...]:
     return tuple(rules)
 
 
-def build_delegation_ir(mutation: DelegationIRMutation = DelegationIRMutation.CANONICAL) -> VerificationIR:
-    """Build a verification IR for delegation safety under the given mutation."""
+def _build_ir(identifier: str, defects: Set[DelegationIRMutation]) -> VerificationIR:
+    """Build one IR whose consumption rule carries the named defects."""
     return VerificationIR(
-        id=f"delegation-ir:{mutation.value}",
+        id=identifier,
         variables=_variables(),
-        transitions=_transitions(mutation),
+        transitions=_transitions(defects),
         invariants=_invariants(),
         bound=DELEGATION_IR_BOUND,
         assumptions=(
@@ -250,6 +278,26 @@ def build_delegation_ir(mutation: DelegationIRMutation = DelegationIRMutation.CA
             "stale_context mutation models TOCTOU drift between verification and execution time",
         ),
     )
+
+
+def build_delegation_ir(mutation: DelegationIRMutation = DelegationIRMutation.CANONICAL) -> VerificationIR:
+    """Build a verification IR for delegation safety under the given mutation."""
+    return _build_ir(f"delegation-ir:{mutation.value}", _defects_of(mutation))
+
+
+def build_combined_delegation_ir(defects: Set[DelegationIRMutation]) -> VerificationIR:
+    """Build one IR carrying every named defect at once.
+
+    The nine entries of ``DELEGATION_IR_DEFECTS`` are independent edits to the consumption rule: each
+    drops a guard part, levels an assignment, or both. A combination is therefore well defined: a guard
+    part is dropped when any named defect drops it, every named defect's assignments are kept, and the
+    empty set builds the canonical variant. ``REDELEGATION_CHAIN`` builds the same body as
+    ``REDELEGATION`` and
+    ``CANONICAL`` names no defect, so neither adds anything to a combination.
+    """
+    named = frozenset(defect for defect in defects if defect is not DelegationIRMutation.CANONICAL)
+    label = "+".join(sorted(defect.value for defect in named)) or "none"
+    return _build_ir(f"delegation-ir:combined:{label}", named)
 
 
 @dataclass(frozen=True, slots=True)
@@ -401,10 +449,12 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
 
 __all__ = [
     "DELEGATION_IR_BOUND",
+    "DELEGATION_IR_DEFECTS",
     "MULTI_GRANT_BOUND",
     "DelegationIRMutation",
     "DelegationIRResult",
     "all_delegation_ir_variants",
+    "build_combined_delegation_ir",
     "build_delegation_ir",
     "build_multi_grant_ir",
 ]
