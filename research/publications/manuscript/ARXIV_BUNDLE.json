@@ -10,8 +10,8 @@
   "files": [
     {
       "path": "conflux_fourth_year_2026.tex",
-      "bytes": 18769,
-      "sha256": "18f69f3721261803ff809a2de543775b999bcd99c7058f0ecd6c75d91e619608"
+      "bytes": 19703,
+      "sha256": "cb96e98f1dade67eda84856cf3394ef2fee3c2832ce413a92b894a3cf6512e1c"
     },
     {
       "path": "generated/tables/agentdojo_breadth_table.tex",
@@ -22,6 +22,21 @@
       "path": "generated/tables/agentdojo_fingerprints_table.tex",
       "bytes": 3283,
       "sha256": "cf8eb365b84397c6f53833ece2d1f7c866181d3a7b2c3b8f3ec5a26795486a0c"
+    },
+    {
+      "path": "generated/tables/native_sled_reproduction_table.tex",
+      "bytes": 1692,
+      "sha256": "99d3293f5b6d396f6cbb434f1c87ca2b59aefd02ce8dd3ced038e0defa1f6181"
+    },
+    {
+      "path": "generated/tables/semantic_conformance_table.tex",
+      "bytes": 1058,
+      "sha256": "9af02a825c275eb59f7851ca60e7ddb790f0f8b42bd2222a1e2c1ad16cd2e9e7"
+    },
+    {
+      "path": "generated/tables/sledv_scaling_table.tex",
+      "bytes": 1235,
+      "sha256": "0e0471331d4ac87b7800485e5d1fca1ccaff0ba62df4574ffa7559203b259cfd"
     },
     {
       "path": "references.bib",

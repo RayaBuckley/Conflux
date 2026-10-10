@@ -1,0 +1,26 @@
+% GENERATED FILE -- do not edit by hand.
+% Run: python scripts/generate_fourth_year_tables.py
+% Source: research/output/runs/native-sled-partb-reproduction-v1/result.json SHA-256: e3751abf62576d85333f08d8f771e56cb11141f195932d1daa5b79fd7d56158c
+% Source: research/output/runs/native-sled-reproduction-v1/result.json SHA-256: de42dadd2480a66faf537abd744d117b817f5351c9240d5b368f434df0607657
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrrl}
+\toprule
+\textbf{Environment} & \textbf{Expected traces} & \textbf{Reproduced} & \textbf{Match} & \textbf{Canonical states} \\
+\midrule
+env-01 & 422{,}535 & 422{,}535 & yes & 5 \\
+env-02 & 996{,}451 & 996{,}451 & yes & 17 \\
+env-03 & 43{,}621 & 43{,}621 & yes & 9 \\
+\midrule
+\textbf{Total} & 1{,}462{,}607 & 1{,}462{,}607 & yes & 31 \\
+\midrule
+\multicolumn{5}{l}{\emph{Canonical fixtures against the archived prototype}} \\
+\multicolumn{5}{l}{Pairs compared: 3; negative controls killed: 5 of 5} \\
+\multicolumn{5}{l}{Directly comparable with the archived trace claim: no (enumeration\_change)} \\
+\multicolumn{5}{l}{Reproduced under depth bound 3; runtime is omitted from the deterministic fixture}} \\
+\bottomrule
+\end{tabular}
+\caption{Native SLED reproduction. The historical environments reproduce their exact trace counts under the recorded depth bound, and the canonical-state compression collapses the raw traces to a handful of states. The archived prototype enumerated transitions differently, so its headline trace count is not directly comparable; this is reproduction and conformance, not an unbounded security proof. Counts are read from each bundle's own \texttt{result.json}.}
+\label{tab:native-sled-reproduction}
+\end{table}

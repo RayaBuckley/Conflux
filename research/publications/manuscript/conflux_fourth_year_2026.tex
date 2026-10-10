@@ -231,9 +231,20 @@ commit \texttt{6fe6b584500e} passed 220 tests with 90.25\% branch coverage,
 13 schema checks, deterministic regeneration, static analysis, wheel build,
 and installed-CLI smoke. The record is
 \texttt{output/validation/6fe6b584500e/}.\\
-\textbf{Semantic conformance:} \emph{generated result pending}.\\
-\textbf{Native SLED:} \emph{generated result pending}.\\
-\textbf{SLED-MC/SLED-V:} \emph{generated result pending}.\\
+\textbf{Semantic conformance:} the reference interpreter and, where the optional
+binaries are present, the Z3 and nuXmv backends decide the same bounded IR
+variants and agree on every decision, refuted variants included, and the
+negative control still fails as designed. Table~\ref{tab:semantic-conformance}
+counts them.\\
+\textbf{Native SLED:} the retained bounded reproduction recovers all three
+historical trace counts and their canonical-state compression; the canonical
+fixtures are not directly comparable with the archived prototype, whose
+enumeration differed. Table~\ref{tab:native-sled-reproduction} records both.\\
+\textbf{SLED-MC/SLED-V:} the retained scaling bundle shows how far the COI
+reduction shrinks the finite models and that no verdict is downgraded after
+reduction; Table~\ref{tab:sledv-scaling} records the sizes and the checks. A
+SLED-V reduction is bounded evidence on the tested finite models, not a proof
+for unbounded deployments.\\
 \textbf{Direction security models:} the retained checksummed bundle reports
 safe exhaustion for the canonical finite disclosure and delegation models and
 minimal witnesses for every seeded selector, disclosure, attribution, and
@@ -253,6 +264,12 @@ the protocols.
 \input{generated/tables/agentdojo_breadth_table}
 
 \input{generated/tables/agentdojo_fingerprints_table}
+
+\input{generated/tables/semantic_conformance_table}
+
+\input{generated/tables/native_sled_reproduction_table}
+
+\input{generated/tables/sledv_scaling_table}
 
 No numerical claim is entered manually. Tables and figures are generated from
 retained, versioned result JSON and include input checksums.

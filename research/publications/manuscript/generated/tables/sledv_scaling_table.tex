@@ -1,0 +1,22 @@
+% GENERATED FILE -- do not edit by hand.
+% Run: python scripts/generate_fourth_year_tables.py
+% Source: research/output/runs/sledv-scaling-v1/result.json SHA-256: 22f312a535a6ccb7163b1a6f86b6a0f928f1be1366baac5daab54d1d7461d81b
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Family} & \textbf{Fixtures} & \textbf{Largest model} & \textbf{After reduction} & \textbf{Reduction} \\
+\midrule
+noise scaling & 10 & 41{,}449 & 2 & 20724.5$\times$ \\
+principal scaling & 8 & 2{,}517 & 2 & 1258.5$\times$ \\
+depth scaling & 10 & 32 & 1 & 32.0$\times$ \\
+\midrule
+\multicolumn{5}{l}{Total fixtures: 28; COI-equivalent fixtures: 23} \\
+\multicolumn{5}{l}{Verdict downgrades after reduction: none} \\
+\multicolumn{5}{l}{Reference and Z3 agree: yes} \\
+\bottomrule
+\end{tabular}
+\caption{SLED-V reduction over three scaling families. The reduction collapses the finite models by up to the factor shown, no verdict is downgraded after reduction, and the reference and Z3 decisions agree. Sizes and checks are read from the bundle's own \texttt{result.json}. This is bounded evidence on the tested finite models; it is not a proof of security for arbitrary or unbounded deployments.}
+\label{tab:sledv-scaling}
+\end{table}

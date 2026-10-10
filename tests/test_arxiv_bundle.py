@@ -28,13 +28,16 @@ def test_manuscript_dependencies_resolve() -> None:
 
 
 def test_ship_set_covers_the_tables_and_the_bibliography() -> None:
-    """The bundle carries the manuscript, both generated tables and the bibliography."""
+    """The bundle carries the manuscript, every generated table and the bibliography."""
     paths, _problems = bundle.dependency_paths(bundle.MANUSCRIPT, bundle.ROOT)
     shipped = {path.name for path in paths}
     assert shipped == {
         "conflux_fourth_year_2026.tex",
         "agentdojo_breadth_table.tex",
         "agentdojo_fingerprints_table.tex",
+        "semantic_conformance_table.tex",
+        "native_sled_reproduction_table.tex",
+        "sledv_scaling_table.tex",
         "references.bib",
     }
 

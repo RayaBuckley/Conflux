@@ -23,6 +23,12 @@ OUT = ROOT / "research" / "publications" / "manuscript" / "generated" / "tables"
 #: Column layout for the breadth table: run, cells, complete, utility, security, incomplete, failures.
 _BREADTH_COLUMNS = "l" * 2 + "r" * 4 + "l"
 
+#: Column layout for the reproduction table: environment, two counts, match, canonical states.
+_REPRODUCTION_COLUMNS = "l" + "r" * 3 + "l"
+
+#: Column layout for the scaling table: family, fixtures, two sizes, reduction factor.
+_SCALING_COLUMNS = "l" + "r" * 4
+
 #: (selection label, bundle directory) for every retained AgentDojo bundle in citation order.
 BUNDLES: tuple[tuple[str, str], ...] = (
     ("stratified", "agentdojo-stratified-banking-v1"),
@@ -193,10 +199,178 @@ def table_agentdojo_fingerprints() -> list[tuple[Path, str]]:
     return [(OUT / "agentdojo_fingerprints_table.tex", tex)]
 
 
+THREE_WAY = RUNS / "three-way-agreement-v1" / "result.json"
+NATIVE_SLED_A = RUNS / "native-sled-reproduction-v1" / "result.json"
+NATIVE_SLED_B = RUNS / "native-sled-partb-reproduction-v1" / "result.json"
+SLEDV = RUNS / "sledv-scaling-v1" / "result.json"
+
+
+def _count(value: int) -> str:
+    """Format a count for a LaTeX table: thousands separated without a stray space."""
+    return f"{int(value):,}".replace(",", "{,}")
+
+
+def _sources(*paths: Path) -> list[tuple[str, str]]:
+    """Header source list: relative path and SHA-256, in the order a table cites them."""
+    entries: list[tuple[str, str]] = []
+    for path in paths:
+        _payload, digest = _read_json(path)
+        entries.append((str(path.relative_to(ROOT)), digest))
+    return entries
+
+
+def table_semantic_conformance() -> list[tuple[Path, str]]:
+    """Reference interpreter, Z3 and nuXmv decisions over the same bounded IR variants."""
+    result, _digest = _read_json(THREE_WAY)
+    summary: dict[str, Any] = result["summary"]
+    control = "holds" if summary["control_ok"] else "fails"
+    rows = [
+        ("IR variants checked", _count(summary["total_variants"])),
+        ("Decided by Z3", _count(summary["z3_measured"])),
+        ("Decided by nuXmv", _count(summary["nuxmv_measured"])),
+        ("Refuted by the reference interpreter", _count(summary["refuted_variants"])),
+        ("Reference and Z3 agree", _count(summary["agree_reference_z3"])),
+        ("Reference and nuXmv agree", _count(summary["agree_reference_nuxmv"])),
+        ("All three agree", _count(summary["agree_all_three"])),
+        ("Negative control", control),
+    ]
+    body = "\n".join(f"{label} & {value} \\\\" for label, value in rows)
+    caption = (
+        "Semantic conformance over the same bounded IR variants: the reference interpreter, the "
+        "optional Z3 backend and the optional nuXmv backend decide the same variants and agree on "
+        "every decision, refuted variants included, and the negative control confirms the harness "
+        "can still fail. Counts are read from the bundle's own \\texttt{result.json}, so the "
+        "table cannot drift from the evidence it cites."
+    )
+    tex = (
+        _header(_sources(THREE_WAY))
+        + "\\begin{table}[t]\n\\centering\n\\small\n\\begin{tabular}{lr}\n\\toprule\n"
+        + "\\textbf{Quantity} & \\textbf{Count} \\\\\n\\midrule\n"
+        + body
+        + "\n\\bottomrule\n\\end{tabular}\n\\caption{"
+        + caption
+        + "}\n\\label{tab:semantic-conformance}\n\\end{table}\n"
+    )
+    return [(OUT / "semantic_conformance_table.tex", tex)]
+
+
+def table_native_sled_reproduction() -> list[tuple[Path, str]]:
+    """Reproduced historical trace counts and the canonical-versus-archived comparison."""
+    part_b, _digest_b = _read_json(NATIVE_SLED_B)
+    part_a, _digest_a = _read_json(NATIVE_SLED_A)
+    rows: list[str] = []
+    for environment in part_b["environments"]:
+        match = "yes" if environment["trace_count_match"] else "no"
+        rows.append(
+            f"{_tex_escape(str(environment['env_id']))} & {_count(environment['expected_traces'])} & "
+            f"{_count(environment['total_traces'])} & {match} & "
+            f"{_count(environment['unique_canonical_states'])} \\\\",
+        )
+    totals: dict[str, Any] = part_b["totals"]
+    total_match = "yes" if totals["trace_count_match"] else "no"
+    rows.append("\\midrule")
+    rows.append(
+        f"\\textbf{{Total}} & {_count(totals['expected_total'])} & {_count(totals['total_traces'])} & "
+        f"{total_match} & {_count(totals['unique_canonical_states'])} \\\\",
+    )
+    historical: dict[str, Any] = part_a["historical_comparison"]
+    comparable = "yes" if historical["comparable"] else "no"
+    controls = part_a["negative_controls"]
+    killed = sum(1 for control in controls if control["killed"])
+    rows.append("\\midrule")
+    rows.append(
+        "\\multicolumn{5}{l}{\\emph{Canonical fixtures against the archived prototype}} \\\\",
+    )
+    rows.append(
+        f"\\multicolumn{{5}}{{l}}{{Pairs compared: {len(part_a['pairs'])}; "
+        f"negative controls killed: {killed} of {len(controls)}}} \\\\",
+    )
+    rows.append(
+        f"\\multicolumn{{5}}{{l}}{{Directly comparable with the archived trace claim: {comparable} "
+        f"({_tex_escape(str(historical['classification']))})}} \\\\",
+    )
+    rows.append(
+        f"\\multicolumn{{5}}{{l}}{{Reproduced under depth bound {part_b['max_depth']}; "
+        "runtime is omitted from the deterministic fixture}} \\\\",
+    )
+    body = "\n".join(rows)
+    caption = (
+        "Native SLED reproduction. The historical environments reproduce their exact trace counts "
+        "under the recorded depth bound, and the canonical-state compression collapses the raw "
+        "traces to a handful of states. The archived prototype enumerated transitions differently, "
+        "so its headline trace count is not directly comparable; this is reproduction and "
+        "conformance, not an unbounded security proof. Counts are read from each bundle's own "
+        "\\texttt{result.json}."
+    )
+    tex = (
+        _header(_sources(NATIVE_SLED_B, NATIVE_SLED_A))
+        + "\\begin{table}[t]\n\\centering\n\\small\n\\begin{tabular}{"
+        + _REPRODUCTION_COLUMNS
+        + "}\n\\toprule\n"
+        + "\\textbf{Environment} & \\textbf{Expected traces} & \\textbf{Reproduced} & "
+        + "\\textbf{Match} & \\textbf{Canonical states} \\\\\n\\midrule\n"
+        + body
+        + "\n\\bottomrule\n\\end{tabular}\n\\caption{"
+        + caption
+        + "}\n\\label{tab:native-sled-reproduction}\n\\end{table}\n"
+    )
+    return [(OUT / "native_sled_reproduction_table.tex", tex)]
+
+
+def table_sledv_scaling() -> list[tuple[Path, str]]:
+    """Per-family SLED-V reduction sizes, and the verdict checks over every fixture."""
+    result, _digest = _read_json(SLEDV)
+    families: dict[str, Any] = result["by_family"]
+    rows: list[str] = []
+    for family in result["scaling_families"]:
+        data = families[family]
+        rows.append(
+            f"{_tex_escape(str(family).replace('_', ' '))} & {_count(data['total_fixtures'])} & "
+            f"{_count(data['max_original_states'])} & {_count(data['max_reduced_states'])} & "
+            f"{float(data['state_reduction_ratio']):.1f}$\\times$ \\\\",
+        )
+    summary: dict[str, Any] = result["summary"]
+    fixtures = result["fixtures"]
+    equivalent = sum(1 for fixture in fixtures if fixture["coi_equivalent"])
+    downgrade = "none" if summary["no_coi_downgrade"] else "present"
+    agree = "yes" if summary["ref_z3_agree"] else "no"
+    rows.append("\\midrule")
+    rows.append(
+        f"\\multicolumn{{5}}{{l}}{{Total fixtures: {_count(summary['total_fixtures'])}; "
+        f"COI-equivalent fixtures: {_count(equivalent)}}} \\\\",
+    )
+    rows.append(f"\\multicolumn{{5}}{{l}}{{Verdict downgrades after reduction: {downgrade}}} \\\\")
+    rows.append(f"\\multicolumn{{5}}{{l}}{{Reference and Z3 agree: {agree}}} \\\\")
+    body = "\n".join(rows)
+    caption = (
+        "SLED-V reduction over three scaling families. The reduction collapses the finite models by "
+        "up to the factor shown, no verdict is downgraded after reduction, and the reference and Z3 "
+        "decisions agree. Sizes and checks are read from the bundle's own \\texttt{result.json}. "
+        "This is bounded evidence on the tested finite models; it is not a proof of security for "
+        "arbitrary or unbounded deployments."
+    )
+    tex = (
+        _header(_sources(SLEDV))
+        + "\\begin{table}[t]\n\\centering\n\\small\n\\begin{tabular}{"
+        + _SCALING_COLUMNS
+        + "}\n\\toprule\n"
+        + "\\textbf{Family} & \\textbf{Fixtures} & \\textbf{Largest model} & "
+        + "\\textbf{After reduction} & \\textbf{Reduction} \\\\\n\\midrule\n"
+        + body
+        + "\n\\bottomrule\n\\end{tabular}\n\\caption{"
+        + caption
+        + "}\n\\label{tab:sledv-scaling}\n\\end{table}\n"
+    )
+    return [(OUT / "sledv_scaling_table.tex", tex)]
+
+
 def generate_all() -> list[tuple[Path, str]]:
     outputs: list[tuple[Path, str]] = []
     outputs.extend(table_agentdojo_breadth())
     outputs.extend(table_agentdojo_fingerprints())
+    outputs.extend(table_semantic_conformance())
+    outputs.extend(table_native_sled_reproduction())
+    outputs.extend(table_sledv_scaling())
     return outputs
 
 
