@@ -1953,10 +1953,13 @@ predates the frozen selection.
 That gap is closed, and not by a silent swap: the two-task bundle moved to
 `agentdojo-pilot-banking-v1` with its provenance recorded in its own `SUMMARY.md`, and the 24-cell run
 of the frozen selection is retained at `agentdojo-stratified-banking-v1`, which is the path its record
-already named. The pilot run is listed in the table above for completeness. The suite id of a fresh
-stratified run is still the preflight's `*:expanded:...` spelling, because the sweep passes the
-manifest's suite key rather than its suite id; the task set, not the spelling, is what identifies a run
-against the manifest.
+already named. The pilot run is listed in the table above for completeness. A fresh stratified run now records the
+manifest's own suite id (`<suite>:stratified-v1`), because the sweep passes it explicitly with
+`--protocol-suite-id` and the preflight refuses an id whose prefix names another suite. Measured with
+the real pinned suite: a banking preflight carrying `--protocol-suite-id banking:stratified-v1` records
+that id, the four frozen tasks and a 24-cell matrix. The bundles
+retained before that change keep the preflight's earlier `*:expanded:...` spelling, so for them the task
+set, not the spelling, is what identifies a run against the manifest.
 
 The diagnostic gap recorded in section 27 is closed in the same change set: a failed cell now keeps a
 bounded single-line summary of the message the classifier read (`failure_reason`, at most 200

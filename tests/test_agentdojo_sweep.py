@@ -39,6 +39,27 @@ def test_selection_without_suite_blocks_is_refused() -> None:
         sweep.selection_suites({"protocol_suite_blocks": {"banking": {"task_ids": []}}})
 
 
+def test_protocol_suite_ids_read_the_manifest_ids() -> None:
+    """The sweep records the selection's own suite id, not the preflight's derived spelling."""
+    selection = {
+        "protocol_suite_blocks": {
+            "banking": {"id": "banking:stratified-v1", "task_ids": ["user_task_0"]},
+            "slack": {"id": "slack:stratified-v1", "task_ids": ["user_task_0"]},
+        },
+    }
+    assert sweep.protocol_suite_ids(selection) == {
+        "banking": "banking:stratified-v1",
+        "slack": "slack:stratified-v1",
+    }
+
+
+def test_protocol_suite_ids_refuse_a_block_without_an_id() -> None:
+    with pytest.raises(ValueError, match="selection_manifest_missing_suite_blocks"):
+        sweep.protocol_suite_ids({})
+    with pytest.raises(ValueError, match="selection_manifest_suite_without_id:banking"):
+        sweep.protocol_suite_ids({"protocol_suite_blocks": {"banking": {"task_ids": ["user_task_0"]}}})
+
+
 def test_requested_suites_accepts_all_and_refuses_unknown_names() -> None:
     available: dict[str, tuple[str, ...]] = {"banking": ("user_task_0",), "travel": ("user_task_5",)}
     assert sweep.requested_suites(available, ["all"]) == available
@@ -55,6 +76,7 @@ def test_commands_match_the_documented_invocations() -> None:
     conflux = Path("/venv/bin/conflux")
     preflight = sweep.preflight_command(
         "banking",
+        "banking:stratified-v1",
         ("user_task_0", "user_task_1"),
         Path("cfg/transformers.json"),
         Path("runs/banking"),
@@ -63,6 +85,7 @@ def test_commands_match_the_documented_invocations() -> None:
     )
     assert preflight[:4] == [str(conflux), "benchmark", "agentdojo", "preflight"]
     assert preflight[preflight.index("--suite") + 1] == "banking"
+    assert preflight[preflight.index("--protocol-suite-id") + 1] == "banking:stratified-v1"
     assert preflight[preflight.index("--task-ids") + 1] == "user_task_0,user_task_1"
     assert preflight[preflight.index("--source-commit") + 1] == "a" * 40
     run = sweep.local_run_command(Path("runs/banking"), Path("cfg/transformers.json"), conflux)
@@ -96,6 +119,7 @@ def test_run_suite_stops_after_a_failed_preflight(tmp_path: Path) -> None:
 
     ok = sweep.run_suite(
         "banking",
+        "banking:stratified-v1",
         ("user_task_0",),
         Path("cfg.json"),
         tmp_path / "run",
@@ -122,6 +146,7 @@ def test_run_suite_summarises_a_finished_run(tmp_path: Path, capsys: pytest.Capt
 
     ok = sweep.run_suite(
         "travel",
+        "travel:stratified-v1",
         ("user_task_5",),
         Path("cfg.json"),
         output,
@@ -147,6 +172,7 @@ def test_run_suite_reports_a_failed_run(tmp_path: Path) -> None:
 
     ok = sweep.run_suite(
         "slack",
+        "slack:stratified-v1",
         ("user_task_0",),
         Path("cfg.json"),
         output,
@@ -158,10 +184,10 @@ def test_run_suite_reports_a_failed_run(tmp_path: Path) -> None:
 
 
 def test_main_runs_every_suite_when_asked_for_all(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    seen: list[str] = []
+    seen: list[tuple[str, str]] = []
 
     def fake_run_suite(*args: object, **kwargs: object) -> bool:
-        seen.append(str(args[0]))
+        seen.append((str(args[0]), str(args[1])))
         return True
 
     monkeypatch.setattr(sweep, "run_suite", fake_run_suite)
@@ -169,7 +195,12 @@ def test_main_runs_every_suite_when_asked_for_all(tmp_path: Path, monkeypatch: p
     config = tmp_path / "transformers.json"
     config.write_text("{}", encoding="utf-8")
     assert sweep.main(["--model-config", str(config), "--conflux", "/bin/true"]) == 0
-    assert seen == ["banking", "slack", "travel", "workspace"]
+    assert seen == [
+        ("banking", "banking:stratified-v1"),
+        ("slack", "slack:stratified-v1"),
+        ("travel", "travel:stratified-v1"),
+        ("workspace", "workspace:stratified-v1"),
+    ]
 
 
 def test_main_refuses_an_unknown_suite(tmp_path: Path) -> None:

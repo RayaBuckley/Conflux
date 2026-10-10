@@ -230,6 +230,11 @@ def _parser() -> argparse.ArgumentParser:
         default="workspace",
         help="pinned AgentDojo suite to build the protocol for (default: workspace)",
     )
+    agentdojo_preflight.add_argument(
+        "--protocol-suite-id",
+        default=None,
+        help="protocol suite id to record verbatim, for example banking:stratified-v1 (default: derived from --suite and --task-ids)",
+    )
     agentdojo_run = agentdojo_commands.add_parser("run", help="deliberately run the pinned six-cell local comparison")
     agentdojo_run.add_argument("--config", type=Path, required=True)
     agentdojo_run.add_argument("--model-config", type=Path)
@@ -1336,6 +1341,9 @@ def _benchmark(arguments: argparse.Namespace) -> int:
         if raw_task_ids:
             parsed_task_ids = tuple(t.strip() for t in raw_task_ids.split(",") if t.strip())
         requested_suite = str(getattr(arguments, "suite", "workspace") or "workspace")
+        protocol_suite_id = getattr(arguments, "protocol_suite_id", None)
+        if protocol_suite_id and str(protocol_suite_id).split(":")[0] != requested_suite:
+            return _unavailable(f"protocol_suite_id_suite_mismatch:{protocol_suite_id}:{requested_suite}")
         try:
             pinned_suite = load_pinned_suite(requested_suite)
         except Exception:
@@ -1348,6 +1356,7 @@ def _benchmark(arguments: argparse.Namespace) -> int:
             source_commit=str(arguments.source_commit or _git_head()),
             task_ids=parsed_task_ids,
             suite_id=requested_suite,
+            protocol_suite_id=protocol_suite_id,
             injection_task_ids=injection_task_ids,
             benchmark_version="v1.2.2" if pinned_suite is None else pinned_suite.benchmark_version,
         )
@@ -1438,6 +1447,7 @@ def _agentdojo_pilot_protocol(
     source_commit: str,
     task_ids: tuple[str, ...] | None = None,
     suite_id: str = "workspace",
+    protocol_suite_id: str | None = None,
     injection_task_ids: tuple[str, ...] | None = None,
     benchmark_version: str = "v1.2.2",
 ) -> ExperimentProtocol:
@@ -1452,6 +1462,8 @@ def _agentdojo_pilot_protocol(
     if task_ids:
         suite["task_ids"] = list(task_ids)
         suite["id"] = f"{suite_id}:expanded:{task_ids[0]}"
+    if protocol_suite_id:
+        suite["id"] = protocol_suite_id
     if injection_task_ids:
         suite["injection_task_ids"] = list(injection_task_ids)
     return ExperimentProtocol(

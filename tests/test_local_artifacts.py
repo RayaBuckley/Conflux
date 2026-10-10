@@ -269,6 +269,83 @@ def test_agentdojo_preflight_honours_requested_suite(
     assert len(preflight["matrix"]) == 12
 
 
+def test_agentdojo_preflight_records_the_requested_protocol_suite_id(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The selection's own suite id is recorded verbatim, and a prefix naming another suite is refused."""
+    snapshot = _snapshot(tmp_path)
+    manifest, _ = resolve_transformers_snapshot(
+        snapshot,
+        model_id=MODEL_ID,
+        revision=REVISION,
+    )
+    configuration = tmp_path / "transformers.json"
+    write_resolved_local_model(
+        ResolvedLocalModel(_spec(manifest.fingerprint), snapshot, manifest),
+        configuration,
+    )
+    monkeypatch.setattr(
+        cli_module,
+        "load_pinned_suite",
+        lambda _: SimpleNamespace(
+            injection_task_ids=("injection_task_2",),
+            benchmark_version="v1.2.2",
+            to_dict=lambda: {"schema_version": "fixture"},
+        ),
+    )
+    output = tmp_path / "banking"
+    assert (
+        main(
+            [
+                "benchmark",
+                "agentdojo",
+                "preflight",
+                "--model-config",
+                str(configuration),
+                "--suite",
+                "banking",
+                "--protocol-suite-id",
+                "banking:stratified-v1",
+                "--task-ids",
+                "user_task_0,user_task_1",
+                "--source-commit",
+                "a" * 40,
+                "--output",
+                str(output),
+            ],
+        )
+        == 0
+    )
+    protocol = json.loads((output / "protocol.json").read_text())
+    preflight = json.loads((output / "preflight.json").read_text())
+    assert protocol["suite"]["id"] == "banking:stratified-v1"
+    assert {cell["suite_id"] for cell in preflight["matrix"]} == {"banking"}
+
+    mismatch = tmp_path / "mismatch"
+    refused = [
+        "benchmark",
+        "agentdojo",
+        "preflight",
+        "--model-config",
+        str(configuration),
+        "--suite",
+        "banking",
+        "--protocol-suite-id",
+        "slack:stratified-v1",
+        "--task-ids",
+        "user_task_0,user_task_1",
+        "--source-commit",
+        "a" * 40,
+        "--output",
+        str(mismatch),
+    ]
+    assert main(refused) == 2
+    assert "protocol_suite_id_suite_mismatch" in capsys.readouterr().err
+    assert not (mismatch / "protocol.json").exists()
+
+
 def test_agentdojo_preflight_narrows_many_injection_tasks_to_one_goal(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

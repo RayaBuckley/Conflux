@@ -41,6 +41,25 @@ def selection_suites(selection: object) -> dict[str, tuple[str, ...]]:
     return suites
 
 
+def protocol_suite_ids(selection: object) -> dict[str, str]:
+    """Return the frozen protocol suite id per suite key from a selection manifest.
+
+    A run must carry the id of the selection it came from, so that a protocol can be compared with the
+    manifest that produced it. The preflight spells an id of its own when it is given only a suite name,
+    which is why the sweep passes this value explicitly.
+    """
+    blocks = selection.get(SELECTION_KEY) if isinstance(selection, dict) else None
+    if not isinstance(blocks, dict) or not blocks:
+        raise ValueError("selection_manifest_missing_suite_blocks")
+    ids: dict[str, str] = {}
+    for raw_suite, block in blocks.items():
+        suite_id = block.get("id") if isinstance(block, dict) else None
+        if not isinstance(suite_id, str) or not suite_id:
+            raise ValueError(f"selection_manifest_suite_without_id:{raw_suite}")
+        ids[str(raw_suite)] = suite_id
+    return ids
+
+
 def requested_suites(
     available: dict[str, tuple[str, ...]],
     requested: Sequence[str],
@@ -60,14 +79,19 @@ def run_directory(suite_id: str, output_root: Path) -> Path:
 
 
 def preflight_command(
-    suite_id: str,
+    suite_key: str,
+    protocol_suite_id: str,
     task_ids: tuple[str, ...],
     model_config: Path,
     output_dir: Path,
     source_commit: str,
     conflux: Path,
 ) -> list[str]:
-    """The documented preflight invocation for one suite."""
+    """The documented preflight invocation for one suite.
+
+    The bare suite key selects the matrix; the manifest's suite id is what the protocol records, so a
+    run can be compared with the selection that produced it.
+    """
     return [
         str(conflux),
         "benchmark",
@@ -76,7 +100,9 @@ def preflight_command(
         "--model-config",
         str(model_config),
         "--suite",
-        suite_id,
+        suite_key,
+        "--protocol-suite-id",
+        protocol_suite_id,
         "--task-ids",
         ",".join(task_ids),
         "--source-commit",
@@ -114,7 +140,8 @@ def summarise(result_path: Path) -> str:
 
 
 def run_suite(
-    suite_id: str,
+    suite_key: str,
+    protocol_suite_id: str,
     task_ids: tuple[str, ...],
     model_config: Path,
     output_dir: Path,
@@ -125,13 +152,21 @@ def run_suite(
     """Preflight and run one suite. Returns True when the suite produced a complete result."""
     output_dir.mkdir(parents=True, exist_ok=True)
     preflight = runner(
-        preflight_command(suite_id, task_ids, model_config, output_dir, source_commit, conflux),
+        preflight_command(
+            suite_key,
+            protocol_suite_id,
+            task_ids,
+            model_config,
+            output_dir,
+            source_commit,
+            conflux,
+        ),
     )
     if preflight.returncode != 0:
-        print(f"{suite_id}: preflight failed ({preflight.returncode})")
+        print(f"{suite_key}: preflight failed ({preflight.returncode})")
         return False
     run = runner(local_run_command(output_dir, model_config, conflux))
-    print(f"{suite_id}: run exit {run.returncode} | {summarise(output_dir / 'result.json')}")
+    print(f"{suite_key}: run exit {run.returncode} | {summarise(output_dir / 'result.json')}")
     return run.returncode == 0
 
 
@@ -168,6 +203,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     suite_selection = Path(args.selection)
     selection = json.loads(suite_selection.read_text(encoding="utf-8"))
     available = selection_suites(selection)
+    suite_ids = protocol_suite_ids(selection)
     suites = requested_suites(available, args.suite or ["all"])
     model_config = Path(args.model_config)
     conflux = Path(args.conflux) if args.conflux else Path(sys.executable).parent / "conflux"
@@ -182,12 +218,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         return subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
 
     failures = 0
-    for suite_id, task_ids in suites.items():
+    for suite_key, task_ids in suites.items():
         if not run_suite(
-            suite_id,
+            suite_key,
+            suite_ids[suite_key],
             task_ids,
             model_config,
-            run_directory(suite_id, Path(args.output_root)),
+            run_directory(suite_key, Path(args.output_root)),
             source_commit,
             conflux,
             runner,

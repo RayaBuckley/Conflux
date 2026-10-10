@@ -95,9 +95,15 @@ workspace behaviour. Build a protocol for any pinned suite from the resolved loc
 conflux benchmark agentdojo preflight \
     --model-config research/output/runs/<run>/transformers.json \
     --suite banking \
+    --protocol-suite-id banking:stratified-v1 \
     --task-ids user_task_0,user_task_1 \
     --output research/output/runs/<run>
 ```
+
+`--protocol-suite-id` records the selection's own suite id verbatim. The stratified sweep passes it,
+so a run says `banking:stratified-v1` rather than the preflight's derived `banking:expanded:<task>`
+spelling; an id whose prefix names another suite than `--suite` is refused with
+`protocol_suite_id_suite_mismatch`.
 
 That command reads the suite's own benchmark tag and injection task ids from the pinned
 package and writes one goal per selected task into the protocol.
