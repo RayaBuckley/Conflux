@@ -214,30 +214,42 @@ class NuXmvBackend:
         """Return the runner this backend uses: the given one, or the host default."""
         return self.runner if self.runner is not None else default_runner(self.resolved_binary())
 
-    def verify(self, ir: VerificationIR) -> FormalVerificationResult:
-        """Verify finite-domain IR invariants using nuXmv IC3, returning a formal result."""
+    def verify(self, ir: VerificationIR, *, smt: bool = False) -> FormalVerificationResult:
+        """Verify IR invariants with nuXmv, returning a formal result.
+
+        ``smt=False`` keeps the recorded behaviour: BDD IC3 over a finite-domain model.
+        ``smt=True`` renders unbounded integer variables as infinite-precision integers and
+        checks the invariants on the SMT route (``go_msat`` then ``msat_check_invar_bmc``),
+        which answers for a symbolic bound rather than one recorded bound. A model the SMT
+        route cannot settle is UNKNOWN, never safe.
+        """
+        backend = "nuxmv-msat" if smt else "nuxmv-ic3"
         if not ir.invariants:
-            return self._unknown(ir, "no_safety_invariants")
+            return self._unknown(ir, "no_safety_invariants", backend)
         binary = self.resolved_binary()
         if not self.availability(binary):
-            return self._unknown(ir, "optional_binary_unavailable:nuXmv")
+            return self._unknown(ir, "optional_binary_unavailable:nuXmv", backend)
         try:
-            model = _smv(ir)
+            model = _smv(ir, unbounded=smt)
         except ValueError as error:
-            return self._unknown(ir, f"unsupported_ir:{error}")
-        commands = "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n"
+            return self._unknown(ir, f"unsupported_ir:{error}", backend)
+        commands = (
+            "go_msat\nmsat_check_invar_bmc\nquit\n"
+            if smt
+            else "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n"
+        )
         with TemporaryDirectory(prefix="conflux-nuxmv-") as temporary:
             path = Path(temporary) / "model.smv"
             path.write_text(model, encoding="utf-8", newline="\n")
             outcome = self.selected_runner().run(binary, path, commands)
-        solver_hash = fingerprint({"backend": "nuXmv-ic3", "version": outcome.version})
+        solver_hash = fingerprint({"backend": backend, "version": outcome.version})
         query_hash = fingerprint(commands)
         model_hash = fingerprint(model)
         output = f"{outcome.stdout}\n{outcome.stderr}"
         if outcome.exit_code != 0:
             return FormalVerificationResult(
                 FormalVerdict.UNKNOWN,
-                "nuxmv-ic3",
+                backend,
                 ir.fingerprint,
                 query_hash,
                 solver_hash,
@@ -246,12 +258,16 @@ class NuXmvBackend:
                 ir.assumptions,
                 error=f"nuxmv_failed:{outcome.exit_code}:{fingerprint(output)}",
             )
-        false_count = output.count(" is false")
-        true_count = output.count(" is true")
+        # An incomplete induction prints "cannot prove the invariant X is true or false", which
+        # contains the substring " is true"; drop those lines before counting settled invariants.
+        settled = "\n".join(line for line in output.splitlines() if "cannot prove" not in line)
+        false_count = settled.count(" is false")
+        true_count = settled.count(" is true")
+        incomplete = false_count == 0 and "cannot prove" in output
         if false_count:
             return FormalVerificationResult(
                 FormalVerdict.UNSAFE,
-                "nuxmv-ic3",
+                backend,
                 ir.fingerprint,
                 query_hash,
                 solver_hash,
@@ -268,7 +284,7 @@ class NuXmvBackend:
         if true_count >= len(ir.invariants):
             return FormalVerificationResult(
                 FormalVerdict.SAFE,
-                "nuxmv-ic3",
+                backend,
                 ir.fingerprint,
                 query_hash,
                 solver_hash,
@@ -276,9 +292,21 @@ class NuXmvBackend:
                 ir.bound,
                 ir.assumptions,
             )
+        if incomplete:
+            return FormalVerificationResult(
+                FormalVerdict.UNKNOWN,
+                backend,
+                ir.fingerprint,
+                query_hash,
+                solver_hash,
+                model_hash,
+                ir.bound,
+                ir.assumptions,
+                error=f"nuxmv_incomplete:{fingerprint(output)}",
+            )
         return FormalVerificationResult(
             FormalVerdict.UNKNOWN,
-            "nuxmv-ic3",
+            backend,
             ir.fingerprint,
             query_hash,
             solver_hash,
@@ -288,12 +316,17 @@ class NuXmvBackend:
             error=f"nuxmv_unrecognised_output:{fingerprint(output)}",
         )
 
-    def _unknown(self, ir: VerificationIR, error: str) -> FormalVerificationResult:
+    def _unknown(
+        self,
+        ir: VerificationIR,
+        error: str,
+        backend: str = "nuxmv-ic3",
+    ) -> FormalVerificationResult:
         return FormalVerificationResult(
             FormalVerdict.UNKNOWN,
-            "nuxmv-ic3",
+            backend,
             ir.fingerprint,
-            fingerprint({"ir": ir.fingerprint, "command": "check_invar_ic3"}),
+            fingerprint({"ir": ir.fingerprint, "ir_bound": ir.bound}),
             fingerprint({"backend": "nuXmv", "version": "unavailable"}),
             None,
             ir.bound,
@@ -302,12 +335,19 @@ class NuXmvBackend:
         )
 
 
-def _domain(variable: StateVariable) -> str:
-    """Return the SMV type of a state variable, or fail closed on an unsupported sort."""
+def _domain(variable: StateVariable, *, unbounded: bool = False) -> str:
+    """Return the SMV type of a state variable, or fail closed on an unsupported sort.
+
+    With ``unbounded`` the SMT route is being rendered, so an integer variable without a declared
+    maximum becomes an infinite-precision integer instead of failing closed. The guards in the
+    model, not the type, then keep the run finite.
+    """
     if variable.sort == Sort.BOOLEAN:
         return "boolean"
     if variable.sort == Sort.INTEGER:
         if variable.minimum is None or variable.maximum is None:
+            if unbounded:
+                return "integer"
             raise ValueError(f"integer state variable {variable.name} requires a bounded domain")
         return f"{variable.minimum}..{variable.maximum}"
     raise ValueError(f"nuXmv subset does not support sort {variable.sort.value}")
@@ -324,8 +364,8 @@ def _initial(variable: StateVariable) -> str:
     raise ValueError(f"nuXmv subset does not support sort {variable.sort.value}")
 
 
-def _smv(ir: VerificationIR) -> str:
-    variables = "\n".join(f"  {variable.name} : {_domain(variable)};" for variable in ir.variables)
+def _smv(ir: VerificationIR, *, unbounded: bool = False) -> str:
+    variables = "\n".join(f"  {variable.name} : {_domain(variable, unbounded=unbounded)};" for variable in ir.variables)
     initial = " & ".join(_initial(variable) for variable in ir.variables)
     transition_terms: list[str] = []
     for rule in sorted(ir.transitions, key=lambda item: item.id):

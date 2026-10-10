@@ -1,0 +1,157 @@
+{
+  "commands": "go_msat\nmsat_check_invar_bmc\nquit\n",
+  "control_commands": "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n",
+  "id": "parameter-general-v1",
+  "route": "nuXmv SMT (go_msat + msat_check_invar_bmc)",
+  "rows": [
+    {
+      "also_evidence": "control row: the finite-domain route must refuse the model instead of guessing",
+      "auxiliary_invariant": "none: this route does not accept an unbounded integer",
+      "backend": "nuxmv-ic3",
+      "counterexample_present": false,
+      "error": "unsupported_ir:integer state variable step requires a bounded domain",
+      "exit_code": null,
+      "expectation": "unknown_fail_closed",
+      "family": "plan_ir",
+      "guard_constant": 4,
+      "invariants": [
+        "no-unauthorised-execution",
+        "capability-envelope-preserved",
+        "principal-context-monotonic",
+        "delegation-authority-requires-grant",
+        "monotonic-confinement",
+        "revocation-propagation",
+        "bounded-liveness"
+      ],
+      "ir_fingerprint": "4a04d2d85395b47bc475e265293e6b9950a6bc0e00766a9e87c5f4393593006d",
+      "model_id": "plan:evidence-plan-single",
+      "nuXmv_version": null,
+      "raw_result_lines": null,
+      "requested_commands": null,
+      "route": "nuxmv-ic3",
+      "row_id": "plan-ir:control:unbounded-bdd-fail-closed",
+      "smv_sha256": null,
+      "solver_hash": "0bf2f836821194de20027203f0f73d17858a42817d2bcc02ec8e55a218f91c26",
+      "status": "error",
+      "stdout_sha256": null,
+      "step_counter_has_declared_range": false,
+      "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
+      "timed_out": null,
+      "verdict": "unknown"
+    },
+    {
+      "also_evidence": "control row: it shows the route can withhold a verdict rather than always agree",
+      "auxiliary_invariant": "none: the liveness implication was replaced by a bare terminated claim",
+      "backend": "nuxmv-msat",
+      "counterexample_present": false,
+      "error": "nuxmv_incomplete:ed80a46d0e7fe12a7f16fd9001d76b0b3cd70f817d47d4e1e692224de8ed7502",
+      "exit_code": 0,
+      "expectation": "not_safe",
+      "family": "plan_ir",
+      "guard_constant": 4,
+      "invariants": [
+        "no-unauthorised-execution",
+        "capability-envelope-preserved",
+        "principal-context-monotonic",
+        "delegation-authority-requires-grant",
+        "monotonic-confinement",
+        "revocation-propagation",
+        "bounded-liveness"
+      ],
+      "ir_fingerprint": "be16cc7f0fa3d29ee832d9eaa6ea97fa8fe91d4147ba266c11a4aa80c40bdf9e",
+      "model_id": "plan:evidence-plan-single:weakened",
+      "nuXmv_version": "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)",
+      "raw_result_lines": [
+        "nuXmv > nuXmv > -- cannot prove the invariant terminated  is true or false : the induction failed",
+        "-- invariant !capability_violated  is true",
+        "-- invariant (delegation_authority_gained -> delegation_consumed)  is true",
+        "-- invariant !unauthorised_executed  is true",
+        "-- invariant !unauthorised_executed  is true",
+        "-- invariant !context_narrowed  is true",
+        "-- invariant (revocation_received -> !unauthorised_executed)  is true"
+      ],
+      "requested_commands": "go_msat\nmsat_check_invar_bmc\nquit\n",
+      "route": "nuxmv-msat",
+      "row_id": "plan-ir:control:weakened-liveness:smt",
+      "smv_sha256": "57d1fa124b931575e3d4f3d0e7bf1b4c01c82d46535d838cee4e65f7ec006b9f",
+      "solver_hash": "e5578954a4acffffa87442c40944d04e2854fcd1e6eb3fc37c0449f971dba039",
+      "status": "error",
+      "stdout_sha256": "fcc996507e073c3e34315aca38058dd9a2ff7dcb9c2f90fd556832bd5a8255f9",
+      "step_counter_has_declared_range": false,
+      "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
+      "timed_out": false,
+      "verdict": "unknown"
+    },
+    {
+      "also_evidence": "notes/ic3-msat-probe.md and notes/induction-probe.md in .conflux-investigation; writing/unbounded-obstructions.md states which families have no such route",
+      "auxiliary_invariant": "bounded-liveness (step >= bound - 1 -> terminated) together with the transition guard step <= bound - 1; the property alone is not inductive",
+      "backend": "nuxmv-msat",
+      "counterexample_present": false,
+      "error": null,
+      "exit_code": 0,
+      "expectation": "safe",
+      "family": "plan_ir",
+      "guard_constant": 4,
+      "invariants": [
+        "no-unauthorised-execution",
+        "capability-envelope-preserved",
+        "principal-context-monotonic",
+        "delegation-authority-requires-grant",
+        "monotonic-confinement",
+        "revocation-propagation",
+        "bounded-liveness"
+      ],
+      "ir_fingerprint": "4a04d2d85395b47bc475e265293e6b9950a6bc0e00766a9e87c5f4393593006d",
+      "model_id": "plan:evidence-plan-single",
+      "nuXmv_version": "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)",
+      "raw_result_lines": [
+        "nuXmv > nuXmv > -- invariant (step >= 4 -> terminated)  is true",
+        "-- invariant !capability_violated  is true",
+        "-- invariant (delegation_authority_gained -> delegation_consumed)  is true",
+        "-- invariant !unauthorised_executed  is true",
+        "-- invariant !unauthorised_executed  is true",
+        "-- invariant !context_narrowed  is true",
+        "-- invariant (revocation_received -> !unauthorised_executed)  is true"
+      ],
+      "requested_commands": "go_msat\nmsat_check_invar_bmc\nquit\n",
+      "route": "nuxmv-msat",
+      "row_id": "plan-ir:single:authorised:smt:symbolic-step-bound",
+      "smv_sha256": "4c0fa186b12cde0c24321ad4e368185bae9da873eb032ffd4cff55731a234cab",
+      "solver_hash": "e5578954a4acffffa87442c40944d04e2854fcd1e6eb3fc37c0449f971dba039",
+      "status": "complete",
+      "stdout_sha256": "83d5f2c938315995516572ac22cea93493503f4e3033ffd296b7505f80ef90d1",
+      "step_counter_has_declared_range": false,
+      "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
+      "timed_out": false,
+      "verdict": "safe"
+    }
+  ],
+  "schema_version": "1",
+  "source": "scripts/generate_parameter_general_evidence.py",
+  "summary": {
+    "by_expectation": {
+      "not_safe": 1,
+      "safe": 1,
+      "unknown_fail_closed": 1
+    },
+    "by_verdict": {
+      "safe": 1,
+      "unknown": 2
+    },
+    "control_rows": [
+      "plan-ir:control:unbounded-bdd-fail-closed",
+      "plan-ir:control:weakened-liveness:smt"
+    ],
+    "errors": [],
+    "positive_rows": [
+      "plan-ir:single:authorised:smt:symbolic-step-bound"
+    ],
+    "rows_without_declared_range": [
+      "plan-ir:control:unbounded-bdd-fail-closed",
+      "plan-ir:control:weakened-liveness:smt",
+      "plan-ir:single:authorised:smt:symbolic-step-bound"
+    ],
+    "total": 3
+  },
+  "timeout_seconds": 300.0
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "conflux.verification.nuxmv_backend.NuXmvBackend(smt=True)",
+  "binary": "nuXmv",
+  "claim": "Each positive row is a verdict about a model whose step counter has no declared range, so the verdict names no bound and no depth. It is not a verdict about a bounded model and must not be quoted as one.",
+  "commands": "go_msat\nmsat_check_invar_bmc\nquit\n",
+  "control_commands": "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n",
+  "controls": "A weakened invariant must not be reported safe, and the finite-domain route must fail closed on an unbounded model. Both controls are retained in the bundle.",
+  "generator": "scripts/generate_parameter_general_evidence.py",
+  "id": "parameter-general-v1",
+  "schema_version": "1",
+  "timeout_seconds": 300.0
+}

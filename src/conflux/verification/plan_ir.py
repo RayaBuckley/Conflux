@@ -58,8 +58,14 @@ def abstract_plan(
     catalogue: OperationCatalogue,
     effect_summaries: tuple[EffectSummary, ...],
     bound: int,
+    unbounded_step: bool = False,
 ) -> PlanAbstraction:
-    """Conservatively abstract a dynamic plan into a serializable verification IR."""
+    """Conservatively abstract a dynamic plan into a serializable verification IR.
+
+    ``unbounded_step`` drops the declared range on the step counter while keeping every
+    guard, so an SMT backend can prove the invariants for a symbolic bound. The default
+    keeps the range, and therefore keeps every recorded bounded row unchanged.
+    """
     if bound < 1:
         raise ValueError("plan verification bound must be positive")
     summaries = {item.node_id: item for item in effect_summaries}
@@ -155,7 +161,7 @@ def abstract_plan(
     ir = VerificationIR(
         f"plan:{plan.id}",
         (
-            StateVariable("step", Sort.INTEGER, 0, 0, bound),
+            StateVariable("step", Sort.INTEGER, 0, 0, None if unbounded_step else bound),
             StateVariable("unauthorised_executed", Sort.BOOLEAN, False),
             StateVariable("capability_violated", Sort.BOOLEAN, False),
             StateVariable("context_narrowed", Sort.BOOLEAN, False),
