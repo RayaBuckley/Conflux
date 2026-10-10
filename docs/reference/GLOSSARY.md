@@ -15,7 +15,7 @@
 | Consent | Approval that can restrict but never grant authority | consent policy port |
 | Confused deputy | A privileged component tricked by untrusted input into misusing its authority; prompt injection is a modern instance | research vocabulary |
 | Decision certificate | Binding of action, context, branch, and policy versions | `ites.state` |
-| ITES | Sole provenance-aware mediation transition kernel | `ites` |
+| ITES (Influence Tracking and Extrapolated Security) | Sole provenance-aware mediation transition kernel; tracks who produced every input the model saw, then extends those principals' policies to the model | `ites` |
 | SLED | Bounded explicit-state security verifier | `evaluation` |
 | Security outcome | Whether executed behavior satisfies policy | ITES/SLED reports |
 | Utility outcome | Whether a task objective was achieved | benchmark adapter result |

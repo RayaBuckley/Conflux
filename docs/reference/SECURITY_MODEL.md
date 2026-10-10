@@ -11,6 +11,10 @@
 | Action schemas | Assign trusted roles to operation arguments and identify protected resources |
 | Application service and executor | Recheck and execute only the certificate-matching action |
 
+ITES stands for **Influence Tracking and Extrapolated Security**: the kernel
+tracks who produced every input a model saw, and extends those influencing
+principals' own policies to the model through the intersection rule.
+
 Models, planners, optional classifiers, and benchmark data are not trusted to
 grant authority, assert decision provenance, or narrow Principal Context.
 A model may nevertheless be relied upon probabilistically for semantic judgement

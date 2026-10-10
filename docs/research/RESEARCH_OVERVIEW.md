@@ -18,6 +18,12 @@ Prompt injection is one mechanism for creating influence. It is not itself the s
 
 ## 2. Principal Context and ITES
 
+ITES stands for **Influence Tracking and Extrapolated Security**, and the name has
+two halves: it tracks who produced every input the model saw (influence
+tracking), and it extends those influencing principals' own policies to the
+model (extrapolated security). The rule that joins them is the intersection
+rule below.
+
 Each execution has a **Principal Context (PC)** containing the principals whose information may have influenced it.
 
 For an action `a`, the core ITES rule is:
@@ -85,7 +91,7 @@ Part C should distinguish:
 
 The previous project introduced:
 
-- Influence Tracking with Extrapolated Security (ITES);
+- Influence Tracking and Extrapolated Security (ITES);
 - Principal/influence accumulation;
 - the permission-intersection rule;
 - a conservative read rule;

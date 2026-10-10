@@ -44,8 +44,11 @@ is never silently discarded.
 
 ## How it works
 
-The security boundary is called **ITES** (Influence Tracking with
-Extrapolated Security). It sits between the model and the tools:
+The security boundary is called **ITES** (Influence Tracking and
+Extrapolated Security). The name has two halves: it tracks who produced every
+input the model saw, and it extends those influencing principals' own policies
+to the model through the intersection rule. It sits between the model and the
+tools:
 
 1. The model proposes an action.
 2. ITES checks the Principal Context — every influencing Principal must be
