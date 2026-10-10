@@ -75,7 +75,31 @@ above name the archived prototype, and they are labelled as applying to it.
 \section{Related work and positioning}
 ITES is structurally analogous to Biba low-water-mark contamination, enriched
 with authenticated principal provenance and authority derived from the
-organisation's existing access-control system. Classical IFC systems
+organisation's existing access-control system.
+
+Classical information-flow work supplies the vocabulary Conflux uses. Denning's
+lattice model orders the classifications that a flow policy
+compares~\citep{denning1976}; Biba's integrity considerations add the dual
+obligation that low-integrity input must not reach a high-integrity
+sink~\citep{biba1977}, and LOMAC applies low-water-mark integrity protection to
+commodity operating systems~\citep{lomac}. The decentralized label model lets
+each principal own the policy attached to the data it
+creates~\citep{myersliskov}, and the language-based survey collects the
+techniques that enforce such policies statically~\citep{sabelfeld2003}. Because
+real systems must disclose something, the declassification literature names the
+dimensions along which a policy may be relaxed and the principles that keep the
+relaxation safe~\citep{declassificationsurvey}; robust declassification demands
+that an adversary cannot exploit the relaxation
+itself~\citep{robustdeclassification}; nonmalleable information flow control
+closes the composition gap that appears when several relaxed components
+meet~\citep{nonmalleableifc}; and attacker control and impact make the
+comparison quantitative by asking what an adversary can still
+influence~\citep{attackercontrol}. Conflux keeps that vocabulary for its
+decision records, but its principals are the parties in an agent session, its
+labels are provenance and consent records, and a disclosure is an explicit
+recorded decision rather than a byte-level flow.
+
+Classical IFC systems
 including HiStar~\citep{histar}, Flume~\citep{flume}, and
 Asbestos~\citep{asbestos} demonstrate that trusted reference-monitor
 boundaries, dynamic contamination, and multi-principal isolation are
