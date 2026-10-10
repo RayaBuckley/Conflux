@@ -64,6 +64,13 @@ permissions. Its bounded SLED results apply to that implementation and model.
 The archived source and PDF remain under \texttt{paper/} with checksums. They
 are not evidence for the refactored kernel. Current experiments use separately
 named legacy-reproduction and canonical suites.
+This paper is a separate artefact and does not reuse those numbers: its
+results are counted only from the retained bundles under
+\texttt{research/output/runs/}, each of which carries the protocol, per-cell
+result and trace records that the tables check. Where this paper refers to the
+earlier results it cites the previous manuscript, and the results sections
+below derive only from the current bundles; only the bounded SLED statements
+above name the archived prototype, and they are labelled as applying to it.
 
 \section{Related work and positioning}
 ITES is structurally analogous to Biba low-water-mark contamination, enriched
@@ -179,6 +186,22 @@ structured-output mode, raw-response hashes, token use and latency. AgentDojo
 integration pins an upstream revision, preserves upstream IDs, and reports
 native and Conflux metrics without hiding added provenance assumptions.
 
+AgentDojo breadth uses the frozen stratified selection: four pinned suites
+(banking, slack, travel, workspace), each executed as one protocol whose suite
+record names the upstream tag, the selected task ids and the injection task
+ids. Every cell runs the same model configuration with seed and temperature
+fixed, and each retained bundle keeps its protocol record, its per-cell result
+JSON and its raw upstream traces. Repeatability is measured, not assumed: a
+retained protocol is re-executed in its own directory and compared cell by
+cell on status, native utility, native security, model-call count and failure
+list, with the raw traces compared after the two timing fields are set aside,
+and the protocol fingerprint must reproduce exactly. A repeated run is restored
+byte-for-byte afterwards, so the retained bundle stays the artefact the tables
+count. Failures are classified from the message that caused them, and each
+cell keeps a bounded summary of that message, so an incomplete cell is
+diagnosable from the bundle itself. At the retained floor-model scale utility
+is zero, so the security counts measure the harness rather than a defence.
+
 \section{Formal verification and planning}
 SLED-V accepts a finite serialisable transition IR rather than arbitrary
 Python. Initial properties cover unauthorised effects and reads, provenance
@@ -226,6 +249,10 @@ defence result: at this model scale utility is zero, so the security counts
 carry no signal, and the standing limitation is stated in the table caption.
 Real-model and AgentDojo claims stay bounded until a capable model completes
 the protocols.
+
+\input{generated/tables/agentdojo_breadth_table}
+
+\input{generated/tables/agentdojo_fingerprints_table}
 
 No numerical claim is entered manually. Tables and figures are generated from
 retained, versioned result JSON and include input checksums.
