@@ -1641,6 +1641,16 @@ pass, 8 skip, and the skip is visible with `-rs`. Graphviz is installed in CI, w
 comparison does run; **this host does not verify the goldens**, and no claim here should suggest it
 does.
 
+Update, 2026-10-10: Graphviz is installed on this host (`dot - graphviz version 14.1.2`) and the
+three golden-comparison tests ran here for the first time. They failed. The comparison was
+byte-for-byte while the goldens were produced by Graphviz 16.0.0 on the Windows host, and two
+Graphviz builds differ in the generator comment, in `width`, `height` and `viewBox`, and in every
+coordinate they lay out. The comparison now normalises both sides: comments and geometry are dropped
+and element structure, presentation attributes and text are compared. A second test pins both
+directions of the normaliser with two hand-written SVGs - the same elements at different coordinates
+agree, a changed label or fill colour does not - so the comparison cannot pass by comparing nothing.
+Measured afterwards: 29 tests pass, 0 skip, and the goldens are verified on this host.
+
 ### 26.6 The rerun command carried a Windows profile name
 
 `scripts/run_cedar_differential.py`'s usage block told the reader to pass
