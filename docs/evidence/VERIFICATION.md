@@ -1906,7 +1906,7 @@ vacuous in the same way as the earlier workspace pilots: a model that completes 
 shown to be protected by a defence. Utility-bearing breadth needs the 7B-plus configuration, which
 the retained runs took on rented pods rather than on this laptop.
 
-### Repeatability of the sweep suites (travel and banking, measured after the section above)
+### Repeatability of the sweep suites (travel, banking, slack and workspace, measured after the section above)
 
 The counts above were one sample per suite. Travel was repeated twice more on the same laptop, same
 model, same seed and same temperature, and the repeats answer the question directly:
@@ -1921,7 +1921,8 @@ model, same seed and same temperature, and the repeats answer the question direc
   recorded `protocol_fingerprint` equals the retained `54781fe7e475522b...` exactly. The earlier
   repeat, written into `.local/`, did not: see the first trap below.
 
-Two traps found while doing this, both now fixed or made explicit:
+Two traps found while doing this (both fixed or made explicit) and a third, found while repeating the
+two remaining suites on 2026-10-10 and not yet fixed:
 
 - `ExperimentProtocol.fingerprint` covers the whole record, including `output_directory` and
   `rerun_command`, so the same measurement written to a different directory carries a different
@@ -1932,15 +1933,36 @@ Two traps found while doing this, both now fixed or made explicit:
 - the first repeat recorded the short spelling `1127281` while the retained bundle records the full
   SHA, so two records of one commit did not compare equal. `scripts/run_agentdojo_sweep.py` now
   resolves `--source-commit` to a full commit SHA and refuses a value that does not resolve.
+- every retained AgentDojo bundle's `RERUN.txt` records
+  `conflux benchmark agentdojo run --config <bundle>/protocol.json --output <bundle> --execute-local`,
+  and that command exits 2 with `artifact_resolution_required`: the protocol names its local artifact
+  manifest under `inputs`, but the run path resolves the model only from `--model-config`, which the
+  rendered command omits. Following a bundle's own recorded instruction therefore does not reproduce
+  the run; adding `--model-config <bundle>/transformers.json` does, and that is the form used for all
+  four repeats recorded here. The fix is a behaviour change in the run path or in the renderer, and it
+  is filed as a queue item rather than applied silently to retained bundles.
 
 What this changes above: travel's counts are repeatable, cell by cell, on this host and this model.
-What it does not change: slack and workspace still carry one sample each, and 0.5B utility is zero
-everywhere, so this measures repeatability of the harness, not of any defence.
+What it does not change: 0.5B utility is zero everywhere, so this measures repeatability of the
+harness, not of any defence.
 
 Banking was repeated the same way, from its own retained protocol file and the documented rerun command
 rather than through the sweep: all 12 cells agree on status, native utility, native security, model
 calls and failures, and `protocol_fingerprint` is equal exactly, because the run wrote back the same
 protocol record. The raw traces differ only in `evaluation_timestamp` and `duration`.
+
+Slack and workspace were repeated the same way on 2026-10-10, from each retained protocol file into its
+retained directory, with the local artifact configuration that the recorded `RERUN.txt` omits (third
+trap below). Slack reproduced its `protocol_fingerprint` `936563e1782d1001...` exactly: all 24
+completed cells agree on `status`, `native_utility`, `native_security`, `model_calls` and the failure
+list, and all 24 raw upstream traces are equal once `evaluation_timestamp` and `duration` are set
+aside. The six incomplete cells are the same six `slack:user_task_16` cells; their recorded failure
+moves from `model` to `parser` because the cell now carries `failure_reason`, which prints the upstream
+validation message that earlier releases discarded, so the cause is readable from the bundle itself
+without a scratch rerun. Workspace reproduced `cbe8f9ad9a5f1b8b...` exactly, with all 78 cells
+agreeing on those five fields, all 78 raw traces equal once the two timing fields are set aside, and
+the same failure categories as its retained bundle. Slack's repeat exits 3 because six cells do not
+complete, while workspace's exits 0: the exit code tracks completion, not agreement.
 
 One provenance gap surfaced while comparing: the retained banking bundle selects two user tasks
 (`user_task_0`, `user_task_1`, protocol id `banking:expanded:user_task_0`), while the frozen selection in
