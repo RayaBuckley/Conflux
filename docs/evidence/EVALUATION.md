@@ -205,6 +205,7 @@ under `research/output/runs/`:
 | SLED depth sweep | `scripts/generate_sled_depth_sweep.py` | Native SLED across 4 bound configurations on delegation and planning systems |
 | SLED environment sweep | `scripts/generate_sled_environment_sweep.py` | Native SLED across varied principal/action/data-item counts |
 | Cross-backend validation | `scripts/generate_backend_cross_validation.py` | Z3 BMC vs. reference interpreter on delegation IR variants, 11/11 verdict classes (bundle `research/output/runs/backend-cross-validation-v1/`) |
+| Delegation defect sweep | `scripts/generate_delegation_defect_sweep.py` | Z3 BMC vs. reference interpreter on every subset of the nine independent delegation defects, 512/512 verdict classes (bundle `research/output/runs/delegation-defect-sweep-v1/`) |
 
 Key findings:
 

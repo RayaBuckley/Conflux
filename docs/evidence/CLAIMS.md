@@ -48,6 +48,7 @@
 | Expanded mutation benchmark: 26 mutants across 4 families, 100% kill rate | Bounded evidence | Part C | `research/output/runs/mutation-benchmark-v1/`: 4 disclosure (native SLED), 7 delegation (native SLED), 10 delegation IR (reference BFS + Z3 BMC + COI-reduced Z3 BMC), 5 synthesis (Z3 BMC); all killed within tested bound |
 | Authenticated provenance recovers utility without soundness violations | Bounded evidence | Part C | `research/output/runs/provenance-precision-v1/`: 324 tasks across 4×4×3×3 parameter grid; C2 (authenticated) completion ≥ C1 (conservative) completion; C2 has zero enforcement soundness violations; C1 mean PC size > C2 mean PC size (overapproximation confirmed) |
 | Planning diagnostic suite covers 22 scenario categories | Implemented | Part C | `research/experiments/suites/planning-diagnostic-v1.yaml`: 22 deterministic scenarios across 16 categories; all validated against planning-diagnostic-suite schema; 4 planning modes tested (reactive, static, dynamic, dynamic_code) |
+| Two encodings of the delegation IR agree on every combination of the nine independent defects | Measured | Part C | `research/output/runs/delegation-defect-sweep-v1/`: 512 of 512 subsets agree by verdict class, 511 carry an unsafe reference verdict, one raw difference (the canonical body, `bounded_safe` vs `safe`); agreement between two encodings of one IR is not a proof of the delegation semantics |
 
 ## Reading the Origin column
 
@@ -133,6 +134,13 @@ model with the measurement previously preserved from revision `bbd59a2`: the ret
 provenance block was superseded by a reproducible one, not dropped. No claim rests on
 nuXmv alone, because the `pe_*` and `native_*` counters are computed over the Z3 verdicts
 and the reference interpreter; the IC3 rows corroborate them without a bound.
+
+Row 47 measures the same optional Z3 backend over a closed population: every subset of the nine
+independent delegation defects is built and compared, so its agreement count is not over a chosen list.
+The bundle records both the raw and the class comparison per subset, the one raw difference in the space
+(the canonical body, `bounded_safe` against `safe`), and the single subset that is not refuted, by id.
+The claim is still about two encodings of one IR against a reference interpreter, not about delegation
+semantics as such.
 
 ## Rationale
 

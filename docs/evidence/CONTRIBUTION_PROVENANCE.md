@@ -82,7 +82,7 @@ here so that a later submission can disclose its history honestly.
 | Branches are isolated alternatives | Implemented | one transition kernel and branch-parent tests |
 | ITES preserves PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: ITES reference PE property is bounded\_safe; finite IR model |
 
-### Fourth-year contributions (Part C) (39 claims)
+### Fourth-year contributions (Part C) (40 claims)
 
 | Claim | Status | Evidence and limits |
 | --- | --- | --- |
@@ -125,8 +125,9 @@ here so that a later submission can disclose its history honestly.
 | Expanded mutation benchmark: 26 mutants across 4 families, 100% kill rate | Bounded evidence | `research/output/runs/mutation-benchmark-v1/`: 4 disclosure (native SLED), 7 delegation (native SLED), 10 delegation IR (reference BFS + Z3 BMC + COI-reduced Z3 BMC), 5 synthesis (Z3 BMC); all killed within tested bound |
 | Authenticated provenance recovers utility without soundness violations | Bounded evidence | `research/output/runs/provenance-precision-v1/`: 324 tasks across 4×4×3×3 parameter grid; C2 (authenticated) completion ≥ C1 (conservative) completion; C2 has zero enforcement soundness violations; C1 mean PC size > C2 mean PC size (overapproximation confirmed) |
 | Planning diagnostic suite covers 22 scenario categories | Implemented | `research/experiments/suites/planning-diagnostic-v1.yaml`: 22 deterministic scenarios across 16 categories; all validated against planning-diagnostic-suite schema; 4 planning modes tested (reactive, static, dynamic, dynamic_code) |
+| Two encodings of the delegation IR agree on every combination of the nine independent defects | Measured | `research/output/runs/delegation-defect-sweep-v1/`: 512 of 512 subsets agree by verdict class, 511 carry an unsafe reference verdict, one raw difference (the canonical body, `bounded_safe` vs `safe`); agreement between two encodings of one IR is not a proof of the delegation semantics |
 
-Ledger rows: 46 (Part B: 0, Part B, reproduced: 1, Part B concept, Part C evidence: 6, Part C: 39).
+Ledger rows: 47 (Part B: 0, Part B, reproduced: 1, Part B concept, Part C evidence: 6, Part C: 40).
 
 <!-- END GENERATED CONTRIBUTION TABLE -->
 

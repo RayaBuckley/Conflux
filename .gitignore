@@ -69,6 +69,8 @@ research/output/runs/*
 !research/output/runs/three-way-agreement-v1/**
 !research/output/runs/backend-cross-validation-v1/
 !research/output/runs/backend-cross-validation-v1/**
+!research/output/runs/delegation-defect-sweep-v1/
+!research/output/runs/delegation-defect-sweep-v1/**
 !research/output/runs/native-sled-partb-reproduction-v1/
 !research/output/runs/native-sled-partb-reproduction-v1/**
 !research/output/runs/agentdojo-7b-v1/
