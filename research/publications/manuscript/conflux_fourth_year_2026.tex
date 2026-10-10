@@ -25,9 +25,16 @@ independent read, authorisation, visibility and consent decisions, versioned
 decision evidence, bounded explicit-state verification, authenticated dynamic
 planning, and an offline result-producing CLI. Architectural repair and the
 credential-free vertical slice are tested, but real-model, external-benchmark
-and solver-binary claims remain gated on reproducible result artefacts. This paper distinguishes
-archived evidence, current implementation evidence and planned experiments;
-numerical placeholders are filled only by generated artefacts.
+and solver-binary claims remain gated on reproducible result artefacts. The
+claim under test is containment: an action is allowed only when every
+influencing principal's own permissions allow it, and an input fetched from
+elsewhere cannot acquire authority it was never granted. Three independent
+bounded analyses agree on all eleven planned variants, ten of which are refuted;
+the archived prototype reproduces its published trace count under a stated
+enumeration change; and property reduction keeps its documented scaling
+advantage on the fixtures exercised here. This paper distinguishes archived
+evidence, current implementation evidence and planned experiments; numerical
+placeholders are filled only by generated artefacts.
 \end{abstract}
 
 \section{Introduction}
