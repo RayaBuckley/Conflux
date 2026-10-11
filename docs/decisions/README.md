@@ -37,3 +37,4 @@ documentation.
 | [025](025-authority-confinement-semantic-judgement-delegation.md) | adr | Authority confinement, semantic judgement, and explicit scoped delegation |
 | [026](026-continuation-and-contribution-provenance.md) | adr | Continuation of the Part B project and contribution provenance |
 | [027](027-complete-agentdojo-coverage.md) | adr | Complete AgentDojo coverage and the full benchmark run |
+| [028](028-joint-argument-rules.md) | adr | A joint argument rule for content origin and destination |

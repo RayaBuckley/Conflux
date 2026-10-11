@@ -125,6 +125,10 @@ evaluates current policy state again.
 - Every Principal in the context must receive a pointwise policy allow.
 - Trusted operation schemas assign argument roles; model output cannot assign
   or change them. Missing roles and unconfigured argument policy deny.
+- An argument allowance may require another argument of the same action: the
+  allowance holds only when every requirement of its grant holds, and a
+  requirement that cannot be established denies
+  ([ADR-028](../decisions/028-joint-argument-rules.md)).
 - Provenance describes influence; read policy decides observation.
 - Missing consent denies. Only internal stop and no-op can omit consent.
 - Delegation remains denied at runtime. Its scoped, one-use grant model is

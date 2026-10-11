@@ -9,6 +9,7 @@ from .adapters import (
 )
 from .argument_policy import (
     ArgumentPolicyGrant,
+    ArgumentRequirement,
     InMemoryArgumentAuthorisationPolicy,
 )
 from .base import InMemoryAuthorisationPolicy, PolicyGrant
@@ -17,6 +18,7 @@ from .owner_policy import OwnerAuthorisationPolicy
 __all__ = [
     "AllowInternalReadPolicy",
     "ArgumentPolicyGrant",
+    "ArgumentRequirement",
     "ExplicitConsentPolicy",
     "InMemoryArgumentAuthorisationPolicy",
     "InMemoryAuthorisationPolicy",

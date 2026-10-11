@@ -298,6 +298,42 @@ unavailable     →  denied
 | Tests | `tests/test_policy_and_ites.py::test_missing_consent_denies_effect`, `test_delegation_is_unsupported` |
 | ADR | [ADR-005](../decisions/005-testing-and-validation.md) |
 
+### SEM-019: An argument allowance may constrain a sibling argument
+
+An argument grant authorises its argument only when every requirement attached
+to that grant holds. A requirement names one other argument of the same action
+and holds when that argument's provenance sources are a subset of the permitted
+sources and, when a value is pinned, its value fingerprint matches:
+
+```text
+grant matches argument  ∧  ∀ requirement: holds(sibling)   →  allowed   (argument_grant)
+grant matches argument  ∧  ∃ requirement: ¬holds(sibling)  →  denied    (argument_requirement_denied)
+no grant matches argument                                  →  denied    (argument_deny)
+```
+
+Requirements fail closed: an absent sibling argument, unknown provenance, an
+empty permitted-source list, or a different value denies. The evidence names
+each unmet requirement as `requires_failed:<argument>`. A grant without
+requirements keeps the evidence shape of the other argument decisions, and
+grants stay additive allowances, so a rule is effective only while it is the
+only grant matching its argument.
+
+Measured motivation: a rule of the wanted shape installed on a content argument
+is never consulted, because content is not an authority-bearing role, and a
+decision carries evidence for the judged role alone. A send whose body is
+private workspace data therefore passes under a destination allowance, while the
+coarse alternative, removing the allowance, refuses the legitimate send as well.
+One grant that names the permitted origin of the body separates the two.
+
+| Aspect | Location |
+|---|---|
+| Requirement | `src/conflux/policy/argument_policy.py` `ArgumentRequirement.holds` |
+| Grant field | `src/conflux/policy/argument_policy.py` `ArgumentPolicyGrant.requires` |
+| Decision | `src/conflux/policy/argument_policy.py` `InMemoryArgumentAuthorisationPolicy.decide` |
+| Exports | `src/conflux/policy/__init__.py` |
+| Tests | `tests/test_argument_policy_joint_rule.py::test_a_joint_rule_refuses_private_content_at_an_outside_destination`, `test_the_same_rule_allows_reviewed_content`, `test_a_grant_without_requirements_keeps_its_decision_shape`, `test_a_requirement_on_an_absent_argument_fails_closed`, `test_unknown_provenance_fails_closed`, `test_a_value_pin_requirement_denies_a_different_value`, `test_the_demonstration_gateway_refuses_the_owners_private_send` |
+| ADR | [ADR-028](../decisions/028-joint-argument-rules.md) |
+
 ## Assessment verdicts
 
 ### SEM-017: An untriggered property is not a pass
