@@ -78,11 +78,15 @@ def refusal_record_payload(source_commit: str) -> dict[str, Any]:
     mediator.mediate("delete_file", {"file_id": "13"}, executor)
     records = [_record_summary(record) for record in mediator.records]
     refusal = records[-1]
+    retained = cast(dict[str, Any], mediator.records[-1]["report"])
+    cast(dict[str, Any], refusal["report"])["refusing_decision"] = refusing_rule_from_retained_report(retained)
+    refused_fields = {key: refusal.get(key) for key in ("reason", "policy_id", "policy_dimension")}
     checks = {
         "refusal_names_a_rule": bool(refusal.get("reason")) and bool(refusal.get("policy_id")),
         "refusal_reason_is_outside_the_adapter_vocabulary": refusal.get("reason") not in ADAPTER_REFUSAL_REASONS,
         "refusal_category_is_policy": refusal_category(refusal) == "policy",
         "refusal_dimension_is_recorded": bool(refusal.get("policy_dimension")),
+        "refusal_matches_the_retained_report": refusing_rule_from_report_summary(refusal) == refused_fields,
         "one_executor_call": len(executor.certificates) == 1,
     }
     return {
@@ -95,6 +99,36 @@ def refusal_record_payload(source_commit: str) -> dict[str, Any]:
         "records": records,
         "checks": checks,
     }
+
+
+def refusing_rule_from_retained_report(report: Mapping[str, Any]) -> dict[str, str] | None:
+    """Return the first denying policy decision in a retained report, in the record's field names.
+
+    The adapter walks the live report object; this walks the serialised copy a reader holds, so a
+    stored bundle can be re-derived without the code that produced it.
+    """
+    for branch in cast(list[dict[str, Any]], report.get("branches", [])):
+        for event in cast(list[dict[str, Any]], branch.get("trace", [])):
+            decision = event.get("decision")
+            if not isinstance(decision, Mapping):
+                continue
+            for entry in cast(list[dict[str, Any]], decision.get("decisions", [])):
+                if not entry.get("allowed"):
+                    return {
+                        "reason": str(entry["reason"]),
+                        "policy_id": str(entry["policy_id"]),
+                        "policy_dimension": str(entry["category"]),
+                    }
+    return None
+
+
+def refusing_rule_from_report_summary(summary: Mapping[str, Any]) -> dict[str, str] | None:
+    """Return the rule the record's retained report excerpt names, or None without one."""
+    report = summary.get("report")
+    excerpt = report.get("refusing_decision") if isinstance(report, Mapping) else None
+    if not isinstance(excerpt, Mapping) or not excerpt:
+        return None
+    return {str(key): str(value) for key, value in excerpt.items()}
 
 
 def _readme(payload: Mapping[str, Any]) -> str:
@@ -125,6 +159,10 @@ def _readme(payload: Mapping[str, Any]) -> str:
         f"({', '.join(cast(list[str], payload['adapter_refusal_vocabulary']))}) is disjoint from the policy",
         "vocabulary, so a reader can",
         "still tell an out-of-scope refusal from a policy decision.",
+        "",
+        "records.json also retains the refusing decision itself (`policy_id`, `category`, `reason`) beside",
+        "the record's three fields, so the bundle's `refusal_matches_the_retained_report` check can be",
+        "re-run by hand from the file alone.",
         "",
         "What this does not show: it is not an AgentDojo result, it measures no model, and it says nothing",
         "about how often a policy refuses in a real suite. The retained run bundles under",
@@ -209,5 +247,7 @@ __all__ = [
     "compare_agentdojo_refusal_evidence_bundle",
     "generate_agentdojo_refusal_evidence_bundle",
     "refusal_record_payload",
+    "refusing_rule_from_report_summary",
+    "refusing_rule_from_retained_report",
     "verify_agentdojo_refusal_evidence_checksums",
 ]

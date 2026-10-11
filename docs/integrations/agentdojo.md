@@ -56,7 +56,10 @@ The adapter's own refusals use the same `reason` field with a disjoint vocabular
 (`unsupported_tool`, `unsupported_arguments`), so `refusal_category` still separates an out-of-scope
 refusal from a policy decision. Run bundles retained before this field existed record no `reason` on
 a policy refusal; `research/output/runs/agentdojo-refusal-record-v1/` holds a small, byte-checked
-example a reviewer can re-run without a model or a network.
+example a reviewer can re-run without a model or a network. That bundle also retains the refusing
+decision itself (`policy_id`, `category`, `reason`) beside the record's three fields, and its
+`refusal_matches_the_retained_report` check re-derives the fields from that excerpt, so a reader can
+verify the rule from the file alone.
 
 ## Six-cell local pilot
 

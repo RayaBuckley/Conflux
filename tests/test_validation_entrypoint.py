@@ -263,6 +263,27 @@ def test_the_paper_tables_are_checked_and_a_drift_fails_the_tier(
     assert "scripts/generate_flmsec_tables.py --check" in failing.invoked
 
 
+def test_the_retained_refusal_bundle_is_checked_when_it_exists(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The retained refusal-record bundle must not drift from the code that wrote it.
+
+    The step is scheduled by a directory guard, so a relocated or emptied guard would drop the only
+    byte-level check of the retained copy while the tier still reported that all checks passed.
+    """
+    step = "scripts/generate_agentdojo_refusal_evidence.py research/output/runs/agentdojo-refusal-record-v1 --check"
+    assert (validate_module.ROOT / "research" / "output" / "runs" / "agentdojo-refusal-record-v1").is_dir()
+    recorder, _, exit_code = _drive_main(monkeypatch, capsys, "--tier", "standard")
+    assert exit_code == 0
+    assert step in recorder.invoked
+
+    failing, output, exit_code = _drive_main(monkeypatch, capsys, "--tier", "standard", fail_at=step)
+    assert exit_code == 1
+    assert "generate_agentdojo_refusal_evidence.py" in output
+    assert step in failing.invoked
+
+
 def test_full_tier_runs_the_packaging_and_extension_checks(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],

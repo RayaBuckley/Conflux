@@ -5,6 +5,8 @@ from .agentdojo_refusal_evidence import (
     AGENTDOJO_REFUSAL_EVIDENCE_FILES,
     compare_agentdojo_refusal_evidence_bundle,
     generate_agentdojo_refusal_evidence_bundle,
+    refusing_rule_from_report_summary,
+    refusing_rule_from_retained_report,
     verify_agentdojo_refusal_evidence_checksums,
 )
 from .cedar_evidence import (
@@ -138,6 +140,8 @@ __all__ = [
     "materialise_jobs",
     "plan_resume",
     "planning_matrix",
+    "refusing_rule_from_report_summary",
+    "refusing_rule_from_retained_report",
     "run_agentdojo_comparison",
     "run_laptop_planning_smoke",
     "run_native_reproduction",
