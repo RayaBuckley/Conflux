@@ -138,7 +138,9 @@ The `conflux demo` command writes three files:
 The result JSON distinguishes proposed, authorised, blocked, executed,
 provider-failed, and excluded outcomes. Security assessments like
 `no_unauthorised_execution` consider only executed branches, not blocked ones
-(SEM-014).
+(SEM-014), and each assessment records a `verdict` of `holds`, `broken`, or
+`not_exercised`. A run that executed nothing reports `not_exercised` for that
+property: nothing was asked to hold, so nothing is claimed to hold.
 
 ## Blocked proposal walkthrough
 
@@ -154,7 +156,9 @@ document). The Principal Context becomes `{alice, eve}`. If Eve does not have a
 
 The blocked branch appears in the result JSON with `status: "blocked"` and a
 diagnostic reason. No effect is executed, no certificate is consumed, and the
-`no_unauthorised_execution` assessment remains `true`. See
+`no_unauthorised_execution` assessment reports the verdict `not_exercised`:
+the property is a universal over executed events, and this run produced none
+(a blocked proposal is a refusal, not a violation, and not a pass). See
 [NEGATIVE_CONTROLS.md](../evidence/NEGATIVE_CONTROLS.md) for deliberately
 vulnerable mediators that fail to block such proposals and the SLED
 counterexamples that detect them.

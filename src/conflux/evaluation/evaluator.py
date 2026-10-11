@@ -28,7 +28,11 @@ class EvaluationResult:
 
     @property
     def secure(self) -> bool:
-        """Whether all security assessments in the report hold."""
+        """Whether all security assessments in the report hold.
+
+        A property the run never exercised does not hold (SEM-017), so a run that executed nothing
+        is not reported as secure.
+        """
         return all(assessment.holds for assessment in self.report.assessments)
 
 

@@ -50,12 +50,16 @@ class _RecordingExecutor:
 
 
 def _record_summary(record: Mapping[str, object]) -> dict[str, Any]:
-    """Return the record fields a refusal counter reads, plus a compact report summary."""
+    """Return the record fields a refusal counter reads, plus a compact report summary.
+
+    Each assessment keeps its verdict beside its boolean flag: a bare ``holds: false`` cannot tell a
+    rule that was broken from a property the run never exercised (SEM-017).
+    """
     summary = {key: record[key] for key in _RECORD_KEYS if key in record}
     report = cast(dict[str, Any], record["report"])
     summary["report"] = {
         "assessments": [
-            {"name": assessment["name"], "holds": assessment["holds"]}
+            {"name": assessment["name"], "holds": assessment["holds"], "verdict": assessment["verdict"]}
             for assessment in cast(list[dict[str, Any]], report["assessments"])
         ],
         **{key: report[key] for key in _REPORT_KEYS},
@@ -131,6 +135,12 @@ def refusing_rule_from_report_summary(summary: Mapping[str, Any]) -> dict[str, s
     return {str(key): str(value) for key, value in excerpt.items()}
 
 
+def _verdicts(record: Mapping[str, Any]) -> str:
+    """Return one record's assessment verdicts as a compact ``name=verdict`` list."""
+    report = cast(dict[str, Any], record["report"])
+    return ", ".join(f"`{item['name']}={item['verdict']}`" for item in cast(list[dict[str, Any]], report["assessments"]))
+
+
 def _readme(payload: Mapping[str, Any]) -> str:
     """Return the human-readable page that explains this bundle."""
     records = cast(list[dict[str, Any]], payload["records"])
@@ -163,6 +173,14 @@ def _readme(payload: Mapping[str, Any]) -> str:
         "records.json also retains the refusing decision itself (`policy_id`, `category`, `reason`) beside",
         "the record's three fields, so the bundle's `refusal_matches_the_retained_report` check can be",
         "re-run by hand from the file alone.",
+        "",
+        "Each assessment in a record's report carries its `verdict` beside its `holds` flag. The refused",
+        "call executed nothing and authorised nothing, so its two event-conditioned properties are",
+        "`not_exercised` with `holds: false`, and only the model-call bound claims to hold (SEM-017).",
+        f"Recorded verdicts: {_verdicts(refusal)}.",
+        "The refusal is not a violation, and an unexercised property is no longer reported as a pass.",
+        "A bundle written before this field existed carries no verdict; the reader of such a file treats",
+        "a recorded `holds: false` as `broken`, because it cannot tell the two cases apart.",
         "",
         "What this does not show: it is not an AgentDojo result, it measures no model, and it says nothing",
         "about how often a policy refuses in a real suite. The retained run bundles under",

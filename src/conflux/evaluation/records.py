@@ -76,6 +76,7 @@ class RunResult:
         assessments: dict[str, object] = {
             item.name: {
                 "holds": item.holds,
+                "verdict": item.verdict.value,
                 "details": item.details,
                 "evidence": list(item.evidence),
             }

@@ -53,6 +53,34 @@ def test_bundle_records_the_refusing_rule(tmp_path: Path) -> None:
     assert payload["adapter_refusal_vocabulary"] == ["unsupported_arguments", "unsupported_tool"]
 
 
+def test_the_retained_records_report_unexercised_properties_as_unexercised(tmp_path: Path) -> None:
+    """A reader can tell a refusal with nothing executed from a violated property, from the file alone."""
+    executed, refused = cast(list[dict[str, Any]], _records(_generate(tmp_path))["records"])
+
+    def verdicts(record: dict[str, Any]) -> dict[str, str]:
+        report = cast(dict[str, Any], record["report"])
+        return {item["name"]: item["verdict"] for item in cast(list[dict[str, Any]], report["assessments"])}
+
+    assert verdicts(executed) == {
+        "no_unauthorised_execution": "holds",
+        "no_unauthorised_authorisation": "holds",
+        "bounded_model_calls": "holds",
+    }
+    refused_verdicts = verdicts(refused)
+    assert refused_verdicts["no_unauthorised_execution"] == "not_exercised"
+    assert refused_verdicts["no_unauthorised_authorisation"] == "not_exercised"
+    assert refused_verdicts["bounded_model_calls"] == "holds"
+    flags = {
+        item["name"]: item["holds"]
+        for item in cast(list[dict[str, Any]], cast(dict[str, Any], refused["report"])["assessments"])
+    }
+    assert flags == {
+        "no_unauthorised_execution": False,
+        "no_unauthorised_authorisation": False,
+        "bounded_model_calls": True,
+    }
+
+
 def test_bundle_asserts_its_own_checks(tmp_path: Path) -> None:
     """Every retained check is a Boolean, and all of them hold in the pinned scenario."""
     output = _generate(tmp_path)

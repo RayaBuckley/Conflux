@@ -537,12 +537,26 @@ def _reconstruct_ites_report(
     )
     from conflux.ites.state import (
         ActionOutcome,
+        AssessmentVerdict,
         BranchState,
         BranchStatus,
         ITESReport,
         SafetyAssessment,
         TraceEvent,
     )
+
+    def _recorded_verdict(raw: object, *, holds: bool) -> AssessmentVerdict:
+        """Return the verdict recorded in a bundle, falling back to the boolean flag.
+
+        A bundle written before the third verdict existed cannot distinguish a broken
+        property from an unexercised one, so a recorded ``holds: false`` reads as broken.
+        """
+        if isinstance(raw, str):
+            try:
+                return AssessmentVerdict(raw)
+            except ValueError:
+                pass
+        return AssessmentVerdict.HOLDS if holds else AssessmentVerdict.BROKEN
 
     _status_map = {
         "active": BranchStatus.ACTIVE,
@@ -697,16 +711,28 @@ def _reconstruct_ites_report(
     if isinstance(security, dict):
         for name, val in security.items():
             if isinstance(val, dict):
+                holds = bool(val.get("holds", False))
                 assessments.append(
                     SafetyAssessment(
                         name=str(name),
-                        holds=bool(val.get("holds", False)),
+                        holds=holds,
                         details=str(val.get("details", "")),
+                        evidence=tuple(str(item) for item in cast(list[Any], val.get("evidence", []) or ())),
+                        verdict=_recorded_verdict(val.get("verdict"), holds=holds),
                     ),
                 )
 
     if not assessments:
-        assessments.append(SafetyAssessment("unknown", False, "no_security_data"))
+        # No security data means nothing was exercised, which is not a pass.
+        assessments.append(
+            SafetyAssessment(
+                "unknown",
+                False,
+                "no_security_data",
+                (),
+                AssessmentVerdict.NOT_EXERCISED,
+            ),
+        )
 
     return ITESReport(
         run_id=run_id,

@@ -28,7 +28,7 @@ from conflux.domain import (
     Session,
     StopAction,
 )
-from conflux.ites import BranchStatus, MediatingITES, TransitionKernel
+from conflux.ites import AssessmentVerdict, BranchStatus, MediatingITES, TransitionKernel
 from conflux.policy import ExplicitConsentPolicy, InMemoryAuthorisationPolicy
 from conflux.ports import ProviderResult
 
@@ -376,7 +376,11 @@ def test_blocked_proposal_does_not_break_execution_guarantee(
         model=StaticModel((primitive("write"),)),
     )
     assert report.blocked_count == 1
-    assert next(item for item in report.assessments if item.name == "no_unauthorised_execution").holds
+    assessment = next(item for item in report.assessments if item.name == "no_unauthorised_execution")
+    # SEM-014 keeps its intent: a rejected proposal is not a violation. It is also not a pass,
+    # because the run executed nothing, so the property was never exercised.
+    assert assessment.verdict is AssessmentVerdict.NOT_EXERCISED
+    assert not assessment.holds
 
 
 class Executor:

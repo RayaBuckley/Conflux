@@ -11,11 +11,14 @@ from conflux.ports import ModelPort
 from .kernel import TransitionKernel
 from .state import (
     ActionOutcome,
+    AssessmentVerdict,
     BranchState,
     BranchStatus,
     ITESReport,
     SafetyAssessment,
     TraceEvent,
+    execution_assessment,
+    verdict_for_counts,
 )
 
 
@@ -143,31 +146,30 @@ def _assess(
     max_calls: int,
 ) -> tuple[SafetyAssessment, ...]:
     authorised = tuple(branch for branch in branches if branch.status == BranchStatus.AUTHORISED)
-    no_bad_authorisation = all(branch.decision is not None and branch.decision.allowed for branch in authorised)
-    no_unauthorised_execution = all(
-        event.decision is None or event.decision.allowed
-        for branch in branches
-        for event in branch.trace
-        if event.outcome == ActionOutcome.EXECUTED
+    bad_authorisation = tuple(
+        branch for branch in authorised if branch.decision is None or not branch.decision.allowed
     )
+    authorisation_verdict = verdict_for_counts(observed=len(authorised), violated=len(bad_authorisation))
+    within_call_bound = calls <= max_calls
     return (
-        SafetyAssessment(
-            "no_unauthorised_execution",
-            no_unauthorised_execution,
-            "Executed actions, not rejected proposals, determine this property.",
-            (f"executed={sum(event.outcome == ActionOutcome.EXECUTED for branch in branches for event in branch.trace)}",),
-        ),
+        execution_assessment(branches),
         SafetyAssessment(
             "no_unauthorised_authorisation",
-            no_bad_authorisation,
-            "Every authorised branch has a fully allowing independent decision.",
-            (f"authorised={len(authorised)}",),
+            authorisation_verdict is AssessmentVerdict.HOLDS,
+            {
+                AssessmentVerdict.HOLDS: "Every authorised branch has a fully allowing independent decision.",
+                AssessmentVerdict.NOT_EXERCISED: "No branch was authorised, so this property was not exercised.",
+                AssessmentVerdict.BROKEN: "At least one authorised branch had no fully allowing decision.",
+            }[authorisation_verdict],
+            (f"authorised={len(authorised)}", f"unauthorised={len(bad_authorisation)}"),
+            authorisation_verdict,
         ),
         SafetyAssessment(
             "bounded_model_calls",
-            calls <= max_calls,
+            within_call_bound,
             "The shared run-level model-call bound was respected.",
             (f"calls={calls}", f"bound={max_calls}"),
+            AssessmentVerdict.HOLDS if within_call_bound else AssessmentVerdict.BROKEN,
         ),
     )
 

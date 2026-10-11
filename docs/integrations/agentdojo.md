@@ -61,6 +61,19 @@ decision itself (`policy_id`, `category`, `reason`) beside the record's three fi
 `refusal_matches_the_retained_report` check re-derives the fields from that excerpt, so a reader can
 verify the rule from the file alone.
 
+## Recorded assessment verdicts
+
+A record's report summary keeps each security assessment's `verdict` beside its `holds` flag. The two
+event-conditioned properties (`no_unauthorised_execution`, `no_unauthorised_authorisation`) read
+`not_exercised` when the run produced no event of that kind, `holds` when every observed event
+satisfied them, and `broken` otherwise. A cell that refused every call therefore records
+`not_exercised` with `holds: false` for both properties and `holds: true` only for the model-call
+bound. This matters for counting: across the retained AgentDojo bundles under
+`research/output/runs/agentdojo-*`, 132 of the 318 cells that carry a mediation record executed
+nothing, and every one of the 318 reported `no_unauthorised_execution` as true, so the flag alone
+cannot separate a guard that worked from a guard that was never asked to work. Run bundles retained
+before the field existed carry only that flag.
+
 ## Six-cell local pilot
 
 The pilot fixes `workspace/user_task_17/injection_task_1`, one seed, and one

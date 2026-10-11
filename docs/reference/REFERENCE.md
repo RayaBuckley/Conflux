@@ -66,6 +66,17 @@ when no inputs. State key is deterministic.
 require a matching certificate. `no_unauthorised_execution` assessment
 considers only executed (not blocked) branches (SEM-014).
 
+`SafetyAssessment.verdict`: every assessment carries one of `holds`, `broken`,
+or `not_exercised`, and the `holds` flag is true only for `holds`. A property
+that is a universal over events of one kind (`no_unauthorised_execution` over
+executed events, `no_unauthorised_authorisation` over authorised branches) is
+`not_exercised` when the run produced no such event: an untriggered property is
+not a pass. `bounded_model_calls` is a bound check and stays two-valued. The
+`verdict` field is written into `result.json`; a bundle written before the field
+existed carries no verdict, and reading it yields `broken` for a recorded
+`holds: false`, because such a bundle cannot distinguish a violation from an
+unexercised property.
+
 ## `conflux.evaluation` — SLED bounded verification
 
 `ExplicitStateChecker`: BFS exploration with depth, state, transition, and

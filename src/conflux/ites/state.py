@@ -218,23 +218,63 @@ class AuthorisedPlan:
     branch_id: str
 
 
+class AssessmentVerdict(StrEnum):
+    """Verdict of a named safety property.
+
+    ``NOT_EXERCISED`` is deliberately not a pass. A property such as
+    ``no_unauthorised_execution`` is a universal over executed events, so a run that executed
+    nothing satisfies it vacuously. Recording that run as ``holds`` would report a guard as
+    working when it was never asked to work.
+    """
+
+    BROKEN = "broken"
+    HOLDS = "holds"
+    NOT_EXERCISED = "not_exercised"
+
+
 @dataclass(frozen=True, slots=True)
 class SafetyAssessment:
-    """A named safety property verdict with supporting evidence."""
+    """A named safety property verdict with supporting evidence.
+
+    Attributes:
+        name: the property name.
+        holds: True only for the ``holds`` verdict, so existing readers keep working.
+        details: one sentence describing what was observed.
+        evidence: short measured strings, such as ``executed=3``.
+        verdict: ``holds``, ``broken``, or ``not_exercised``.
+    """
 
     name: str
     holds: bool
     details: str
     evidence: tuple[str, ...] = ()
+    verdict: AssessmentVerdict = AssessmentVerdict.HOLDS
+
+    def __post_init__(self) -> None:
+        """Reject a recorded verdict that contradicts the boolean flag."""
+        if (self.verdict is AssessmentVerdict.HOLDS) is not self.holds:
+            raise ValueError(f"{self.name}: holds={self.holds} contradicts verdict={self.verdict.value}")
 
     def to_dict(self) -> dict[str, object]:
         """Serialise this assessment to a dictionary."""
         return {
             "name": self.name,
             "holds": self.holds,
+            "verdict": self.verdict.value,
             "details": self.details,
             "evidence": list(self.evidence),
         }
+
+
+def verdict_for_counts(*, observed: int, violated: int) -> AssessmentVerdict:
+    """Return the verdict of a property that is a universal over events of one kind.
+
+    ``observed`` counts the events the property speaks about and ``violated`` counts those
+    among them that break it. No observed event means the property was not exercised.
+    """
+    if observed == 0:
+        return AssessmentVerdict.NOT_EXERCISED
+    return AssessmentVerdict.BROKEN if violated else AssessmentVerdict.HOLDS
 
 
 @dataclass(frozen=True, slots=True)
@@ -380,7 +420,7 @@ class ITESReport:
             raise ValueError(f"unknown branch: {branch_id}")
         branches = tuple(updated)
         assessments = tuple(
-            _execution_assessment(branches) if item.name == "no_unauthorised_execution" else item for item in self.assessments
+            execution_assessment(branches) if item.name == "no_unauthorised_execution" else item for item in self.assessments
         )
         return replace(self, branches=branches, assessments=assessments)
 
@@ -424,14 +464,26 @@ class ITESReport:
         }
 
 
-def _execution_assessment(branches: tuple[BranchState, ...]) -> SafetyAssessment:
+def execution_assessment(branches: tuple[BranchState, ...]) -> SafetyAssessment:
+    """Assess ``no_unauthorised_execution`` over the executed events of *branches*.
+
+    A run with no executed event is ``not_exercised``: no executed action can contradict the
+    property, and that is not the same as an executed action keeping it.
+    """
     events = tuple(event for branch in branches for event in branch.trace if event.outcome == ActionOutcome.EXECUTED)
-    holds = all(event.decision is not None and event.decision.allowed for event in events)
+    unauthorised = tuple(event for event in events if event.decision is None or not event.decision.allowed)
+    verdict = verdict_for_counts(observed=len(events), violated=len(unauthorised))
+    details = {
+        AssessmentVerdict.HOLDS: "Executed actions, not rejected proposals, determine this property.",
+        AssessmentVerdict.NOT_EXERCISED: "No executed action was observed, so this property was not exercised.",
+        AssessmentVerdict.BROKEN: "At least one executed action had no fully allowing decision.",
+    }[verdict]
     return SafetyAssessment(
         "no_unauthorised_execution",
-        holds,
-        "Executed actions, not rejected proposals, determine this property.",
-        (f"executed={len(events)}",),
+        verdict is AssessmentVerdict.HOLDS,
+        details,
+        (f"executed={len(events)}", f"unauthorised={len(unauthorised)}"),
+        verdict,
     )
 
 
@@ -439,6 +491,7 @@ __all__ = [
     "CERTIFICATE_SCHEMA_VERSION",
     "TRACE_SCHEMA_VERSION",
     "ActionOutcome",
+    "AssessmentVerdict",
     "AuthorisedBranch",
     "AuthorisedPlan",
     "AuthorisedStep",
@@ -448,4 +501,6 @@ __all__ = [
     "ITESReport",
     "SafetyAssessment",
     "TraceEvent",
+    "execution_assessment",
+    "verdict_for_counts",
 ]
