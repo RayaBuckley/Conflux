@@ -60,7 +60,7 @@
     {
       "ids": ["AGENTDOJO-005"],
       "status": "implemented",
-      "evidence": ["src/conflux/experiments/agentdojo_refusal_reasons.py", "scripts/derive_agentdojo_refusal_reasons.py", "tests/test_agentdojo_refusal_reasons.py", "docs/integrations/agentdojo.md"]
+      "evidence": ["src/conflux/experiments/agentdojo_refusal_reasons.py", "scripts/derive_agentdojo_refusal_reasons.py", "research/output/runs/agentdojo-refusal-reasons-v1/refusal-reasons.json", "tests/test_agentdojo_refusal_reasons.py", "docs/integrations/agentdojo.md"]
     },
     {
       "ids": ["AGENTDOJO-003"],
