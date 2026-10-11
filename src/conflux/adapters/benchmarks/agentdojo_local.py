@@ -27,7 +27,7 @@ from conflux.domain import (
 )
 from conflux.evaluation.defences import NoDefence
 from conflux.experiments.agentdojo import AgentDojoCell, AgentDojoCellResult
-from conflux.ites import MediatingITES, TransitionKernel
+from conflux.ites import ITESReport, MediatingITES, TransitionKernel
 from conflux.policy import (
     ArgumentPolicyGrant,
     ExplicitConsentPolicy,
@@ -73,6 +73,29 @@ def refusal_failures(records: Iterable[Mapping[str, object]]) -> tuple[str, ...]
     if "adapter" in categories:
         return ("adapter",)
     return ()
+
+
+def refusing_rule(report: ITESReport) -> dict[str, str] | None:
+    """Return the refusing policy's own reason, identity and dimension, or None.
+
+    A blocked record retains the whole report, but the refusal counters read the record's own
+    ``reason`` field: a record without one cannot say which rule refused, or whether any rule was
+    asked at all. The policy vocabulary is disjoint from the adapter vocabulary in
+    :data:`ADAPTER_REFUSAL_REASONS`, so :func:`refusal_category` still reads the call as a policy
+    refusal.
+    """
+    for branch in report.branches:
+        for event in branch.trace:
+            if event.decision is None:
+                continue
+            for decision in event.decision.decisions:
+                if not decision.allowed:
+                    return {
+                        "reason": decision.reason,
+                        "policy_id": decision.policy_id,
+                        "policy_dimension": decision.category.value,
+                    }
+    return None
 
 
 def cell_failures(
@@ -226,15 +249,17 @@ class AgentDojoActionMediator:
             max_model_calls=1,
         )
         if not report.authorised_branches:
-            self.records.append(
-                {
-                    "tool": tool_name,
-                    "arguments_sha256": hashlib.sha256(canonical_json(arguments).encode("utf-8")).hexdigest(),
-                    "outcome": "blocked",
-                    "annotations_sha256": annotations.fingerprint,
-                    "report": report.to_dict(),
-                },
-            )
+            blocked_record: dict[str, object] = {
+                "tool": tool_name,
+                "arguments_sha256": hashlib.sha256(canonical_json(arguments).encode("utf-8")).hexdigest(),
+                "outcome": "blocked",
+                "annotations_sha256": annotations.fingerprint,
+                "report": report.to_dict(),
+            }
+            refusal = refusing_rule(report)
+            if refusal is not None:
+                blocked_record.update(refusal)
+            self.records.append(blocked_record)
             return ProviderResult(False, error="policy_blocked")
         result = service.execute(
             report=report,

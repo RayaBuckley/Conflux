@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
@@ -37,6 +38,33 @@ class _Executor:
     def execute(self, action: Action, *, certificate_id: str, action_fingerprint: str) -> ProviderResult:
         self.calls.append((certificate_id, action_fingerprint))
         return ProviderResult(True, outcome=f"result:{action.id}")
+
+
+def _denying_decisions(record: dict[str, object]) -> list[dict[str, Any]]:
+    """Return the refusing decision items retained inside one mediation record."""
+    report = cast(dict[str, Any], record["report"])
+    return [
+        decision
+        for branch in cast(list[dict[str, Any]], report["branches"])
+        for event in cast(list[dict[str, Any]], branch["trace"])
+        for decision in cast(list[dict[str, Any]], cast(dict[str, Any], event["decision"] or {}).get("decisions", []))
+        if not decision["allowed"]
+    ]
+
+
+def test_blocked_record_names_the_refusing_policy_rule() -> None:
+    """A policy refusal records the rule that refused, not only the fact of a refusal."""
+    executor = _Executor([])
+    mediator = AgentDojoActionMediator(attacked=True, defence="ites_conservative")
+    assert mediator.mediate("search_emails", {"query": "hiking"}, executor).success
+    assert not mediator.mediate("delete_file", {"file_id": "13"}, executor).success
+    record = mediator.records[-1]
+    denying = _denying_decisions(record)
+    assert denying, "the fixture must exercise a policy denial"
+    assert record["reason"] == denying[0]["reason"] != ""
+    assert record["policy_id"] == denying[0]["policy_id"] != ""
+    assert record["policy_dimension"] == denying[0]["category"]
+    assert refusal_category(record) == "policy"
 
 
 def test_attacked_search_adds_injection_provenance_and_blocks_delete() -> None:

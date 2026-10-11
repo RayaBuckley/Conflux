@@ -1,6 +1,12 @@
 """Reproducible experiment definitions and retained-run metadata."""
 
 from .agentdojo import AgentDojoCell, AgentDojoCellResult, agentdojo_matrix, run_agentdojo_comparison
+from .agentdojo_refusal_evidence import (
+    AGENTDOJO_REFUSAL_EVIDENCE_FILES,
+    compare_agentdojo_refusal_evidence_bundle,
+    generate_agentdojo_refusal_evidence_bundle,
+    verify_agentdojo_refusal_evidence_checksums,
+)
 from .cedar_evidence import (
     CEDAR_EVIDENCE_FILES,
     compare_cedar_preflight_bundle,
@@ -76,6 +82,7 @@ from .resume import (
 from .smoke import BUNDLE_FILES, generate_smoke_bundle
 
 __all__ = [
+    "AGENTDOJO_REFUSAL_EVIDENCE_FILES",
     "BACKEND_LLAMA_CPP",
     "BACKEND_TRANSFORMERS",
     "BUNDLE_FILES",
@@ -107,12 +114,14 @@ __all__ = [
     "agentdojo_matrix",
     "aggregate_planning_comparison",
     "cedar_differential_preflight",
+    "compare_agentdojo_refusal_evidence_bundle",
     "compare_cedar_preflight_bundle",
     "compare_coi_evidence_bundle",
     "compare_direction_evidence_bundle",
     "compare_native_sled_bundle",
     "completion_marker",
     "expand_cases",
+    "generate_agentdojo_refusal_evidence_bundle",
     "generate_cedar_preflight_bundle",
     "generate_coi_evidence_bundle",
     "generate_direction_evidence_bundle",
@@ -134,6 +143,7 @@ __all__ = [
     "run_native_reproduction",
     "run_planning_comparison",
     "validate_laptop_protocols",
+    "verify_agentdojo_refusal_evidence_checksums",
     "verify_cedar_preflight_checksums",
     "verify_coi_evidence_checksums",
     "verify_native_sled_checksums",

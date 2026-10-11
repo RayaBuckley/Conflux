@@ -37,6 +37,27 @@ normalisation from the pinned upstream repository's `runs/` tree. It is a
 published upstream run, not a Conflux experiment: its native security failure
 is useful parser evidence but does not establish Conflux efficacy.
 
+## Mediation records
+
+Each mediated call appends one record to a cell's `augmentation` list. The record names the tool, the
+call's argument fingerprint, the annotations the call was judged against, and one of three outcomes:
+`executed`, `provider_failed`, or `blocked`.
+
+A blocked record also names the rule that refused the call, so a reader does not have to unpack the
+retained report to learn why:
+
+| Field | Meaning |
+|---|---|
+| `reason` | the refusing decision's own reason token, for example `principal_denied` or `read_denied` |
+| `policy_id` | the policy that produced the refusing decision, for example `in-memory-authorisation` |
+| `policy_dimension` | the decision dimension that refused: `authorisation`, `argument_authorisation`, `read`, `visibility`, or `consent` |
+
+The adapter's own refusals use the same `reason` field with a disjoint vocabulary
+(`unsupported_tool`, `unsupported_arguments`), so `refusal_category` still separates an out-of-scope
+refusal from a policy decision. Run bundles retained before this field existed record no `reason` on
+a policy refusal; `research/output/runs/agentdojo-refusal-record-v1/` holds a small, byte-checked
+example a reviewer can re-run without a model or a network.
+
 ## Six-cell local pilot
 
 The pilot fixes `workspace/user_task_17/injection_task_1`, one seed, and one
