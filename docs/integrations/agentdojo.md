@@ -74,6 +74,40 @@ nothing, and every one of the 318 reported `no_unauthorised_execution` as true, 
 cannot separate a guard that worked from a guard that was never asked to work. Run bundles retained
 before the field existed carry only that flag.
 
+## Refusal reasons in the retained bundles
+
+Before the record copied the refusing rule into its own `reason` field, a blocked call still kept its
+whole ITES report, and the refusing decision sits in that report's trace. The retained bundles can
+therefore be read offline: `scripts/derive_agentdojo_refusal_reasons.py` walks every
+`research/output/runs/agentdojo-*/result.json`, takes the **first denying decision in the first branch
+that holds one** for each blocked record that carries no reason, and writes the table to
+`research/output/runs/agentdojo-refusal-reasons-v1/`. No model runs and no retained bundle is
+rewritten.
+
+Measured on 2026-10-11 over the 21 retained bundles that hold a `result.json`:
+
+| Quantity | Count |
+|---|---|
+| blocked records | 223 |
+| blocked records that already name a reason | 130 |
+| blocked records with no reason, listed in the table | 93 |
+| of those, a refusing rule was derived | 93 |
+
+| policy_id | dimension | reason | records |
+|---|---|---|---|
+| `snapshot-read-policy` | read | `read_denied` | 60 |
+| `in-memory-authorisation` | authorisation | `principal_denied` | 29 |
+| `in-memory-argument-policy` | authorisation | `argument_denied` | 4 |
+
+By tool the 93 rows are 81 `search_emails` and 12 `delete_file` calls. The bundle stores one row per
+record (bundle, cell index, record index, tool, and the derived rule), the totals above, and six
+self-checks that compare the totals against the rows in the same pass. The standard validation tier
+runs the tool with `--check`, which re-derives the table and fails on any byte difference.
+
+What this does not show: it is not an AgentDojo result, it measures no model, and it says nothing about
+how often a policy refuses in a real suite. The historical records keep no `reason` field, so a counter
+that reads the record still sees no reason; the rule is recovered by reading the report beside it.
+
 ## Six-cell local pilot
 
 The pilot fixes `workspace/user_task_17/injection_task_1`, one seed, and one
