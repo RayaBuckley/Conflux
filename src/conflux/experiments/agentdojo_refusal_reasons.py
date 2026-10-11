@@ -25,6 +25,23 @@ AGENTDOJO_REFUSAL_REASONS_FILES = frozenset({"CHECKSUMS.sha256", "README.md", "r
 DEFAULT_RUNS_ROOT = Path("research/output/runs")
 """Directory whose ``agentdojo-*`` bundles are read, relative to the repository root."""
 
+_REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+"""Repository root, used to record paths a reader can follow; an installed copy records absolute paths."""
+
+
+def _posix(path: Path) -> str:
+    """Return a path as POSIX text, relative to the repository root when it lies inside it.
+
+    The recorded form must not depend on how a caller spells the runs root, so the same tree always
+    produces the same bundle bytes.
+    """
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(_REPOSITORY_ROOT).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
 _COUNT_KEYS = (
     "cells",
     "records",
@@ -72,7 +89,7 @@ def derive_refusal_reason_rows(runs_root: Path) -> tuple[list[dict[str, Any]], l
                 rows.append(
                     {
                         "bundle": directory.name,
-                        "result_json": f"{runs_root.as_posix()}/{directory.name}/result.json",
+                        "result_json": f"{directory.name}/result.json",
                         "cell": cell_index,
                         "record": record_index,
                         "case_id": cell.get("case_id"),
@@ -85,7 +102,7 @@ def derive_refusal_reason_rows(runs_root: Path) -> tuple[list[dict[str, Any]], l
                         "derived_policy_dimension": (derived or {}).get("policy_dimension"),
                     },
                 )
-        bundles.append({"bundle": directory.name, "result_json": f"{runs_root.as_posix()}/{directory.name}/result.json", **counts})
+        bundles.append({"bundle": directory.name, "result_json": f"{directory.name}/result.json", **counts})
     return rows, bundles
 
 
@@ -156,7 +173,7 @@ def refusal_reason_payload(source_commit: str, runs_root: Path = DEFAULT_RUNS_RO
         "classification": "adapter_evidence",
         "complete": True,
         "source_commit": source_commit,
-        "runs_root": runs_root.as_posix(),
+        "runs_root": _posix(runs_root),
         "bundles": bundles,
         "totals": totals,
         "records": rows,

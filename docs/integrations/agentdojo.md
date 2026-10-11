@@ -102,7 +102,9 @@ Measured on 2026-10-11 over the 21 retained bundles that hold a `result.json`:
 By tool the 93 rows are 81 `search_emails` and 12 `delete_file` calls. The bundle stores one row per
 record (bundle, cell index, record index, tool, and the derived rule), the totals above, and six
 self-checks that compare the totals against the rows in the same pass. The standard validation tier
-runs the tool with `--check`, which re-derives the table and fails on any byte difference.
+runs the tool with `--check`, which re-derives the table and fails on any byte difference. Each
+`result.json` is recorded relative to the runs root, and the runs root relative to the repository, so the
+same tree produces the same bundle whichever form of the root a caller passes.
 
 What this does not show: it is not an AgentDojo result, it measures no model, and it says nothing about
 how often a policy refuses in a real suite. The historical records keep no `reason` field, so a counter

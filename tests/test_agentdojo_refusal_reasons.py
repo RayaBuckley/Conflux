@@ -262,3 +262,20 @@ def test_the_shipped_bundle_matches_a_fresh_derivation(tmp_path: Path) -> None:
 def test_the_shipped_bundle_keeps_its_file_set_and_checksums() -> None:
     assert {path.name for path in SHIPPED_BUNDLE.iterdir()} == set(AGENTDOJO_REFUSAL_REASONS_FILES)
     assert verify_agentdojo_refusal_reasons_checksums(SHIPPED_BUNDLE) == ()
+
+
+def test_the_recorded_paths_do_not_depend_on_how_the_runs_root_is_given(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    blocked = _record("blocked")
+    blocked["report"] = _report_with_a_denying_decision()
+    _write_bundle(tmp_path / "runs", "agentdojo-a-v1", [_cell([blocked])])
+    monkeypatch.chdir(tmp_path)
+    relative = refusal_reason_payload("deadbeef", Path("runs"))
+    absolute = refusal_reason_payload("deadbeef", tmp_path / "runs")
+    assert relative == absolute
+    assert relative["bundles"][0]["result_json"] == "agentdojo-a-v1/result.json"
+    assert relative["records"][0]["result_json"] == "agentdojo-a-v1/result.json"
+
+
+def test_a_runs_root_inside_the_repository_is_recorded_relative_to_it() -> None:
+    assert refusal_reason_payload("deadbeef", RUNS_ROOT)["runs_root"] == "research/output/runs"
+    assert refusal_reason_payload("deadbeef", RUNS_ROOT.resolve())["runs_root"] == "research/output/runs"
