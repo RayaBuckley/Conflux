@@ -12,6 +12,9 @@ Usage::
     python scripts/fetch_literature.py --force           # re-fetch
     python scripts/fetch_literature.py --html-only      # skip PDF fallback
     python scripts/fetch_literature.py --timeout 60     # per-request timeout
+
+The manifest is merged, not replaced: a run over one key updates that key's row and
+keeps every other row.
 """
 
 from __future__ import annotations
@@ -400,16 +403,68 @@ def write_fetch_status(key: str, category: str, source_url: str, result: FetchRe
     )
 
 
-def update_manifest(results: list[dict[str, object]]) -> None:
-    """Write the aggregate manifest."""
+def read_manifest_entries(path: Path) -> list[dict[str, object]]:
+    """Read the manifest rows on disk, or an empty list when there are none to read.
+
+    A missing or unreadable manifest is not fatal: the run then writes the rows it
+    fetched.  Anything that is not a row with a ``key`` is dropped, so a hand-edited
+    file cannot put a malformed row back into the index.
+    """
+    if not path.exists():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        print(f"Warning: could not read {path} ({error}); writing a fresh manifest", file=sys.stderr)
+        return []
+    rows = data.get("entries", []) if isinstance(data, dict) else []
+    if not isinstance(rows, list):
+        return []
+    return [row for row in rows if isinstance(row, dict) and "key" in row]
+
+
+def merge_manifest_entries(
+    existing: list[dict[str, object]],
+    updates: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Return the manifest rows with ``updates`` applied.
+
+    A run over one key must not delete the index of the other keys.  Rows that are not
+    named in ``updates`` keep their contents and their position; rows named there are
+    replaced in place; rows that the manifest does not have yet are appended in the
+    order they were fetched.
+    """
+    by_key = {str(row["key"]): row for row in updates}
+    replaced: set[str] = set()
+    merged: list[dict[str, object]] = []
+    for row in existing:
+        key = str(row["key"])
+        if key in by_key:
+            merged.append(by_key[key])
+            replaced.add(key)
+        else:
+            merged.append(row)
+    merged.extend(row for key, row in by_key.items() if key not in replaced)
+    return merged
+
+
+def update_manifest(results: list[dict[str, object]], *, path: Path | None = None) -> None:
+    """Write the aggregate manifest, merging this run into the rows already on disk."""
+    target = path if path is not None else MANIFEST_PATH
+    existing = read_manifest_entries(target)
+    merged = merge_manifest_entries(existing, results)
     manifest = {
         "schema_version": "1",
         "generated_date": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "entries": results,
+        "entries": merged,
     }
-    MANIFEST_PATH.write_text(
+    target.write_text(
         json.dumps(manifest, indent=2) + "\n",
         encoding="utf-8",
+    )
+    print(
+        f"[manifest] {target}: {len(merged)} entries after this run "
+        f"({len(results)} fetched now, {len(existing)} before)",
     )
 
 
