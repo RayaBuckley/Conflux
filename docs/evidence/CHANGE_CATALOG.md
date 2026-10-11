@@ -23,6 +23,7 @@ the repository has accepted, implemented, or deferred.
 | PARTB-001 | Part B classifier counters retained under a pinned hash seed (the archived prototype walks string `frozenset`s, so its counters depended on `PYTHONHASHSEED`) | `research/output/runs/native-sled-partb-classification-v1/` retains the seed sweep and byte-identical `--check`; `tests/test_partb_classification_evidence.py` |
 | PLAN-001..PLAN-003 | Typed plans, outcome validation, authority-minimising selection | planning and optimisation tests |
 | AGENTDOJO-001, AGENTDOJO-002 | Pinned upstream structures and strict result translation | lock, raw fixture, adapter tests |
+| AGENTDOJO-004 | A blocked call records the refusing policy's own reason, identity and dimension, so a policy refusal is legible without reading the whole report | adapter regression test, and a retained byte-checked example in `research/output/runs/agentdojo-refusal-record-v1/` |
 | CLUSTER-001, CLUSTER-002 | Capability discovery and resumable manifest jobs | doctor and resume tests |
 | PLAN-DYN-000..PLAN-DYN-011, PLAN-DYN-013..PLAN-DYN-015, PLAN-DYN-017 | Open-ended planning contracts, mediation, code envelope, SLED abstraction, and optimisation | specification, runtime, sandbox, verification, and mutation tests |
 
