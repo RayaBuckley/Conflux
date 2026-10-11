@@ -17,6 +17,10 @@ The refused call keeps the whole ITES report, and now also names the rule that r
 vocabulary, so a reader can
 still tell an out-of-scope refusal from a policy decision.
 
+records.json also retains the refusing decision itself (`policy_id`, `category`, `reason`) beside
+the record's three fields, so the bundle's `refusal_matches_the_retained_report` check can be
+re-run by hand from the file alone.
+
 What this does not show: it is not an AgentDojo result, it measures no model, and it says nothing
 about how often a policy refuses in a real suite. The retained run bundles under
 `research/output/runs/` were produced before this field existed, so their policy refusals still
