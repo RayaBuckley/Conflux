@@ -387,6 +387,17 @@ tasks in the four suites, 60 require an effect call, and a new run is selected
 from those. Real-model and AgentDojo claims stay bounded until a capable model
 completes the protocols on effect-bearing tasks.
 
+\textbf{Refusal attribution:} the retained bundles name the rule behind each
+refusal without a rerun. The bundle \texttt{agentdojo-refusal-reasons-v1} under
+\texttt{research/output/runs/} re-derives the causing rule from the report that
+every blocked record already keeps, and attributes 93 refused calls in the six
+bundles that hold them: \texttt{snapshot-read-policy} 60 on the read dimension,
+\texttt{in-memory-authorisation} 29 and \texttt{in-memory-argument-policy} 4 on
+the authorisation dimension, over the tools \texttt{search\_emails} 81 and
+\texttt{delete\_file} 12, with the conservative arm holding 57 of the 93. A
+refusal count is therefore legible as a named rule, so the snapshot-read,
+authorisation and argument-policy layers can be told apart in retained evidence.
+
 \input{generated/tables/agentdojo_breadth_table}
 
 \input{generated/tables/agentdojo_fingerprints_table}
