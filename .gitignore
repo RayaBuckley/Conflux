@@ -99,6 +99,8 @@ research/output/runs/*
 !research/output/runs/agentdojo-refusal-reasons-v1/**
 !research/output/runs/agentdojo-verdict-evidence-v1/
 !research/output/runs/agentdojo-verdict-evidence-v1/**
+!research/output/runs/harness-demo-v1/
+!research/output/runs/harness-demo-v1/**
 data/
 *.jsonl
 !research/output/runs/smoke/*.jsonl

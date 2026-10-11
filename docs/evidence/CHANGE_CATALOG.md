@@ -28,6 +28,7 @@ the repository has accepted, implemented, or deferred.
 | AGENTDOJO-006 | All three assessment verdicts are reachable and distinguishable in retained evidence: two runs hold `holds` and `not_exercised`, and one declared constructed record (the executed call's allowing decision removed) holds `broken` | `research/output/runs/agentdojo-verdict-evidence-v1/` (byte-checked by the standard tier) and `tests/test_agentdojo_verdict_evidence.py` |
 | CLUSTER-001, CLUSTER-002 | Capability discovery and resumable manifest jobs | doctor and resume tests |
 | PLAN-DYN-000..PLAN-DYN-011, PLAN-DYN-013..PLAN-DYN-015, PLAN-DYN-017 | Open-ended planning contracts, mediation, code envelope, SLED abstraction, and optimisation | specification, runtime, sandbox, verification, and mutation tests |
+| HARNESS-001 | One local tool gateway, one fixed plan, two arms that differ only in whether the policy pipeline is installed: without it an injected request posts the private file to an outside address, with it the same call is refused `principal_denied` by `in-memory-authorisation` while the benign part of the task still completes | `research/output/runs/harness-demo-v1/` (byte-checked by the standard tier), `docs/integrations/harness-demo.md`, `tests/test_harness_demo.py` |
 
 ## Partial and externally gated programme
 

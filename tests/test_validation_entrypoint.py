@@ -305,6 +305,28 @@ def test_the_retained_verdict_bundle_is_checked_when_it_exists(
     assert step in failing.invoked
 
 
+def test_the_retained_harness_demo_is_checked_when_it_exists(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The retained harness demo must not drift from the code that wrote it.
+
+    The demo is the repository's only end-to-end reading of effect mediation by a policy, so its
+    bytes are checked in the standard tier. The step is scheduled by a directory guard, so a
+    relocated or emptied guard would drop that byte-level check.
+    """
+    step = "scripts/generate_harness_demo.py research/output/runs/harness-demo-v1 --check"
+    assert (validate_module.ROOT / "research" / "output" / "runs" / "harness-demo-v1").is_dir()
+    recorder, _, exit_code = _drive_main(monkeypatch, capsys, "--tier", "standard")
+    assert exit_code == 0
+    assert step in recorder.invoked
+
+    failing, output, exit_code = _drive_main(monkeypatch, capsys, "--tier", "standard", fail_at=step)
+    assert exit_code == 1
+    assert "generate_harness_demo.py" in output
+    assert step in failing.invoked
+
+
 def test_full_tier_runs_the_packaging_and_extension_checks(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],

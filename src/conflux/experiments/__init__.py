@@ -52,6 +52,14 @@ from .direction_evidence import (
     compare_direction_evidence_bundle,
     generate_direction_evidence_bundle,
 )
+from .harness_demo import (
+    HARNESS_DEMO_FILES,
+    compare_harness_demo_bundle,
+    generate_harness_demo_bundle,
+    harness_annotations,
+    harness_demo_payload,
+    verify_harness_demo_checksums,
+)
 from .laptop_smoke import (
     BACKEND_LLAMA_CPP,
     BACKEND_TRANSFORMERS,
@@ -113,6 +121,7 @@ __all__ = [
     "COI_EVIDENCE_ROOT_FILES",
     "DEFAULT_RUNS_ROOT",
     "DIRECTION_EVIDENCE_FILES",
+    "HARNESS_DEMO_FILES",
     "MUTATION",
     "NATIVE_EVIDENCE_FILES",
     "SCENARIO",
@@ -146,6 +155,7 @@ __all__ = [
     "compare_cedar_preflight_bundle",
     "compare_coi_evidence_bundle",
     "compare_direction_evidence_bundle",
+    "compare_harness_demo_bundle",
     "compare_native_sled_bundle",
     "completion_marker",
     "derive_refusal_reason_rows",
@@ -156,9 +166,12 @@ __all__ = [
     "generate_cedar_preflight_bundle",
     "generate_coi_evidence_bundle",
     "generate_direction_evidence_bundle",
+    "generate_harness_demo_bundle",
     "generate_native_sled_bundle",
     "generate_planning_report",
     "generate_smoke_bundle",
+    "harness_annotations",
+    "harness_demo_payload",
     "load_cedar_bundle",
     "load_cedar_corpus",
     "load_default_planning_diagnostic_suite",
@@ -186,5 +199,6 @@ __all__ = [
     "verify_agentdojo_verdict_evidence_checksums",
     "verify_cedar_preflight_checksums",
     "verify_coi_evidence_checksums",
+    "verify_harness_demo_checksums",
     "verify_native_sled_checksums",
 ]

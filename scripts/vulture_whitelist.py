@@ -72,3 +72,10 @@ DERIVED_FROM
 OUTPUT_OF
 OBSERVABLE_TO
 RETRY
+
+# Standard-library HTTP hooks: the http.server base classes call these by name,
+# so the harness demo's loopback sink has no in-repository reference to them.
+_.do_POST
+_.log_message
+_.daemon_threads
+_.server_version
