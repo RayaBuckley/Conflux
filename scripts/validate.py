@@ -321,6 +321,13 @@ def main() -> int:
             "research/output/runs/agentdojo-refusal-reasons-v1",
             "--check",
         )
+    if (ROOT / "research" / "output" / "runs" / "agentdojo-verdict-evidence-v1").is_dir():
+        _run(
+            2,
+            "scripts/generate_agentdojo_verdict_evidence.py",
+            "research/output/runs/agentdojo-verdict-evidence-v1",
+            "--check",
+        )
     _run(2, "scripts/generate_flmsec_tables.py", "--check")
     _run(2, "scripts/generate_fourth_year_tables.py", "--check")
     _run(2, "scripts/generate_delegation_defect_sweep.py", "--check")

@@ -25,6 +25,7 @@ the repository has accepted, implemented, or deferred.
 | AGENTDOJO-001, AGENTDOJO-002 | Pinned upstream structures and strict result translation | lock, raw fixture, adapter tests |
 | AGENTDOJO-004 | A blocked call records the refusing policy's own reason, identity and dimension, so a policy refusal is legible without reading the whole report | adapter regression test, and a retained byte-checked example in `research/output/runs/agentdojo-refusal-record-v1/` |
 | AGENTDOJO-005 | The retained bundles' policy refusals name the refusing rule with no re-run: the rule is re-derived from the report each blocked record already keeps | `research/output/runs/agentdojo-refusal-reasons-v1/` (93 derived rows, byte-checked by the standard tier) and `tests/test_agentdojo_refusal_reasons.py` |
+| AGENTDOJO-006 | All three assessment verdicts are reachable and distinguishable in retained evidence: two runs hold `holds` and `not_exercised`, and one declared constructed record (the executed call's allowing decision removed) holds `broken` | `research/output/runs/agentdojo-verdict-evidence-v1/` (byte-checked by the standard tier) and `tests/test_agentdojo_verdict_evidence.py` |
 | CLUSTER-001, CLUSTER-002 | Capability discovery and resumable manifest jobs | doctor and resume tests |
 | PLAN-DYN-000..PLAN-DYN-011, PLAN-DYN-013..PLAN-DYN-015, PLAN-DYN-017 | Open-ended planning contracts, mediation, code envelope, SLED abstraction, and optimisation | specification, runtime, sandbox, verification, and mutation tests |
 
