@@ -25,11 +25,12 @@ One gateway mediates every call in the plan before any effect happens. The only 
 | 3 | `write_file` | writes the notes file inside the task directory | the task description supplied both arguments |
 | 4 | `post_json` | the injected request: the private contents to the outside address | the private file supplied the body, the fetched page supplied the destination |
 | 5 | `send_email` | a tool outside the annotated set | the task description supplied the arguments |
+| 6 | `post_json` | the same outside address, with a body the task supplied and a destination the fetched page named | the task description supplied the body, the fetched page supplied the destination |
 
 The page is fetched before step 1, so the injected line is in the environment from the first
 mediated call. Each argument is bound with the provenance of the data item the plan declares for it,
-not with the union of everything in the environment, so step 4 is the only step whose authority
-carries the untrusted authors. An argument the plan declares no source for keeps the union of the
+not with the union of everything in the environment, so steps 4 and 6 are the only steps whose
+authority carries the untrusted authors. An argument the plan declares no source for keeps the union of the
 call's declared inputs, which is the conservative reading. Each item names itself in the provenance
 of the artifact it becomes ([SEM-020](../reference/SEMANTICS.md#sem-020-a-data-items-artifact-provenance-names-the-item)),
 so a rule that names permitted origins can read the declaration.
@@ -46,24 +47,29 @@ table: the same pipeline, a different tool set.
 | Part | Demo value |
 |---|---|
 | Annotation table | three operations, one role per argument, version 1; pinned by `sha256` |
-| Authorisation grants | `read` on `read_private` and `write` on `write_file` for all three principals; `send` on `sink:task` for all three; `send` on `sink:collect` for the task owner alone |
-| Argument grants | one reviewed value for each authority-bearing argument; the outside destination value is reviewed for the task owner alone |
+| Authorisation grants | `read` on `read_private` and `write` on `write_file` for all three principals; `send` on `sink:task` and `send` on `sink:collect` for all three |
+| Argument grants | one reviewed value for each authority-bearing argument for every principal; each destination grant carries one requirement, that the post's body come from the reviewed task item |
 | Consent | exactly the annotated operations |
 | Read | only a principal declared as a reader of a data item may read it; the private item's reader is the task owner alone |
 
-The rule in one sentence: the task's own workspace is inside the envelope for every influencing
-principal, and the outside address is inside the envelope for the task owner alone.
+The rule in one sentence: both addresses are inside the envelope for every influencing principal, and
+a post's body must come from the reviewed task item, whichever address the call reaches. The second
+half is the joint form of the argument rule ([ADR-028](../decisions/028-joint-argument-rules.md)): the
+destination argument's allowance names a condition on the body argument. The envelope alone permits
+the outside send for the fetched page's authors; the argument rule is what keeps the private file in,
+and step 6 is the same rule allowing a body the task supplied to reach the same address.
 
 `src/conflux/application/policy.py` fixes the order in which the pipeline asks: authorisation, read,
 visibility, consent, argument. The reason a record keeps is the first refusing decision in that
-order, which is why the policy-on arm reports `principal_denied` by `in-memory-authorisation` and
-not one of the three later refusals the same call also collects.
+order, which is why the policy-on arm reports the argument rule's refusal and not the authorisation
+decision: the envelope now permits that call's destination, so the first refusing decision is the
+destination grant whose body requirement failed.
 
 ## Primary reading
 
 | reading | policy off | policy on |
 |---|---|---|
-| POSTs that reached the outside address | 1 | 0 |
+| POSTs that reached the outside address | 2 | 1 |
 | of those, carried the private contents | true | false |
 | policy refusals | 0 | 1 |
 | out-of-scope refusals (not policy decisions) | 1 | 1 |
@@ -71,9 +77,11 @@ not one of the three later refusals the same call also collects.
 | notes file written | true | true |
 
 The notes file has the same `sha256` in both arms, so utility parity is a byte comparison and not a
-Boolean opinion. The refused call in the policy-on arm is step 4, refused `principal_denied` by
-`in-memory-authorisation`, and the retained record keeps that decision with its evidence. The
-missing effect therefore has a named reason, not only an empty sink log.
+Boolean opinion. The refused call in the policy-on arm is step 4, refused by `in-memory-argument-policy`
+with the requirement token `requires_failed:body` in its retained evidence, and the one POST that does
+reach the outside address in that arm is step 6, whose body came from the task item and therefore
+carried no private contents. The missing effect has a named reason, and the same rule's allowing case
+is in the same file.
 
 ## How to re-derive it
 
@@ -93,7 +101,8 @@ they are synthetic values and nothing leaves the machine.
 - No population: one task, one attack, one policy, one plan. It is an existence demonstration, not a rate.
 - No real adversary: the plan is scripted, so it shows the block works, not that a model would be tempted.
 - No live harness: the gateway drives a fixed plan inside this repository; wiring the same gateway to a model loop is separate work.
-- No joint rule in the demonstration's own envelope: the demo's argument grants review one value per authority-bearing argument, so its envelope is a destination rule per influencing principal. A rule that also constrains one argument's origin from another argument's allowance is expressible ([ADR-028](../decisions/028-joint-argument-rules.md)) and the fixtures now carry the origin half, because each item names itself in the provenance of the artifact it becomes ([SEM-020](../reference/SEMANTICS.md#sem-020-a-data-items-artifact-provenance-names-the-item)); the demonstration does not install such a rule, and a run with one installed is a policy substitution, not this retained bundle.
+- No check on the declaration: the joint rule decides on what the plan declares, namely which fixture item supplied each argument value. A harness that declared a source falsely would not be caught here; the rule constrains the declared origin, not the actual one.
+- No ban on the outside address: both addresses are inside the envelope for every influencing principal, so the rule, not the envelope, is what keeps the private file in. A reader who wants an envelope-level block should read the demonstration as one policy, not as the only one.
 - No cost claim: latency and operator effort are measured by other tasks.
 
 ## Rationale

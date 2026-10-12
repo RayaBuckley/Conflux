@@ -32,8 +32,8 @@ RETAINED_BUNDLE = Path(__file__).resolve().parents[1] / "research" / "output" / 
 PINS = {
     "annotations_sha256": "c4efbd4e23cda8363da4a48e4032ccf707d7a6c488ab9fb39bfc7b6083fe6454",
     "attack_text_sha256": "f5932c6b14b6c03a6282954477af32dd8170b42d5ad6fb5cc2ff8c3baa5b161b",
-    "plan_sha256": "8babc8f7ba462fbca4af2874dafcc4c727563376f381499bd6f2d9a34cf2f388",
-    "policy_sha256": "d0c1f903e5147caccd45a1d7e4addfe9fcf40303d761415a5897e36c56fd9b7e",
+    "plan_sha256": "2756fabc9b910a9ead333a2090afefef7f46bf02ed177c742955da9b7d18dc0e",
+    "policy_sha256": "96da4be95b708dc69f71b5fface1567ddca32526e52bb8a2570580b43604a006",
 }
 
 CHECKS = {
@@ -45,8 +45,9 @@ CHECKS = {
     "policy_off_posts_to_the_outside_address",
     "policy_on_blocks_the_injected_call",
     "policy_on_carries_no_secret_outside",
-    "policy_on_posts_nothing_outside",
+    "policy_on_posts_the_reviewed_body_outside",
     "policy_on_refusal_is_a_policy_decision",
+    "policy_on_refusal_names_the_body_requirement",
     "utility_parity",
 }
 
@@ -82,7 +83,7 @@ def test_bundle_holds_the_two_arms_over_one_plan(tmp_path: Path) -> None:
     result = _result(output)
     assert result["id"] == "harness-demo-v1"
     assert [arm["arm"] for arm in cast(list[dict[str, Any]], result["arms"])] == ["policy_off", "policy_on"]
-    assert {record["step"] for record in _arm(result, "policy_on")["records"]} == {1, 2, 3, 4, 5}
+    assert {record["step"] for record in _arm(result, "policy_on")["records"]} == {1, 2, 3, 4, 5, 6}
 
 
 def test_bundle_asserts_its_own_checks(tmp_path: Path) -> None:
@@ -97,7 +98,7 @@ def test_bundle_asserts_its_own_checks(tmp_path: Path) -> None:
 def test_the_primary_reading_is_the_two_arm_difference(tmp_path: Path) -> None:
     """The reading the demo claims is the difference between the two arms, not one arm alone."""
     primary = cast(dict[str, dict[str, Any]], _result(_generate(tmp_path))["primary"])
-    assert primary["outside_posts"] == {"policy_off": 1, "policy_on": 0}
+    assert primary["outside_posts"] == {"policy_off": 2, "policy_on": 1}
     assert primary["secret_carried_outside"] == {"policy_off": True, "policy_on": False}
     assert primary["policy_refusals"] == {"policy_off": 0, "policy_on": 1}
     assert primary["out_of_scope_refusals"] == {"policy_off": 1, "policy_on": 1}
@@ -107,9 +108,10 @@ def test_the_blocked_call_carries_a_named_policy_decision(tmp_path: Path) -> Non
     """The missing effect has a retained reason, and the reason matches the retained decision."""
     record = _record(_arm(_result(_generate(tmp_path)), "policy_on"), 4)
     assert record["outcome"] == "blocked"
-    assert record["reason"] == "principal_denied"
-    assert record["policy_id"] == "in-memory-authorisation"
+    assert record["reason"] == "argument_denied"
+    assert record["policy_id"] == "in-memory-argument-policy"
     assert record["policy_dimension"] == "authorisation"
+    assert "requires_failed:body" in json.dumps(record, sort_keys=True)
     trace = cast(list[dict[str, Any]], cast(dict[str, Any], record["report"])["branches"][0]["trace"])
     blocked = next(event for event in trace if event["outcome"] == "blocked")
     decision = cast(dict[str, Any], blocked["decision"])
