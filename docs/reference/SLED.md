@@ -191,12 +191,26 @@ permitted release policy. This connects to robust-declassification literature
 and is relevant to prompt-injection resistance for visibility/declassification
 decisions.
 
-### Liveness / utility (bounded evidence)
+### Liveness / utility (bounded evidence, declared endpoints)
 
 Under an explicit competence/controller assumption, an authorised task reaches
-its goal or a defined safe abort. Encoded as a bounded liveness invariant
-`AG(step >= bound -> terminated)` in the plan IR, verified by Z3 BMC. See
-`src/conflux/verification/plan_ir.py`.
+its goal or a defined safe abort. When the caller declares the plan node that
+reaches the goal and the node that stops without it, the plan IR records
+
+```text
+step >= bound -> (goal_reached or safe_abort)
+```
+
+with two support invariants (`safe-abort-clean`, `goal-reached-clean`) that stop
+either endpoint from being reached through an unauthorised effect. The reference
+interpreter, the Z3 encoding and the nuXmv backend are all measured on that
+obligation, and every row records the auxiliary its route needed, the bound it
+was given and its expectation. The older obligation `AG(step >= bound ->
+terminated)` remains recorded, but on its own it is satisfied by construction in
+a bounded row: the abstraction assigns `terminated` itself when the step guard
+fires, so it constrains the abstraction rather than the plan. See
+`src/conflux/verification/plan_ir.py` and
+`research/output/runs/plan-ir-progress-v1/`.
 
 ### Monotonic confinement (IR-encoded, bounded evidence)
 

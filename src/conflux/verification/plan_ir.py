@@ -59,15 +59,34 @@ def abstract_plan(
     effect_summaries: tuple[EffectSummary, ...],
     bound: int,
     unbounded_step: bool = False,
+    goal_nodes: tuple[str, ...] = (),
+    abort_nodes: tuple[str, ...] = (),
 ) -> PlanAbstraction:
     """Conservatively abstract a dynamic plan into a serializable verification IR.
 
     ``unbounded_step`` drops the declared range on the step counter while keeping every
     guard, so an SMT backend can prove the invariants for a symbolic bound. The default
     keeps the range, and therefore keeps every recorded bounded row unchanged.
+
+    ``goal_nodes`` and ``abort_nodes`` name plan nodes as the two ways a run may end well:
+    the node that reaches the plan's goal, and a node that stops without the goal but
+    without an unauthorised effect. Declaring either adds the ``goal_reached`` and
+    ``safe_abort`` state variables and the obligation ``step >= bound -> (goal_reached or
+    safe_abort)``, so a run that spends its bound without reaching either endpoint is
+    refuted instead of ending on the abstraction's own ``terminated`` assignment. When
+    neither is declared the abstraction is identical to the one that omits them, so every
+    recorded bounded row stays unchanged.
     """
     if bound < 1:
         raise ValueError("plan verification bound must be positive")
+    overlap = sorted(set(goal_nodes) & set(abort_nodes))
+    if overlap:
+        raise ValueError(f"a plan node cannot be both a goal and an abort: {', '.join(overlap)}")
+    declared_nodes = {node.id for current in (plan, *plan.subplans) for node in current.nodes}
+    unknown_endpoints = sorted((set(goal_nodes) | set(abort_nodes)) - declared_nodes)
+    if unknown_endpoints:
+        raise ValueError(f"unknown plan endpoint node: {', '.join(unknown_endpoints)}")
+    progress = bool(goal_nodes or abort_nodes)
     summaries = {item.node_id: item for item in effect_summaries}
     unsupported: list[str] = []
     transitions: list[TransitionRule] = []
@@ -145,8 +164,15 @@ def abstract_plan(
                         Assignment("delegation_authority_gained", Expression.constant(True)),
                     ),
                 )
+            if progress:
+                if node.id in goal_nodes:
+                    node_summary = summaries.get(node.id)
+                    reached = node_summary.executed if isinstance(node, ActionTemplateNode) and node_summary else True
+                    assignments.append(Assignment("goal_reached", Expression.constant(reached)))
+                if node.id in abort_nodes:
+                    assignments.append(Assignment("safe_abort", Expression.constant(True)))
             transitions.append(TransitionRule(rule_id, step_guard, tuple(assignments)))
-    assumptions = (
+    assumptions: tuple[str, ...] = (
         "every continuation produces only schema-valid patches within the declared node bound",
         "every grounded effect is mediated at action time by the canonical kernel",
         "generated code is abstracted by its declared capability effect summary",
@@ -156,10 +182,67 @@ def abstract_plan(
         "revocation_received models mid-plan revocation blocking downstream effects",
         "terminated models bounded liveness per arXiv:2510.14133",
     )
+    if progress:
+        assumptions = assumptions + (
+            "goal_reached and safe_abort are assigned from the plan's declared endpoint nodes and each action "
+            "node's recorded effect summary, not chosen by the model",
+        )
     if unsupported:
         return PlanAbstraction(None, assumptions, tuple(sorted(unsupported)))
+    endpoint_variables = (
+        (
+            StateVariable("goal_reached", Sort.BOOLEAN, False),
+            StateVariable("safe_abort", Sort.BOOLEAN, False),
+        )
+        if progress
+        else ()
+    )
+    endpoint_invariants = (
+        (
+            SafetyInvariant(
+                "bounded-progress",
+                Expression.operator(
+                    ExpressionKind.IMPLIES,
+                    Expression.operator(
+                        ExpressionKind.GREATER_EQUAL,
+                        Expression.variable("step"),
+                        Expression.constant(bound),
+                    ),
+                    Expression.operator(
+                        ExpressionKind.OR,
+                        Expression.variable("goal_reached"),
+                        Expression.variable("safe_abort"),
+                    ),
+                ),
+            ),
+            SafetyInvariant(
+                "safe-abort-clean",
+                Expression.operator(
+                    ExpressionKind.IMPLIES,
+                    Expression.variable("safe_abort"),
+                    Expression.operator(
+                        ExpressionKind.NOT,
+                        Expression.variable("unauthorised_executed"),
+                    ),
+                ),
+            ),
+            SafetyInvariant(
+                "goal-reached-clean",
+                Expression.operator(
+                    ExpressionKind.IMPLIES,
+                    Expression.variable("goal_reached"),
+                    Expression.operator(
+                        ExpressionKind.NOT,
+                        Expression.variable("unauthorised_executed"),
+                    ),
+                ),
+            ),
+        )
+        if progress
+        else ()
+    )
     ir = VerificationIR(
-        f"plan:{plan.id}",
+        f"plan:{plan.id}" + (":progress" if progress else ""),
         (
             StateVariable("step", Sort.INTEGER, 0, 0, None if unbounded_step else bound),
             StateVariable("unauthorised_executed", Sort.BOOLEAN, False),
@@ -171,6 +254,7 @@ def abstract_plan(
             StateVariable("authority_set", Sort.INTEGER, 0, 0, bound),
             StateVariable("revocation_received", Sort.BOOLEAN, False),
             StateVariable("terminated", Sort.BOOLEAN, False),
+            *endpoint_variables,
         ),
         tuple(transitions),
         (
@@ -233,6 +317,7 @@ def abstract_plan(
                     Expression.variable("terminated"),
                 ),
             ),
+            *endpoint_invariants,
         ),
         bound,
         assumptions,

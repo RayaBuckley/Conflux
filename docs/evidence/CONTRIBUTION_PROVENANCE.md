@@ -83,7 +83,7 @@ here so that a later submission can disclose its history honestly.
 | Branches are isolated alternatives | Implemented | one transition kernel and branch-parent tests |
 | ITES preserves PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: ITES reference PE property is bounded\_safe; finite IR model |
 
-### Fourth-year contributions (Part C) (44 claims)
+### Fourth-year contributions (Part C) (45 claims)
 
 | Claim | Status | Evidence and limits |
 | --- | --- | --- |
@@ -131,8 +131,9 @@ here so that a later submission can disclose its history honestly.
 | A local tool gateway blocks an injected outside send while a policy is installed, and performs it while that policy is off | Bounded evidence | `research/output/runs/harness-demo-v1/`: one scripted five-step plan, one indirect injection, one envelope policy, and a sink on loopback; with the policy off the private contents reach the outside address once, with the policy on that call is refused `principal_denied` and the sink receives nothing; the benign part of the task completes in both arms with the same notes-file digest; no model runs, nothing leaves the machine, and the demo says nothing about rates or about real harnesses |
 | Three encodings of the delegation IR agree on every combination of the nine independent defects | Measured | `research/output/runs/delegation-defect-sweep-v1/`: 512 of 512 subsets agree by verdict class across the reference interpreter, Z3 and nuXmv, 511 carry an unsafe reference verdict, one raw difference against Z3 (the canonical body, `bounded_safe` vs `safe`) and none against nuXmv; agreement between three encodings of one IR is not a proof of the delegation semantics |
 | Three encodings of the plan IR agree on a plan x effect-summary x bound grid | Measured | `research/output/runs/plan_ir/`: 36 of 36 readings agree by verdict class across the reference interpreter, Z3 and nuXmv, every reading states an expectation before measurement and meets it, 16 carry an unsafe reference verdict (unauthorised execution, and a capability violation for the code-execution plan) and every cleared reading is named in the bundle; the grid covers three plan shapes and one operation catalogue, not the open space of plans |
+| Declared goal/abort endpoints decide a bounded plan-IR liveness row | Bounded evidence | `research/output/runs/plan-ir-progress-v1/`: 28 readings (a positive reading, five controls and a no-endpoint reading, each at bounds 1 to 4) x 3 routes = 84 measured rows; every reading states its expectation before measurement and meets it; the reference interpreter, the Z3 encoding and the nuXmv backend agree by verdict class on all 28 readings; 20 readings are refuted, one per reading of every control family (an endpoint declared on a node a path may never take, a three-node plan whose first node may be taken forever, an abort node recorded as executed without authorisation, a goal action recorded as not executed, and the obligation weakened to a bare `goal_reached` claim); the no-endpoint reading keeps the 7-invariant, 10-variable shape every earlier bundle recorded, and each row records the auxiliary its route needed and the bound it was given; the older obligation `AG(step >= bound -> terminated)` is satisfied by construction in a bounded row because the abstraction assigns `terminated` itself, and whether a goal predicate can be read from a plan field rather than a recorded effect summary is still open |
 
-Ledger rows: 52 (Part B: 0, Part B, reproduced: 2, Part B concept, Part C evidence: 6, Part C: 44).
+Ledger rows: 53 (Part B: 0, Part B, reproduced: 2, Part B concept, Part C evidence: 6, Part C: 45).
 
 <!-- END GENERATED CONTRIBUTION TABLE -->
 

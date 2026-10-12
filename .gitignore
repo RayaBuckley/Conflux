@@ -241,6 +241,8 @@ data/
 !research/output/runs/agentdojo-7b-v5/**
 !research/output/runs/planning-pilot-llama-3b-v3/
 !research/output/runs/planning-pilot-llama-3b-v3/**
+!research/output/runs/plan-ir-progress-v1/
+!research/output/runs/plan-ir-progress-v1/**
 dist/
 build/
 

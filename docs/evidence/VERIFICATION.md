@@ -2226,3 +2226,36 @@ attack-success rate stays zero and the three defence settings are indistinguisha
 numbers bound model competence, not defence effect. Slack and travel were not run at 14B because the pod
 window closed. One repetition, seed 0, bounds `max_model_calls` 8 and `max_steps` 16 as the frozen
 protocol sets them.
+
+## 33. Plan IR progress: a declared endpoint pair decides the bounded row (2026-10-12, author-run)
+
+The plan IR's bounded liveness row recorded `AG(step >= bound -> terminated)`, and the abstraction
+assigns `terminated` itself when the step guard fires, so a bounded row satisfied that obligation by
+construction. `scripts/generate_plan_ir_progress_evidence.py` measures the obligation a caller can make a
+plan earn: declare the node that reaches the goal and the node that stops without it, and the IR records
+`step >= bound -> (goal_reached or safe_abort)` with the support invariants `safe-abort-clean` and
+`goal-reached-clean`. The endpoints are assigned from plan fields - the declared goal action's recorded
+execution state and the declared abort node's own rule - never chosen by the model, and a node declared as
+both, or a node the plan does not have, raises `ValueError` instead of becoming a silently unreachable
+endpoint.
+
+The bundle is retained as `research/output/runs/plan-ir-progress-v1/` and the standard validation tier runs
+its `--check` mode:
+
+- 28 readings - a positive reading, five controls and a no-endpoint reading, each at bounds one to four -
+  measured with all three routes, 84 rows. Every reading states its expectation before it is measured and
+  all 84 are met.
+- The three routes agree by verdict class on all 28 readings, and each row records the auxiliary its route
+  needed (the symbolic route's transition-guard auxiliary stays recorded in `parameter-general-v1`).
+- 20 readings carry an unsafe reference verdict, one per reading of every control family: an endpoint
+  declared on a node a path may never take, a three-node plan whose first node may be taken forever, an
+  abort node recorded as executed without authorisation, a goal action recorded as not executed, and the
+  obligation weakened to a bare `goal_reached` claim. The generator refuses to write a bundle whose
+  controls nothing can refute.
+- The no-endpoint reading keeps the shape every earlier bundle recorded - 7 invariants and 10 state
+  variables - so the change is additive, and the retained `plan_ir` grid still matches byte for byte.
+
+Limits of this section: four bounds of one plan shape family with declared endpoints, and one control per
+way the obligation can fail, are not a claim that a plan in general reaches its goal. The endpoint
+declaration is the caller's, and whether a goal predicate can be read from a plan field rather than from a
+recorded effect summary is still open.

@@ -108,6 +108,32 @@ rule cannot be satisfied by an origin narrower than the evidence.
 | Tests | `tests/test_domain.py::test_a_data_item_names_itself_in_its_artifact_provenance`, `test_an_authorless_data_item_stays_unknown_and_names_itself`, `test_with_source_adds_one_origin_and_keeps_the_rest`; `tests/test_argument_policy_joint_rule.py::test_a_requirement_reads_each_arguments_own_source` |
 | ADR | [ADR-004](../decisions/004-immutable-state-and-provenance.md), [ADR-028](../decisions/028-joint-argument-rules.md) |
 
+### SEM-021: A bounded plan reaches a declared endpoint or is refuted
+
+When a caller declares the plan node that reaches the goal and the node that stops
+without it, the plan IR records the obligation
+
+```text
+step >= bound -> (goal_reached or safe_abort)
+safe_abort      -> not unauthorised_executed
+goal_reached    -> not unauthorised_executed
+```
+
+`goal_reached` and `safe_abort` are assigned from the plan's declared endpoint nodes and
+each action node's recorded effect summary, never chosen by the model, and a run that
+spends its bound without reaching either endpoint is refuted. A node declared as both a
+goal and an abort, or a node the plan does not have, is a `ValueError` rather than a
+silently unreachable endpoint. The earlier obligation `AG(step >= bound -> terminated)`
+stays recorded beside it; on its own it is satisfied by construction in a bounded row,
+because the abstraction assigns `terminated` itself when the step guard fires.
+
+| Aspect | Location |
+|---|---|
+| Definition | `src/conflux/verification/plan_ir.py` `abstract_plan(goal_nodes=..., abort_nodes=...)` |
+| Evidence | `research/output/runs/plan-ir-progress-v1/` (28 readings x 3 routes, 20 refuted control readings) |
+| Tests | `tests/test_plan_ir_progress_evidence.py` |
+| ADR | [ADR-021](../decisions/021-human-reviewable-evidence-and-visualisation.md) |
+
 ## Decision composition
 
 ### SEM-005: ActionDecision is a conjunction of independent decisions
@@ -402,6 +428,6 @@ never asked to work.
 | Delegation safety | — | Model only, runtime disabled |
 | Observational confidentiality | — | Future work |
 | Robust disclosure | — | Future work |
-| Liveness / utility | — | Future work |
+| Liveness / utility | SEM-021 | Bounded evidence, `research/output/runs/plan-ir-progress-v1/` |
 
 See [SLED](SLED.md) for the verification approach and verdict semantics.
