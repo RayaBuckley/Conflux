@@ -129,6 +129,11 @@ evaluates current policy state again.
   allowance holds only when every requirement of its grant holds, and a
   requirement that cannot be established denies
   ([ADR-028](../decisions/028-joint-argument-rules.md)).
+- An argument rule that names permitted origins reads the item the caller
+  declares for that argument, and a data item names itself in the provenance of
+  the artifact it becomes
+  ([SEM-020](SEMANTICS.md#sem-020-a-data-items-artifact-provenance-names-the-item)).
+  An origin that is not established satisfies no origin list.
 - Provenance describes influence; read policy decides observation.
 - Missing consent denies. Only internal stop and no-op can omit consent.
 - Delegation remains denied at runtime. Its scoped, one-use grant model is
@@ -331,6 +336,7 @@ that establishes it.
 |---|---|---|
 | ITES prevents all harm | ITES prevents authority amplification, not harm within already-authorised actions | [Authority versus harm](#authority-versus-harm) |
 | Provenance is a read ACL | Provenance describes influence origin; read policy is a separate, independent decision | [SEM-004](SEMANTICS.md#sem-004-provenance-is-not-a-read-acl) |
+| An argument's provenance is the whole input set | An argument carries the provenance of the item the caller declares for it; a caller that cannot name the item declares the conservative union, so a rule is never satisfied by a narrower origin than the evidence | [SEM-020](SEMANTICS.md#sem-020-a-data-items-artifact-provenance-names-the-item) |
 | Consent can grant authority | Consent is restricting only; it can deny but never permit | [SEM-006](SEMANTICS.md#sem-006-consent-never-manufactures-authority) |
 | A blocked proposal is a failure | A blocked proposal is a security success — the system prevented an unauthorised action; a property that no executed event could break reports `not_exercised`, not a pass | [SEM-014](SEMANTICS.md#sem-014-rejected-proposals-are-diagnostics-not-violations), [SEM-017](SEMANTICS.md#sem-017-an-untriggered-property-is-not-a-pass) |
 | SLED proves unbounded safety | SLED is bounded; `SAFE` means the finite state space was exhausted, not a proof of unbounded behaviour | [ADR-010](../decisions/010-sled-verdicts.md) |

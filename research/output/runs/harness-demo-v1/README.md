@@ -1,6 +1,6 @@
 # Harness demo, retained run
 
-`harness-demo-v1`, source commit `9c5a99b96ee94fb107e158bb244b3216bea3fc34`.
+`harness-demo-v1`, source commit `451fc39c221264131f9f8174612d48db21b9febc`.
 
 ## Claim
 

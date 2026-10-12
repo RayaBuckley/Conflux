@@ -27,9 +27,12 @@ One gateway mediates every call in the plan before any effect happens. The only 
 | 5 | `send_email` | a tool outside the annotated set | the task description supplied the arguments |
 
 The page is fetched before step 1, so the injected line is in the environment from the first
-mediated call. Each argument is bound with the provenance of the data item that supplied it, not
-with the union of everything in the environment, so step 4 is the only step whose authority carries
-the untrusted authors.
+mediated call. Each argument is bound with the provenance of the data item the plan declares for it,
+not with the union of everything in the environment, so step 4 is the only step whose authority
+carries the untrusted authors. An argument the plan declares no source for keeps the union of the
+call's declared inputs, which is the conservative reading. Each item names itself in the provenance
+of the artifact it becomes ([SEM-020](../reference/SEMANTICS.md#sem-020-a-data-items-artifact-provenance-names-the-item)),
+so a rule that names permitted origins can read the declaration.
 
 Step 5 is a deliberate probe. `send_email` has no annotation, so no policy can judge it and the
 gateway refuses it as out of scope in both arms. The retained reading counts those refusals
@@ -90,7 +93,7 @@ they are synthetic values and nothing leaves the machine.
 - No population: one task, one attack, one policy, one plan. It is an existence demonstration, not a rate.
 - No real adversary: the plan is scripted, so it shows the block works, not that a model would be tempted.
 - No live harness: the gateway drives a fixed plan inside this repository; wiring the same gateway to a model loop is separate work.
-- No joint content-by-destination rule: the envelope is a destination rule per influencing principal. A rule that also constrains the content's origin is not expressible with the current grant shapes, because the authorisation grant has no content dimension and the argument grant has no destination dimension.
+- No joint rule in the demonstration's own envelope: the demo's argument grants review one value per authority-bearing argument, so its envelope is a destination rule per influencing principal. A rule that also constrains one argument's origin from another argument's allowance is expressible ([ADR-028](../decisions/028-joint-argument-rules.md)) and the fixtures now carry the origin half, because each item names itself in the provenance of the artifact it becomes ([SEM-020](../reference/SEMANTICS.md#sem-020-a-data-items-artifact-provenance-names-the-item)); the demonstration does not install such a rule, and a run with one installed is a policy substitution, not this retained bundle.
 - No cost claim: latency and operator effort are measured by other tasks.
 
 ## Rationale

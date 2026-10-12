@@ -32,12 +32,24 @@ class DataItem:
         object.__setattr__(self, "readers", frozenset(self.readers))
         object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
+    @property
+    def provenance_source(self) -> str:
+        """Return the provenance source that names this item (SEM-020)."""
+        return f"environment:{self.id}"
+
     def to_artifact(self) -> Artifact[Any]:
-        """Convert this data item into a provenance-bearing artifact."""
+        """Convert this data item into a provenance-bearing artifact.
+
+        The artifact names the item in its provenance sources, so a rule over an argument's origin
+        can read which item supplied the value; the item's authors stay in the principals and read
+        policy stays a separate decision (SEM-004, SEM-020).
+        """
         provenance = (
-            Provenance.from_principals(self.authors).with_activity("environment_input")
+            Provenance.from_principals(self.authors)
+            .with_source(self.provenance_source)
+            .with_activity("environment_input")
             if self.authors
-            else Provenance.unknown(source=f"environment:{self.id}")
+            else Provenance.unknown(source=self.provenance_source)
         )
         return Artifact(
             id=self.id,

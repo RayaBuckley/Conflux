@@ -101,6 +101,18 @@ class Provenance:
             attested=self.attested,
         )
 
+    def with_source(self, source: str) -> Provenance:
+        """Return a copy of this provenance naming one more influence origin."""
+        if not source:
+            raise ValueError("source must be non-empty")
+        return Provenance(
+            principals=self.principals,
+            sources=self.sources | {source},
+            activities=self.activities,
+            precision=self.precision,
+            attested=self.attested,
+        )
+
     def to_dict(self) -> dict[str, object]:
         """Return a deterministic JSON-compatible representation."""
         return {

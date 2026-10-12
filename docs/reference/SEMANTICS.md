@@ -84,6 +84,30 @@ The mutant `ProvenanceAsReadPolicy` violates this and is killed by SLED.
 | Kill test | `tests/semantics/test_mutation_killing.py::test_provenance_as_acl_mutant` |
 | ADR | [ADR-004](../decisions/004-immutable-state-and-provenance.md) |
 
+### SEM-020: A data item's artifact provenance names the item
+
+Converted to an artifact, a data item records its own identity as a provenance source,
+alongside its authors. The source names the item that supplied the value; it is neither an
+author nor a reader:
+
+```text
+item has authors    → sources == {environment:<id>}, precision EXACT,   attested
+item has no authors → sources == {environment:<id>}, precision UNKNOWN, unattested
+with_source("")     → ValueError
+```
+
+An argument rule that names permitted provenance sources reads the item a caller declared
+for that argument. A caller that cannot name the item behind a value must therefore give
+that argument a conservative provenance, such as the union of the call's inputs, so that a
+rule cannot be satisfied by an origin narrower than the evidence.
+
+| Aspect | Location |
+|---|---|
+| Definition | `src/conflux/domain/environment.py` `DataItem.provenance_source`, `DataItem.to_artifact`; `src/conflux/domain/provenance.py` `Provenance.with_source` |
+| Declaration | `src/conflux/experiments/harness_demo.py` `HarnessGateway._argument_provenance` |
+| Tests | `tests/test_domain.py::test_a_data_item_names_itself_in_its_artifact_provenance`, `test_an_authorless_data_item_stays_unknown_and_names_itself`, `test_with_source_adds_one_origin_and_keeps_the_rest`; `tests/test_argument_policy_joint_rule.py::test_a_requirement_reads_each_arguments_own_source` |
+| ADR | [ADR-004](../decisions/004-immutable-state-and-provenance.md), [ADR-028](../decisions/028-joint-argument-rules.md) |
+
 ## Decision composition
 
 ### SEM-005: ActionDecision is a conjunction of independent decisions

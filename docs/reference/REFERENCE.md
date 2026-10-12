@@ -6,7 +6,7 @@
 |---|---|
 | `Principal` | Identity only; authority comes from policy, not identity |
 | `PrincipalContext` | Join semilattice via `merge` (SEM-001); `is_authority_bearing` guard (SEM-002) |
-| `Provenance` | Commutative monoid via `merge` (SEM-003); not a read ACL (SEM-004) |
+| `Provenance` | Commutative monoid via `merge` (SEM-003); not a read ACL (SEM-004); `with_source` adds an influence origin (SEM-020) |
 | `Artifact` | Immutable; fingerprint is deterministic |
 | `ResourceRef` | Stable protected-object reference |
 | `ActionArgument` | Immutable; `authority_bearing` derived from trusted `ArgumentRole` |

@@ -37,6 +37,7 @@ from conflux.domain import (
     PrimitiveAction,
     Principal,
     ProposalBatch,
+    Provenance,
     ResourceRef,
     Session,
     canonical_json,
@@ -539,6 +540,20 @@ class HarnessGateway:
             artifacts.append(item.to_artifact())
         return tuple(artifacts)
 
+    def _argument_provenance(self, call: ScriptedCall, union: Provenance) -> dict[str, Provenance]:
+        """Return each argument's own provenance, named by the item the plan declares for it.
+
+        An argument the plan declares no source for is given the union of the call's declared
+        inputs, which is the conservative reading: the value could have been influenced by any of
+        them, so an origin rule that names one item cannot be satisfied by accident.
+        """
+        declared: dict[str, Provenance] = {}
+        for name, item_id in call.value_sources.items():
+            item = self.environment.data_item(item_id)
+            if item is not None:
+                declared[name] = item.to_artifact().provenance
+        return {name: declared.get(name, union) for name in call.arguments}
+
     def mediate(self, call: ScriptedCall) -> ProviderResult:
         """Mediate one scripted tool call through the pipeline, then execute it if authorised."""
         schema = self.annotations.operations.get(call.tool)
@@ -547,7 +562,10 @@ class HarnessGateway:
             return ProviderResult(False, error=UNSUPPORTED_TOOL)
         inputs = self._inputs(call)
         provenance = provenance_union(*(artifact.provenance for artifact in inputs))
-        bound = schema.bind({name: (value, provenance) for name, value in call.arguments.items()})
+        argument_provenance = self._argument_provenance(call, provenance)
+        bound = schema.bind(
+            {name: (value, argument_provenance.get(name, provenance)) for name, value in call.arguments.items()},
+        )
         action = PrimitiveAction(
             call.tool,
             call.tool,

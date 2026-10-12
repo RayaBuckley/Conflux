@@ -88,6 +88,39 @@ def test_authors_and_readers_are_separate(alice: Principal, bob: Principal) -> N
     assert bob in item.readers
 
 
+def test_a_data_item_names_itself_in_its_artifact_provenance(alice: Principal) -> None:
+    """A data item with authors records its own identity as a provenance source (SEM-020)."""
+    item = DataItem("doc", "secret", frozenset({alice}), frozenset({alice}))
+    artifact = item.to_artifact()
+    assert item.provenance_source == "environment:doc"
+    assert artifact.provenance.sources == frozenset({"environment:doc"})
+    assert artifact.provenance.principals == frozenset({alice})
+    assert artifact.provenance.precision == ProvenancePrecision.EXACT
+    assert artifact.provenance.attested
+    assert not artifact.provenance.is_unknown
+
+
+def test_an_authorless_data_item_stays_unknown_and_names_itself() -> None:
+    """An item with no authors keeps unknown provenance, and still names the item it came from."""
+    item = DataItem("doc", "value")
+    artifact = item.to_artifact()
+    assert artifact.provenance.sources == frozenset({"environment:doc"})
+    assert artifact.provenance.is_unknown
+    assert not artifact.provenance.attested
+
+
+def test_with_source_adds_one_origin_and_keeps_the_rest(alice: Principal) -> None:
+    """Provenance.with_source is additive and refuses an empty source."""
+    provenance = Provenance.from_principal(alice, source="invocation")
+    extended = provenance.with_source("environment:doc")
+    assert extended.sources == frozenset({"invocation", "environment:doc"})
+    assert extended.principals == provenance.principals
+    assert extended.precision == provenance.precision
+    assert extended.attested == provenance.attested
+    with pytest.raises(ValueError, match="source must be non-empty"):
+        provenance.with_source("")
+
+
 def test_environment_rejects_duplicate_data_ids() -> None:
     first = DataItem("same", 1)
     second = DataItem("same", 2)

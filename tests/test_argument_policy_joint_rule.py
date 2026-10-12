@@ -209,11 +209,16 @@ def test_impossible_grants_are_rejected() -> None:
         _destination_grant(duplicated, duplicated)
 
 
-def _joint_rule_pipeline() -> Any:
+def _permitted_source(item_id: str) -> str:
+    """Return the demonstration's own provenance source for one of its fixture items."""
+    return next(item for item in harness_demo.fixture_items() if item.id == item_id).provenance_source
+
+
+def _joint_rule_pipeline(permitted: frozenset[str] | None = None) -> Any:
     """Return the demonstration's pipeline with the owner's address grant replaced by a joint rule.
 
-    The address role and the reviewed value come from the demonstration's own annotation table, so
-    the test follows the shipped schema rather than a copy of it.
+    The address role, the permitted source and the replaced grant all come from the demonstration's
+    own tables, so the test follows the shipped schema rather than a copy of it.
     """
     user = harness_demo.demo_principals()[0]
     schema = harness_demo.harness_annotations().operations["post_json"]
@@ -221,7 +226,11 @@ def _joint_rule_pipeline() -> Any:
     existing = frozenset(
         grant
         for grant in harness_demo.argument_grants()
-        if not (grant.operation == "post_json" and grant.argument_name == "destination" and grant.principal_id == user.id)
+        if not (
+            grant.operation == "post_json"
+            and grant.argument_name == "destination"
+            and grant.principal_id == user.id
+        )
     )
     joint = ArgumentPolicyGrant(
         user.id,
@@ -229,7 +238,16 @@ def _joint_rule_pipeline() -> Any:
         "destination",
         destination_role,
         None,
-        (ArgumentRequirement("body", provenance_sources=frozenset({harness_demo.USER_TASK_ITEM})),),
+        (
+            ArgumentRequirement(
+                "body",
+                provenance_sources=(
+                    permitted
+                    if permitted is not None
+                    else frozenset({_permitted_source(harness_demo.USER_TASK_ITEM)})
+                ),
+            ),
+        ),
     )
     return DecisionPipeline(
         InMemoryAuthorisationPolicy(harness_demo.envelope_grants()),
@@ -240,23 +258,40 @@ def _joint_rule_pipeline() -> Any:
     )
 
 
-def _run_gateway(monkeypatch: pytest.MonkeyPatch, call: harness_demo.ScriptedCall) -> tuple[dict[str, Any], _StubExecutor]:
-    """Mediate one scripted call through the demonstration's gateway with the joint rule installed."""
+def _installed_gateway(
+    monkeypatch: pytest.MonkeyPatch, pipeline: Any, *, fetch_page: bool = True,
+) -> tuple[harness_demo.HarnessGateway, _StubExecutor]:
+    """Return the demonstration's gateway with one pipeline installed and the page already fetched.
+
+    The demonstration's own arm fetches the page before step one, so the page is in the environment
+    and in the initial inputs of every step; the mixed-origin call declares that page as the source
+    of one of its arguments. The page is left out only where a test isolates the argument dimension,
+    because the page's authors are what the envelope refuses first.
+    """
     stub = _StubExecutor()
-    monkeypatch.setattr(harness_demo, "demo_pipeline", _joint_rule_pipeline)
+    monkeypatch.setattr(harness_demo, "demo_pipeline", lambda: pipeline)
     gateway = harness_demo.HarnessGateway(policy_enabled=True, executor_factory=lambda _call: stub)
+    if fetch_page:
+        gateway.fetch_page()
+    return gateway, stub
+
+
+def _run_gateway(
+    monkeypatch: pytest.MonkeyPatch, call: harness_demo.ScriptedCall, *, fetch_page: bool = False,
+) -> tuple[dict[str, Any], _StubExecutor]:
+    """Mediate one scripted call through the demonstration's gateway with the joint rule installed."""
+    gateway, stub = _installed_gateway(monkeypatch, _joint_rule_pipeline(), fetch_page=fetch_page)
     gateway.mediate(call)
     return gateway.records[-1], stub
 
 
-def test_the_demonstration_gateway_refuses_the_owners_private_send(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The joint rule blocks the owner's own send and leaves the effect boundary uncalled.
+def _injected_send() -> harness_demo.ScriptedCall:
+    """Return the demonstration's injection step as the task owner would have issued it.
 
-    The environment fixtures do not record a data-item identity in artifact provenance, so the
-    requirement fails closed here. The rule therefore still refuses reviewed content under the
-    demonstration's own fixture; recording item identity in provenance is a separate change.
+    The owner's declared sources are the task item and the private note, so the call carries no
+    page-influenced input: the argument dimension is left to decide it.
     """
-    call = harness_demo.ScriptedCall(
+    return harness_demo.ScriptedCall(
         101,
         "post_json",
         {"destination": harness_demo.OUTSIDE_DESTINATION, "body": harness_demo.SECRET_VALUE},
@@ -264,11 +299,74 @@ def test_the_demonstration_gateway_refuses_the_owners_private_send(monkeypatch: 
         "the task owner sends the private note to the outside address",
     )
 
-    record, stub = _run_gateway(monkeypatch, call)
+
+def _mixed_origin_post() -> harness_demo.ScriptedCall:
+    """Return an in-task post whose two arguments declare different origins.
+
+    The body came from the item the task owner authored, and the address came from the fetched page,
+    so the union of the call's inputs holds a source that belongs to neither argument on its own.
+    """
+    return harness_demo.ScriptedCall(
+        102,
+        "post_json",
+        {"destination": harness_demo.TASK_DESTINATION, "body": harness_demo.TASK_BODY},
+        {"destination": harness_demo.PAGE_ITEM, "body": harness_demo.USER_TASK_ITEM},
+        "an in-task post whose address was taken from the fetched page",
+    )
+
+
+def test_the_origin_form_allows_the_benign_post(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The same rule lets the in-task post run, because the demonstration declares its body origin.
+
+    This is the half the rule could not decide before a data item named itself in its provenance:
+    the body's declared source is the item the task owner authored, so the requirement holds.
+    """
+    call = harness_demo.demo_plan()[1]
+
+    record, stub = _run_gateway(monkeypatch, call, fetch_page=True)
+
+    assert record["outcome"] == "executed"
+    assert stub.calls == ["post_json"]
+
+
+def test_the_demonstration_gateway_refuses_the_owners_private_send(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The joint rule blocks the owner's own send and leaves the effect boundary uncalled."""
+    record, stub = _run_gateway(monkeypatch, _injected_send())
 
     assert record["outcome"] == "blocked"
     assert record["policy_dimension"] == "authorisation"
     assert record["policy_id"] == "in-memory-argument-policy"
     assert record["reason"] == "argument_denied"
     assert "requires_failed:body" in json.dumps(record, sort_keys=True)
+    assert stub.calls == []
+
+
+def test_a_requirement_reads_each_arguments_own_source(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A rule on the body accepts the origin the plan declares for that argument, not the call's union.
+
+    The call's declared inputs hold the page's source as well, so a rule that read one provenance for
+    the whole call would deny this call; judging the argument against the item the plan declares for
+    it allows it, because the body's own source is the one the rule permits.
+    """
+    gateway, stub = _installed_gateway(
+        monkeypatch, _joint_rule_pipeline(frozenset({_permitted_source(harness_demo.USER_TASK_ITEM)})),
+    )
+
+    gateway.mediate(_mixed_origin_post())
+
+    assert gateway.records[-1]["outcome"] == "executed"
+    assert stub.calls == ["post_json"]
+
+
+def test_a_requirement_refuses_an_argument_from_another_item(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The same rule refuses the call when it permits only the page's source for the body."""
+    gateway, stub = _installed_gateway(
+        monkeypatch, _joint_rule_pipeline(frozenset({_permitted_source(harness_demo.PAGE_ITEM)})),
+    )
+
+    gateway.mediate(_mixed_origin_post())
+
+    assert gateway.records[-1]["outcome"] == "blocked"
+    assert gateway.records[-1]["reason"] == "argument_denied"
+    assert "requires_failed:body" in json.dumps(gateway.records[-1], sort_keys=True)
     assert stub.calls == []

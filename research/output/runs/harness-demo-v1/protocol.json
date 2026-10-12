@@ -337,5 +337,5 @@
     "rule": "The task's own workspace is inside the envelope for every influencing principal; the outside address is inside the envelope for the task owner alone."
   },
   "policy_sha256": "d0c1f903e5147caccd45a1d7e4addfe9fcf40303d761415a5897e36c56fd9b7e",
-  "source_commit": "9c5a99b96ee94fb107e158bb244b3216bea3fc34"
+  "source_commit": "451fc39c221264131f9f8174612d48db21b9febc"
 }
