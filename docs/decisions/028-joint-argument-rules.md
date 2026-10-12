@@ -85,3 +85,20 @@ A measured probe (the joint-rule decision note in the investigation workspace,
 - `tests/test_argument_policy_joint_rule.py` - unit tests and the demonstration gateway arm.
 - `docs/integrations/harness-demo.md` - the demonstration whose gateway the new arm uses.
 - `docs/decisions/024-external-provenance-and-authority-bounds.md`, `025-authority-confinement-semantic-judgement-delegation.md` - earlier work on argument-level authority.
+
+## Update (2026-10-12)
+
+Two changes since this record was accepted, both landed, so the context above reads as history:
+
+- The provenance-source form is no longer unreachable with the environment fixtures: a data item
+  now names itself in the provenance of the artifact it becomes
+  ([SEM-020](../reference/SEMANTICS.md#sem-020-a-data-items-artifact-provenance-names-the-item),
+  commit `5e4aa12`, task X19). The value-pin form remains the fallback.
+- The harness demonstration installs this rule in its own envelope
+  (`research/output/runs/harness-demo-v1/`, commit `d2a2f9c`, task X21): both addresses are inside
+  the envelope for every influencing principal, each destination grant carries the requirement that
+  the post's body come from the reviewed task item, and the retained run shows the rule refusing the
+  injected call with `requires_failed:body` and allowing a body the task supplied at the same outside
+  address. So the sentence in the Context, that the demonstration is blocked by principal
+  attribution rather than by the content of the note, describes the state before that change, not
+  the shipped demonstration.
