@@ -153,7 +153,7 @@ def test_the_arms_differ_only_in_the_policy(tmp_path: Path) -> None:
     off, on = _arm(result, "policy_off"), _arm(result, "policy_on")
     assert off["policy_enabled"] is False
     assert on["policy_enabled"] is True
-    for step in (1, 2, 3, 4, 5):
+    for step in (1, 2, 3, 4, 5, 6):
         left, right = _record(off, step), _record(on, step)
         for field in ("tool", "value_sources", "argument_roles", "argument_value_sha256", "arguments_sha256"):
             assert left.get(field) == right.get(field)
