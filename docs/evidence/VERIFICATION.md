@@ -2259,3 +2259,24 @@ Limits of this section: four bounds of one plan shape family with declared endpo
 way the obligation can fail, are not a claim that a plan in general reaches its goal. The endpoint
 declaration is the caller's, and whether a goal predicate can be read from a plan field rather than from a
 recorded effect summary is still open.
+
+## 34. The runtime-to-IR conformance boundary, stated and checked (2026-10-13)
+
+`docs/evidence/CLAIMS.md` keeps the unbounded-deployment row at `Not claimed`, and the plan-to-IR path
+answers `UNKNOWN` for anything outside its supported subset. Until now that boundary lived only in the
+code: `plan_ir.abstract_plan` spelled its reason codes inline and `verify_plan` built its error strings
+in place, so a reader had to reconstruct the boundary from two implementations.
+
+`src/conflux/verification/conformance_scope.py` states the boundary as data: the two plan features the
+abstraction refuses (`unknown_operation`, `missing_effect_summary`), the dispatcher's unknown-backend
+case (`unsupported_verification_backend`), all three with the outcome `UNKNOWN`, and, recorded
+separately, the runtime side (`differential_conformance`), where a record outside the IR is a mismatch
+and not an UNKNOWN. The reason codes are module constants in `plan_ir.py` that both the emitter and the
+statement import, so the two cannot drift.
+
+Six tests in `tests/test_conformance_scope.py` check the statement against the code rather than against
+its own text: each unsupported feature is triggered and must yield `UNKNOWN`; the codes the path emits
+must equal the declared set; a supported plan must declare nothing unsupported; and the claim row in
+`docs/evidence/CLAIMS.md` must carry the status and reason the module declares. No claim is promoted:
+the unbounded-deployment row stays `Not claimed`, and the test fails if that changes without the code
+changing with it.

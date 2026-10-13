@@ -79,3 +79,8 @@ _.do_POST
 _.log_message
 _.daemon_threads
 _.server_version
+
+# Conformance-scope boundary rows: the fields are public data read by consumers
+# and tests, while the gate's vulture scan sees only src/conflux.
+_.feature
+_.where

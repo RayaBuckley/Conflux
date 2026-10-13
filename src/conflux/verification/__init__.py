@@ -1,5 +1,13 @@
 """Serializable formal-verification IR and optional backends."""
 
+from .conformance_scope import (
+    MISMATCH_SCOPE,
+    UNSUPPORTED_CODES,
+    UNSUPPORTED_SCOPE,
+    LedgerRow,
+    ScopeEntry,
+    unbounded_deployment_row,
+)
 from .defence_models import (
     camel_ir,
     camel_native_property_ir,
@@ -112,12 +120,15 @@ from .z3_backend import verify_with_z3
 __all__ = [
     "ENDORSEMENT_SCHEMA_VERSION",
     "EXERCISE_TABLE",
+    "MISMATCH_SCOPE",
     "PLAN_PROJECTION",
     "REDUCTION_SCHEMA_VERSION",
     "REFINEMENT_SCHEMA_VERSION",
     "ROBUST_DISCLOSURE_SCHEMA_VERSION",
     "SELF_COMPOSITION_SCHEMA_VERSION",
     "SYNTHESIS_SCHEMA_VERSION",
+    "UNSUPPORTED_CODES",
+    "UNSUPPORTED_SCOPE",
     "Assignment",
     "AuthorityLoss",
     "Availability",
@@ -133,6 +144,7 @@ __all__ = [
     "FormalVerdict",
     "FormalVerificationResult",
     "InvariantOutcome",
+    "LedgerRow",
     "MonitorEvent",
     "MonitorReport",
     "MonitorSpec",
@@ -149,6 +161,7 @@ __all__ = [
     "RobustDisclosureResult",
     "RuntimeTransitionRecord",
     "SafetyInvariant",
+    "ScopeEntry",
     "SecretPartition",
     "Sort",
     "SoundAbstractionResult",
@@ -198,6 +211,7 @@ __all__ = [
     "sound_endorsement_ir",
     "successors",
     "synthesise_controller",
+    "unbounded_deployment_row",
     "verify_endorsement",
     "verify_plan",
     "verify_robust_disclosure",

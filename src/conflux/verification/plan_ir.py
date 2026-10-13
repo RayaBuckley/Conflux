@@ -27,6 +27,13 @@ from .nuxmv_backend import NuXmvBackend
 from .results import FormalVerdict, FormalVerificationResult
 from .z3_backend import verify_with_z3
 
+# Reason codes for the runtime-to-IR conformance boundary. `conformance_scope` imports these
+# so the boundary statement and the emitter share one source.
+UNSUPPORTED_UNKNOWN_OPERATION = "unknown_operation"
+UNSUPPORTED_MISSING_EFFECT_SUMMARY = "missing_effect_summary"
+UNSUPPORTED_PLAN_ABSTRACTION = "unsupported_plan_abstraction"
+UNSUPPORTED_VERIFICATION_BACKEND = "unsupported_verification_backend"
+
 
 @dataclass(frozen=True, slots=True)
 class EffectSummary:
@@ -126,11 +133,11 @@ def abstract_plan(
                         node.template.operation_version,
                     )
                 except ValueError:
-                    unsupported.append(f"{rule_id}:unknown_operation")
+                    unsupported.append(f"{rule_id}:{UNSUPPORTED_UNKNOWN_OPERATION}")
                     continue
                 summary = summaries.get(node.id)
                 if summary is None:
-                    unsupported.append(f"{rule_id}:missing_effect_summary")
+                    unsupported.append(f"{rule_id}:{UNSUPPORTED_MISSING_EFFECT_SUMMARY}")
                     continue
                 assignments.extend(
                     (
@@ -356,7 +363,7 @@ def verify_plan(
             None,
             bound,
             abstraction.assumptions,
-            error=f"unsupported_plan_abstraction:{','.join(abstraction.unsupported)}",
+            error=f"{UNSUPPORTED_PLAN_ABSTRACTION}:{','.join(abstraction.unsupported)}",
         )
     if backend == "z3":
         return verify_with_z3(abstraction.ir)
@@ -371,7 +378,7 @@ def verify_plan(
         None,
         bound,
         abstraction.assumptions,
-        error=f"unsupported_verification_backend:{backend}",
+        error=f"{UNSUPPORTED_VERIFICATION_BACKEND}:{backend}",
     )
 
 
