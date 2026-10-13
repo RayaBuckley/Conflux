@@ -39,6 +39,19 @@ from .ir import (
     TransitionRule,
     VerificationIR,
 )
+from .monitor import (
+    EXERCISE_TABLE,
+    PLAN_PROJECTION,
+    Availability,
+    InvariantOutcome,
+    MonitorEvent,
+    MonitorReport,
+    MonitorSpec,
+    MonitorVerdict,
+    ProjectionSource,
+    check_monitor,
+    emit_monitor,
+)
 from .nuxmv_backend import NuXmvBackend, NuXmvOutcome, NuXmvRunner
 from .plan_ir import EffectSummary, PlanAbstraction, abstract_plan, verify_plan
 from .provenance_distinction import (
@@ -98,6 +111,8 @@ from .z3_backend import verify_with_z3
 
 __all__ = [
     "ENDORSEMENT_SCHEMA_VERSION",
+    "EXERCISE_TABLE",
+    "PLAN_PROJECTION",
     "REDUCTION_SCHEMA_VERSION",
     "REFINEMENT_SCHEMA_VERSION",
     "ROBUST_DISCLOSURE_SCHEMA_VERSION",
@@ -105,6 +120,7 @@ __all__ = [
     "SYNTHESIS_SCHEMA_VERSION",
     "Assignment",
     "AuthorityLoss",
+    "Availability",
     "ControllerDecision",
     "ControllerStrategy",
     "DifferentialConformanceResult",
@@ -116,10 +132,16 @@ __all__ = [
     "FiniteInstance",
     "FormalVerdict",
     "FormalVerificationResult",
+    "InvariantOutcome",
+    "MonitorEvent",
+    "MonitorReport",
+    "MonitorSpec",
+    "MonitorVerdict",
     "NuXmvBackend",
     "NuXmvOutcome",
     "NuXmvRunner",
     "PlanAbstraction",
+    "ProjectionSource",
     "ProvenanceOverapproximation",
     "ReductionComparison",
     "ReferenceSafetyResult",
@@ -139,6 +161,7 @@ __all__ = [
     "abstract_plan",
     "camel_ir",
     "camel_native_property_ir",
+    "check_monitor",
     "check_refinement",
     "check_sound_abstraction",
     "compare_cone_of_influence",
@@ -149,6 +172,7 @@ __all__ = [
     "differential_conformance",
     "dual_llm_baseline_ir",
     "dual_llm_native_property_ir",
+    "emit_monitor",
     "enforcement_is_sound",
     "evaluate",
     "evaluate_strategy",
