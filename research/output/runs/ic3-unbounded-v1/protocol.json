@@ -17,10 +17,9 @@
   "id": "ic3-unbounded-v1",
   "negated_claims": [
     "This bundle does not prove any unbounded-system property; it reports bounded IC3 verdicts.",
-    "This bundle does not claim a nuXmv witness for any refutation.",
+    "This bundle does not claim that any printed nuXmv trace is shortest, and lifts no witness beyond the printed state count.",
     "This bundle is not an AgentDojo or benchmark result."
   ],
-  "no_witness_rule": "IC3 refutations carry no lifted counterexample in this backend, so no witness order and no counterexample length is recorded; a refuted model keeps only its violated invariant properties and the raw nuXmv lines.",
   "nuXmv_version": [
     "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)"
   ],
@@ -33,5 +32,6 @@
   ],
   "timeout_seconds": 300.0,
   "unavailable_rule": "When nuXmv is missing or a model errors, status is nuxmv_unavailable or error and no verdict is claimed.",
-  "vacuous_rule": "Models with no variables or no transitions are listed in summary.trivial_models: a safety check over such a model proves nothing about the family it names."
+  "vacuous_rule": "Models with no variables or no transitions are listed in summary.trivial_models: a safety check over such a model proves nothing about the family it names.",
+  "witness_rule": "For each refuted invariant nuXmv's IC3 prints an execution sequence; witness_lengths records the number of states in each printed sequence, so a length of n means the violation is reached after n - 1 transitions. An empty list means nuXmv printed no sequence, so no length is claimed. The count describes the printed trace only and is not an independent proof that the trace is shortest."
 }

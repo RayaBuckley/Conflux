@@ -11,9 +11,11 @@ Scope and honesty rules enforced here:
   recorded per model; families whose bound grows with a scaling parameter are
   bounded by that value, not unbounded.
 * The native-SLED explicit-state families have no IR and are absent.
-* nuXmv IC3 reports no lifted counterexample here, so no witness or
-  counterexample length is recorded; refutations keep only the violated
-  invariant properties.
+* A refutation records the state count of every execution sequence nuXmv
+  printed, one count per refuted invariant (``witness_lengths``); n states
+  reach the violation after n - 1 transitions.  A model that prints no
+  sequence records an empty list, so no length is claimed without a trace,
+  and no printed trace is claimed to be the shortest.
 * When nuXmv is missing or a model errors, the run records no verdict.
 * Models with no variables or no transitions are listed in ``trivial_models``:
   a safety check over such a model is vacuous.
@@ -66,8 +68,13 @@ class RecordingNuXmvRunner:
         timed_out = False
         try:
             process = subprocess.run(
-                (binary, "-int", str(model_path)), input=commands, check=False, capture_output=True, text=True,
-                timeout=self.timeout_seconds, shell=False,
+                (binary, "-int", str(model_path)),
+                input=commands,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=self.timeout_seconds,
+                shell=False,
             )
             elapsed = time.perf_counter() - started
             stdout, stderr, exit_code = process.stdout, process.stderr, process.returncode
@@ -87,12 +94,21 @@ class RecordingNuXmvRunner:
                 "timed_out": timed_out,
                 "seconds": round(elapsed, 6),
                 "raw_result_lines": [
-                    line.strip() for line in stdout.splitlines()
+                    line.strip()
+                    for line in stdout.splitlines()
                     if line.strip().startswith("-- invariant") or " is true" in line or " is false" in line
                 ][:12],
             },
         )
         return NuXmvOutcome(exit_code, stdout, stderr, version)
+
+
+def _witness_lengths(result: Any) -> list[int]:
+    """Return the per-refutation witness lengths recorded on the result, or an empty list."""
+    for entry in result.counterexample:
+        if isinstance(entry, dict) and "witness_lengths" in entry:
+            return [int(value) for value in entry["witness_lengths"]]
+    return []
 
 
 def _status(result: Any, binary: str) -> str:
@@ -146,6 +162,7 @@ def probe_model(
         "status": _status(result, binary),
         "error": result.error,
         "counterexample_present": bool(result.counterexample),
+        "witness_lengths": _witness_lengths(result),
         "solver_hash": result.solver_hash,
         "notes": notes,
     }
@@ -204,9 +221,13 @@ def _family_delegation_variants() -> Iterator[tuple[str, str, str, VerificationI
     from conflux.verification.delegation_ir import all_delegation_ir_variants
 
     for variant in all_delegation_ir_variants():
-        yield (f"delegation-variant:{variant.ir.id}", "three-way-agreement-v1",
-               "conflux.verification.delegation_ir.all_delegation_ir_variants", variant.ir,
-               f"mutation={variant.mutation.value}")
+        yield (
+            f"delegation-variant:{variant.ir.id}",
+            "three-way-agreement-v1",
+            "conflux.verification.delegation_ir.all_delegation_ir_variants",
+            variant.ir,
+            f"mutation={variant.mutation.value}",
+        )
 
 
 def _family_delegation_defects() -> Iterator[tuple[str, str, str, VerificationIR, str]]:
@@ -215,9 +236,13 @@ def _family_delegation_defects() -> Iterator[tuple[str, str, str, VerificationIR
     for defects in sweep.defect_subsets():
         ir = sweep.build_combined_delegation_ir(defects)
         names = ",".join(sorted(d.value for d in defects)) or "none"
-        yield (f"delegation-defect:{names}", "delegation-defect-sweep-v1",
-               "scripts.generate_delegation_defect_sweep.build_combined_delegation_ir", ir,
-               f"defect_count={len(defects)}")
+        yield (
+            f"delegation-defect:{names}",
+            "delegation-defect-sweep-v1",
+            "scripts.generate_delegation_defect_sweep.build_combined_delegation_ir",
+            ir,
+            f"defect_count={len(defects)}",
+        )
 
 
 def _family_sledv_scaling() -> Iterator[tuple[str, str, str, VerificationIR, str]]:
@@ -234,16 +259,24 @@ def _family_sledv_scaling() -> Iterator[tuple[str, str, str, VerificationIR, str
         for value in values:
             ir = VerificationIR.from_dict(builder(value))
             base = f"sledv-scaling:{kind}-{safety}-{value}"
-            yield (base, "sledv-scaling-v1",
-                   f"scripts.generate_sledv_scaling_evidence.{builder.__name__}", ir,
-                   f"family={kind}_scaling value={value} safety={safety}")
+            yield (
+                base,
+                "sledv-scaling-v1",
+                f"scripts.generate_sledv_scaling_evidence.{builder.__name__}",
+                ir,
+                f"family={kind}_scaling value={value} safety={safety}",
+            )
     for kind, safety, builder, values in builders:
         for value in values:
             ir = VerificationIR.from_dict(builder(value))
             base = f"sledv-scaling:{kind}-{safety}-{value}:coi-reduced"
-            yield (base, "sledv-scaling-v1-coi-reduced",
-                   f"scripts.generate_sledv_scaling_evidence.{builder.__name__}+COI", _reduced(ir),
-                   f"family={kind}_scaling value={value} safety={safety} coi_reduced=yes")
+            yield (
+                base,
+                "sledv-scaling-v1-coi-reduced",
+                f"scripts.generate_sledv_scaling_evidence.{builder.__name__}+COI",
+                _reduced(ir),
+                f"family={kind}_scaling value={value} safety={safety} coi_reduced=yes",
+            )
 
 
 def _family_coi_scaling() -> Iterator[tuple[str, str, str, VerificationIR, str]]:
@@ -252,14 +285,17 @@ def _family_coi_scaling() -> Iterator[tuple[str, str, str, VerificationIR, str]]
     for kind, builder in builders:
         for n in scaling.NOISE_COUNTS:
             ir = VerificationIR.from_dict(builder(n))
-            yield (f"coi-scaling:{kind}-noise-{n}", "coi-scaling-v1",
-                   f"scripts.generate_coi_scaling.{builder.__name__}", ir, f"noise={n}")
+            yield (f"coi-scaling:{kind}-noise-{n}", "coi-scaling-v1", f"scripts.generate_coi_scaling.{builder.__name__}", ir, f"noise={n}")
     for kind, builder in builders:
         for n in scaling.NOISE_COUNTS:
             ir = VerificationIR.from_dict(builder(n))
-            yield (f"coi-scaling:{kind}-noise-{n}:coi-reduced", "coi-scaling-v1-coi-reduced",
-                   f"scripts.generate_coi_scaling.{builder.__name__}+COI", _reduced(ir),
-                   f"noise={n} coi_reduced=yes")
+            yield (
+                f"coi-scaling:{kind}-noise-{n}:coi-reduced",
+                "coi-scaling-v1-coi-reduced",
+                f"scripts.generate_coi_scaling.{builder.__name__}+COI",
+                _reduced(ir),
+                f"noise={n} coi_reduced=yes",
+            )
 
 
 def _family_sled_coi_reduction() -> Iterator[tuple[str, str, str, VerificationIR, str]]:
@@ -268,8 +304,13 @@ def _family_sled_coi_reduction() -> Iterator[tuple[str, str, str, VerificationIR
         yield (f"sled-coi:{ir.id}", "sled-coi-reduction-v1", f"research/experiments/suites/sled-coi-v1/{path.name}", ir, "")
     for path in sorted((ROOT / "research" / "experiments" / "suites" / "sled-coi-v1").glob("*.json")):
         ir = VerificationIR.from_dict(json.loads(path.read_text(encoding="utf-8")))
-        yield (f"sled-coi:{ir.id}:coi-reduced", "sled-coi-reduction-v1-coi-reduced",
-               f"research/experiments/suites/sled-coi-v1/{path.name}+COI", _reduced(ir), "coi_reduced=yes")
+        yield (
+            f"sled-coi:{ir.id}:coi-reduced",
+            "sled-coi-reduction-v1-coi-reduced",
+            f"research/experiments/suites/sled-coi-v1/{path.name}+COI",
+            _reduced(ir),
+            "coi_reduced=yes",
+        )
 
 
 def _plan_ir(plan: Any, case: str, effect_case: str, bound: int) -> VerificationIR:
@@ -299,9 +340,13 @@ def _family_plan_ir() -> Iterator[tuple[str, str, str, VerificationIR, str]]:
         for effect_case in plan.EFFECT_CASES:
             for bound in plan.BOUNDS:
                 ir = _plan_ir(plan, case, effect_case, bound)
-                yield (f"plan-ir:{case}:{effect_case}:b{bound}", "plan_ir",
-                       "scripts.generate_plan_ir_evidence._row (IR rebuilt by probe)", ir,
-                       f"expectation={plan.EXPECTATIONS.get((case, effect_case))}")
+                yield (
+                    f"plan-ir:{case}:{effect_case}:b{bound}",
+                    "plan_ir",
+                    "scripts.generate_plan_ir_evidence._row (IR rebuilt by probe)",
+                    ir,
+                    f"expectation={plan.EXPECTATIONS.get((case, effect_case))}",
+                )
 
 
 def _family_plan_ir_coi() -> Iterator[tuple[str, str, str, VerificationIR, str]]:
@@ -310,9 +355,13 @@ def _family_plan_ir_coi() -> Iterator[tuple[str, str, str, VerificationIR, str]]
         for effect_case in plan.EFFECT_CASES:
             for bound in plan.BOUNDS:
                 ir = _plan_ir(plan, case, effect_case, bound)
-                yield (f"plan-ir:{case}:{effect_case}:b{bound}:coi-reduced", "plan_ir-coi-reduced",
-                       "scripts.generate_plan_ir_evidence._row (IR rebuilt by probe)+COI", _reduced(ir),
-                       f"expectation={plan.EXPECTATIONS.get((case, effect_case))} coi_reduced=yes")
+                yield (
+                    f"plan-ir:{case}:{effect_case}:b{bound}:coi-reduced",
+                    "plan_ir-coi-reduced",
+                    "scripts.generate_plan_ir_evidence._row (IR rebuilt by probe)+COI",
+                    _reduced(ir),
+                    f"expectation={plan.EXPECTATIONS.get((case, effect_case))} coi_reduced=yes",
+                )
 
 
 FAMILIES: dict[str, Callable[[], Iterator[tuple[str, str, str, VerificationIR, str]]]] = {
@@ -388,13 +437,13 @@ def build_protocol(bundle: dict[str, Any]) -> dict[str, Any]:
             "Families whose bound grows with a scaling parameter are bounded by the recorded parameter value.",
             "The native-SLED explicit-state families define no IR and are absent from this bundle.",
         ],
-        "no_witness_rule": (
-            "IC3 refutations carry no lifted counterexample in this backend, so no witness order and no counterexample "
-            "length is recorded; a refuted model keeps only its violated invariant properties and the raw nuXmv lines."
+        "witness_rule": (
+            "For each refuted invariant nuXmv's IC3 prints an execution sequence; witness_lengths records the number "
+            "of states in each printed sequence, so a length of n means the violation is reached after n - 1 "
+            "transitions. An empty list means nuXmv printed no sequence, so no length is claimed. The count describes "
+            "the printed trace only and is not an independent proof that the trace is shortest."
         ),
-        "unavailable_rule": (
-            "When nuXmv is missing or a model errors, status is nuxmv_unavailable or error and no verdict is claimed."
-        ),
+        "unavailable_rule": ("When nuXmv is missing or a model errors, status is nuxmv_unavailable or error and no verdict is claimed."),
         "vacuous_rule": (
             "Models with no variables or no transitions are listed in summary.trivial_models: a safety check over such a "
             "model proves nothing about the family it names."
@@ -405,7 +454,7 @@ def build_protocol(bundle: dict[str, Any]) -> dict[str, Any]:
         ),
         "negated_claims": [
             "This bundle does not prove any unbounded-system property; it reports bounded IC3 verdicts.",
-            "This bundle does not claim a nuXmv witness for any refutation.",
+            "This bundle does not claim that any printed nuXmv trace is shortest, and lifts no witness beyond the printed state count.",
             "This bundle is not an AgentDojo or benchmark result.",
         ],
     }

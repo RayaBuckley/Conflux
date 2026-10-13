@@ -35,7 +35,7 @@ def bundle() -> dict[str, Any]:
     return data
 
 
-def test_bundle_counts_are_complete_and_carry_no_witness(bundle: dict[str, Any]) -> None:
+def test_bundle_counts_are_complete_and_record_witness_lengths(bundle: dict[str, Any]) -> None:
     summary = bundle["summary"]
     assert summary["total"] == 689
     assert summary["by_verdict"] == {"safe": 99, "unsafe": 590}
@@ -44,11 +44,33 @@ def test_bundle_counts_are_complete_and_carry_no_witness(bundle: dict[str, Any])
     assert len(bundle["models"]) == summary["total"]
     assert len({model["row_id"] for model in bundle["models"]}) == summary["total"]
     for model in bundle["models"]:
-        assert "counterexample_length" not in model
-        assert not [key for key in model if "witness" in key]
+        lengths = model["witness_lengths"]
+        assert isinstance(lengths, list)
+        assert all(isinstance(length, int) and length >= 1 for length in lengths)
+        if model["verdict"] == "unsafe":
+            assert lengths
+        else:
+            assert lengths == []
         assert model["smv_sha256"]
         assert model["stdout_sha256"]
         assert model["verdict"] in {"safe", "unsafe", "unknown"}
+
+
+def test_protocol_states_the_measured_witness_rule() -> None:
+    protocol: dict[str, Any] = json.loads((BUNDLE / "protocol.json").read_text(encoding="utf-8"))
+    assert "witness_rule" in protocol
+    assert "no_witness_rule" not in protocol
+    assert "witness_lengths" in protocol["witness_rule"]
+
+
+def test_every_refutation_records_a_trace_and_no_safe_row_does(bundle: dict[str, Any]) -> None:
+    unsafe = [model for model in bundle["models"] if model["verdict"] == "unsafe"]
+    safe = [model for model in bundle["models"] if model["verdict"] == "safe"]
+    assert len(unsafe) == 590
+    assert len(safe) == 99
+    assert all(model["witness_lengths"] for model in unsafe)
+    assert all(not model["witness_lengths"] for model in safe)
+    assert sum(len(model["witness_lengths"]) for model in unsafe) == 3204
 
 
 def test_depth_family_carries_no_unsafe_control(bundle: dict[str, Any]) -> None:
