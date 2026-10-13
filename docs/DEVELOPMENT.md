@@ -221,9 +221,11 @@ suppress false positives and standardise style:
 - `.vscode/ltexrc.json` — LTeX grammar and spell-check configuration (British English).
 - `.editorconfig` — editor indentation and line-ending conventions.
 
-Run `python scripts/validate_extensions.py` to execute markdownlint, cspell,
-and LTeX checks from the command line. The script uses `npx` for the
-Node.js tools (`npm install` to set up) and the VS Code extension's bundled
-LTeX CLI. It exits 0 when all available tools pass or when no tools are
-installed. The `validate.py` entry point runs this script as a non-blocking
-advisory step.
+Run `python scripts/validate_extensions.py` to execute the markdownlint and
+cspell checks from the command line; LTeX is configured for the VS Code editor
+only and this script does not run it. The script uses `npx` for the Node.js
+tools (`npm install` to set up). It exits 0 when all available tools pass or
+when no tools are installed. `scripts/validate.py` runs this script in the full
+tier only (`_run(3, ...)` in `scripts/validate.py`), and a failure there is
+recorded without stopping the run, so one failed extension check appears in the
+full tier's summary and does not hide the later steps.
