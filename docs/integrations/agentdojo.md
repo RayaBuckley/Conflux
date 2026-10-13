@@ -129,6 +129,16 @@ runs the tool with `--check`, which re-derives the table and fails on any byte d
 `result.json` is recorded relative to the runs root, and the runs root relative to the repository, so the
 same tree produces the same bundle whichever form of the root a caller passes.
 
+Each row keeps the argument hash and no argument value. The hash binds the row to the exact arguments of
+the retained record it names (bundle, cell index, record index), so a reader can compare a re-derived row
+against that record without copying argument values that may carry injected text. It cannot give back an
+argument's declared origin, and no record derived from these runs can: the AgentDojo mediator declares no
+per-argument source, and binds every argument to the union of the call's inputs
+(`src/conflux/adapters/benchmarks/agentdojo_local.py`, `schema.bind({name: (value, provenance) ...})` with
+`provenance = provenance_union(...)`). A per-argument declaration exists only where a plan declares one —
+the demonstration bundle, whose records each serialise `value_sources`
+(`src/conflux/experiments/harness_demo.py`).
+
 What this does not show: it is not an AgentDojo result, it measures no model, and it says nothing about
 how often a policy refuses in a real suite. The historical records keep no `reason` field, so a counter
 that reads the record still sees no reason; the rule is recovered by reading the report beside it.
