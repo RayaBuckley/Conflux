@@ -54,6 +54,8 @@ _RECORD_KEYS = (
     "annotations_sha256",
     "certificate_id",
 )
+_TRACE_EVENT_KEYS = ("sequence", "outcome", "branch_id", "depth", "reason")
+"""Trace-event fields a retained record keeps, so a reader can order each decision."""
 
 
 class _RecordingExecutor:
@@ -69,7 +71,7 @@ class _RecordingExecutor:
 
 
 def _record_summary(record: Mapping[str, object]) -> dict[str, Any]:
-    """Return the record fields a verdict reader reads, plus its assessment verdicts."""
+    """Return the record fields a verdict reader reads, plus its ordered trace and its verdicts."""
     summary: dict[str, Any] = {"kind": "run"}
     summary.update({key: record[key] for key in _RECORD_KEYS if key in record})
     report = cast(dict[str, Any], record["report"])
@@ -80,6 +82,7 @@ def _record_summary(record: Mapping[str, object]) -> dict[str, Any]:
         ],
         **{key: report[key] for key in _REPORT_KEYS},
     }
+    summary["trace"] = _trace_events(report)
     return summary
 
 
@@ -106,6 +109,42 @@ def _decision_of(event: Mapping[str, Any]) -> Mapping[str, Any] | None:
     """Return the decision recorded beside a trace event, or None when it carries none."""
     decision = event.get("decision")
     return cast(Mapping[str, Any], decision) if isinstance(decision, Mapping) else None
+
+
+def _trace_events(report: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Return every trace event of a serialised report, ordered as the kernel recorded it.
+
+    Each event keeps the ``sequence`` number the kernel assigned, the ``outcome`` it recorded, the
+    branch it belongs to, its depth, the kernel's ``reason``, and whether the decision beside it
+    allowed the action. Ordering authorisation against execution therefore needs this file only.
+    """
+    events: list[dict[str, Any]] = []
+    branches = cast(list[dict[str, Any]], report.get("branches", []))
+    for branch in sorted(branches, key=lambda item: str(item.get("branch_id", ""))):
+        for event in cast(list[dict[str, Any]], branch.get("trace", [])):
+            entry: dict[str, Any] = {key: event.get(key) for key in _TRACE_EVENT_KEYS}
+            decision = _decision_of(event)
+            entry["decision_allowed"] = None if decision is None else decision.get("allowed")
+            events.append(entry)
+    return events
+
+
+def _trace_outcomes(summary: Mapping[str, Any]) -> tuple[str, ...]:
+    """Return one retained record's trace outcomes in kernel order."""
+    return tuple(str(event["outcome"]) for event in cast(list[dict[str, Any]], summary["trace"]))
+
+
+def _trace_sequences(summary: Mapping[str, Any]) -> tuple[int, ...]:
+    """Return one retained record's trace sequence numbers in kernel order."""
+    return tuple(int(event["sequence"]) for event in cast(list[dict[str, Any]], summary["trace"]))
+
+
+def _trace_decision(summary: Mapping[str, Any], outcome: str) -> bool | None:
+    """Return the decision flag of the trace event with *outcome*, or None when there is none."""
+    for event in cast(list[dict[str, Any]], summary["trace"]):
+        if event["outcome"] == outcome:
+            return cast(bool | None, event["decision_allowed"])
+    return None
 
 
 def mutant_record(executed: Mapping[str, Any], report: Mapping[str, Any], source_index: int) -> dict[str, Any]:
@@ -184,6 +223,11 @@ def verdict_evidence_payload(source_commit: str) -> dict[str, Any]:
     checks = {
         "all_three_verdicts_present": {value for value, count in counts.items() if count} == {"holds", "not_exercised", "broken"},
         "counts_match_the_records": counts == _verdict_counts(records),
+        "executed_record_trace_orders_authorisation_before_execution": _trace_outcomes(executed)
+        == ("proposed", "authorised", "executed")
+        and _trace_sequences(executed) == (0, 1, 2)
+        and _trace_decision(executed, "authorised") is True
+        and _trace_decision(executed, "executed") is True,
         "executed_record_holds": executed_verdict["verdict"] == AssessmentVerdict.HOLDS.value
         and executed_verdict["holds"] is True
         and authorisation_verdict["verdict"] == AssessmentVerdict.HOLDS.value,
@@ -196,6 +240,9 @@ def verdict_evidence_payload(source_commit: str) -> dict[str, Any]:
         "one_executor_call": len(executor.certificates) == 1,
         "refused_record_not_exercised": refused_verdict["verdict"] == AssessmentVerdict.NOT_EXERCISED.value
         and refused_verdict["holds"] is False,
+        "refused_record_trace_orders_the_block_after_the_proposal": _trace_outcomes(refused) == ("proposed", "blocked")
+        and _trace_sequences(refused) == (0, 1)
+        and _trace_decision(refused, "blocked") is False,
     }
     return {
         "schema_version": "1",
@@ -247,6 +294,12 @@ def _readme(payload: Mapping[str, Any]) -> str:
         f"`{counts['broken']}` broken. Record 1 is an executed action with a fully allowing decision, so the",
         "execution property holds. Record 2 executed and authorised nothing, so its two event-conditioned",
         "properties are `not_exercised` with `holds: false` and only the model-call bound claims to hold.",
+        "",
+        "Each run record also keeps its whole ordered trace, not only its final outcome. Record 1's trace is",
+        "`sequence` 0 `proposed`, 1 `authorised` (the decision allows), 2 `executed` (the decision allows).",
+        "Record 2's is `sequence` 0 `proposed`, 1 `blocked` (the decision denies). The order the kernel",
+        "recorded, proposal then authorisation or denial then execution, is therefore a property of this file,",
+        "and a reader can order authorisation against execution without reading `src/conflux/ites/state.py`.",
         "",
         "Record 3 is constructed, and the file says how:",
         "",

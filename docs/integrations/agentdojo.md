@@ -95,7 +95,11 @@ and `mutation` names the single change, and the removed decision keeps the rules
 call. Its verdict comes from the library rule `verdict_for_counts(observed=1, violated=1)`, so a
 reader can re-derive it from the file alone. The standard tier byte-checks the bundle, and its
 README states the limit: the third record is a classifier case, not a defence failure observed in
-a run.
+a run. Each run record in that bundle also keeps its whole ordered trace, not only its final
+outcome: record 1's trace is `sequence` 0 `proposed`, 1 `authorised`, 2 `executed`, and record 2's
+is `sequence` 0 `proposed`, 1 `blocked`. So the order the kernel recorded, proposal then
+authorisation or denial then execution, is checkable from the retained file without reading
+`src/conflux/ites/state.py`.
 
 ## Refusal reasons in the retained bundles
 

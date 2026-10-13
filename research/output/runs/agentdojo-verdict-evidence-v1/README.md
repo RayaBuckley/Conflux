@@ -16,6 +16,12 @@ Verdict tally over the retained records: `4` holds, `2` not_exercised,
 execution property holds. Record 2 executed and authorised nothing, so its two event-conditioned
 properties are `not_exercised` with `holds: false` and only the model-call bound claims to hold.
 
+Each run record also keeps its whole ordered trace, not only its final outcome. Record 1's trace is
+`sequence` 0 `proposed`, 1 `authorised` (the decision allows), 2 `executed` (the decision allows).
+Record 2's is `sequence` 0 `proposed`, 1 `blocked` (the decision denies). The order the kernel
+recorded, proposal then authorisation or denial then execution, is therefore a property of this file,
+and a reader can order authorisation against execution without reading `src/conflux/ites/state.py`.
+
 Record 3 is constructed, and the file says how:
 
 > the decision of the executed trace event is removed before the assessment is applied, so the constructed record is what a defender that dispatches without recording an allowing decision leaves behind

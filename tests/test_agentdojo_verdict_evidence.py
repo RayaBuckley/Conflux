@@ -59,6 +59,7 @@ def test_bundle_asserts_its_own_checks(tmp_path: Path) -> None:
         "all_three_verdicts_present",
         "counts_match_the_records",
         "executed_record_holds",
+        "executed_record_trace_orders_authorisation_before_execution",
         "mutant_keeps_the_tool_and_arguments",
         "mutant_names_its_mutation",
         "mutant_record_broken",
@@ -66,6 +67,7 @@ def test_bundle_asserts_its_own_checks(tmp_path: Path) -> None:
         "mutant_removes_every_allowing_rule",
         "one_executor_call",
         "refused_record_not_exercised",
+        "refused_record_trace_orders_the_block_after_the_proposal",
     }
     assert all(checks.values())
 
@@ -89,6 +91,49 @@ def test_executed_record_holds_and_refused_record_is_unexercised(tmp_path: Path)
         "holds",
     ]
     assert refused["report"]["assessments"][1]["holds"] is False
+
+
+def test_records_keep_their_ordered_trace(tmp_path: Path) -> None:
+    """Each run record keeps the whole trace, so a reader can order authorisation against execution."""
+    records = cast(list[dict[str, Any]], _records(_generate(tmp_path))["records"])
+    executed, refused = records[0], records[1]
+    assert [(event["sequence"], event["outcome"]) for event in executed["trace"]] == [
+        (0, "proposed"),
+        (1, "authorised"),
+        (2, "executed"),
+    ]
+    assert [event["decision_allowed"] for event in executed["trace"]] == [None, True, True]
+    assert [(event["sequence"], event["outcome"]) for event in refused["trace"]] == [(0, "proposed"), (1, "blocked")]
+    assert [event["decision_allowed"] for event in refused["trace"]] == [None, False]
+
+
+def test_trace_events_name_their_branch_and_the_kernel_reason(tmp_path: Path) -> None:
+    """A trace event carries the branch, the depth and the kernel's own reason."""
+    records = cast(list[dict[str, Any]], _records(_generate(tmp_path))["records"])
+    executed, refused = records[0], records[1]
+    assert [event["reason"] for event in executed["trace"]] == ["model_proposal", "all_decisions_allow", "provider_succeeded"]
+    assert {event["branch_id"] for event in executed["trace"]} == {"root.1"}
+    assert [event["depth"] for event in executed["trace"]] == [0, 0, 0]
+    assert [event["reason"] for event in refused["trace"]] == ["model_proposal", "principal_denied"]
+
+
+def test_retained_bundle_ordering_claim_is_re_derivable_from_the_file() -> None:
+    """The ordering claim is re-derived from the retained file alone, without the module's helpers."""
+    if not RETAINED_BUNDLE.is_dir():
+        pytest.skip("the retained verdict-evidence bundle is not present")
+    records = cast(list[dict[str, Any]], _records(RETAINED_BUNDLE)["records"])
+    runs = [record for record in records if record["kind"] == "run"]
+    orders = [[(event["sequence"], event["outcome"]) for event in record["trace"]] for record in runs]
+    assert orders == [[(0, "proposed"), (1, "authorised"), (2, "executed")], [(0, "proposed"), (1, "blocked")]]
+    decisions = [[event["decision_allowed"] for event in record["trace"]] for record in runs]
+    assert decisions == [[None, True, True], [None, False]]
+
+
+def test_readme_points_the_ordering_claim_at_the_file(tmp_path: Path) -> None:
+    """The page says where the trace ordering can be read, so a reader does not need the source."""
+    readme = (_generate(tmp_path) / "README.md").read_text(encoding="utf-8")
+    assert "`sequence` 0 `proposed`, 1 `authorised`" in readme
+    assert "without reading `src/conflux/ites/state.py`" in readme
 
 
 def test_constructed_record_removes_only_the_decision(tmp_path: Path) -> None:
