@@ -61,6 +61,13 @@ decision itself (`policy_id`, `category`, `reason`) beside the record's three fi
 `refusal_matches_the_retained_report` check re-derives the fields from that excerpt, so a reader can
 verify the rule from the file alone.
 
+The `no_defence` control arm is not an allow-all baseline. A tool the pilot annotation set does not
+cover is refused before the defence engine is consulted, and the control arm's own cells record that
+refusal: in the bundles retained under `research/output/runs/agentdojo-*/raw-upstream/`, 27 of the
+152 `no_defence` cell files carry `unsupported_tool` or `unsupported_arguments` (50 of the 198 files
+when the copies nested under `runpod-h100-14b-stratified/` are counted too; re-derived 2026-10-13).
+The arm's utility figure therefore does not mean that every call was allowed.
+
 ## Recorded assessment verdicts
 
 A record's report summary keeps each security assessment's `verdict` beside its `holds` flag. The two
