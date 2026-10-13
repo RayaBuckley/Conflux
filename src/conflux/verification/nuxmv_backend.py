@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 from collections.abc import Callable
@@ -233,11 +234,7 @@ class NuXmvBackend:
             model = _smv(ir, unbounded=smt)
         except ValueError as error:
             return self._unknown(ir, f"unsupported_ir:{error}", backend)
-        commands = (
-            "go_msat\nmsat_check_invar_bmc\nquit\n"
-            if smt
-            else "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n"
-        )
+        commands = "go_msat\nmsat_check_invar_bmc\nquit\n" if smt else "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n"
         with TemporaryDirectory(prefix="conflux-nuxmv-") as temporary:
             path = Path(temporary) / "model.smv"
             path.write_text(model, encoding="utf-8", newline="\n")
@@ -278,6 +275,7 @@ class NuXmvBackend:
                     {
                         "output_sha256": fingerprint(output),
                         "failed_invariants": false_count,
+                        "witness_lengths": list(_witness_lengths(output)),
                     },
                 ),
             )
@@ -333,6 +331,32 @@ class NuXmvBackend:
             ir.assumptions,
             error=error,
         )
+
+
+_TRACE_STATE = re.compile(r"^\s*->\s*State:\s*\d+\.\d+\s*<-")
+
+
+def _witness_lengths(output: str) -> tuple[int, ...]:
+    """Return the state count of each counterexample trace nuXmv printed.
+
+    nuXmv prints one execution sequence per refuted invariant, introduced by
+    ``-- as demonstrated by the following execution sequence`` and listing states as
+    ``  -> State: 1.1 <-``. A sequence of n states reaches the violation after n - 1 transitions,
+    so the count is a witness length, not a step index. An empty tuple means nuXmv printed no
+    sequence, and no length is claimed.
+    """
+    lengths: list[int] = []
+    current: int | None = None
+    for line in output.splitlines():
+        if "execution sequence" in line:
+            if current is not None:
+                lengths.append(current)
+            current = 0
+        elif current is not None and _TRACE_STATE.match(line):
+            current += 1
+    if current is not None:
+        lengths.append(current)
+    return tuple(lengths)
 
 
 def _domain(variable: StateVariable, *, unbounded: bool = False) -> str:
