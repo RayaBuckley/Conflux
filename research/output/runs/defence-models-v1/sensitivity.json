@@ -29,6 +29,35 @@
       "ir_id": "camel-baseline",
       "reachable_states": 5
     },
+    "camelot_native_property": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "send-direct-message"
+            }
+          ],
+          "invariant_id": "no-untrusted-recipient"
+        }
+      ],
+      "ir_id": "camelot-native-property",
+      "reachable_states": 9
+    },
+    "camelot_pe": {
+      "bound": 5,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "camelot-baseline",
+      "reachable_states": 10
+    },
     "dual_llm_native_property": {
       "bound": 3,
       "invariants": [
@@ -57,6 +86,45 @@
       ],
       "ir_id": "dual-llm-baseline",
       "reachable_states": 4
+    },
+    "fides_native_property": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "trusted-action-call"
+            }
+          ],
+          "invariant_id": "no-untrusted-action"
+        },
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "permitted-flow-release"
+            }
+          ],
+          "invariant_id": "no-flow-to-untrusted-reader"
+        }
+      ],
+      "ir_id": "fides-native-property",
+      "reachable_states": 10
+    },
+    "fides_pe": {
+      "bound": 5,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "fides-baseline",
+      "reachable_states": 5
     },
     "ites_native_property": {
       "bound": 5,

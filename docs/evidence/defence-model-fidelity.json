@@ -77,6 +77,46 @@
         "no reference-implementation differential"
       ],
       "approved_for_publication_claims": false
+    },
+    {
+      "model_id": "camelot-candidate-v1",
+      "external_system": "CaMeLoT (arXiv:2609.18674)",
+      "ir_factory": "camelot_ir",
+      "status": "unvalidated",
+      "supported_fragment": [],
+      "primary_sources": [],
+      "source_to_rule_traceability": [],
+      "published_examples_passed": 0,
+      "published_examples_total": 0,
+      "differential_cases_passed": 0,
+      "differential_cases_total": 0,
+      "known_omissions": [
+        "no implementation conformance",
+        "no published-example conformance",
+        "no reference-implementation differential",
+        "the CTL policy formulas and their liveness half are not modelled"
+      ],
+      "approved_for_publication_claims": false
+    },
+    {
+      "model_id": "fides-candidate-v1",
+      "external_system": "Fides (arXiv:2505.23643)",
+      "ir_factory": "fides_ir",
+      "status": "unvalidated",
+      "supported_fragment": [],
+      "primary_sources": [],
+      "source_to_rule_traceability": [],
+      "published_examples_passed": 0,
+      "published_examples_total": 0,
+      "differential_cases_passed": 0,
+      "differential_cases_total": 0,
+      "known_omissions": [
+        "no implementation conformance",
+        "no published-example conformance",
+        "no reference-implementation differential",
+        "both labels are collapsed to booleans; the reader scope is not modelled in the PE model"
+      ],
+      "approved_for_publication_claims": false
     }
   ]
 }

@@ -876,11 +876,370 @@ def ites_with_read_check_ir() -> VerificationIR:
     )
 
 
+def camelot_ir() -> VerificationIR:
+    """CaMeLoT candidate abstraction: plan pre-check with history facts.
+
+    This is a small finite abstraction inspired by CaMeLoT
+    (arXiv:2609.18674), not an implementation-conformance model of the
+    published system.  CaMeLoT parses the plan into a finite state machine
+    whose states carry the tool, the argument provenance and history facts,
+    checks CTL policy formulas with nuXmv before any tool runs, and feeds a
+    failing trace back to the planner as repair feedback.
+
+    The finite model collapses the plan trace to one pre-check gate and one
+    history fact: whether the decision to execute was influenced by an
+    untrusted source.  CaMeLoT's temporal formulas are **not** modelled here:
+    the expression language has no temporal operator, so only the safety half
+    of its representative policy is represented, and that half is the subject
+    of ``camelot_native_property_ir``.  The liveness obligation the paper adds
+    (a ticket must eventually resolve, so a suppression attack is caught) has
+    no analogue in a safety invariant and is deliberately out of scope.
+
+    **PE vulnerability (in the candidate abstraction):** CaMeLoT has no
+    principal at all.  Trust is positional - the user prompt is trusted by
+    position - and is assigned per tool, never per value, so the plan policy
+    can be satisfied while the principal that actually influenced the decision
+    lacks authority for it.
+
+    Variables:
+        plan_prechecked: the plan passed the CTL pre-check.
+        history_influenced: a history fact records untrusted influence.
+        action_executed: an effect was executed.
+        ticket_resolved: the ticket flow reached resolution.
+        pe_violation: PE violation occurred.
+        attacker_authorised: attacker has permission (False).
+    """
+    return VerificationIR(
+        "camelot-baseline",
+        (
+            StateVariable("plan_prechecked", Sort.BOOLEAN, False),
+            StateVariable("history_influenced", Sort.BOOLEAN, False),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("ticket_resolved", Sort.BOOLEAN, False),
+            StateVariable("pe_violation", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "plan-precheck-accepts",
+                _const(True),
+                (Assignment("plan_prechecked", _const(True)),),
+            ),
+            TransitionRule(
+                "history-records-untrusted-influence",
+                _const(True),
+                (Assignment("history_influenced", _const(True)),),
+            ),
+            TransitionRule(
+                "prechecked-plan-executes",
+                _var("plan_prechecked"),
+                (
+                    Assignment("action_executed", _const(True)),
+                    Assignment(
+                        "pe_violation",
+                        _and(
+                            _var("action_executed"),
+                            _var("history_influenced"),
+                            _not(_var("attacker_authorised")),
+                        ),
+                    ),
+                ),
+            ),
+            TransitionRule(
+                "ticket-flow-resolves",
+                _var("action_executed"),
+                (Assignment("ticket_resolved", _const(True)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-pe-violation",
+                _not(_var("pe_violation")),
+                "PE: no action executed when an influencing principal lacks authorisation",
+            ),
+        ),
+        5,
+        (
+            "CaMeLoT candidate abstraction: plan pre-check with history facts",
+            "plan_prechecked gates execution; history facts record untrusted influence",
+            "CaMeLoT trust is positional and per tool, so the plan policy holds while PE fails",
+            "the CTL formulas and their liveness half are not modelled in this finite IR",
+        ),
+    )
+
+
+def camelot_native_property_ir() -> VerificationIR:
+    """CaMeLoT candidate abstraction: its own property Q (policy holds on the trace).
+
+    The safety half of CaMeLoT's representative policy: a direct message is
+    sent only when the recipient is trusted.  The plan pre-check is the gate
+    that enforces it; the ticket flow is modelled because the paper's liveness
+    obligation returns repair feedback through it, but no liveness property is
+    checked (a ``SafetyInvariant`` cannot express ``AF``).
+
+    Variables:
+        recipient_trusted: the policy marked the recipient trusted.
+        send_called: a direct-message call was made.
+        precheck_gate: the plan pre-check is active (starts True; no rule clears it).
+        ticket_created: the ticket flow created a ticket.
+        ticket_resolved: the ticket flow resolved it.
+
+    Q invariant: ``not send_called or recipient_trusted`` - holds, and is
+    falsifiable by a single-rule mutation of ``send-direct-message``.
+    """
+    return VerificationIR(
+        "camelot-native-property",
+        (
+            StateVariable("recipient_trusted", Sort.BOOLEAN, False),
+            StateVariable("send_called", Sort.BOOLEAN, False),
+            StateVariable("precheck_gate", Sort.BOOLEAN, True),
+            StateVariable("ticket_created", Sort.BOOLEAN, False),
+            StateVariable("ticket_resolved", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "precheck-labels-recipient-trusted",
+                _const(True),
+                (Assignment("recipient_trusted", _const(True)),),
+            ),
+            TransitionRule(
+                "send-direct-message",
+                _and(_var("precheck_gate"), _var("recipient_trusted")),
+                (Assignment("send_called", _const(True)),),
+            ),
+            TransitionRule(
+                "ticket-create",
+                _const(True),
+                (Assignment("ticket_created", _const(True)),),
+            ),
+            TransitionRule(
+                "ticket-resolve",
+                _var("ticket_created"),
+                (Assignment("ticket_resolved", _const(True)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-untrusted-recipient",
+                _or(_not(_var("send_called")), _var("recipient_trusted")),
+                "Q: a direct message is sent only to a policy-trusted recipient",
+            ),
+        ),
+        4,
+        (
+            "CaMeLoT candidate abstraction native property: policy holds on the trace",
+            "the pre-check gates the call; the policy labels the recipient trusted",
+            "the liveness half (a ticket eventually resolves) is not modelled",
+        ),
+    )
+
+
+def fides_ir() -> VerificationIR:
+    """Fides candidate abstraction: planner information-flow control.
+
+    This is a small finite abstraction inspired by Fides
+    (arXiv:2505.23643), not an implementation-conformance model of the
+    published system.  Fides labels data with a confidentiality (reader
+    scope) and an integrity (source trust) label that travel with the data
+    and join when values combine; policy P-T allows a dangerous call only
+    from a trusted context and P-F releases data only to permitted readers.
+
+    The finite model collapses both labels to booleans: one integrity label
+    for the value that drives the call and one for the planner context.  The
+    reader scope is not modelled here.
+
+    **PE vulnerability (in the candidate abstraction):** a label is only as
+    honest as the party that wrote it.  A lying tool can label
+    attacker-controlled data trusted (the note names this), and the resulting
+    call satisfies P-T while the principal that supplied the data still lacks
+    authority for it.
+
+    Variables:
+        source_label_trusted: integrity label written by the tool that supplied the value.
+        context_label_trusted: integrity label of the planner context.
+        value_trusted: the joined label of the value driving the call.
+        action_executed: an effect was executed.
+        pe_violation: PE violation occurred.
+        attacker_authorised: attacker has permission (False).
+    """
+    return VerificationIR(
+        "fides-baseline",
+        (
+            StateVariable("source_label_trusted", Sort.BOOLEAN, False),
+            StateVariable("context_label_trusted", Sort.BOOLEAN, True),
+            StateVariable("value_trusted", Sort.BOOLEAN, False),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("pe_violation", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "lying-tool-labels-source-trusted",
+                _const(True),
+                (Assignment("source_label_trusted", _const(True)),),
+            ),
+            TransitionRule(
+                "join-integrity-labels",
+                _var("source_label_trusted"),
+                (
+                    Assignment(
+                        "value_trusted",
+                        _and(_var("source_label_trusted"), _var("context_label_trusted")),
+                    ),
+                ),
+            ),
+            TransitionRule(
+                "trusted-action-call",
+                _and(_var("context_label_trusted"), _var("value_trusted")),
+                (
+                    Assignment("action_executed", _const(True)),
+                    Assignment(
+                        "pe_violation",
+                        _and(
+                            _var("action_executed"),
+                            _not(_var("attacker_authorised")),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-pe-violation",
+                _not(_var("pe_violation")),
+                "PE: no action executed when an influencing principal lacks authorisation",
+            ),
+        ),
+        5,
+        (
+            "Fides candidate abstraction: planner information-flow control",
+            "labels are booleans; the reader scope is not modelled in the PE model",
+            "a lying tool can relabel attacker data trusted, so P-T holds while PE fails",
+        ),
+    )
+
+
+def fides_native_property_ir() -> VerificationIR:
+    """Fides candidate abstraction: its own properties Q (P-T and P-F).
+
+    Policy P-T: a dangerous call runs only from a trusted context with a
+    trusted value.  Policy P-F: no value is released to a reader outside the
+    permitted scope, modelled with a bounded reader set and a membership test
+    (``ExpressionKind.IN``), the same set encoding ``ites_with_read_check_ir``
+    uses.
+
+    Variables:
+        context_trusted: the planner context's integrity label.
+        value_trusted: the value's integrity label.
+        readers: the readership the value is released to.
+        released_readers: the readership the value was released to.
+        trusted_call_made: a dangerous call ran.
+        released: the value was released.
+
+    P-F is stated over the label captured at release (``released_readers``),
+    not over the current ``readers``: a value that left under a permitted
+    readership does not become a violation because a later join widens the
+    label it was copied from.
+
+    Q invariants: ``not trusted_call_made or (context_trusted and
+    value_trusted)`` (P-T) and ``not released or "mallory" not in
+    released_readers`` (P-F).
+    """
+    return VerificationIR(
+        "fides-native-property",
+        (
+            StateVariable("context_trusted", Sort.BOOLEAN, True),
+            StateVariable("value_trusted", Sort.BOOLEAN, False),
+            StateVariable("readers", Sort.SET, frozenset({"alice"})),
+            StateVariable("released_readers", Sort.SET, frozenset()),
+            StateVariable("trusted_call_made", Sort.BOOLEAN, False),
+            StateVariable("released", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "trusted-context-labels-value",
+                _var("context_trusted"),
+                (Assignment("value_trusted", _const(True)),),
+            ),
+            TransitionRule(
+                "untrusted-reader-joins-scope",
+                _const(True),
+                (
+                    Assignment(
+                        "readers",
+                        Expression.operator(
+                            ExpressionKind.UNION,
+                            _var("readers"),
+                            Expression.constant("mallory"),
+                        ),
+                    ),
+                ),
+            ),
+            TransitionRule(
+                "trusted-action-call",
+                _and(_var("context_trusted"), _var("value_trusted")),
+                (Assignment("trusted_call_made", _const(True)),),
+            ),
+            TransitionRule(
+                "permitted-flow-release",
+                _and(
+                    _not(
+                        Expression.operator(
+                            ExpressionKind.IN,
+                            Expression.constant("mallory"),
+                            _var("readers"),
+                        ),
+                    ),
+                    _var("value_trusted"),
+                ),
+                (
+                    Assignment("released", _const(True)),
+                    Assignment("released_readers", _var("readers")),
+                ),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-untrusted-action",
+                _or(
+                    _not(_var("trusted_call_made")),
+                    _and(_var("context_trusted"), _var("value_trusted")),
+                ),
+                "Q (P-T): a dangerous call runs only from a trusted context and value",
+            ),
+            SafetyInvariant(
+                "no-flow-to-untrusted-reader",
+                _or(
+                    _not(_var("released")),
+                    _not(
+                        Expression.operator(
+                            ExpressionKind.IN,
+                            Expression.constant("mallory"),
+                            _var("released_readers"),
+                        ),
+                    ),
+                ),
+                "Q (P-F): a value is not released to a reader outside the permitted scope",
+            ),
+        ),
+        4,
+        (
+            "Fides candidate abstraction native property: P-T and P-F",
+            "the reader scope is a bounded set; membership is an IN test",
+            "the join takes the lower integrity label; a lying tool can raise it",
+        ),
+    )
+
+
 __all__ = [
     "camel_ir",
     "camel_native_property_ir",
+    "camelot_ir",
+    "camelot_native_property_ir",
     "dual_llm_baseline_ir",
     "dual_llm_native_property_ir",
+    "fides_ir",
+    "fides_native_property_ir",
     "ites_defective_requester_only_ir",
     "ites_native_property_ir",
     "ites_reference_ir",

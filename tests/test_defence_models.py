@@ -16,8 +16,12 @@ from conflux.verification import (
     VerificationIR,
     camel_ir,
     camel_native_property_ir,
+    camelot_ir,
+    camelot_native_property_ir,
     dual_llm_baseline_ir,
     dual_llm_native_property_ir,
+    fides_ir,
+    fides_native_property_ir,
     ites_defective_requester_only_ir,
     ites_native_property_ir,
     ites_reference_ir,
@@ -49,6 +53,8 @@ UNSAFE_PE_MODELS: dict[str, tuple[ModelFactory, bool]] = {
     "camel": (camel_ir, False),
     "progent": (progent_ir, False),
     "pact": (pact_ir, False),
+    "camelot": (camelot_ir, False),
+    "fides": (fides_ir, False),
 }
 
 # Candidate abstractions that satisfy their own intended property Q.
@@ -58,6 +64,8 @@ NATIVE_PROPERTY_MODELS: dict[str, ModelFactory] = {
     "progent": progent_native_property_ir,
     "pact": pact_native_property_ir,
     "ites": ites_native_property_ir,
+    "camelot": camelot_native_property_ir,
+    "fides": fides_native_property_ir,
 }
 
 
@@ -198,6 +206,10 @@ class TestDefenceModelStructure:
             progent_native_property_ir,
             pact_ir,
             pact_native_property_ir,
+            camelot_ir,
+            camelot_native_property_ir,
+            fides_ir,
+            fides_native_property_ir,
         ):
             ir = factory()
             restored = type(ir).from_dict(ir.to_dict())
@@ -219,6 +231,11 @@ EXPECTED_EXERCISE_CLASSES: dict[str, dict[str, str]] = {
         "blocked-not-executed": CLASS_CHECKED,
         "no-maximality-violation": CLASS_CHECKED,
     },
+    "camelot_native_property_ir": {"no-untrusted-recipient": CLASS_CHECKED},
+    "fides_native_property_ir": {
+        "no-untrusted-action": CLASS_CHECKED,
+        "no-flow-to-untrusted-reader": CLASS_CHECKED,
+    },
 }
 
 HOLDING_IR_FACTORIES: dict[str, ModelFactory] = {
@@ -228,6 +245,8 @@ HOLDING_IR_FACTORIES: dict[str, ModelFactory] = {
     "pact_native_property_ir": pact_native_property_ir,
     "ites_native_property_ir": ites_native_property_ir,
     "ites_reference_ir": ites_reference_ir,
+    "camelot_native_property_ir": camelot_native_property_ir,
+    "fides_native_property_ir": fides_native_property_ir,
 }
 
 

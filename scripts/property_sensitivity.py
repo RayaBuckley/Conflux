@@ -24,8 +24,12 @@ from typing import Any
 from conflux.verification.defence_models import (
     camel_ir,
     camel_native_property_ir,
+    camelot_ir,
+    camelot_native_property_ir,
     dual_llm_baseline_ir,
     dual_llm_native_property_ir,
+    fides_ir,
+    fides_native_property_ir,
     ites_defective_requester_only_ir,
     ites_native_property_ir,
     ites_reference_ir,
@@ -53,6 +57,10 @@ IR_FACTORIES = {
     "ites_native_property": ites_native_property_ir,
     "ites_requester_only": ites_defective_requester_only_ir,
     "ites_with_read_check": ites_with_read_check_ir,
+    "camelot_pe": camelot_ir,
+    "camelot_native_property": camelot_native_property_ir,
+    "fides_pe": fides_ir,
+    "fides_native_property": fides_native_property_ir,
 }
 
 
