@@ -84,3 +84,11 @@ _.server_version
 # and tests, while the gate's vulture scan sees only src/conflux.
 _.feature
 _.where
+
+# Property-sensitivity surface: scripts/property_sensitivity.py and the defence-model
+# tests consume it, but the gate's vulture scan sees only src/conflux.
+classification_document
+classify_ir
+classify_invariant
+guard_mutations
+reachable_states

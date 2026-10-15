@@ -1,25 +1,28 @@
 % GENERATED FILE -- do not edit by hand.
 % Source: research/output/runs/defence-models-v1/result.json
-% SHA-256: 61ad85c499ec721e7956b752ff84271686bbb4a7ca1f378304241884503611ac
+% SHA-256: 5075b4f75ad59a25c84e0352884705265071b815e3026f944bf056ca5ec44d8d
 % Run: python scripts/generate_flmsec_tables.py
 \begin{table}[t]
 \centering
 \small
-\begin{tabular}{lccc}
+\begin{tabular}{lcccc}
 \toprule
-\textbf{Defence model} & \textbf{Native property Q} & \textbf{PE property} &
+\textbf{Defence model} & \textbf{Native property Q} & \textbf{Q exercise} & \textbf{PE property} &
 \textbf{Counterexample} \\
 \midrule
-Dual-LLM & Safe & Unsafe & 4-step PE witness \\
-CaMeL & Safe & Unsafe & 4-step PE witness \\
-Progent & Safe & Unsafe & 3-step PE witness \\
-PACT & Safe & Unsafe & 3-step PE witness \\
-Requester-only & --- & Unsafe & 4-step PE witness \\
-\textbf{ITES} & Safe (PE is native) & Safe & --- \\
+Dual-LLM & Safe & By construction & Unsafe & 4-step PE witness \\
+CaMeL & Safe & By construction & Unsafe & 4-step PE witness \\
+Progent & Safe & By construction & Unsafe & 3-step PE witness \\
+PACT & Safe & By construction & Unsafe & 3-step PE witness \\
+Requester-only & --- & --- & Unsafe & 4-step PE witness \\
+\textbf{ITES} & Safe & Checked & Safe & --- \\
 \bottomrule
 \end{tabular}
 \caption{Comparative defence verification. Each defence
-abstraction satisfies its own intended property Q; a PE counterexample
+abstraction satisfies its own intended property Q in the finite model; the
+Q exercise column reports how that property was exercised under the declared
+one-rule guard-mutation alphabet of \texttt{scripts/property\_sensitivity.py}
+(SEM-017: an untriggered property is not a pass). A PE counterexample
 demonstrates non-implication between the defence's native objective and the
 Conflux PE property, not a defect in the compared system. ITES preserves PE.
 All results are preliminary finite-model comparisons, not implementation-level

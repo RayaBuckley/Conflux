@@ -41,6 +41,7 @@ from conflux.verification.defence_models import (
     dual_llm_baseline_ir,
     dual_llm_native_property_ir,
     ites_defective_requester_only_ir,
+    ites_native_property_ir,
     ites_reference_ir,
     pact_ir,
     pact_native_property_ir,
@@ -223,7 +224,7 @@ def generate() -> dict[str, Any]:
         {
             "name": "ITES",
             "pe_property": _verify(ites_reference_ir),
-            "native_property": None,
+            "native_property": _verify(ites_native_property_ir),
         },
     ]
     pe_measured = [m["pe_property"] for m in models if _measured(m["pe_property"])]

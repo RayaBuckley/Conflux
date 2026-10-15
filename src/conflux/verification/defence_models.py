@@ -145,14 +145,17 @@ def dual_llm_native_property_ir() -> VerificationIR:
     Variables:
         processor_executed: the quarantined processor directly executed an effect
         planner_executed: the privileged planner executed an effect
+        processor_gate: the defence is active (starts True; no rule clears it)
 
-    Q invariant: ``not processor_executed`` — should be SAFE.
+    Q invariant: ``not processor_executed`` — holds, and is falsifiable by a
+    single-rule mutation of ``processor-executes``.
     """
     return VerificationIR(
         "dual-llm-native-property",
         (
             StateVariable("processor_executed", Sort.BOOLEAN, False),
             StateVariable("planner_executed", Sort.BOOLEAN, False),
+            StateVariable("processor_gate", Sort.BOOLEAN, True),
         ),
         (
             TransitionRule(
@@ -164,6 +167,11 @@ def dual_llm_native_property_ir() -> VerificationIR:
                 "processor-receives-data",
                 _const(True),
                 (),
+            ),
+            TransitionRule(
+                "processor-executes",
+                _not(_var("processor_gate")),
+                (Assignment("processor_executed", _const(True)),),
             ),
         ),
         (
@@ -177,6 +185,7 @@ def dual_llm_native_property_ir() -> VerificationIR:
         (
             "Dual-LLM candidate abstraction native property: processor never executes",
             "the planner can execute; the processor only receives data",
+            "processor_gate starts True and no rule clears it: holds by construction",
         ),
     )
 
@@ -186,19 +195,25 @@ def ites_reference_ir() -> VerificationIR:
 
     This model encodes the ITES rule: if the planner consumed attacker data
     and the attacker is not authorised, the action is blocked.  The PE
-    invariant should hold (SAFE).
+    invariant holds, and each holding invariant is falsifiable by a
+    single-rule guard mutation (the block and allow guards partition the
+    state space, and each property has one rule that records it).
 
     Variables:
         planner_consumed_attacker: planner read attacker-controlled data
         action_executed: an effect was executed
         action_blocked: ITES blocked the action
-        pe_violation: PE violation occurred
+        pe_violation: PE violation recorded (executed after consuming unauthorised data)
         attacker_authorised: attacker has permission (False)
+        maximality_violation: over-blocking recorded (blocked without unauthorised influence)
 
     Transition rules:
-        1. ``planner-consumes``: planner reads attacker data
-        2. ``ites-blocks``: ITES blocks execution because attacker is unauthorised
-        3. ``ites-allows``: ITES allows execution when no unauthorised influence
+        1. ``planner-consumes-attacker-data``: planner reads attacker data
+        2. ``ites-blocks-unauthorised``: block when consumed and the attacker is unauthorised
+        3. ``ites-allows-authorised``: allow when not blocked and no unauthorised influence
+        4. ``authorisation-granted``: the attacker gains permission for this action
+        5. ``pe-violation-recorded``: executed after consuming unauthorised data
+        6. ``maximality-violation-recorded``: blocked without unauthorised influence
     """
     return VerificationIR(
         "ites-reference",
@@ -208,16 +223,18 @@ def ites_reference_ir() -> VerificationIR:
             StateVariable("action_blocked", Sort.BOOLEAN, False),
             StateVariable("pe_violation", Sort.BOOLEAN, False),
             StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+            StateVariable("maximality_violation", Sort.BOOLEAN, False),
         ),
         (
             TransitionRule(
                 "planner-consumes-attacker-data",
-                _const(True),
+                _not(_var("action_executed")),
                 (Assignment("planner_consumed_attacker", _const(True)),),
             ),
             TransitionRule(
                 "ites-blocks-unauthorised",
                 _and(
+                    _not(_var("action_executed")),
                     _var("planner_consumed_attacker"),
                     _not(_var("attacker_authorised")),
                 ),
@@ -228,8 +245,33 @@ def ites_reference_ir() -> VerificationIR:
             ),
             TransitionRule(
                 "ites-allows-authorised",
-                _not(_var("planner_consumed_attacker")),
+                _and(
+                    _not(_var("action_blocked")),
+                    _or(
+                        _not(_var("planner_consumed_attacker")),
+                        _var("attacker_authorised"),
+                    ),
+                ),
                 (Assignment("action_executed", _const(True)),),
+            ),
+            TransitionRule(
+                "authorisation-granted",
+                _var("planner_consumed_attacker"),
+                (Assignment("attacker_authorised", _const(True)),),
+            ),
+            TransitionRule(
+                "pe-violation-recorded",
+                _and(
+                    _var("action_executed"),
+                    _var("planner_consumed_attacker"),
+                    _not(_var("attacker_authorised")),
+                ),
+                (Assignment("pe_violation", _const(True)),),
+            ),
+            TransitionRule(
+                "maximality-violation-recorded",
+                _and(_var("action_blocked"), _not(_var("planner_consumed_attacker"))),
+                (Assignment("maximality_violation", _const(True)),),
             ),
         ),
         (
@@ -243,12 +285,88 @@ def ites_reference_ir() -> VerificationIR:
                 _not(_and(_var("action_blocked"), _var("action_executed"))),
                 "a blocked action is never executed",
             ),
+            SafetyInvariant(
+                "no-maximality-violation",
+                _not(_var("maximality_violation")),
+                "no over-blocking: nothing is blocked without unauthorised influence",
+            ),
         ),
-        4,
+        6,
         (
             "ITES reference: principal-intersection rule",
             "attacker_authorised is False; ITES blocks after consuming attacker data",
+            "block and allow guards partition the state space; each property has a recording rule",
         ),
+    )
+
+
+def ites_native_property_ir() -> VerificationIR:
+    """ITES candidate abstraction: its own property Q (no over-blocking).
+
+    ITES claims to block exactly the actions an unauthorised influencer
+    contributed to.  This model carries that family-specific guarantee:
+    nothing is blocked without unauthorised influence.  The comparative PE
+    property stays on :func:`ites_reference_ir`; this factory is the native
+    property surface that every other defence family already has.
+
+    Q invariant: ``not maximality_violation`` — holds, and is falsifiable
+    by a single-rule mutation of the block guard.
+    """
+    return VerificationIR(
+        "ites-native-property",
+        (
+            StateVariable("planner_consumed_attacker", Sort.BOOLEAN, False),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("action_blocked", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+            StateVariable("maximality_violation", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "planner-consumes-attacker-data",
+                _not(_var("action_executed")),
+                (Assignment("planner_consumed_attacker", _const(True)),),
+            ),
+            TransitionRule(
+                "ites-blocks-unauthorised",
+                _and(
+                    _not(_var("action_executed")),
+                    _var("planner_consumed_attacker"),
+                    _not(_var("attacker_authorised")),
+                ),
+                (Assignment("action_blocked", _const(True)),),
+            ),
+            TransitionRule(
+                "ites-allows-authorised",
+                _and(
+                    _not(_var("action_blocked")),
+                    _or(
+                        _not(_var("planner_consumed_attacker")),
+                        _var("attacker_authorised"),
+                    ),
+                ),
+                (Assignment("action_executed", _const(True)),),
+            ),
+            TransitionRule(
+                "authorisation-granted",
+                _var("planner_consumed_attacker"),
+                (Assignment("attacker_authorised", _const(True)),),
+            ),
+            TransitionRule(
+                "maximality-violation-recorded",
+                _and(_var("action_blocked"), _not(_var("planner_consumed_attacker"))),
+                (Assignment("maximality_violation", _const(True)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-maximality-violation",
+                _not(_var("maximality_violation")),
+                "Q: ITES never blocks an action that no unauthorised principal influenced",
+            ),
+        ),
+        5,
+        ("ITES candidate abstraction native property: no over-blocking",),
     )
 
 
@@ -388,12 +506,21 @@ def camel_native_property_ir() -> VerificationIR:
 
     Only the planner (with capabilities) can execute; the quarantined data
     processor cannot.  This property Q is satisfied by the abstraction.
+
+    Variables:
+        processor_executed: the quarantined processor directly executed an effect
+        planner_executed: the privileged planner executed an effect
+        processor_gate: the defence is active (starts True; no rule clears it)
+
+    Q invariant: ``not processor_executed`` — holds, and is falsifiable by a
+    single-rule mutation of ``processor-executes``.
     """
     return VerificationIR(
         "camel-native-property",
         (
             StateVariable("processor_executed", Sort.BOOLEAN, False),
             StateVariable("planner_executed", Sort.BOOLEAN, False),
+            StateVariable("processor_gate", Sort.BOOLEAN, True),
         ),
         (
             TransitionRule(
@@ -405,6 +532,11 @@ def camel_native_property_ir() -> VerificationIR:
                 "processor-receives-data",
                 _const(True),
                 (),
+            ),
+            TransitionRule(
+                "processor-executes",
+                _not(_var("processor_gate")),
+                (Assignment("processor_executed", _const(True)),),
             ),
         ),
         (
@@ -418,6 +550,7 @@ def camel_native_property_ir() -> VerificationIR:
         (
             "CaMeL candidate abstraction native property: processor never executes",
             "the planner can execute via capabilities; the processor only receives data",
+            "processor_gate starts True and no rule clears it: holds by construction",
         ),
     )
 
@@ -491,15 +624,31 @@ def progent_ir() -> VerificationIR:
 
 
 def progent_native_property_ir() -> VerificationIR:
-    """Progent candidate abstraction: its own property Q (all calls satisfy policy)."""
+    """Progent candidate abstraction: its own property Q (all calls satisfy policy).
+
+    Variables:
+        policy_violation: a call violated the parameter-sensitive policy
+        policy_gate: the defence is active (starts True; no rule clears it)
+
+    Q invariant: ``not policy_violation`` — holds, and is falsifiable by a
+    single-rule mutation of ``policy-violated-call``.
+    """
     return VerificationIR(
         "progent-native-property",
-        (StateVariable("policy_violation", Sort.BOOLEAN, False),),
+        (
+            StateVariable("policy_violation", Sort.BOOLEAN, False),
+            StateVariable("policy_gate", Sort.BOOLEAN, True),
+        ),
         (
             TransitionRule(
                 "policy-checked-call",
                 _const(True),
                 (Assignment("policy_violation", _const(False)),),
+            ),
+            TransitionRule(
+                "policy-violated-call",
+                _not(_var("policy_gate")),
+                (Assignment("policy_violation", _const(True)),),
             ),
         ),
         (
@@ -510,7 +659,10 @@ def progent_native_property_ir() -> VerificationIR:
             ),
         ),
         2,
-        ("Progent candidate abstraction native property: all calls satisfy policy",),
+        (
+            "Progent candidate abstraction native property: all calls satisfy policy",
+            "policy_gate starts True and no rule clears it: holds by construction",
+        ),
     )
 
 
@@ -583,18 +735,33 @@ def pact_ir() -> VerificationIR:
 
 
 def pact_native_property_ir() -> VerificationIR:
-    """PACT candidate abstraction: its own property Q (argument provenance preserved)."""
+    """PACT candidate abstraction: its own property Q (argument provenance preserved).
+
+    Variables:
+        arg_provenance_tracked: argument provenance is tracked (True, unchanged)
+        provenance_lost: argument provenance was lost
+        provenance_gate: the defence is active (starts True; no rule clears it)
+
+    Q invariant: ``not provenance_lost`` — holds, and is falsifiable by a
+    single-rule mutation of ``provenance-dropped``.
+    """
     return VerificationIR(
         "pact-native-property",
         (
             StateVariable("arg_provenance_tracked", Sort.BOOLEAN, True),
             StateVariable("provenance_lost", Sort.BOOLEAN, False),
+            StateVariable("provenance_gate", Sort.BOOLEAN, True),
         ),
         (
             TransitionRule(
                 "cross-step-provenance",
                 _const(True),
                 (Assignment("provenance_lost", _const(False)),),
+            ),
+            TransitionRule(
+                "provenance-dropped",
+                _not(_var("provenance_gate")),
+                (Assignment("provenance_lost", _const(True)),),
             ),
         ),
         (
@@ -605,7 +772,10 @@ def pact_native_property_ir() -> VerificationIR:
             ),
         ),
         2,
-        ("PACT candidate abstraction native property: argument provenance preserved",),
+        (
+            "PACT candidate abstraction native property: argument provenance preserved",
+            "provenance_gate starts True and no rule clears it: holds by construction",
+        ),
     )
 
 
@@ -712,6 +882,7 @@ __all__ = [
     "dual_llm_baseline_ir",
     "dual_llm_native_property_ir",
     "ites_defective_requester_only_ir",
+    "ites_native_property_ir",
     "ites_reference_ir",
     "ites_with_read_check_ir",
     "pact_ir",

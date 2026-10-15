@@ -10,11 +10,16 @@
 | Direction readiness mutations | Table 1, Sec 5 | research/output/runs/direction-readiness-v1/security-mutations.json | "11/11 mutants killed, 1-step witnesses" | Finite disclosure/delegation models, depth 1 |
 | Checker agreement (ref + COI) | Table 2, Sec 5 | research/output/runs/sled-coi-reduction-v1/result.json | "reference and reduced agree on 2 fixtures" | Finite IR models; Z3 unavailable in environment |
 | COI reduction preserves verdicts | Table 3, Sec 5 | research/output/runs/sled-coi-reduction-v1/result.json | "COI reduces variables/rules/states while preserving verdicts" | 2 fixtures only; unsafe witness lifts |
-| Dual-LLM satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison, not implementation evaluation" | Finite abstraction, not faithful to published system |
-| CaMeL satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison" | Finite abstraction |
-| Progent satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison" | Finite abstraction |
-| PACT satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison" | Finite abstraction |
-| ITES preserves PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "bounded_safe within the stated finite model" | Finite IR model |
+| Dual-LLM satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison, not implementation evaluation; the native Q invariant holds by construction (SEM-017 checked_by_construction), retained in defence-models-v1/sensitivity.json" | Finite abstraction, not faithful to published system; Q holds by construction, so it is not exercised |
+| CaMeL satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison; the native Q invariant holds by construction (SEM-017 checked_by_construction), retained in defence-models-v1/sensitivity.json" | Finite abstraction; Q holds by construction, so it is not exercised |
+| Progent satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison; the native Q invariant holds by construction (SEM-017 checked_by_construction), retained in defence-models-v1/sensitivity.json" | Finite abstraction; Q holds by construction, so it is not exercised |
+| PACT satisfies Q but violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "finite IR model comparison; the native Q invariant holds by construction (SEM-017 checked_by_construction), retained in defence-models-v1/sensitivity.json" | Finite abstraction; Q holds by construction, so it is not exercised |
+| ITES preserves PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "bounded_safe within the stated finite model; the PE invariant is falsifiable by a guard mutation (checked)" | Finite IR model |
 | Requester-only violates PE | Table 4, Sec 5 | research/output/runs/defence-models-v1/result.json | "UNSAFE with counterexample" | Finite IR model |
 | AgentDojo pipeline executes | Sec 5 (related work) | research/output/runs/agentdojo-1b5-nf4-v1/result.json | "pipeline runs end-to-end" | 1.5B model too small for utility; not efficacy evidence |
 | Observational confidentiality (bounded) | Sec 4.2 | docs/evidence/CLAIMS.md | "bounded evidence, not noninterference proof" | Finite product state spaces; Z3 BMC |
+
+Exercise classes (`checked`, `checked_by_construction`, `violated_at_baseline`) are retained in
+`research/output/runs/defence-models-v1/sensitivity.json`, regenerated and checked by
+`python scripts/property_sensitivity.py [--check]`. A `Safe` entry in the Q column is read together with its
+exercise class: SEM-017 treats an untriggered property as not a pass.

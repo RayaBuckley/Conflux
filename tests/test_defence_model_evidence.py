@@ -297,7 +297,7 @@ class TestDefenceEvidenceBundle:
         assert recorded["reproducible_here"] is True
         assert set(recorded["verdicts"]) == {model["name"] for model in available["models"]}
         assert recorded["verdicts"]["Dual-LLM"] == {"pe": "safe", "native": "safe"}
-        assert recorded["verdicts"]["ITES"] == {"pe": "safe", "native": None}
+        assert recorded["verdicts"]["ITES"] == {"pe": "safe", "native": "safe"}
         assert recorded["verdicts"] != PRESERVED_NUXMV, "a fresh measurement must overwrite the preserved values"
 
     def test_deterministic_regeneration(self, bundle: dict[str, Any]) -> None:

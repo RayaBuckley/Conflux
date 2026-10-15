@@ -19,6 +19,7 @@ from conflux.verification import (
     dual_llm_baseline_ir,
     dual_llm_native_property_ir,
     ites_defective_requester_only_ir,
+    ites_native_property_ir,
     ites_reference_ir,
     ites_with_read_check_ir,
     pact_ir,
@@ -26,6 +27,11 @@ from conflux.verification import (
     progent_ir,
     progent_native_property_ir,
     reference_safety_check,
+)
+from conflux.verification.sensitivity import (
+    CLASS_CHECKED,
+    CLASS_CHECKED_BY_CONSTRUCTION,
+    classify_ir,
 )
 
 pytestmark = pytest.mark.security
@@ -51,6 +57,7 @@ NATIVE_PROPERTY_MODELS: dict[str, ModelFactory] = {
     "camel": camel_native_property_ir,
     "progent": progent_native_property_ir,
     "pact": pact_native_property_ir,
+    "ites": ites_native_property_ir,
 }
 
 
@@ -182,6 +189,7 @@ class TestDefenceModelStructure:
             dual_llm_baseline_ir,
             dual_llm_native_property_ir,
             ites_reference_ir,
+            ites_native_property_ir,
             ites_defective_requester_only_ir,
             ites_with_read_check_ir,
             camel_ir,
@@ -194,3 +202,70 @@ class TestDefenceModelStructure:
             ir = factory()
             restored = type(ir).from_dict(ir.to_dict())
             assert restored.fingerprint == ir.fingerprint
+# Expected exercise class per (factory, invariant) under the declared mutation
+# alphabet in ``conflux.verification.sensitivity``: for one rule at a time, its
+# guard is replaced by True.  ``checked`` means a mutation of a rule that is
+# satisfied by some reachable state of the reference model falsifies the
+# invariant; ``checked_by_construction`` means only rules whose guard is
+# unsatisfiable in every reachable state falsify it.
+EXPECTED_EXERCISE_CLASSES: dict[str, dict[str, str]] = {
+    "dual_llm_native_property_ir": {"processor-never-executes": CLASS_CHECKED_BY_CONSTRUCTION},
+    "camel_native_property_ir": {"processor-never-executes": CLASS_CHECKED_BY_CONSTRUCTION},
+    "progent_native_property_ir": {"no-policy-violation": CLASS_CHECKED_BY_CONSTRUCTION},
+    "pact_native_property_ir": {"provenance-preserved": CLASS_CHECKED_BY_CONSTRUCTION},
+    "ites_native_property_ir": {"no-maximality-violation": CLASS_CHECKED},
+    "ites_reference_ir": {
+        "no-pe-violation": CLASS_CHECKED,
+        "blocked-not-executed": CLASS_CHECKED,
+        "no-maximality-violation": CLASS_CHECKED,
+    },
+}
+
+HOLDING_IR_FACTORIES: dict[str, ModelFactory] = {
+    "dual_llm_native_property_ir": dual_llm_native_property_ir,
+    "camel_native_property_ir": camel_native_property_ir,
+    "progent_native_property_ir": progent_native_property_ir,
+    "pact_native_property_ir": pact_native_property_ir,
+    "ites_native_property_ir": ites_native_property_ir,
+    "ites_reference_ir": ites_reference_ir,
+}
+
+
+class TestFalsifiabilityGate:
+    """Every holding invariant must be falsifiable by the declared mutation alphabet.
+
+    A ``safe`` verdict is only evidence when some mutation of the model would
+    break the property (SEM-017: an untriggered property is not a pass).  The
+    exercises class records *how* it can be broken, not just that it holds.
+    """
+
+    @pytest.mark.parametrize("name", list(HOLDING_IR_FACTORIES), ids=list(HOLDING_IR_FACTORIES))
+    def test_every_holding_invariant_is_falsifiable(self, name: str) -> None:
+        for item in classify_ir(HOLDING_IR_FACTORIES[name]()):
+            assert item.exercise_class in (CLASS_CHECKED, CLASS_CHECKED_BY_CONSTRUCTION), (
+                f"{name}/{item.invariant_id} holds but no guard mutation falsifies it"
+            )
+            assert item.falsifiers, f"{name}/{item.invariant_id} has no recorded falsifier"
+
+    @pytest.mark.parametrize("name", list(EXPECTED_EXERCISE_CLASSES), ids=list(EXPECTED_EXERCISE_CLASSES))
+    def test_exercise_class_matches_the_declared_table(self, name: str) -> None:
+        actual = {item.invariant_id: item.exercise_class for item in classify_ir(HOLDING_IR_FACTORIES[name]())}
+        assert actual == EXPECTED_EXERCISE_CLASSES[name]
+
+    def test_checked_requires_a_satisfiable_guard(self) -> None:
+        """``checked`` must rest on a mutation whose guard some reachable state satisfies."""
+        for name, factory in HOLDING_IR_FACTORIES.items():
+            for item in classify_ir(factory()):
+                if item.exercise_class != CLASS_CHECKED:
+                    continue
+                assert any(falsifier.guard_satisfiable_at_reachable_state for falsifier in item.falsifiers), (
+                    f"{name}/{item.invariant_id} is checked without a satisfiable guard"
+                )
+
+    def test_ites_preserves_pe_with_a_non_trivial_exercise_class(self) -> None:
+        """ITES preserves PE, and the PE invariant is now genuinely exercised."""
+        result = reference_safety_check(ites_reference_ir())
+        assert result.verdict in (FormalVerdict.SAFE, FormalVerdict.BOUNDED_SAFE)
+        classes = {item.invariant_id: item.exercise_class for item in classify_ir(ites_reference_ir())}
+        assert classes["no-pe-violation"] == CLASS_CHECKED
+        assert classes["no-maximality-violation"] == CLASS_CHECKED

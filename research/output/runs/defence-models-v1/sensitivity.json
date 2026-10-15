@@ -1,0 +1,216 @@
+{
+  "irs": {
+    "camel_native_property": {
+      "bound": 3,
+      "invariants": [
+        {
+          "exercise_class": "checked_by_construction",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "processor-executes"
+            }
+          ],
+          "invariant_id": "processor-never-executes"
+        }
+      ],
+      "ir_id": "camel-native-property",
+      "reachable_states": 2
+    },
+    "camel_pe": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "camel-baseline",
+      "reachable_states": 5
+    },
+    "dual_llm_native_property": {
+      "bound": 3,
+      "invariants": [
+        {
+          "exercise_class": "checked_by_construction",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "processor-executes"
+            }
+          ],
+          "invariant_id": "processor-never-executes"
+        }
+      ],
+      "ir_id": "dual-llm-native-property",
+      "reachable_states": 2
+    },
+    "dual_llm_pe": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "dual-llm-baseline",
+      "reachable_states": 4
+    },
+    "ites_native_property": {
+      "bound": 5,
+      "invariants": [
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "ites-blocks-unauthorised"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "maximality-violation-recorded"
+            }
+          ],
+          "invariant_id": "no-maximality-violation"
+        }
+      ],
+      "ir_id": "ites-native-property",
+      "reachable_states": 7
+    },
+    "ites_pe": {
+      "bound": 6,
+      "invariants": [
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "planner-consumes-attacker-data"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "ites-allows-authorised"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "pe-violation-recorded"
+            }
+          ],
+          "invariant_id": "no-pe-violation"
+        },
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "ites-allows-authorised"
+            }
+          ],
+          "invariant_id": "blocked-not-executed"
+        },
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "ites-blocks-unauthorised"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "maximality-violation-recorded"
+            }
+          ],
+          "invariant_id": "no-maximality-violation"
+        }
+      ],
+      "ir_id": "ites-reference",
+      "reachable_states": 7
+    },
+    "ites_requester_only": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "ites-defective-requester-only",
+      "reachable_states": 5
+    },
+    "ites_with_read_check": {
+      "bound": 5,
+      "invariants": [
+        {
+          "exercise_class": "checked_by_construction",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "ites-with-read-check",
+      "reachable_states": 4
+    },
+    "pact_native_property": {
+      "bound": 2,
+      "invariants": [
+        {
+          "exercise_class": "checked_by_construction",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "provenance-dropped"
+            }
+          ],
+          "invariant_id": "provenance-preserved"
+        }
+      ],
+      "ir_id": "pact-native-property",
+      "reachable_states": 1
+    },
+    "pact_pe": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "pact-baseline",
+      "reachable_states": 5
+    },
+    "progent_native_property": {
+      "bound": 2,
+      "invariants": [
+        {
+          "exercise_class": "checked_by_construction",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "policy-violated-call"
+            }
+          ],
+          "invariant_id": "no-policy-violation"
+        }
+      ],
+      "ir_id": "progent-native-property",
+      "reachable_states": 1
+    },
+    "progent_pe": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "progent-baseline",
+      "reachable_states": 5
+    }
+  },
+  "mutation_alphabet": "replace_one_rule_guard_with_true",
+  "schema_version": "1"
+}

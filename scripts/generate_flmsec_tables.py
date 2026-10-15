@@ -215,6 +215,20 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
     defence_path = RUNS / "defence-models-v1" / "result.json"
     defence, defence_sha = _read_json(defence_path)
     source = str(defence_path.relative_to(ROOT))
+    sensitivity, _ = _read_json(RUNS / "defence-models-v1" / "sensitivity.json")
+    exercise = {
+        name: block["invariants"][0]["exercise_class"]
+        for name, block in sensitivity["irs"].items()
+        if block["invariants"]
+    }
+    native_ir = {
+        "Dual-LLM": "dual_llm_native_property",
+        "CaMeL": "camel_native_property",
+        "Progent": "progent_native_property",
+        "PACT": "pact_native_property",
+        "ITES": "ites_native_property",
+    }
+    exercise_label = {"checked": "Checked", "checked_by_construction": "By construction"}
 
     rows: list[str] = []
     for m in defence["models"]:
@@ -224,17 +238,16 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
         native = m["native_property"]
         if native is not None:
             nat_label = "Safe" if native["verdict"] != "unsafe" else "Unsafe"
-        elif name == "ITES":
-            nat_label = "Safe (PE is native)"
         else:
             nat_label = "---"
         if pe == "unsafe":
             cx = f"{m['pe_property']['counterexample_length']}-step PE witness"
         else:
             cx = "---"
+        q_exercise = exercise_label.get(exercise.get(native_ir.get(name, ""), ""), "---")
         is_ites = name == "ITES"
         label = f"\\textbf{{{name}}}" if is_ites else name
-        rows.append(f"{label} & {nat_label} & {pe_label} & {cx} \\\\")
+        rows.append(f"{label} & {nat_label} & {q_exercise} & {pe_label} & {cx} \\\\")
 
     table_body = "\n".join(rows)
 
@@ -243,9 +256,9 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
         + r"""\begin{table}[t]
 \centering
 \small
-\begin{tabular}{lccc}
+\begin{tabular}{lcccc}
 \toprule
-\textbf{Defence model} & \textbf{Native property Q} & \textbf{PE property} &
+\textbf{Defence model} & \textbf{Native property Q} & \textbf{Q exercise} & \textbf{PE property} &
 \textbf{Counterexample} \\
 \midrule
 """
@@ -254,7 +267,10 @@ def table_comparative_defence() -> list[tuple[Path, str]]:
 \bottomrule
 \end{tabular}
 \caption{Comparative defence verification. Each defence
-abstraction satisfies its own intended property Q; a PE counterexample
+abstraction satisfies its own intended property Q in the finite model; the
+Q exercise column reports how that property was exercised under the declared
+one-rule guard-mutation alphabet of \texttt{scripts/property\_sensitivity.py}
+(SEM-017: an untriggered property is not a pass). A PE counterexample
 demonstrates non-implication between the defence's native objective and the
 Conflux PE property, not a defect in the compared system. ITES preserves PE.
 All results are preliminary finite-model comparisons, not implementation-level
