@@ -36,6 +36,7 @@ from .endorsement import (
     sound_endorsement_ir,
     verify_endorsement,
 )
+from .horn_backend import HornEncodingError, verify_with_horn
 from .interpreter import (
     DifferentialConformanceResult,
     RuntimeTransitionRecord,
@@ -150,6 +151,7 @@ __all__ = [
     "FiniteInstance",
     "FormalVerdict",
     "FormalVerificationResult",
+    "HornEncodingError",
     "InvariantOutcome",
     "LedgerRow",
     "MonitorEvent",
@@ -229,5 +231,6 @@ __all__ = [
     "verify_endorsement",
     "verify_plan",
     "verify_robust_disclosure",
+    "verify_with_horn",
     "verify_with_z3",
 ]
