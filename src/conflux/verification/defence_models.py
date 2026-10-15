@@ -1231,6 +1231,229 @@ def fides_native_property_ir() -> VerificationIR:
     )
 
 
+def pace_ir() -> VerificationIR:
+    """PACE candidate abstraction: provenance-aware capability enforcement.
+
+    This is a small finite abstraction inspired by PACE (arXiv:2610.01349),
+    not an implementation-conformance model of it.  PACE freezes a tool call
+    at the last boundary, wires it into an episode graph, and verifies a path
+    chain (cut every flow edge from a protected value to the unsafe terminal)
+    and an effect chain of nine obligations before dispatch.  This IR keeps
+    only the compile step and a cut-then-dispatch step: the episode graph,
+    the nine obligations, the two certificates and the recomputing verifier
+    are not modelled.
+
+    The abstraction's PE vulnerability is the one the expansion survey
+    records: authority is compiled from the authenticated request channel
+    alone and is never summed over the principals that influenced the
+    decision, and the untrusted frontier is a single bucket.  The
+    represented-path property Q can therefore hold while an influencing
+    principal's separate authority is never required.
+
+    ``Sort`` has no enum member, so provenance here is a boolean; that is
+    what the finite model does and does not capture.
+
+    Variables:
+        request_authenticated: the request channel is authenticated (True).
+        capability_compiled: a capability was compiled from the request.
+        untrusted_influence: attacker-influenced content entered the episode.
+        cut_installed: the flow cut was installed.
+        dispatched: the call was dispatched.
+        attacker_authorised: attacker has permission (False).
+        pe_violation: PE violation occurred.
+
+    **PE vulnerability:** ``dispatch-past-cut`` runs once the capability is
+    compiled and the cut is installed, even when attacker-influenced content
+    entered the episode and the attacker is not authorised, so
+    ``no-pe-violation`` has a reachable counterexample.
+    """
+    return VerificationIR(
+        "pace-baseline",
+        (
+            StateVariable("request_authenticated", Sort.BOOLEAN, True),
+            StateVariable("capability_compiled", Sort.BOOLEAN, False),
+            StateVariable("untrusted_influence", Sort.BOOLEAN, False),
+            StateVariable("cut_installed", Sort.BOOLEAN, False),
+            StateVariable("dispatched", Sort.BOOLEAN, False),
+            StateVariable("attacker_authorised", Sort.BOOLEAN, False),
+            StateVariable("pe_violation", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "compile-capability-from-request",
+                _var("request_authenticated"),
+                (Assignment("capability_compiled", _const(True)),),
+            ),
+            TransitionRule(
+                "untrusted-influence-enters-episode",
+                _const(True),
+                (Assignment("untrusted_influence", _const(True)),),
+            ),
+            TransitionRule(
+                "install-cut",
+                _var("capability_compiled"),
+                (Assignment("cut_installed", _const(True)),),
+            ),
+            TransitionRule(
+                "dispatch-past-cut",
+                _and(_var("capability_compiled"), _var("cut_installed")),
+                (
+                    Assignment("dispatched", _const(True)),
+                    Assignment(
+                        "pe_violation",
+                        _and(
+                            _var("dispatched"),
+                            _and(
+                                _var("untrusted_influence"),
+                                _not(_var("attacker_authorised")),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-pe-violation",
+                _not(_var("pe_violation")),
+                "PE: no effect is executed without the authority of every influencing principal",
+            ),
+        ),
+        5,
+        (
+            "PACE candidate abstraction: capability compiled from the authenticated request, cut then dispatch",
+            "the episode graph, the nine effect obligations, the certificates and the recomputing verifier are not modelled",
+            "trust levels are booleans because the IR has no enum sort",
+        ),
+    )
+
+
+def pace_native_property_ir() -> VerificationIR:
+    """PACE candidate abstraction: its own path-chain property Q.
+
+    Q (the represented-path half of PACE-C): no call is dispatched while a
+    represented flow edge from a protected value to the unsafe terminal is
+    uncut.  The survey states the property as "no represented path from a
+    protected value to an unsafe terminal"; this abstraction states it over a
+    *bounded enumerated* cut set - the two edges ``e1`` and ``e2`` the
+    abstraction represents - instead of an open hypergraph.  Bounding the
+    graph and enumerating the cut set is the abstraction decision that makes
+    this candidate verifiable in the finite IR; the effect chain, the
+    certificates and the recomputing verifier are not modelled, and the
+    delegation-attenuation obligation is not represented at all.
+
+    ``Sort`` has no enum member, so the cut set is a bounded ``Sort.SET``
+    whose membership is an ``IN`` test - the same encoding
+    ``ites_with_read_check_ir`` uses.  Each represented edge is added by its
+    own rule, so the cut is data the model can be mutated away from rather
+    than a guard that always holds.
+
+    Variables:
+        graph_built: the episode graph was built at the last boundary.
+        cut_edges: the represented flow edges that have been cut (set).
+        dispatched: the call was dispatched.
+        effect_verified: the effect atoms were verified.
+
+    Q invariant: ``not dispatched or ("e1" in cut_edges and "e2" in
+    cut_edges)``.
+    """
+    return VerificationIR(
+        "pace-native-property",
+        (
+            StateVariable("graph_built", Sort.BOOLEAN, False),
+            StateVariable("cut_edges", Sort.SET, frozenset()),
+            StateVariable("dispatched", Sort.BOOLEAN, False),
+            StateVariable("effect_verified", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "freeze-and-build-graph",
+                _not(_var("graph_built")),
+                (Assignment("graph_built", _const(True)),),
+            ),
+            TransitionRule(
+                "install-cut-edge-e1",
+                _var("graph_built"),
+                (
+                    Assignment(
+                        "cut_edges",
+                        Expression.operator(
+                            ExpressionKind.UNION,
+                            _var("cut_edges"),
+                            Expression.constant("e1"),
+                        ),
+                    ),
+                ),
+            ),
+            TransitionRule(
+                "install-cut-edge-e2",
+                _var("graph_built"),
+                (
+                    Assignment(
+                        "cut_edges",
+                        Expression.operator(
+                            ExpressionKind.UNION,
+                            _var("cut_edges"),
+                            Expression.constant("e2"),
+                        ),
+                    ),
+                ),
+            ),
+            TransitionRule(
+                "dispatch-past-cut",
+                _and(
+                    _var("graph_built"),
+                    _and(
+                        Expression.operator(
+                            ExpressionKind.IN,
+                            Expression.constant("e1"),
+                            _var("cut_edges"),
+                        ),
+                        Expression.operator(
+                            ExpressionKind.IN,
+                            Expression.constant("e2"),
+                            _var("cut_edges"),
+                        ),
+                    ),
+                ),
+                (Assignment("dispatched", _const(True)),),
+            ),
+            TransitionRule(
+                "verify-effect-atoms",
+                _var("dispatched"),
+                (Assignment("effect_verified", _const(True)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-uncut-flow-to-unsafe-terminal",
+                _or(
+                    _not(_var("dispatched")),
+                    _and(
+                        Expression.operator(
+                            ExpressionKind.IN,
+                            Expression.constant("e1"),
+                            _var("cut_edges"),
+                        ),
+                        Expression.operator(
+                            ExpressionKind.IN,
+                            Expression.constant("e2"),
+                            _var("cut_edges"),
+                        ),
+                    ),
+                ),
+                "Q: no call is dispatched while a represented flow edge to the unsafe terminal is uncut",
+            ),
+        ),
+        5,
+        (
+            "PACE candidate abstraction native property: the path chain over a bounded enumerated cut set",
+            "the graph is bounded to the two represented edges; the effect chain and the certificates are not modelled",
+            "the cut set is a bounded set; membership is an IN test",
+        ),
+    )
+
+
 __all__ = [
     "camel_ir",
     "camel_native_property_ir",
@@ -1244,6 +1467,8 @@ __all__ = [
     "ites_native_property_ir",
     "ites_reference_ir",
     "ites_with_read_check_ir",
+    "pace_ir",
+    "pace_native_property_ir",
     "pact_ir",
     "pact_native_property_ir",
     "progent_ir",

@@ -117,6 +117,28 @@
         "both labels are collapsed to booleans; the reader scope is not modelled in the PE model"
       ],
       "approved_for_publication_claims": false
+    },
+    {
+      "model_id": "pace-candidate-v1",
+      "external_system": "PACE (arXiv:2610.01349)",
+      "ir_factory": "pace_ir",
+      "status": "unvalidated",
+      "supported_fragment": [],
+      "primary_sources": [],
+      "source_to_rule_traceability": [],
+      "published_examples_passed": 0,
+      "published_examples_total": 0,
+      "differential_cases_passed": 0,
+      "differential_cases_total": 0,
+      "known_omissions": [
+        "no implementation conformance",
+        "no published-example conformance",
+        "no reference-implementation differential",
+        "the episode graph is bounded to two represented edges and the cut set is enumerated, not open",
+        "the nine effect obligations, the two certificates and the recomputing verifier are not modelled",
+        "delegation attenuation is not represented"
+      ],
+      "approved_for_publication_claims": false
     }
   ]
 }

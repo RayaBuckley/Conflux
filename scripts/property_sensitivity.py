@@ -34,6 +34,8 @@ from conflux.verification.defence_models import (
     ites_native_property_ir,
     ites_reference_ir,
     ites_with_read_check_ir,
+    pace_ir,
+    pace_native_property_ir,
     pact_ir,
     pact_native_property_ir,
     progent_ir,
@@ -61,6 +63,8 @@ IR_FACTORIES = {
     "camelot_native_property": camelot_native_property_ir,
     "fides_pe": fides_ir,
     "fides_native_property": fides_native_property_ir,
+    "pace_pe": pace_ir,
+    "pace_native_property": pace_native_property_ir,
 }
 
 

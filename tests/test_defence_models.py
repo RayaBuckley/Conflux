@@ -26,6 +26,8 @@ from conflux.verification import (
     ites_native_property_ir,
     ites_reference_ir,
     ites_with_read_check_ir,
+    pace_ir,
+    pace_native_property_ir,
     pact_ir,
     pact_native_property_ir,
     progent_ir,
@@ -55,6 +57,7 @@ UNSAFE_PE_MODELS: dict[str, tuple[ModelFactory, bool]] = {
     "pact": (pact_ir, False),
     "camelot": (camelot_ir, False),
     "fides": (fides_ir, False),
+    "pace": (pace_ir, False),
 }
 
 # Candidate abstractions that satisfy their own intended property Q.
@@ -66,6 +69,7 @@ NATIVE_PROPERTY_MODELS: dict[str, ModelFactory] = {
     "ites": ites_native_property_ir,
     "camelot": camelot_native_property_ir,
     "fides": fides_native_property_ir,
+    "pace": pace_native_property_ir,
 }
 
 
@@ -210,6 +214,8 @@ class TestDefenceModelStructure:
             camelot_native_property_ir,
             fides_ir,
             fides_native_property_ir,
+            pace_ir,
+            pace_native_property_ir,
         ):
             ir = factory()
             restored = type(ir).from_dict(ir.to_dict())
@@ -236,6 +242,7 @@ EXPECTED_EXERCISE_CLASSES: dict[str, dict[str, str]] = {
         "no-untrusted-action": CLASS_CHECKED,
         "no-flow-to-untrusted-reader": CLASS_CHECKED,
     },
+    "pace_native_property_ir": {"no-uncut-flow-to-unsafe-terminal": CLASS_CHECKED},
 }
 
 HOLDING_IR_FACTORIES: dict[str, ModelFactory] = {
@@ -247,6 +254,7 @@ HOLDING_IR_FACTORIES: dict[str, ModelFactory] = {
     "ites_reference_ir": ites_reference_ir,
     "camelot_native_property_ir": camelot_native_property_ir,
     "fides_native_property_ir": fides_native_property_ir,
+    "pace_native_property_ir": pace_native_property_ir,
 }
 
 

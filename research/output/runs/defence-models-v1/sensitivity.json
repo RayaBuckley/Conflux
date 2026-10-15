@@ -220,6 +220,35 @@
       "ir_id": "ites-with-read-check",
       "reachable_states": 4
     },
+    "pace_native_property": {
+      "bound": 5,
+      "invariants": [
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "dispatch-past-cut"
+            }
+          ],
+          "invariant_id": "no-uncut-flow-to-unsafe-terminal"
+        }
+      ],
+      "ir_id": "pace-native-property",
+      "reachable_states": 7
+    },
+    "pace_pe": {
+      "bound": 5,
+      "invariants": [
+        {
+          "exercise_class": "violated_at_baseline",
+          "falsifiers": [],
+          "invariant_id": "no-pe-violation"
+        }
+      ],
+      "ir_id": "pace-baseline",
+      "reachable_states": 9
+    },
     "pact_native_property": {
       "bound": 2,
       "invariants": [
