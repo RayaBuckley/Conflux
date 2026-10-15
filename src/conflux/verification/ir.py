@@ -286,6 +286,7 @@ class VerificationIR:
         object.__setattr__(self, "invariants", tuple(self.invariants))
         object.__setattr__(self, "assumptions", tuple(self.assumptions))
         variable_names = {variable.name for variable in self.variables}
+        variable_sorts = {variable.name: variable.sort for variable in self.variables}
         if len(variable_names) != len(self.variables) or not variable_names:
             raise ValueError("verification variables must be non-empty and unique")
         if len({rule.id for rule in self.transitions}) != len(self.transitions):
@@ -297,8 +298,18 @@ class VerificationIR:
             if unknown:
                 raise ValueError(f"transition assigns unknown variables: {sorted(unknown)}")
             _validate_expression(rule.guard, variable_names)
+            guard_sort = _expression_sort(rule.guard, variable_sorts)
+            if guard_sort is not None and guard_sort != Sort.BOOLEAN:
+                raise ValueError(f"transition guard for {rule.id} is not boolean")
             for assignment in rule.assignments:
                 _validate_expression(assignment.expression, variable_names)
+                expression_sort = _expression_sort(assignment.expression, variable_sorts)
+                target_sort = variable_sorts[assignment.variable]
+                if expression_sort is not None and expression_sort != target_sort:
+                    raise ValueError(
+                        f"transition {rule.id} assigns a {expression_sort.value} expression "
+                        f"to {target_sort.value} variable {assignment.variable}",
+                    )
         for invariant in self.invariants:
             _validate_expression(invariant.expression, variable_names)
 
@@ -375,6 +386,47 @@ def _validate_expression(expression: Expression, variables: set[str]) -> None:
         raise ValueError(f"expression references unknown variable: {expression.value}")
     for argument in expression.arguments:
         _validate_expression(argument, variables)
+
+
+_BOOLEAN_KINDS = frozenset(
+    {
+        ExpressionKind.NOT,
+        ExpressionKind.AND,
+        ExpressionKind.OR,
+        ExpressionKind.EQUAL,
+        ExpressionKind.LESS_EQUAL,
+        ExpressionKind.GREATER_EQUAL,
+        ExpressionKind.GREATER_THAN,
+        ExpressionKind.LESS_THAN,
+        ExpressionKind.IMPLIES,
+        ExpressionKind.IN,
+        ExpressionKind.SUBSET,
+    },
+)
+_SET_KINDS = frozenset({ExpressionKind.UNION, ExpressionKind.INTERSECT, ExpressionKind.DIFFERENCE})
+
+
+def _expression_sort(expression: Expression, sorts: dict[str, Sort]) -> Sort | None:
+    """Return the sort of an expression, or None when it cannot be inferred cheaply.
+
+    A single-sorted check, not a type system: None means "do not reject", so this only
+    fires on a definite mismatch such as a Boolean assigned to an integer variable.
+    """
+    if expression.kind == ExpressionKind.VARIABLE:
+        return sorts.get(str(expression.value))
+    if expression.kind == ExpressionKind.CONSTANT:
+        if isinstance(expression.value, bool):
+            return Sort.BOOLEAN
+        if isinstance(expression.value, int):
+            return Sort.INTEGER
+        return None
+    if expression.kind in _BOOLEAN_KINDS:
+        return Sort.BOOLEAN
+    if expression.kind in _SET_KINDS:
+        return Sort.SET
+    if expression.kind == ExpressionKind.ADD:
+        return Sort.INTEGER
+    return None
 
 
 def _parse_variable(value: object) -> StateVariable:
