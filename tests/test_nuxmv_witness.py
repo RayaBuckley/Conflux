@@ -13,12 +13,14 @@ from pathlib import Path
 import pytest
 
 from conflux.verification import (
+    Assignment,
     Expression,
     ExpressionKind,
     FormalVerdict,
     SafetyInvariant,
     Sort,
     StateVariable,
+    TransitionRule,
     VerificationIR,
 )
 from conflux.verification.nuxmv_backend import NuXmvBackend, NuXmvOutcome, _witness_lengths
@@ -51,13 +53,19 @@ class _StubRunner:
 
 
 def _ir() -> VerificationIR:
+    """A one-rule model; the runner is a stub, so the rule only has to make the IR renderable."""
     variable = StateVariable("safe", Sort.BOOLEAN, True)
     invariant = SafetyInvariant(
         "safe-remains-true",
         Expression(ExpressionKind.VARIABLE, "safe"),
         "safe stays true",
     )
-    return VerificationIR("witness-fixture", (variable,), (), (invariant,), 4)
+    drop_safe = TransitionRule(
+        "drop-safe",
+        Expression(ExpressionKind.VARIABLE, "safe"),
+        (Assignment("safe", Expression.constant(False)),),
+    )
+    return VerificationIR("witness-fixture", (variable,), (drop_safe,), (invariant,), 4)
 
 
 def test_witness_lengths_counts_the_states_of_one_sequence() -> None:

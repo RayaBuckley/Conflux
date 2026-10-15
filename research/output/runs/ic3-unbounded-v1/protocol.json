@@ -32,6 +32,6 @@
   ],
   "timeout_seconds": 300.0,
   "unavailable_rule": "When nuXmv is missing or a model errors, status is nuxmv_unavailable or error and no verdict is claimed.",
-  "vacuous_rule": "Models with no variables or no transitions are listed in summary.trivial_models: a safety check over such a model proves nothing about the family it names.",
+  "vacuous_rule": "Models with no variables or no transitions are listed in summary.trivial_models and no verdict is recorded for them: _smv refuses to render a model with no transition rules, so the run records UNKNOWN with unsupported_ir. Rows whose invariants are all checked_by_construction under the declared mutation alphabet (scripts/property_sensitivity.py, SEM-017) are listed in summary.unexercised_rows: a safety verdict over such a row is decided by the initial state alone and proves nothing about the family it names. Every row also records invariant_classes so either list can be audited from the file alone.",
   "witness_rule": "For each refuted invariant nuXmv's IC3 prints an execution sequence; witness_lengths records the number of states in each printed sequence, so a length of n means the violation is reached after n - 1 transitions. An empty list means nuXmv printed no sequence, so no length is claimed. The count describes the printed trace only and is not an independent proof that the trace is shortest."
 }

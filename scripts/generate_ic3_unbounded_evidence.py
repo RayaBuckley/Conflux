@@ -17,8 +17,11 @@ Scope and honesty rules enforced here:
   sequence records an empty list, so no length is claimed without a trace,
   and no printed trace is claimed to be the shortest.
 * When nuXmv is missing or a model errors, the run records no verdict.
-* Models with no variables or no transitions are listed in ``trivial_models``:
-  a safety check over such a model is vacuous.
+* Models with no variables or no transitions are listed in ``trivial_models``
+  and no verdict is recorded for them: ``_smv`` refuses to render a model with
+  no transition rules. Rows whose invariants are all ``checked_by_construction``
+  are listed in ``unexercised_rows``; their verdict is decided by the initial
+  state alone.
 
 Usage::
 
@@ -49,6 +52,7 @@ DEFAULT_TIMEOUT_SECONDS = 300.0
 from conflux.verification.ir import VerificationIR  # noqa: E402
 from conflux.verification.nuxmv_backend import NuXmvBackend, NuXmvOutcome, _render, _smv  # noqa: E402
 from conflux.verification.reduction import compare_cone_of_influence  # noqa: E402
+from conflux.verification.sensitivity import CLASS_CHECKED_BY_CONSTRUCTION, classify_ir  # noqa: E402
 
 
 class RecordingNuXmvRunner:
@@ -156,6 +160,7 @@ def probe_model(
         "variables": len(ir.variables),
         "rules": len(ir.transitions),
         "invariants": [item.id for item in ir.invariants],
+        "invariant_classes": {item.invariant_id: item.exercise_class for item in classify_ir(ir)},
         "properties_rendered": [_render(item.expression) for item in ir.invariants],
         "verdict": result.verdict.value,
         "backend": result.backend,
@@ -414,6 +419,11 @@ def generate(
             "unique_ir_fingerprints": len({model["ir_fingerprint"] for model in models}),
             "unique_smv_sha256": len({model["smv_sha256"] for model in models if model["smv_sha256"]}),
             "trivial_models": [model["row_id"] for model in models if not model["variables"] or not model["rules"]],
+            "unexercised_rows": [
+                model["row_id"]
+                for model in models
+                if model["invariant_classes"] and set(model["invariant_classes"].values()) == {CLASS_CHECKED_BY_CONSTRUCTION}
+            ],
             "errors": [model["row_id"] for model in models if model["error"]],
         },
     }
@@ -445,8 +455,12 @@ def build_protocol(bundle: dict[str, Any]) -> dict[str, Any]:
         ),
         "unavailable_rule": ("When nuXmv is missing or a model errors, status is nuxmv_unavailable or error and no verdict is claimed."),
         "vacuous_rule": (
-            "Models with no variables or no transitions are listed in summary.trivial_models: a safety check over such a "
-            "model proves nothing about the family it names."
+            "Models with no variables or no transitions are listed in summary.trivial_models and no verdict is recorded "
+            "for them: _smv refuses to render a model with no transition rules, so the run records UNKNOWN with "
+            "unsupported_ir. Rows whose invariants are all checked_by_construction under the declared mutation alphabet "
+            "(scripts/property_sensitivity.py, SEM-017) are listed in summary.unexercised_rows: a safety verdict over "
+            "such a row is decided by the initial state alone and proves nothing about the family it names. Every row "
+            "also records invariant_classes so either list can be audited from the file alone."
         ),
         "check_semantics": (
             "--check re-runs every model and compares result.json and protocol.json byte for byte. No timing and no "

@@ -399,6 +399,11 @@ def _smv(ir: VerificationIR, *, unbounded: bool = False) -> str:
             for variable in ir.variables
         )
         transition_terms.append(f"({_render(rule.guard)} & {updates})")
+    if not transition_terms:
+        raise ValueError(
+            f"verification IR {ir.id} has no transition rules; a rendered model would be a stutter loop "
+            "with a single reachable state, so any safety verdict over it is vacuous",
+        )
     stutter = " & ".join(f"next({variable.name}) = {variable.name}" for variable in ir.variables)
     transition = " | ".join((*transition_terms, f"({stutter})"))
     invariants = "\n".join(
