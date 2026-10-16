@@ -35,7 +35,7 @@ def bundle() -> dict[str, Any]:
 def test_rows_name_their_parameter_and_invariant(bundle: dict[str, Any]) -> None:
     assert bundle["rows"], "bundle carries no rows"
     for row in bundle["rows"]:
-        assert row["route"] in {"nuxmv-msat", "nuxmv-ic3"}
+        assert row["route"] in {"nuxmv-msat", "nuxmv-ic3", "nuxmv-predabs"}
         assert row["symbolic_parameter"].strip()
         assert row["auxiliary_invariant"].strip()
         assert row["expectation"]
@@ -49,27 +49,57 @@ def test_rows_name_their_parameter_and_invariant(bundle: dict[str, Any]) -> None
             assert row["stdout_sha256"]
 
 
-def test_positive_row_names_no_bound_and_no_depth(bundle: dict[str, Any]) -> None:
+def test_positive_rows_name_no_bound_and_no_depth(bundle: dict[str, Any]) -> None:
+    """One positive row per unbounded route, over the same model, and neither names a bound."""
     positive = [row for row in bundle["rows"] if row["expectation"] == "safe"]
-    assert len(positive) == 1
-    row = positive[0]
-    assert row["verdict"] == "safe"
-    assert row["status"] == "complete"
-    assert row["step_counter_has_declared_range"] is False
+    assert {row["route"] for row in positive} == {"nuxmv-msat", "nuxmv-predabs"}
+    assert len({row["ir_fingerprint"] for row in positive}) == 1, "positive rows must be one model"
+    for row in positive:
+        assert row["verdict"] == "safe"
+        assert row["status"] == "complete"
+        assert row["step_counter_has_declared_range"] is False
     for forbidden in ("bound", "depth", "checked_steps", "unrolling", "counterexample_length"):
-        assert forbidden not in row, f"positive row smuggles {forbidden}"
         assert forbidden not in bundle, f"bundle smuggles {forbidden}"
+        for row in positive:
+            assert forbidden not in row, f"positive row smuggles {forbidden}"
     assert bundle["summary"]["errors"] == []
+
+
+def test_the_route_that_withholds_is_paired_with_the_route_that_settles(bundle: dict[str, Any]) -> None:
+    """The bundle shows the difference between the two unbounded routes over one model.
+
+    The code/capability family carries two rows with the same IR fingerprint: k-induction reports
+    an incomplete induction, CEGAR returns a counterexample for the same model. Without the pair a
+    reader could take "we have an unbounded route" for "we have a verdict for this family".
+    """
+    rows = {row["row_id"]: row for row in bundle["rows"]}
+    incomplete = rows["plan-ir:code:capability:smt:induction-incomplete"]
+    refuted = rows["plan-ir:code:capability:predabs:counterexample"]
+    assert incomplete["ir_fingerprint"] == refuted["ir_fingerprint"]
+    assert incomplete["route"] == "nuxmv-msat"
+    assert incomplete["verdict"] == "unknown"
+    assert (incomplete["error"] or "").startswith("nuxmv_incomplete")
+    assert refuted["route"] == "nuxmv-predabs"
+    assert refuted["verdict"] == "unsafe"
+    assert refuted["counterexample_present"] is True
 
 
 def test_controls_withhold_a_verdict(bundle: dict[str, Any]) -> None:
     controls = [row for row in bundle["rows"] if row["expectation"] != "safe"]
-    assert len(controls) == 2
-    weakened = next(row for row in controls if row["expectation"] == "not_safe")
-    assert weakened["verdict"] != "safe"
+    assert {row["expectation"] for row in controls} == {"not_safe", "unknown_fail_closed", "unknown_incomplete"}
+    assert all(row["verdict"] != "safe" for row in controls)
     fail_closed = next(row for row in controls if row["expectation"] == "unknown_fail_closed")
     assert fail_closed["verdict"] == "unknown"
     assert (fail_closed["error"] or "").startswith("unsupported_ir")
+    # The weakened control is carried on both unbounded routes over one fingerprint:
+    # k-induction only withholds agreement, CEGAR refutes it.
+    weakened = {
+        row["route"]: row for row in controls if "weakened" in row["row_id"]
+    }
+    assert set(weakened) == {"nuxmv-msat", "nuxmv-predabs"}
+    assert len({row["ir_fingerprint"] for row in weakened.values()}) == 1
+    assert weakened["nuxmv-msat"]["verdict"] == "unknown"
+    assert weakened["nuxmv-predabs"]["verdict"] == "unsafe"
 
 
 def test_missing_binary_claims_no_verdict(tmp_path: Path) -> None:

@@ -7,6 +7,14 @@ plan IR is declared without a range, so the model has an infinite-precision inte
 SMT route (``go_msat`` then ``msat_check_invar_bmc``) settles the invariants without naming a bound or
 a depth. The guards, not the type, keep each run finite.
 
+The bundle also carries a **second** unbounded route, predicate-abstraction CEGAR (``go_msat`` then
+``check_invar_cegar_predabs -n <index>``, one call per invariant). It is there because the two routes
+do not answer the same question: k-induction reports "cannot prove" on a family whose invariant fails
+only after a deep path, where CEGAR returns a counterexample, and CEGAR settles the weakened control
+that k-induction can only withhold agreement on. Both routes are retained over the same model, so the
+positive rows are an agreement between two independent routes rather than one tool's answer. A model that gets no
+verdict from either route is UNKNOWN, never safe.
+
 Each row therefore records three things a bounded row does not need:
 
 * ``symbolic_parameter`` - the quantity that was left symbolic, in words;
@@ -42,6 +50,7 @@ BINARY = "nuXmv"
 DEFAULT_TIMEOUT_SECONDS = 300.0
 SMT_COMMANDS = "go_msat\nmsat_check_invar_bmc\nquit\n"
 BDD_COMMANDS = "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n"
+PREDABS_COMMAND_TEMPLATE = "go_msat\ncheck_invar_cegar_predabs -n {index}\nquit\n"
 
 from conflux.verification import abstract_plan  # noqa: E402
 from conflux.verification.ir import Expression, SafetyInvariant, VerificationIR  # noqa: E402
@@ -113,6 +122,7 @@ def probe_row(
     route: str,
     smt: bool,
     also_evidence: str,
+    predabs: bool = False,
     binary: str = BINARY,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
 ) -> dict[str, Any]:
@@ -120,7 +130,7 @@ def probe_row(
     ic3 = _load_script("generate_ic3_unbounded_evidence.py")
     runner = ic3.RecordingNuXmvRunner(timeout)
     backend = NuXmvBackend(binary=binary, runner=runner)
-    result = backend.verify(ir, smt=smt)
+    result = backend.verify(ir, smt=smt, predabs=predabs)
     record: dict[str, Any] = {
         "row_id": row_id,
         "family": family,
@@ -204,7 +214,100 @@ def build_bundle(*, binary: str = BINARY, timeout: float = DEFAULT_TIMEOUT_SECON
         binary=binary,
         timeout=timeout,
     )
-    rows = sorted((positive, weakened, bdd), key=lambda item: item["row_id"])
+    # The second unbounded route, on the same model as the positive row: predicate-abstraction
+    # CEGAR settles invariants that k-induction reports as "cannot prove", so the retained
+    # evidence is an agreement between two independent routes rather than one tool's answer.
+    predabs_positive = probe_row(
+        f"plan-ir:{case}:{effect_case}:predabs:symbolic-step-bound",
+        "plan_ir",
+        unbounded,
+        expectation="safe",
+        symbolic_parameter=positive["symbolic_parameter"],
+        auxiliary_invariant=(
+            "none beyond the model: the CEGAR route synthesises its own inductive argument, "
+            "which is why it can settle what k-induction leaves incomplete"
+        ),
+        route="nuxmv-predabs",
+        smt=False,
+        also_evidence=(
+            "second unbounded route over the same model, so this row is an agreement between two "
+            "routes; notes/ic3-msat-probe.md records the route that came first"
+        ),
+        binary=binary,
+        timeout=timeout,
+        predabs=True,
+    )
+    # The refuted family: k-induction reports "cannot prove !capability_violated", CEGAR returns
+    # a counterexample for it. A route that only ever agreed would not carry this row.
+    refuted = plan_ir("code", "capability", bound, unbounded_step=True)
+    predabs_refutation = probe_row(
+        "plan-ir:code:capability:predabs:counterexample",
+        "plan_ir",
+        refuted,
+        expectation="not_safe",
+        symbolic_parameter=positive["symbolic_parameter"],
+        auxiliary_invariant="none: this family's capability envelope is genuinely violated",
+        route="nuxmv-predabs",
+        smt=False,
+        also_evidence=(
+            "the same family on the msat route leaves one invariant 'cannot prove'; this row shows "
+            "the second unbounded route refuting it with a counterexample"
+        ),
+        binary=binary,
+        timeout=timeout,
+        predabs=True,
+    )
+    # The same refuted family on the first unbounded route. Kept beside the CEGAR row above so the
+    # bundle itself shows the difference between the routes: one fingerprint, one route that
+    # cannot settle it, one that refutes it.
+    induction_incomplete = probe_row(
+        "plan-ir:code:capability:smt:induction-incomplete",
+        "plan_ir",
+        refuted,
+        expectation="unknown_incomplete",
+        symbolic_parameter=positive["symbolic_parameter"],
+        auxiliary_invariant=(
+            "bounded-liveness together with the transition guard, as in the positive row; the "
+            "capability invariant is not inductive and k-induction does not strengthen it"
+        ),
+        route="nuxmv-msat",
+        smt=True,
+        also_evidence=(
+            "paired with plan-ir:code:capability:predabs:counterexample over the same IR fingerprint: "
+            "the first unbounded route withholds a verdict on this family, the second refutes it"
+        ),
+        binary=binary,
+        timeout=timeout,
+    )
+    predabs_control = probe_row(
+        "plan-ir:control:weakened-liveness:predabs",
+        "plan_ir",
+        with_weakened_invariant(unbounded),
+        expectation="not_safe",
+        symbolic_parameter=positive["symbolic_parameter"],
+        auxiliary_invariant="none: the liveness implication was replaced by a bare terminated claim",
+        route="nuxmv-predabs",
+        smt=False,
+        also_evidence=(
+            "the same control on the msat route only withholds agreement; this row shows the "
+            "second route refuting it, which is the sharper control"
+        ),
+        binary=binary,
+        timeout=timeout,
+        predabs=True,
+    )
+    rows = sorted(
+        (
+            positive,
+            weakened,
+            bdd,
+            predabs_positive,
+            predabs_refutation,
+            induction_incomplete,
+            predabs_control,
+        ),
+        key=lambda item: item["row_id"],
+    )
     by_verdict: dict[str, int] = {}
     by_expectation: dict[str, int] = {}
     for row in rows:
@@ -214,8 +317,13 @@ def build_bundle(*, binary: str = BINARY, timeout: float = DEFAULT_TIMEOUT_SECON
         "schema_version": "1",
         "id": OUTPUT.name,
         "source": str(Path(__file__).resolve().relative_to(ROOT)),
-        "route": "nuXmv SMT (go_msat + msat_check_invar_bmc)",
+        "route": (
+            "nuXmv unbounded routes: SMT k-induction (go_msat + msat_check_invar_bmc), and "
+            "predicate-abstraction CEGAR (go_msat + check_invar_cegar_predabs -n <index>, one call "
+            "per invariant)"
+        ),
         "commands": SMT_COMMANDS,
+        "predabs_commands": PREDABS_COMMAND_TEMPLATE,
         "control_commands": BDD_COMMANDS,
         "timeout_seconds": timeout,
         "rows": rows,
@@ -239,19 +347,24 @@ def build_protocol(bundle: dict[str, Any]) -> dict[str, Any]:
         "schema_version": "1",
         "id": OUTPUT.name,
         "generator": str(Path(__file__).resolve().relative_to(ROOT)),
-        "backend": "conflux.verification.nuxmv_backend.NuXmvBackend(smt=True)",
+        "backend": "conflux.verification.nuxmv_backend.NuXmvBackend(smt=True | predabs=True)",
         "binary": BINARY,
         "commands": SMT_COMMANDS,
+        "predabs_commands": PREDABS_COMMAND_TEMPLATE,
         "control_commands": BDD_COMMANDS,
         "timeout_seconds": bundle["timeout_seconds"],
         "claim": (
             "Each positive row is a verdict about a model whose step counter has no declared range, "
             "so the verdict names no bound and no depth. It is not a verdict about a bounded model "
-            "and must not be quoted as one."
+            "and must not be quoted as one. The two unbounded routes answer different questions: on "
+            "the SMT k-induction route a model it cannot settle is UNKNOWN, and the CEGAR route is "
+            "the one that settles such a family - in both directions."
         ),
         "controls": (
             "A weakened invariant must not be reported safe, and the finite-domain route must fail "
-            "closed on an unbounded model. Both controls are retained in the bundle."
+            "closed on an unbounded model. Both controls are retained in the bundle, and the "
+            "weakened control is carried on both unbounded routes: k-induction withholds agreement "
+            "on it, CEGAR refutes it, so the reader can see the difference between the routes."
         ),
     }
 

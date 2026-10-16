@@ -216,7 +216,13 @@ class NuXmvBackend:
         """Return the runner this backend uses: the given one, or the host default."""
         return self.runner if self.runner is not None else default_runner(self.resolved_binary())
 
-    def verify(self, ir: VerificationIR, *, smt: bool = False) -> FormalVerificationResult:
+    def verify(
+        self,
+        ir: VerificationIR,
+        *,
+        smt: bool = False,
+        predabs: bool = False,
+    ) -> FormalVerificationResult:
         """Verify IR invariants with nuXmv, returning a formal result.
 
         A set-sorted IR is expanded into Boolean membership variables over each set's declared
@@ -230,27 +236,42 @@ class NuXmvBackend:
         checks the invariants on the SMT route (``go_msat`` then ``msat_check_invar_bmc``),
         which answers for a symbolic bound rather than one recorded bound. A model the SMT
         route cannot settle is UNKNOWN, never safe.
+
+        ``predabs=True`` keeps the same unbounded rendering but proves the invariants with the
+        predicate-abstraction CEGAR route (``go_msat`` then ``check_invar_cegar_predabs -n
+        <index>``, one call per invariant). That route is unbounded, and it settles models
+        k-induction leaves incomplete in both directions: it proves a model whose invariants
+        hold and refutes one whose invariant fails. An invariant that receives no verdict makes
+        the result UNKNOWN, never safe.
         """
-        backend = "nuxmv-msat" if smt else "nuxmv-ic3"
+        backend = "nuxmv-predabs" if predabs else ("nuxmv-msat" if smt else "nuxmv-ic3")
         try:
             expanded = expand_sets(ir)
         except SetExpansionError as error:
             return self._unknown(ir, f"set_universe_undeclared:{error}", backend)
         if expanded is not ir:
             return replace(
-                self._verify_expanded(expanded, smt=smt),
+                self._verify_expanded(expanded, smt=smt, predabs=predabs),
                 ir_hash=ir.fingerprint,
                 assumptions=expanded.assumptions,
             )
-        return self._verify_expanded(ir, smt=smt)
+        return self._verify_expanded(ir, smt=smt, predabs=predabs)
 
-    def _verify_expanded(self, ir: VerificationIR, *, smt: bool = False) -> FormalVerificationResult:
-        backend = "nuxmv-msat" if smt else "nuxmv-ic3"
+    def _verify_expanded(
+        self,
+        ir: VerificationIR,
+        *,
+        smt: bool = False,
+        predabs: bool = False,
+    ) -> FormalVerificationResult:
+        backend = "nuxmv-predabs" if predabs else ("nuxmv-msat" if smt else "nuxmv-ic3")
         if not ir.invariants:
             return self._unknown(ir, "no_safety_invariants", backend)
         binary = self.resolved_binary()
         if not self.availability(binary):
             return self._unknown(ir, "optional_binary_unavailable:nuXmv", backend)
+        if predabs:
+            return self._verify_predabs(ir, binary)
         try:
             model = _smv(ir, unbounded=smt)
         except ValueError as error:
@@ -335,6 +356,98 @@ class NuXmvBackend:
             error=f"nuxmv_unrecognised_output:{fingerprint(output)}",
         )
 
+    def _verify_predabs(self, ir: VerificationIR, binary: str) -> FormalVerificationResult:
+        """Prove an unbounded model's invariants one property at a time, with CEGAR.
+
+        The predicate-abstraction route takes one property per call (``-n <index>``, 0-based,
+        in the order the invariants are written into the model), so this route runs one nuXmv
+        process per invariant. Each verdict is matched to its invariant by index, never by the
+        expression the route prints: that expression is the *abstracted* one, in which a
+        synthesised predicate can stand for part of the statement (``step >= 8`` prints as
+        ``_____a_p_0``). A property that receives no verdict makes the whole result UNKNOWN,
+        never safe.
+        """
+        backend = "nuxmv-predabs"
+        ordered = sorted(ir.invariants, key=lambda item: item.id)
+        try:
+            model = _smv(ir, unbounded=True)
+        except ValueError as error:
+            return self._unknown(ir, f"unsupported_ir:{error}", backend)
+        runner = self.selected_runner()
+        commands: list[str] = []
+        outputs: list[str] = []
+        versions: list[str] = []
+        verdicts: list[str | None] = []
+        with TemporaryDirectory(prefix="conflux-nuxmv-") as temporary:
+            path = Path(temporary) / "model.smv"
+            path.write_text(model, encoding="utf-8", newline="\n")
+            for index in range(len(ordered)):
+                command = f"go_msat\ncheck_invar_cegar_predabs -n {index}\nquit\n"
+                commands.append(command)
+                outcome = runner.run(binary, path, command)
+                versions.append(outcome.version)
+                output = f"{outcome.stdout}\n{outcome.stderr}"
+                outputs.append(output)
+                if outcome.exit_code != 0:
+                    return FormalVerificationResult(
+                        FormalVerdict.UNKNOWN,
+                        backend,
+                        ir.fingerprint,
+                        fingerprint("\n".join(commands)),
+                        fingerprint({"backend": backend, "version": outcome.version}),
+                        fingerprint(model),
+                        ir.bound,
+                        ir.assumptions,
+                        error=f"nuxmv_failed:{outcome.exit_code}:{fingerprint(output)}",
+                    )
+                verdicts.append(_predabs_verdict(output))
+        transcript = "\n".join(outputs)
+        query_hash = fingerprint("\n".join(commands))
+        solver_hash = fingerprint({"backend": backend, "versions": sorted(set(versions))})
+        model_hash = fingerprint(model)
+        refuted = [item.id for item, verdict in zip(ordered, verdicts, strict=True) if verdict == "false"]
+        if refuted:
+            return FormalVerificationResult(
+                FormalVerdict.UNSAFE,
+                backend,
+                ir.fingerprint,
+                query_hash,
+                solver_hash,
+                model_hash,
+                ir.bound,
+                ir.assumptions,
+                (
+                    {
+                        "output_sha256": fingerprint(transcript),
+                        "failed_invariants": len(refuted),
+                        "failed_invariant_ids": tuple(refuted),
+                    },
+                ),
+            )
+        unsettled = [item.id for item, verdict in zip(ordered, verdicts, strict=True) if verdict != "true"]
+        if unsettled:
+            return FormalVerificationResult(
+                FormalVerdict.UNKNOWN,
+                backend,
+                ir.fingerprint,
+                query_hash,
+                solver_hash,
+                model_hash,
+                ir.bound,
+                ir.assumptions,
+                error=f"nuxmv_predabs_unsettled:{fingerprint(transcript)}",
+            )
+        return FormalVerificationResult(
+            FormalVerdict.SAFE,
+            backend,
+            ir.fingerprint,
+            query_hash,
+            solver_hash,
+            model_hash,
+            ir.bound,
+            ir.assumptions,
+        )
+
     def _unknown(
         self,
         ir: VerificationIR,
@@ -378,6 +491,19 @@ def _witness_lengths(output: str) -> tuple[int, ...]:
     if current is not None:
         lengths.append(current)
     return tuple(lengths)
+
+
+_PREDABS_VERDICT = re.compile(r"-- invariant .*?  is (true|false)")
+
+
+def _predabs_verdict(output: str) -> str | None:
+    """Return the first verdict the CEGAR route printed, or ``None`` when it printed none.
+
+    The route echoes its verdict when it prints a counterexample, so the first match is the one
+    that answers the property that was asked about.
+    """
+    match = _PREDABS_VERDICT.search(output)
+    return match.group(1) if match else None
 
 
 def _domain(variable: StateVariable, *, unbounded: bool = False) -> str:

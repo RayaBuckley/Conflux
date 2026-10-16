@@ -2,8 +2,83 @@
   "commands": "go_msat\nmsat_check_invar_bmc\nquit\n",
   "control_commands": "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n",
   "id": "parameter-general-v1",
-  "route": "nuXmv SMT (go_msat + msat_check_invar_bmc)",
+  "predabs_commands": "go_msat\ncheck_invar_cegar_predabs -n {index}\nquit\n",
+  "route": "nuXmv unbounded routes: SMT k-induction (go_msat + msat_check_invar_bmc), and predicate-abstraction CEGAR (go_msat + check_invar_cegar_predabs -n <index>, one call per invariant)",
   "rows": [
+    {
+      "also_evidence": "the same family on the msat route leaves one invariant 'cannot prove'; this row shows the second unbounded route refuting it with a counterexample",
+      "auxiliary_invariant": "none: this family's capability envelope is genuinely violated",
+      "backend": "nuxmv-predabs",
+      "counterexample_present": true,
+      "error": null,
+      "exit_code": 0,
+      "expectation": "not_safe",
+      "family": "plan_ir",
+      "guard_constant": 4,
+      "invariants": [
+        "no-unauthorised-execution",
+        "capability-envelope-preserved",
+        "delegation-authority-requires-grant",
+        "revocation-propagation",
+        "bounded-liveness"
+      ],
+      "ir_fingerprint": "57d8fb46be608f12a70d2eeb60368eb390ab8a65c6f3569f15daad4b3f73528f",
+      "model_id": "plan:evidence-plan-code",
+      "nuXmv_version": "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)",
+      "raw_result_lines": [
+        "nuXmv > nuXmv > -- invariant (revocation_received -> !unauthorised_executed)  is true"
+      ],
+      "requested_commands": "go_msat\ncheck_invar_cegar_predabs -n 4\nquit\n",
+      "route": "nuxmv-predabs",
+      "row_id": "plan-ir:code:capability:predabs:counterexample",
+      "smv_sha256": "46191a51d4eab43e360f39983fa674c6c7426a3d506bcd7fbc31f3afa28e7405",
+      "solver_hash": "9ee4d21122c928608a35a229a5a3ee90eadb2533c4f4560f1f3a518216990e3c",
+      "status": "complete",
+      "stdout_sha256": "623d7c1c1d8733aca3175c9083ec4370b127be7c6578d0c192421961826fa9ba",
+      "step_counter_has_declared_range": false,
+      "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
+      "timed_out": false,
+      "verdict": "unsafe"
+    },
+    {
+      "also_evidence": "paired with plan-ir:code:capability:predabs:counterexample over the same IR fingerprint: the first unbounded route withholds a verdict on this family, the second refutes it",
+      "auxiliary_invariant": "bounded-liveness together with the transition guard, as in the positive row; the capability invariant is not inductive and k-induction does not strengthen it",
+      "backend": "nuxmv-msat",
+      "counterexample_present": false,
+      "error": "nuxmv_incomplete:627f95940280243a7c0f474af995f666fd867d58da32352716bce7fb0ef1d7ab",
+      "exit_code": 0,
+      "expectation": "unknown_incomplete",
+      "family": "plan_ir",
+      "guard_constant": 4,
+      "invariants": [
+        "no-unauthorised-execution",
+        "capability-envelope-preserved",
+        "delegation-authority-requires-grant",
+        "revocation-propagation",
+        "bounded-liveness"
+      ],
+      "ir_fingerprint": "57d8fb46be608f12a70d2eeb60368eb390ab8a65c6f3569f15daad4b3f73528f",
+      "model_id": "plan:evidence-plan-code",
+      "nuXmv_version": "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)",
+      "raw_result_lines": [
+        "nuXmv > nuXmv > -- invariant (step >= 4 -> terminated)  is true",
+        "-- cannot prove the invariant !capability_violated  is true or false : the induction failed",
+        "-- invariant (delegation_authority_gained -> delegation_consumed)  is true",
+        "-- invariant !unauthorised_executed  is true",
+        "-- invariant (revocation_received -> !unauthorised_executed)  is true"
+      ],
+      "requested_commands": "go_msat\nmsat_check_invar_bmc\nquit\n",
+      "route": "nuxmv-msat",
+      "row_id": "plan-ir:code:capability:smt:induction-incomplete",
+      "smv_sha256": "46191a51d4eab43e360f39983fa674c6c7426a3d506bcd7fbc31f3afa28e7405",
+      "solver_hash": "e5578954a4acffffa87442c40944d04e2854fcd1e6eb3fc37c0449f971dba039",
+      "status": "error",
+      "stdout_sha256": "e39e654e59c822b1535fbc14d66039eae9e5b08ae65c7f6df4329a78a2af2847",
+      "step_counter_has_declared_range": false,
+      "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
+      "timed_out": false,
+      "verdict": "unknown"
+    },
     {
       "also_evidence": "control row: the finite-domain route must refuse the model instead of guessing",
       "auxiliary_invariant": "none: this route does not accept an unbounded integer",
@@ -36,6 +111,41 @@
       "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
       "timed_out": null,
       "verdict": "unknown"
+    },
+    {
+      "also_evidence": "the same control on the msat route only withholds agreement; this row shows the second route refuting it, which is the sharper control",
+      "auxiliary_invariant": "none: the liveness implication was replaced by a bare terminated claim",
+      "backend": "nuxmv-predabs",
+      "counterexample_present": true,
+      "error": null,
+      "exit_code": 0,
+      "expectation": "not_safe",
+      "family": "plan_ir",
+      "guard_constant": 4,
+      "invariants": [
+        "no-unauthorised-execution",
+        "capability-envelope-preserved",
+        "delegation-authority-requires-grant",
+        "revocation-propagation",
+        "bounded-liveness"
+      ],
+      "ir_fingerprint": "8763752ea41d03674db70725f85c8b769bb8bfa7b3fe4a69707b2bf5c0763086",
+      "model_id": "plan:evidence-plan-single:weakened",
+      "nuXmv_version": "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)",
+      "raw_result_lines": [
+        "nuXmv > nuXmv > -- invariant (revocation_received -> !unauthorised_executed)  is true"
+      ],
+      "requested_commands": "go_msat\ncheck_invar_cegar_predabs -n 4\nquit\n",
+      "route": "nuxmv-predabs",
+      "row_id": "plan-ir:control:weakened-liveness:predabs",
+      "smv_sha256": "b4a5c7afbbd9ffbedf229ccf5c5dbfef163b901f304ce58c82f8b0dc38f59d77",
+      "solver_hash": "9ee4d21122c928608a35a229a5a3ee90eadb2533c4f4560f1f3a518216990e3c",
+      "status": "complete",
+      "stdout_sha256": "623d7c1c1d8733aca3175c9083ec4370b127be7c6578d0c192421961826fa9ba",
+      "step_counter_has_declared_range": false,
+      "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
+      "timed_out": false,
+      "verdict": "unsafe"
     },
     {
       "also_evidence": "control row: it shows the route can withhold a verdict rather than always agree",
@@ -75,6 +185,41 @@
       "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
       "timed_out": false,
       "verdict": "unknown"
+    },
+    {
+      "also_evidence": "second unbounded route over the same model, so this row is an agreement between two provers; notes/ic3-msat-probe.md records the route that came first",
+      "auxiliary_invariant": "none beyond the model: the CEGAR prover synthesises its own inductive argument, which is why it can settle what k-induction leaves incomplete",
+      "backend": "nuxmv-predabs",
+      "counterexample_present": false,
+      "error": null,
+      "exit_code": 0,
+      "expectation": "safe",
+      "family": "plan_ir",
+      "guard_constant": 4,
+      "invariants": [
+        "no-unauthorised-execution",
+        "capability-envelope-preserved",
+        "delegation-authority-requires-grant",
+        "revocation-propagation",
+        "bounded-liveness"
+      ],
+      "ir_fingerprint": "e1d5f9d2c52339bcbedbc2f9d299015cf39d6370670859227a37c700a425e4cc",
+      "model_id": "plan:evidence-plan-single",
+      "nuXmv_version": "*** This is nuXmv 2.2.0 (compiled on Fri May 29 11:00:56 2026)",
+      "raw_result_lines": [
+        "nuXmv > nuXmv > -- invariant (revocation_received -> !unauthorised_executed)  is true"
+      ],
+      "requested_commands": "go_msat\ncheck_invar_cegar_predabs -n 4\nquit\n",
+      "route": "nuxmv-predabs",
+      "row_id": "plan-ir:single:authorised:predabs:symbolic-step-bound",
+      "smv_sha256": "ac1e09bc75433fc31512940b9df39bd3d36fdd104f6c6f8ff511e51360c67f2a",
+      "solver_hash": "9ee4d21122c928608a35a229a5a3ee90eadb2533c4f4560f1f3a518216990e3c",
+      "status": "complete",
+      "stdout_sha256": "623d7c1c1d8733aca3175c9083ec4370b127be7c6578d0c192421961826fa9ba",
+      "step_counter_has_declared_range": false,
+      "symbolic_parameter": "the plan's declared node bound, which stays a constant in the guards while the step counter itself has no declared range",
+      "timed_out": false,
+      "verdict": "safe"
     },
     {
       "also_evidence": "notes/ic3-msat-probe.md and notes/induction-probe.md in .conflux-investigation; writing/unbounded-obstructions.md states which families have no such route",
@@ -120,28 +265,38 @@
   "source": "scripts/generate_parameter_general_evidence.py",
   "summary": {
     "by_expectation": {
-      "not_safe": 1,
-      "safe": 1,
-      "unknown_fail_closed": 1
+      "not_safe": 3,
+      "safe": 2,
+      "unknown_fail_closed": 1,
+      "unknown_incomplete": 1
     },
     "by_verdict": {
-      "safe": 1,
-      "unknown": 2
+      "safe": 2,
+      "unknown": 3,
+      "unsafe": 2
     },
     "control_rows": [
+      "plan-ir:code:capability:predabs:counterexample",
+      "plan-ir:code:capability:smt:induction-incomplete",
       "plan-ir:control:unbounded-bdd-fail-closed",
+      "plan-ir:control:weakened-liveness:predabs",
       "plan-ir:control:weakened-liveness:smt"
     ],
     "errors": [],
     "positive_rows": [
+      "plan-ir:single:authorised:predabs:symbolic-step-bound",
       "plan-ir:single:authorised:smt:symbolic-step-bound"
     ],
     "rows_without_declared_range": [
+      "plan-ir:code:capability:predabs:counterexample",
+      "plan-ir:code:capability:smt:induction-incomplete",
       "plan-ir:control:unbounded-bdd-fail-closed",
+      "plan-ir:control:weakened-liveness:predabs",
       "plan-ir:control:weakened-liveness:smt",
+      "plan-ir:single:authorised:predabs:symbolic-step-bound",
       "plan-ir:single:authorised:smt:symbolic-step-bound"
     ],
-    "total": 3
+    "total": 7
   },
   "timeout_seconds": 300.0
 }

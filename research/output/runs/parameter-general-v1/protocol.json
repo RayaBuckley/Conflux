@@ -1,12 +1,13 @@
 {
-  "backend": "conflux.verification.nuxmv_backend.NuXmvBackend(smt=True)",
+  "backend": "conflux.verification.nuxmv_backend.NuXmvBackend(smt=True | predabs=True)",
   "binary": "nuXmv",
-  "claim": "Each positive row is a verdict about a model whose step counter has no declared range, so the verdict names no bound and no depth. It is not a verdict about a bounded model and must not be quoted as one.",
+  "claim": "Each positive row is a verdict about a model whose step counter has no declared range, so the verdict names no bound and no depth. It is not a verdict about a bounded model and must not be quoted as one. The two unbounded routes answer different questions: on the SMT k-induction route a model it cannot settle is UNKNOWN, and the CEGAR route is the one that settles such a family - in both directions.",
   "commands": "go_msat\nmsat_check_invar_bmc\nquit\n",
   "control_commands": "go\nbuild_boolean_model\ncheck_invar_ic3\nquit\n",
-  "controls": "A weakened invariant must not be reported safe, and the finite-domain route must fail closed on an unbounded model. Both controls are retained in the bundle.",
+  "controls": "A weakened invariant must not be reported safe, and the finite-domain route must fail closed on an unbounded model. Both controls are retained in the bundle, and the weakened control is carried on both unbounded routes: k-induction withholds agreement on it, CEGAR refutes it, so the reader can see the difference between the routes.",
   "generator": "scripts/generate_parameter_general_evidence.py",
   "id": "parameter-general-v1",
+  "predabs_commands": "go_msat\ncheck_invar_cegar_predabs -n {index}\nquit\n",
   "schema_version": "1",
   "timeout_seconds": 300.0
 }
