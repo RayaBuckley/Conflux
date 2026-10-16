@@ -108,7 +108,7 @@ def _failure_summary(result: dict[str, Any]) -> str:
     return ", ".join(f"{name} {value}" for name, value in sorted(counts.items()))
 
 
-def table_agentdojo_breadth() -> list[tuple[Path, str]]:
+def table_agentdojo_breadth(base: Path = OUT) -> list[tuple[Path, str]]:
     """Counts per retained bundle: cells, completion, utility, security, failure categories."""
     sources: list[tuple[str, str]] = []
     rows: list[str] = []
@@ -146,8 +146,7 @@ def table_agentdojo_breadth() -> list[tuple[Path, str]]:
         "recorded failure, so one cell can carry several categories and a cell that completed can "
         "still carry a category such as \\texttt{utility}. The six incomplete "
         "slack cells were later diagnosed as capability failures of that model, not adapter gaps; a "
-        "module rerun of the same suite reports them as parser failures. Section 27 of the verification "
-        "record holds the diagnosis and the repeatability measurement."
+        "module rerun of the same suite reports them as parser failures."
     )
     tex = (
         _header(sources)
@@ -161,10 +160,10 @@ def table_agentdojo_breadth() -> list[tuple[Path, str]]:
         + caption
         + "}\n\\label{tab:agentdojo-breadth}\n\\end{table}\n"
     )
-    return [(OUT / "agentdojo_breadth_table.tex", tex)]
+    return [(base / "agentdojo_breadth_table.tex", tex)]
 
 
-def table_agentdojo_fingerprints() -> list[tuple[Path, str]]:
+def table_agentdojo_fingerprints(base: Path = OUT) -> list[tuple[Path, str]]:
     """Protocol identity per retained bundle, so a repeat can be compared with the retained run."""
     sources: list[tuple[str, str]] = []
     rows: list[str] = []
@@ -200,7 +199,7 @@ def table_agentdojo_fingerprints() -> list[tuple[Path, str]]:
         + caption
         + "}\n\\label{tab:agentdojo-fingerprints}\n\\end{table}\n"
     )
-    return [(OUT / "agentdojo_fingerprints_table.tex", tex)]
+    return [(base / "agentdojo_fingerprints_table.tex", tex)]
 
 
 THREE_WAY = RUNS / "three-way-agreement-v1" / "result.json"
@@ -225,7 +224,7 @@ def _sources(*paths: Path) -> list[tuple[str, str]]:
     return entries
 
 
-def table_semantic_conformance() -> list[tuple[Path, str]]:
+def table_semantic_conformance(base: Path = OUT) -> list[tuple[Path, str]]:
     """Reference interpreter, Z3 and nuXmv decisions over the same bounded IR variants."""
     result, _digest = _read_json(THREE_WAY)
     summary: dict[str, Any] = result["summary"]
@@ -257,10 +256,10 @@ def table_semantic_conformance() -> list[tuple[Path, str]]:
         + caption
         + "}\n\\label{tab:semantic-conformance}\n\\end{table}\n"
     )
-    return [(OUT / "semantic_conformance_table.tex", tex)]
+    return [(base / "semantic_conformance_table.tex", tex)]
 
 
-def table_native_sled_reproduction() -> list[tuple[Path, str]]:
+def table_native_sled_reproduction(base: Path = OUT) -> list[tuple[Path, str]]:
     """Reproduced historical trace counts and the canonical-versus-archived comparison."""
     part_b, _digest_b = _read_json(NATIVE_SLED_B)
     part_a, _digest_a = _read_json(NATIVE_SLED_A)
@@ -336,10 +335,10 @@ def table_native_sled_reproduction() -> list[tuple[Path, str]]:
         + caption
         + "}\n\\label{tab:native-sled-reproduction}\n\\end{table}\n"
     )
-    return [(OUT / "native_sled_reproduction_table.tex", tex)]
+    return [(base / "native_sled_reproduction_table.tex", tex)]
 
 
-def table_sledv_scaling() -> list[tuple[Path, str]]:
+def table_sledv_scaling(base: Path = OUT) -> list[tuple[Path, str]]:
     """Per-family SLED-V reduction sizes, and the verdict checks over every fixture."""
     result, _digest = _read_json(SLEDV)
     families: dict[str, Any] = result["by_family"]
@@ -405,10 +404,10 @@ def table_sledv_scaling() -> list[tuple[Path, str]]:
         + caption
         + "}\n\\label{tab:sledv-scaling}\n\\end{table}\n"
     )
-    return [(OUT / "sledv_scaling_table.tex", tex)]
+    return [(base / "sledv_scaling_table.tex", tex)]
 
 
-def table_provenance_precision() -> list[tuple[Path, str]]:
+def table_provenance_precision(base: Path = OUT) -> list[tuple[Path, str]]:
     """Capability retention and over-blocking for three provenance rules, from the bundle's rows."""
     result, _digest = _read_json(PROVENANCE)
     summary: dict[str, Any] = result["summary"]
@@ -464,17 +463,18 @@ def table_provenance_precision() -> list[tuple[Path, str]]:
         + caption
         + "}\n\\label{tab:provenance-precision}\n\\end{table}\n"
     )
-    return [(OUT / "provenance_precision_table.tex", tex)]
+    return [(base / "provenance_precision_table.tex", tex)]
 
 
-def generate_all() -> list[tuple[Path, str]]:
+def generate_all(base: Path | None = None) -> list[tuple[Path, str]]:
+    base = OUT if base is None else base
     outputs: list[tuple[Path, str]] = []
-    outputs.extend(table_agentdojo_breadth())
-    outputs.extend(table_agentdojo_fingerprints())
-    outputs.extend(table_semantic_conformance())
-    outputs.extend(table_native_sled_reproduction())
-    outputs.extend(table_sledv_scaling())
-    outputs.extend(table_provenance_precision())
+    outputs.extend(table_agentdojo_breadth(base))
+    outputs.extend(table_agentdojo_fingerprints(base))
+    outputs.extend(table_semantic_conformance(base))
+    outputs.extend(table_native_sled_reproduction(base))
+    outputs.extend(table_sledv_scaling(base))
+    outputs.extend(table_provenance_precision(base))
     return outputs
 
 
@@ -485,9 +485,18 @@ def main() -> int:
         action="store_true",
         help="verify the retained tables match regeneration without writing",
     )
+    parser.add_argument(
+        "--outdir",
+        default=None,
+        help="write to this directory instead of the manuscript's generated/tables",
+    )
     arguments = parser.parse_args()
+    target = OUT
+    if arguments.outdir:
+        candidate = Path(arguments.outdir)
+        target = candidate if candidate.is_absolute() else ROOT / candidate
 
-    outputs = generate_all()
+    outputs = generate_all(target)
     mismatches: list[str] = []
     for path, content in outputs:
         if arguments.check:

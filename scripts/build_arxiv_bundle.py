@@ -39,8 +39,8 @@ from pathlib import Path
 from typing import TypedDict, cast
 
 ROOT = Path(__file__).resolve().parents[1]
-MANUSCRIPT = ROOT / "research" / "publications" / "manuscript" / "conflux_fourth_year_2026.tex"
-MANIFEST = ROOT / "research" / "publications" / "manuscript" / "ARXIV_BUNDLE.json"
+MANUSCRIPT = ROOT / "research" / "publications" / "arxiv" / "main.tex"
+MANIFEST = ROOT / "research" / "publications" / "arxiv" / "ARXIV_BUNDLE.json"
 OUT = ROOT / ".local" / "arxiv-bundle"
 
 INPUT = re.compile(r"\\(?:input|include)\{([^}]+)\}")

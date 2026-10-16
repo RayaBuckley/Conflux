@@ -26,6 +26,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RUNS = ROOT / "research" / "output" / "runs"
 FIGS = ROOT / "research" / "publications" / "manuscript" / "generated" / "figures"
+if "--outdir" in sys.argv:
+    _candidate = Path(sys.argv[sys.argv.index("--outdir") + 1])
+    FIGS = _candidate if _candidate.is_absolute() else ROOT / _candidate
 CHECK = "--check" in sys.argv
 PROBLEMS: list[str] = []
 

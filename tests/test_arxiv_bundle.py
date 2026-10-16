@@ -22,17 +22,17 @@ def _manuscript_copy(tmp_path: Path) -> Path:
 
 
 def test_manuscript_dependencies_resolve() -> None:
-    """Every file the manuscript inputs must exist, with nothing missing."""
+    """Every file the arXiv paper inputs must exist, with nothing missing."""
     _paths, problems = bundle.dependency_paths(bundle.MANUSCRIPT, bundle.ROOT)
     assert problems == []
 
 
 def test_ship_set_covers_the_tables_figures_and_the_bibliography() -> None:
-    """The bundle carries the manuscript, every generated table and figure, and the bibliography."""
+    """The bundle carries the paper, every generated table and figure, and the bibliography."""
     paths, _problems = bundle.dependency_paths(bundle.MANUSCRIPT, bundle.ROOT)
     shipped = {path.name for path in paths}
     assert shipped == {
-        "conflux_fourth_year_2026.tex",
+        bundle.MANUSCRIPT.name,
         "agentdojo_breadth_table.tex",
         "agentdojo_fingerprints_table.tex",
         "semantic_conformance_table.tex",
@@ -244,20 +244,20 @@ def test_a_live_repository_path_is_left_alone(tmp_path: Path) -> None:
     assert bundle.path_problems(manuscript, tmp_path) == []
 
 
-def test_the_old_archive_path_would_have_been_caught(tmp_path: Path) -> None:
-    """The sentence that sent readers to a directory that never existed is now refused.
+def test_a_dead_repository_path_in_prose_is_caught(tmp_path: Path) -> None:
+    """Prose that names a repository path which no longer exists is refused.
 
-    The manuscript is copied with only that one path changed, so the test fails if the
-    check stops looking at prose.
+    The paper is copied with one dead path added to its prose, so the test fails if
+    the check stops looking at prose and only follows \\input targets.
     """
-    manuscript = tmp_path / "manuscript.tex"
-    manuscript.write_text(
+    paper = tmp_path / "main.tex"
+    paper.write_text(
         bundle.source_text(bundle.MANUSCRIPT).replace(
-            "\\texttt{research/publications/paper/}",
-            "\\texttt{paper/}",
+            "\\end{document}",
+            "\\texttt{research/publications/renamed-away/}\n\\end{document}",
         ),
         encoding="utf-8",
     )
-    problems = bundle.path_problems(manuscript, bundle.ROOT)
+    problems = bundle.path_problems(paper, bundle.ROOT)
     assert len(problems) == 1
-    assert "'paper/'" in problems[0]
+    assert "'research/publications/renamed-away/'" in problems[0]

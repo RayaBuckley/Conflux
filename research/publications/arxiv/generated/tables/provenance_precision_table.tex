@@ -1,0 +1,18 @@
+% GENERATED FILE -- do not edit by hand.
+% Run: python scripts/generate_fourth_year_tables.py
+% Source: research/output/runs/provenance-precision-v1/result.json SHA-256: 63e1c91896aa9090c95aff93dfe1fad102157d032bb4fba739f7d19bcdea4082
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{llrrrr}
+\toprule
+\textbf{Provenance rule} & \textbf{Provenance set} & \textbf{Mean size} & \textbf{Secure tasks completed} & \textbf{False denials} & \textbf{Vulnerable executions} \\
+\midrule
+C0 requester only (negative control) & requester & 1.00 & 208 of 208 & 0 of 208 & 48 of 48 \\
+C1 may-have-written provenance & possible authors & 8.62 & 173 of 208 & 35 of 208 & 0 of 48 \\
+C2 authenticated provenance & actual contributors & 3.08 & 208 of 208 & 0 of 208 & 0 of 48 \\
+\bottomrule
+\end{tabular}
+\caption{Capability retention and over-blocking for three provenance rules over 351 symbolic delegation fixtures (208 securely achievable, 95 securely blocked, 48 vulnerable), three repetitions per parameter cell. C0 is the negative control: it authorises the requester alone, so its row shows what the confinement rule costs rather than a capability figure. From the conservative rule to authenticated provenance, denials of securely achievable work fall from 35 to 0, the mean size of the computed provenance set falls from 8.62 to 3.08, and 0 of 351 authenticated rows both authorise and violate the confinement rule. The measurement is one-sided: the rows count the denials the rule produces, and the bundle holds no refusal counter and no model, so a refusal an agent would add on top is uncounted.}
+\label{tab:provenance-precision}
+\end{table}

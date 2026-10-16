@@ -53,6 +53,7 @@ PAPER = ROOT / "research" / "publications" / "paper"
 MANUSCRIPT = ROOT / "research" / "publications" / "manuscript"
 WORKSHOP = ROOT / "research" / "publications" / "workshop"
 PUBLICATIONS = ROOT / "research" / "publications"
+ARXIV = ROOT / "research" / "publications" / "arxiv"
 SMOKE = ROOT / "research" / "output" / "runs" / "smoke"
 NATIVE_SLED = ROOT / "research" / "output" / "runs" / "native-sled-reproduction-v1"
 COI_EVIDENCE = ROOT / "research" / "output" / "runs" / "sled-coi-reduction-v1"
@@ -223,6 +224,7 @@ def check_docs(errors: list[str]) -> None:
         ROOT / "AGENTS.md",
         *DOCS.rglob("*.md"),
         PUBLICATIONS / "README.md",
+        *ARXIV.glob("*.md"),
         *MANUSCRIPT.glob("*.md"),
         *WORKSHOP.glob("*.md"),
         REPORTS / "README.md",
@@ -774,6 +776,21 @@ def check_manuscript(errors: list[str]) -> None:
         errors.append("generated current-manuscript PDF must not be tracked in git")
 
 
+def check_arxiv(errors: list[str]) -> None:
+    required = {
+        "README.md",
+        "main.tex",
+        "references.bib",
+        "generated/tables/README.md",
+        "generated/figures/README.md",
+    }
+    for name in required:
+        if not (ARXIV / name).is_file():
+            errors.append(f"arXiv paper file is missing: research/publications/arxiv/{name}")
+    if index_blob_oid(ARXIV / "main.pdf") is not None:
+        errors.append("generated arXiv-paper PDF must not be tracked in git")
+
+
 def check_workshop(errors: list[str]) -> None:
     required = {
         "README.md",
@@ -1172,6 +1189,7 @@ def main() -> int:
     check_reports(errors)
     check_archived_paper(errors)
     check_manuscript(errors)
+    check_arxiv(errors)
     check_workshop(errors)
     check_smoke_evidence(errors)
     check_native_sled_evidence(errors)

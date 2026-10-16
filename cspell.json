@@ -819,6 +819,7 @@
     "research/reports/analysis/**",
     "research/publications/paper/**",
     "research/publications/manuscript/**",
+    "research/publications/arxiv/references.bib",
     "research/publications/workshop/references.bib",
     "research/publications/workshop/checklist.tex",
     "research/publications/flmsec_2026/references.bib",

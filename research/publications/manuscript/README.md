@@ -25,14 +25,17 @@ gated protocols produce completed retained result JSON with verified checksums.
 
 ## arXiv submission bundle
 
-`scripts/build_arxiv_bundle.py` stages the source an arXiv submission needs and
-packages it as a deterministic `.tar.gz` below `.local/arxiv-bundle/`. It
-resolves every `\input`, `\bibliography` and `\includegraphics` target from the
-manuscript, refuses to package a tree with a missing dependency, and compares
-the tracked `ARXIV_BUNDLE.json` manifest with the files it ships, so a changed
-source or a stale manifest stops the build. The archive root is this directory,
-because arXiv compiles from the root of the submission directory. The standard
-validation tier runs the script with `--check`.
+This report is not the arXiv submission. Since 2026-10-16
+`scripts/build_arxiv_bundle.py` stages the source of the arXiv preprint under
+`../arxiv/`, which presents the whole body of work as one contribution; this
+report keeps its year-by-year structure for its own reader. The script packages
+a deterministic `.tar.gz` below `.local/arxiv-bundle/`, resolves every
+`\input`, `\bibliography` and `\includegraphics` target from the paper, refuses
+to package a tree with a missing dependency, and compares the tracked
+`../arxiv/ARXIV_BUNDLE.json` manifest with the files it ships, so a changed
+source or a stale manifest stops the build. The archive root is the paper's
+directory, because arXiv compiles from the root of the submission directory.
+The standard validation tier runs the script with `--check`.
 
 Those rules were read from <https://info.arxiv.org/help/submit_tex.html> on
 2026-10-10: a source collection is packaged in a `.tar` or `.zip` archive;

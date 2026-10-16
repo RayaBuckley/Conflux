@@ -1,0 +1,698 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{nicefrac}
+\usepackage{url}
+\usepackage{xcolor}
+\definecolor{safebg}{rgb}{0.85,0.93,0.85}
+\definecolor{safebd}{rgb}{0.3,0.6,0.3}
+\definecolor{unsafebg}{rgb}{0.95,0.85,0.85}
+\definecolor{unsafebd}{rgb}{0.7,0.3,0.3}
+\definecolor{pendingbg}{rgb}{0.92,0.92,0.95}
+\definecolor{pendingbd}{rgb}{0.5,0.5,0.7}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, calc, matrix}
+\pgfplotsset{compat=1.18}
+\usepackage[numbers]{natbib}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\title{Preventing Privilege Escalation in LLM Agents: Provenance-Based Authority from Theory to Canonical Implementation}
+
+\author{Raya Buckley}
+
+\date{October 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Large-language-model agents combine information from multiple principals
+while performing externally visible actions. We argue that privilege
+escalation, rather than prompt injection itself, is the appropriate
+system-level security objective. We present Influence Tracking with
+Extrapolated Security (ITES), a provenance-based defence that derives the
+effective authority of each execution from the intersection of the
+permissions held by all principals that influence it, and the System-Level
+Evaluator for Defences (SLED), which evaluates a defence independently of
+language-model behaviour by exhaustively exploring the reachable execution
+space under worst-case assumptions. We then present Conflux, a canonical
+implementation of ITES with independent read, authorisation, visibility and
+consent decisions; argument-aware authorisation; audience-specific
+disclosure; structured attribution; authenticated dynamic planning; a
+serialisable verification IR with cone-of-influence reduction and three
+unbounded route backends; and a scoped delegation model that remains disabled
+at runtime. We report bounded evidence from native SLED mutation testing,
+semantic conformance across three independent decision procedures, reduced
+verification, provenance-rule over-blocking measurements, and pinned
+AgentDojo runs, and we separate that evidence from claims that still require
+gated artefacts. A holding safety verdict is cited as support only when the
+same artefact classifies the underlying invariant as falsifiable under a
+declared mutation alphabet. The core guarantee, that authority can only
+decrease as influence accumulates, follows from the provenance-based
+authorisation rule and holds under arbitrary model behaviour.
+\end{abstract}
+
+
+\section{Introduction}
+
+Large language model (LLM) agents read documents, invoke tools, and perform
+externally visible actions on behalf of users. Unlike traditional software,
+these agents process natural-language inputs from multiple principals,
+including users, documents, databases, APIs, and other systems. Arbitrary
+information may influence decisions with real-world consequences
+\citep{earlycategorization}.
+
+Prompt injection has emerged as a fundamental challenge
+\citep{struq,spotlighting,neuralexec}. Model-level defences improve
+instruction following but remain probabilistic: adaptive attacks may
+invalidate empirical robustness
+\citep{criticaleval,detectprompt,poisoningalignment,checkpointgcg}. We
+instead treat \emph{privilege escalation} as the system-level security
+objective: if every principal influencing an action is authorised for it,
+then arbitrary model behaviour cannot increase authority
+\citep{provos2003,davi2010}.
+
+We introduce Influence Tracking with Extrapolated Security (ITES), a
+provenance-based defence that derives the effective authority of each
+execution from information provenance and an existing access-control system,
+and the System-Level Evaluator for Defences (SLED), which evaluates
+system-level defences under worst-case model behaviour by exhaustively
+exploring the reachable execution space \citep{earlycategorization}. The
+historical evaluation explored approximately 1.5 million traces and observed
+no successful privilege escalation while preserving maximal utility for all
+tasks consistent with the access-control system; Section~\ref{sec:eval}
+reproduces its per-environment counts exactly under the recorded depth bound.
+
+This paper unifies the foundational ITES/SLED theory with the Conflux
+canonical implementation, which extends the original design with independent
+policy ports, argument-aware authorisation, controlled disclosure, structured
+attribution, authenticated dynamic planning, serialisable formal
+verification, and benchmark translation. The contributions are:
+
+\begin{enumerate}
+  \item We argue that privilege escalation, rather than prompt injection
+    itself, is the appropriate system-level security objective for LLM
+    agents operating within existing access-control systems.
+  \item We present ITES, whose authority-intersection rule is a
+    principal-sensitive analogue of low-water-mark integrity
+    \citep{biba1977,lomac}, and prove that authority is monotonically
+    non-increasing as influence accumulates.
+  \item We introduce SLED, which evaluates defences independently of
+    language-model behaviour by exhaustively exploring the execution state
+    space under worst-case assumptions.
+  \item We describe the Conflux canonical architecture, which separates
+    read, authorisation, visibility, and consent decisions; extends to
+    argument-aware policy, audience disclosure, structured attribution,
+    authenticated dynamic planning, and serialisable formal verification;
+    and maintains a disabled scoped-delegation model.
+  \item We report bounded current evidence from native SLED mutation
+    testing, semantic conformance across three decision procedures,
+    cone-of-influence-reduced verification with three unbounded routes,
+    provenance-rule over-blocking measurement, and pinned AgentDojo runs,
+    and we separate that evidence from claims that remain pending.
+\end{enumerate}
+
+
+\section{Related Work}
+
+\subsection{Model-Level Defences}
+
+Model-level defences seek to make language models resist prompt injection
+through improved prompting, alignment, or fine-tuning
+\citep{struq,spotlighting,secalign,datasentinel}. While often effective
+empirically, their security remains probabilistic and may be bypassed by
+adaptive attacks \citep{criticaleval,checkpointgcg,poisoningalignment}. ITES
+assumes worst-case model behaviour and derives security entirely from
+system-level enforcement.
+
+\subsection{System-Level Defences}
+
+Several works address prompt injection through system-level enforcement.
+The Dual LLM pattern separates privileged planning from untrusted parsing.
+CaMeL extends this with capability tracking and developer-defined policies
+enforced by a custom interpreter \citep{camel,designpatterns}. Progent
+mediates tool calls with symbolic privilege control \citep{progent}. PACT
+tracks argument-level provenance \citep{pact}, and FORGE enforces
+history-sensitive Datalog policies \citep{forge}. ITES differs by deriving
+authority directly from the organisation's existing access-control system
+rather than introducing a trusted planning model, binary trust labels, or
+a new policy language.
+
+\subsection{Classical Security Lineage}
+
+The ITES authority-intersection rule is structurally analogous to Biba's
+low-water-mark contamination: consuming information from an additional
+principal can preserve or reduce effective authority but cannot increase it
+\citep{biba1977}. LOMAC operationalised low-water-mark integrity in
+commodity systems and confronted the same utility--security tension
+\citep{lomac}. Denning's lattice model provides the formal foundation: the
+intersection of permission sets is a meet in the powerset lattice
+\citep{denning1976}. Sabelfeld and Myers provide the vocabulary for
+explicit and implicit flows \citep{sabelfeld2003}, while Myers and Liskov's
+decentralized information-flow control moves toward multi-principal policies
+\citep{myersliskov}. Declassification and endorsement mechanisms
+\citep{declassification-survey,robust-declassification,attacker-control,nonmalleable-ifc}
+inform Conflux's visibility and disclosure design. Conflux enriches this
+lineage with authenticated principal identities and authority derived from
+the organisation's current access-control state.
+
+\subsection{Evaluation}
+
+AgentDojo supplies realistic prompt-injection tasks and metrics
+\citep{agentdojo}. Existing benchmarks evaluate robustness against known
+attacks, while SLED evaluates whether a defence satisfies its intended
+security objective under arbitrary model behaviour.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{2.8cm}p{2.2cm}p{2.2cm}p{2.2cm}p{2.5cm}}
+\toprule
+& Model-level & Dual LLM & CaMeL & ITES \\
+\midrule
+Primary mechanism & Model robustness & Model isolation & Dual LLM + policies & Provenance + ACS \\
+Security depends on model & Yes & Planning model & Planning model & No \\
+Requires new policy language & No & No & Yes & No \\
+Tracks & N/A & N/A & Capabilities & Principals \\
+Security objective & Prevent PI & Prevent PI & Prevent PI + policies & Prevent PE \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of representative approaches. PI denotes prompt injection; PE denotes privilege escalation; ACS denotes access-control system.}
+\label{tab:comparison}
+\end{table}
+
+
+\section{Threat Model and Security Objective}
+
+We consider an LLM-based agent that performs externally visible actions on
+behalf of users. The agent receives information from multiple principals,
+both directly through prompts and indirectly through documents, APIs, and
+tool outputs. Any principal may provide arbitrary inputs; we make no
+assumptions about the model's ability to distinguish instructions from data
+or resist prompt injection. The enforcement mechanism and access-control
+system (ACS) are assumed correct and uncompromised.
+
+\subsection{Access-Control System}
+
+We model the ACS as the tuple $(A, U, D, P, W, R)$, where $A$ is the set of
+parameterised actions, $U$ is the set of principals, $D$ is the set of data
+objects, $P \subseteq U \times A$ is the permission relation, $W
+\subseteq D \times U$ specifies authorship, and $R \subseteq D \times U$
+specifies read access \citep{abac}. For principal $u$ and action $a$,
+$P(u, a)$ holds iff $u$ is authorised to perform $a$.
+
+\subsection{Security Objective}
+
+\begin{definition}[Influencing Principal]
+A principal $u$ influences an action if information originating from $u$
+contributes, directly or indirectly, to the execution that produces the
+action.
+\end{definition}
+
+\begin{definition}[Privilege Escalation]
+Privilege escalation occurs iff the agent performs an action $a \in A$ for
+which there exists an influencing principal $u \in U$ such that $\neg
+P(u, a)$.
+\end{definition}
+
+Under this formulation, security depends only on provenance and the current
+access-control state, not on the source or mechanism of influence. Prompt
+injection is one possible source of influence; ITES treats it uniformly with
+any other.
+
+
+\section{ITES: Provenance-Based Authority}
+
+The central principle of ITES is that every execution inherits the
+effective authority implied by the provenance of its inputs. For an
+execution $e$ whose direct inputs are data objects $ds \subseteq D$, the
+\emph{Principal Context} (influence set in earlier formulations) is:
+\[
+\mathrm{PC}(e) = \bigcup_{d \in ds} \{u \in U \mid W(d, u)\}.
+\]
+Objects produced by an execution inherit its complete Principal Context.
+Influence accumulates monotonically: once a principal influences a
+computation, that influence persists unless a trusted provenance mechanism
+removes it. Under the conservative model, influence is never removed.
+
+\subsection{Authorisation Rule}
+
+Given an execution $e$ with Principal Context $\mathrm{PC}(e)$, ITES permits
+an action $a \in A$ iff:
+\[
+\forall u \in \mathrm{PC}(e),\; P(u, a).
+\]
+Equivalently, the effective authority is the intersection of the permission
+sets of all influencing principals. The Conflux extension adds a
+non-empty-context condition: an action is blocked if $\mathrm{PC}(e) =
+\varnothing$, preventing vacuous authority.
+
+\subsection{Maximal Secure Authorisation}
+
+\begin{theorem}[Maximal Secure Authorisation]
+ITES authorises the maximal set of actions that can be permitted without
+allowing privilege escalation.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+ITES authorises exactly $\bigcap_{u \in \mathrm{PC}(e)} \{a \mid P(u, a)\}$.
+Any strict superset must include an action $a$ for which some influencing
+principal $u$ lacks permission, satisfying Definition~2.
+\end{proof}
+
+\subsection{Authority Monotonicity}
+
+\begin{theorem}[Authority Monotonicity]
+If $\mathrm{PC}(e_1) \subseteq \mathrm{PC}(e_2)$, then
+$\mathrm{Permitted}(\mathrm{PC}(e_2)) \subseteq
+\mathrm{Permitted}(\mathrm{PC}(e_1))$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Adding influencing principals introduces additional constraints; the
+intersection can only shrink or remain unchanged.
+\end{proof}
+
+\begin{corollary}[Security Guarantee]
+Under the threat model of Section~3, and assuming correct enforcement of
+influence tracking, provenance, and access-control checks, ITES prevents
+privilege escalation.
+\end{corollary}
+
+The guarantee is independent of the source of influence. Prompt injection,
+retrieved documents, compromised tools, and arbitrary model behaviour are
+treated uniformly: once information contributes to an execution, the
+authority of that execution is constrained by the permissions of the
+corresponding principals.
+
+
+\section{SLED: Worst-Case Evaluation}
+
+Existing prompt-injection benchmarks measure robustness against a finite
+collection of attacks. SLED instead evaluates whether a system-level
+defence correctly enforces its security properties under arbitrary model
+behaviour.
+
+\subsection{State-Space Exploration}
+
+SLED treats each execution as a nondeterministic black box that may produce
+any behaviour consistent with the system interface. A system state contains
+the environment, the ACS, available data, accumulated influence, pending
+executions, and possible actions. Beginning from an initial state, SLED
+enumerates every action that may result from each pending execution,
+updates the environment, propagates influence, and schedules further
+executions. Exploration continues until every reachable state is visited
+or a bound is reached.
+
+The Conflux reimplementation provides native SLED with breadth-first
+exploration, canonical state keys, deduplication, retained bounds, and
+shortest counterexamples. Verdicts are \texttt{SAFE} (exhausted finite
+model), \texttt{BOUNDED\_SAFE} (truncated), \texttt{UNSAFE}
+(counterexample found), or \texttt{UNKNOWN} (modelling failure). A bounded
+verdict is evidence about the retained finite model, not a proof for an
+unbounded deployment.
+
+
+\section{Conflux: Canonical Architecture and Extensions}
+
+Conflux refactors the original design into a canonical security kernel
+with one dependency direction and one mediation boundary. Immutable domain
+values represent principals, Principal Contexts, permissions, resources,
+artefacts, provenance, sessions, and actions. The ITES kernel is pure:
+model proposals cannot assert or narrow their Principal Context,
+alternative branches share an immutable parent, and effect execution
+requires an exact decision certificate.
+
+\subsection{Independent Policy Ports}
+
+Authorisation, read access, visibility, and consent are separate decisions.
+Consent cannot override authority; visibility cannot override read policy.
+This separation prevents a single policy dimension from manufacturing
+authority for another.
+
+\subsection{Argument-Aware Authorisation}
+
+Trusted action-argument roles carry provenance independently of the
+proposing execution. Pointwise selector policy checks each principal for
+each argument component, preventing authority borrowing through content or
+consent.
+
+\subsection{Audience-Specific Disclosure and Attribution}
+
+Deterministic redaction produces audience-specific event views that do not
+copy hidden payload fields. Structured attribution records are
+evidence-derived rather than model-asserted: trusted model explanations are
+rejected in favour of provenance, context, and policy records.
+
+\subsection{Authenticated Dynamic Planning}
+
+Open-ended plans use authenticated operation catalogues, typed bindings,
+immutable graph patches, explicit bounded loops, and continuations. Every
+grounded effect is re-mediated by ITES at action time; the planner cannot
+manufacture authority. Generated code is inert data submitted to a mediated
+sandbox capability, not trusted control flow. Security is a hard selection
+constraint; eligible plans are then ordered by utility, authority
+footprint, sensitive observations, and cost.
+
+\subsection{Scoped Delegation}
+
+The delegation model supports exact issuer, beneficiary, operation,
+resource, and argument bindings with expiry, revocation, and atomic
+one-use consumption. Delegation remains \emph{runtime-disabled}: ITES still
+denies delegation operations. The model exists for bounded verification
+only.
+
+\subsection{Serialisable Formal Verification}
+
+A serialisable verification IR supports a reference interpreter, runtime
+differential tests, optional Z3 bounded model checking, and a nuXmv
+Boolean subset. Property-scoped cone-of-influence (COI) reduction closes
+transitively over guards and dependencies. Reduction claims require matching
+reference verdicts and a liftable unsafe witness. Section~\ref{sec:fv}
+reports the unbounded route backends and the falsifiability check that
+qualifies every holding verdict.
+
+
+\section{Formal Verification and Planning}
+\label{sec:fv}
+
+SLED-V accepts a finite serialisable transition IR rather than arbitrary
+Python. Initial properties cover unauthorised effects and reads, provenance
+monotonicity, absence of implicit delegation and bounded resource use.
+Bounded SMT results retain solver artefacts; unbounded claims require an
+IC3/PDR-capable backend and runtime-to-IR conformance.
+
+Property-scoped cone-of-influence reduction closes transitively over guards
+and right-hand-side dependencies that may update an invariant variable.
+Reduction claims require matching reference verdicts and a liftable unsafe
+witness; an unsupported expression or disagreement fails the comparison. The
+retained bundle records matching finite-fixture verdicts and measurable
+reduction, while unavailable optional solver binaries contribute no
+equivalence evidence.
+
+Authority-constrained planning uses authenticated operation catalogues,
+immutable open-ended plan graphs, explicit bounded loops, typed continuations
+and value bindings. The evaluation's dynamic-code mode emits an inert
+\texttt{ModeledProgram} graph; it is not compiled, evaluated, or sent to an
+executor. Every declared effect is re-authorised at modelled action time.
+Security is a hard selection constraint; eligible plans are then ordered by
+utility, authority footprint, sensitive observations, irreversible effects,
+cost and a deterministic fingerprint.
+
+\subsection{Unbounded routes}
+
+Three routes decide an invariant with no step bound on the plan IR.
+\texttt{nuxmv-ic3} is IC3/PDR over the finite domain, \texttt{nuxmv-predabs}
+is predicate abstraction with CEGAR refinement, and \texttt{nuxmv-msat} is
+SMT-based induction. The plan IR declares no step range and keeps the plan's
+node bound as a symbolic constant in its guards, so a verdict from any of the
+three is not a finite unrolling of a fixed number of steps.
+
+The retained IC3 bundle holds 689 rows: 666 complete and 23 error, with
+verdicts \texttt{unsafe} 590, \texttt{safe} 76 and \texttt{unknown} 23. All
+23 errors are refusals of models that carry no transition rules; they are
+reported as \texttt{unknown}, never as safety. On the plan IR the
+predicate-abstraction and induction routes agree with the reference on all
+seven rows of the parameter-general bundle (two safe, two unsafe, three
+unknown), and each row states its expectation before it is measured. The two
+positive rows need an auxiliary invariant plus a transition guard, because
+the property alone is not inductive.
+
+A separate bundle reworks the plan-liveness obligation. The earlier
+obligation, \texttt{AG(step >= bound -> terminated)}, assigned
+\texttt{terminated} inside the abstraction, so a bounded row satisfied it by
+construction. The obligation now declares a plan's two good endings and
+measures \texttt{step >= bound -> (goal\_reached or safe\_abort)} with the
+support invariants \texttt{safe-abort-clean} and \texttt{goal-reached-clean}.
+Across 84 measured rows at bounds one to four, every reading meets its stated
+expectation, the three routes agree by verdict class on all 28 readings, and
+20 of 28 readings carry an unsafe reference verdict, so the agreement cannot
+come from a population nothing can refute.
+
+\subsection{Falsifiability of a holding verdict}
+
+A holding verdict (\texttt{safe} or \texttt{bounded\_safe}) is cited as
+support only when the same artefact classes the invariant as falsifiable under
+a declared mutation alphabet, \texttt{replace\_one\_rule\_guard\_with\_true}.
+Each holding invariant receives one class: \texttt{checked}, when a
+single-rule guard mutation falsifies it at a reachable state;
+\texttt{checked\_by\_construction}, when no such mutation falsifies it; and
+\texttt{violated\_at\_baseline} otherwise. Over the defence-model subset, 12
+IRs carry 14 invariant rows: four are \texttt{checked}, five
+\texttt{checked\_by\_construction} and five \texttt{violated\_at\_baseline}.
+
+The distinction changes what the evaluation may claim. Of the five native
+holding rows in the defence bundle only ITES is \texttt{checked} (seven
+reachable states, falsified by \texttt{ites-blocks-unauthorised}); Dual-LLM,
+CaMeL, PACT and Progent are \texttt{checked\_by\_construction} over two, two,
+one and one reachable state, each with a single falsifier whose guard is not
+satisfiable at a reachable state. Their holding verdicts are therefore inert
+under the declared alphabet and are not cited as support. On the
+property-enforcement side six rows are measured and five are refuted; the one
+holding row is ITES, and it is \texttt{checked}. The class is a statement
+about the declared alphabet, not an absolute property of the invariant.
+
+\begin{figure}[t]
+\centering
+\input{generated/figures/f1_property_sensitivity}
+\caption{Property-sensitivity classes for the six defence models. A segment
+counts invariant rows of one class; ITES is the only model whose native
+invariants are \texttt{checked}, so it is the only holding verdict in this
+subset that may be cited as support. Generated from the retained sensitivity
+bundle.}
+\label{fig:property-sensitivity}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\input{generated/figures/f2_unbounded_routes}
+\caption{Verdict split per unbounded route, normalised within each bundle so
+the two scales can be read together. The IC3/PDR bundle carries 689 rows and
+the predicate-abstraction and induction bundle seven; the printed number is
+the row count, not a rate. Generated from the two retained result bundles.}
+\label{fig:unbounded-routes}
+\end{figure}
+
+
+\section{Evaluation and Evidence Status}
+\label{sec:eval}
+
+We distinguish three evidence tiers: \emph{reproduced} (a historical
+count re-derived from a retained bundle), \emph{bounded current} (the
+canonical kernel on finite models), and \emph{pending} (gated on retained
+result artefacts). No numerical claim is entered manually; tables and
+figures are generated from versioned result JSON, and each generated file
+names its source files and their digests in its header.
+
+\subsection{Native SLED Reproduction}
+
+The retained native reproduction detects all five seeded monitor defects,
+each with a one-step witness, across three fixture pairs with fixed finite
+bounds, and reproduces the three historical per-environment trace counts and
+their canonical-state compression under the recorded depth bound. The
+canonical fixtures are not directly comparable with the archived prototype
+(the previous implementation, kept for reference), whose enumeration differed;
+Table~\ref{tab:native-sled-reproduction} records both and reports the bound
+and the retained count instead of recomputing that prototype's depth-bound
+share. This is bounded evidence: it exercises finite
+monitor models, not all deployment observers.
+
+\input{generated/tables/native_sled_reproduction_table}
+
+\subsection{Semantic Conformance}
+
+The reference interpreter and, where the optional binaries are present, the
+Z3 and nuXmv backends decide the same bounded IR variants and agree on every
+decision, refuted variants included, and the negative control still fails as
+designed. Table~\ref{tab:semantic-conformance} counts them. A separate sweep
+closes the population instead of listing it: the nine independent delegation
+defects have 512 subsets, and the Z3 and nuXmv encodings reproduce the
+reference interpreter's verdict class on every one of them, with all three
+backends refuting 511. Agreement between the reference interpreter and the
+two solver encodings over a closed set of defect combinations is evidence
+about the encoding, not a proof of the delegation semantics.
+
+\input{generated/tables/semantic_conformance_table}
+
+\subsection{SLED-V Reduction Scaling}
+
+The retained scaling bundle shows how far the cone-of-influence reduction
+shrinks the finite models and that no verdict is downgraded after reduction;
+Table~\ref{tab:sledv-scaling} records the sizes and the checks. Two limits
+belong with those sizes. The nine fixtures that carry a reference
+\emph{unsafe} verdict come from the noise and principal families, not from
+the depth family: the five depth fixtures labelled unsafe encode a
+single-state model with no transition, and the reference interpreter and Z3
+both decide them safe, so the depth family contributes no positive control
+and the scaling evidence for it is about reduction size alone. A SLED-V
+reduction is bounded evidence on the tested finite models, not a proof for
+unbounded deployments.
+
+\input{generated/tables/sledv_scaling_table}
+
+\subsection{Over-blocking and Capability Retention}
+
+The retained provenance bundle compares three provenance rules over 351
+symbolic delegation fixtures. The conservative rule denies 35 of the 208
+securely achievable fixtures, and the authenticated rule denies none of them,
+while the mean size of the computed provenance set falls from 8.62 to 3.08;
+the requester-only control shows what the confinement rule costs rather than
+a capability figure. Table~\ref{tab:provenance-precision} records the counts.
+The measurement is one-sided: the bundle counts the denials the rule
+produces, holds no refusal counter and no model, so a refusal an agent would
+add on top is uncounted. The denials concentrate where provenance
+heterogeneity is high: 24 of 32 fixtures there, against none of 117 at low
+heterogeneity.
+
+\input{generated/tables/provenance_precision_table}
+
+\subsection{Direction Security Models}
+
+The retained, checksummed bundle reports safe exhaustion for the canonical
+finite disclosure and delegation models and minimal witnesses for every
+seeded selector, disclosure, attribution, and delegation defect. Delegation
+remains disabled at runtime, so these are bounded-model statements about the
+models, not operational findings.
+
+\subsection{Real Models and AgentDojo}
+
+The pinned AgentDojo adapter (package \texttt{0.1.35}, benchmark
+\texttt{v1.2.2}) provides the retained breadth evidence counted in
+Table~\ref{tab:agentdojo-breadth}, with the protocol identity of each bundle
+in Table~\ref{tab:agentdojo-fingerprints}. Both tables are generated from the
+retained result and protocol JSON. They record what a 0.5B floor model did,
+not a defence result: at this model scale utility is zero, so the security
+counts carry no signal, and the standing limitation is stated in the table
+caption. The two 7B runs in the same ledger share a second, independent
+limit: their five tasks are read-only, their ground truth is
+\texttt{search\_emails} alone, and every retained log made at most that one
+call, so no effect tool was reached at any model size and their security
+counts carry no signal either. Of the 97 user tasks in the four suites, 60
+require an effect call, and a new run is selected from those. Real-model and
+AgentDojo claims stay bounded until a capable model completes the protocols
+on effect-bearing tasks.
+
+\input{generated/tables/agentdojo_breadth_table}
+
+\input{generated/tables/agentdojo_fingerprints_table}
+
+\subsection{Remote AgentDojo runs on a local 14B model}
+
+The pinned adapter was also run with a single local model,
+\texttt{Qwen/Qwen2.5-14B-Instruct} (revision \texttt{cf98f3b3}), served in
+4-bit NF4 on one CUDA device at temperature $0.0$ and seed $0$. Three runs
+were retained: a workspace pilot of 30 cells, and a stratified sweep of 24
+banking cells and 78 workspace cells. Every cell ran; all but one completed,
+and the single incomplete cell is a parser failure.
+
+In the pilot, native utility is $18/30$ and identical across the three arms
+(\texttt{no\_defence}, \texttt{ites\_conservative}, \texttt{ites\_oracle},
+$6/10$ each): the guarded arms neither gain nor lose a completed user task.
+The recorded failures are \texttt{utility}~(12) and \texttt{policy}~(3), with
+no model, parser, tool, setup, security or bound failure. The three policy
+failures are all \texttt{user\_task\_39} under the two guarded arms, where the
+arm refused a repeated \texttt{search\_emails} call.
+
+The security counts must be read with their floor in view. Over the whole
+pilot the model proposed one tool only, \texttt{search\_emails}, 65 times, and
+the 30 executed mediation records are all that read tool. No effect call --- a
+write, send or delete --- was proposed in any cell, so none was executed. The
+counts therefore describe this model and this harness, not a defence that
+stopped an attempted injection.
+
+The two stratified runs are weaker and are reported as such. The banking
+sweep recorded zero utility and 192 mediation records that are all refused
+with the adapter-level reason \texttt{unsupported\_tool}, so every call is
+refused before the policy engine is consulted and the per-arm ``secure'' rate
+is vacuous. The workspace sweep recorded utility $1/78$ and 564 records: 348
+\texttt{provider\_failed}, 177 blocked and 39 executed, all of them
+\texttt{search\_emails}; in 54 of the 78 cells nothing executed. Resident
+failure categories are \texttt{utility}~(76), \texttt{policy}~(46) and
+\texttt{parser}~(1).
+
+\begin{figure}[t]
+\centering
+\input{generated/figures/f3_runpod_cells}
+\caption{Cells by arm for the 14B pilot and by stratum for the stratified
+sweep. A segment counts cells; the grey segment is completed cells and the
+outlined segment failed cells. The banking stratum completed every cell while
+executing nothing, which is why its security count carries no efficacy claim.
+Generated from the three retained run bundles.}
+\label{fig:runpod-cells}
+\end{figure}
+
+\subsection{Refusal attribution}
+
+The retained bundles name the rule behind each refusal without a rerun. One
+bundle re-derives the causing rule from the report that every blocked record
+already keeps, and attributes 93 refused calls in the six bundles that hold
+them: \texttt{snapshot-read-policy} 60 on the read dimension,
+\texttt{in-memory-authorisation} 29 and \texttt{in-memory-argument-policy} 4
+on the authorisation dimension, over the tools \texttt{search\_emails} 81 and
+\texttt{delete\_file} 12, with the conservative arm holding 57 of the 93. A
+refusal count is therefore legible as a named rule, so the snapshot-read,
+authorisation and argument-policy layers can be told apart in retained
+evidence.
+
+
+\section{Discussion and Limitations}
+
+Conflux assumes sound authentication, provenance, policy state, and complete
+mediation. It does not prevent actions authorised for every influencing
+principal and does not guarantee subjective intent alignment. Conservative
+contexts can over-approximate influence, reducing utility. The
+authority-intersection rule is structurally analogous to Biba's
+low-water-mark contamination \citep{biba1977} and is a standard meet in
+the powerset lattice \citep{denning1976}; novelty claims must be qualified
+against the classical information-flow-control literature
+\citep{sabelfeld2003,myersliskov,declassification-survey,robust-declassification,attacker-control,nonmalleable-ifc}.
+
+Authorised-read safety is not noninterference: a system can obey local ACL
+checks and still leak information through outputs or control flow. Formal
+results are scoped to their finite model, backend, and conformance
+evidence: a holding verdict is cited only when the same artefact classifies
+the invariant as falsifiable under a declared mutation alphabet, so an
+inert holding row is not offered as support. Delegation has a bounded model
+and lifecycle representation but remains unsupported by operational ITES.
+Provider adapters are research prototypes, not production isolation
+boundaries. Real-model, AgentDojo, and planning comparisons remain pending
+until gated runs produce retained evidence, and the retained AgentDojo runs
+are read with their capability floor in view rather than as a defence
+result.
+
+
+\section{Conclusion}
+
+We have presented a unified view of ITES and SLED---from the core
+theoretical guarantees and worst-case evaluation through the Conflux
+canonical implementation with independent policy ports, argument-aware
+authorisation, controlled disclosure, structured attribution, authenticated
+dynamic planning, serialisable formal verification, and a disabled
+scoped-delegation foundation. The core security guarantee---that authority
+can only decrease as influence accumulates---follows from the
+provenance-based authorisation rule and is independent of language-model
+behaviour. The remaining research contribution is stronger evidence and
+carefully gated activation: real-model, external-benchmark, and formal
+artefacts whose claims remain tied to explicit assumptions, models, and
+bounds.
+
+
+\bibliography{references}
+\bibliographystyle{plainnat}
+
+\end{document}

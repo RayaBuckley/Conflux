@@ -342,6 +342,20 @@ def main() -> int:
     _run(2, "scripts/generate_plan_ir_progress_evidence.py", "--check")
     _run(2, "scripts/generate_parameter_general_evidence.py", "--check")
     _run(2, "scripts/generate_manuscript_figures.py", "--check")
+    _run(
+        2,
+        "scripts/generate_fourth_year_tables.py",
+        "--outdir",
+        "research/publications/arxiv/generated/tables",
+        "--check",
+    )
+    _run(
+        2,
+        "scripts/generate_manuscript_figures.py",
+        "--outdir",
+        "research/publications/arxiv/generated/figures",
+        "--check",
+    )
     _run(2, "scripts/build_arxiv_bundle.py", "--check")
     if tier == 1:
         _run(

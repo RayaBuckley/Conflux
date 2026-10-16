@@ -1,0 +1,30 @@
+% GENERATED FILE -- do not edit by hand.
+% Run: python scripts/generate_fourth_year_tables.py
+% Source: research/output/runs/agentdojo-stratified-banking-v1/result.json SHA-256: 17edd75b1b5e6e03df835154457b60de3dff6c4f963020c7dd38c3bdd57777fa
+% Source: research/output/runs/agentdojo-stratified-banking-v1/protocol.json SHA-256: cbf41d0ae0242311fadf67b2340a723cd06c20a26a3d11b1ec25ca5ade1e8cf1
+% Source: research/output/runs/agentdojo-stratified-slack-v1/result.json SHA-256: 69e60b580d24bf9a28796d267e5434ec5afb9d664fe7dd697019fa47ccff2b15
+% Source: research/output/runs/agentdojo-stratified-slack-v1/protocol.json SHA-256: 9c2ce6e181a17faaf96f061039b3cce5c9c209d965d17cd4951f7819a405946d
+% Source: research/output/runs/agentdojo-stratified-travel-v1/result.json SHA-256: a4e85c02b7533a8ff71f536aca87b5a4594ad6467ff4828f5a99c004fc91a6d1
+% Source: research/output/runs/agentdojo-stratified-travel-v1/protocol.json SHA-256: ee62fbc6ae0fbf0f4dcf6dcddc8e9e57a95db3693b67e8ec37c9498c5135fa5c
+% Source: research/output/runs/agentdojo-stratified-workspace-v1/result.json SHA-256: 810e24057e8b961f49ae88c1b47901049b2443a5116c2057a0c099adcafb70ce
+% Source: research/output/runs/agentdojo-stratified-workspace-v1/protocol.json SHA-256: 1d75d38896dc76d9d0a8071143f67fe0d05ade74acb620a4a8fd2cd80f6a711b
+% Source: research/output/runs/agentdojo-pilot-banking-v1/result.json SHA-256: 7e74dfa894f89d13e1db9e35495b484c6e47eae4ad8bc4195608a79633983ab0
+% Source: research/output/runs/agentdojo-pilot-banking-v1/protocol.json SHA-256: 44904393e0c13f582f1116bc1ed4c3c0227da55c87252ce50d5e7d709b0830a1
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{llrrrrl}
+\toprule
+\textbf{Run} & \textbf{Cells} & \textbf{Complete} & \textbf{Utility} & \textbf{Security} & \textbf{Incomplete} & \textbf{Failure categories} \\
+\midrule
+banking (\textit{stratified}, 4 tasks) & 24 & 24 & 0 & 24 & 0 & utility 24 \\
+slack (\textit{stratified}, 5 tasks) & 30 & 24 & 0 & 24 & 6 & model 6, policy 6, utility 24 \\
+travel (\textit{stratified}, 10 tasks) & 60 & 60 & 0 & 60 & 0 & policy 42, utility 60 \\
+workspace (\textit{stratified}, 13 tasks) & 78 & 78 & 0 & 78 & 0 & policy 8, utility 78 \\
+banking (\textit{pilot}, 2 tasks) & 12 & 12 & 0 & 12 & 0 & utility 12 \\
+\textbf{Total} & \textbf{204} & \textbf{198} & \textbf{0} & \textbf{198} & \textbf{6} & \\
+\bottomrule
+\end{tabular}
+\caption{Retained AgentDojo breadth evidence, counted from each bundle's own \texttt{result.json}. 204 cells, 198 complete, 0 with utility, 198 reporting no security violation. The model is a 0.5B floor configuration, so utility is zero and the security counts are vacuous: a model that completes no task cannot be shown to be protected. Failure counts are the categories the run recorded: each cell contributes one count per recorded failure, so one cell can carry several categories and a cell that completed can still carry a category such as \texttt{utility}. The six incomplete slack cells were later diagnosed as capability failures of that model, not adapter gaps; a module rerun of the same suite reports them as parser failures.}
+\label{tab:agentdojo-breadth}
+\end{table}

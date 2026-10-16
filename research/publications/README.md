@@ -24,7 +24,7 @@ here keeps one framing from being copied into the other.
 | [manuscript/](manuscript/README.md) | The fourth-year reviewer | Progress report, year by year |
 | [workshop/](workshop/README.md) | NeurIPS 2026 workshop reviewers | One unified eight-page contribution |
 | [flmsec_2026/](flmsec_2026/SUBMISSION_CHECKLIST.md) | FLMSec 2026 reviewers | Influence-tracking submission package |
-| arXiv preprint | The international research community | One cohesive research contribution |
+| [arxiv/](arxiv/README.md) | The international research community | One cohesive research contribution |
 
 ## paper/ - archived previous-year paper
 
@@ -37,7 +37,7 @@ here keeps one framing from being copied into the other.
 - **Audience**: the fourth-year reviewer.
 - **Goal**: report progress and state the evidence boundary of each claim.
 - **Framing**: it separates work completed in the previous year from work completed this year. That is correct for this reader, and it is not a model for any other document.
-- **Open issue**: `scripts/build_arxiv_bundle.py` points `MANUSCRIPT` at this file, so the arXiv bundle currently ships the fourth-year report rather than a research paper.
+- **Not the arXiv source**: until 2026-10-16 `scripts/build_arxiv_bundle.py` built from this file. The arXiv preview now ships `../arxiv/`, which presents the whole body of work as one contribution. The deliberate year-by-year structure stays here, for this reader.
 
 ## workshop/ - unified workshop paper
 
@@ -51,9 +51,9 @@ here keeps one framing from being copied into the other.
 - **Goal**: the influence-tracking framing of the work, with its own checklist and claim-to-evidence map.
 - **Relation to workshop/**: same venue, different framing and a different document. `workshop/` covers the wider body of work.
 
-## arXiv preprint
+## arxiv/ - the arXiv preprint
 
 - **Audience**: the international research community.
 - **Goal**: one cohesive research contribution. Every part of the work appears as a single body of research.
 - **Framing rule**: the preprint must not be structured as a progress report, must not separate the work by year, and must not read as a document written for examiners.
-- **Status**: no dedicated source file yet. The bundle step builds from the fourth-year report until one exists.
+- **Source**: `arxiv/main.tex`, packaged by `scripts/build_arxiv_bundle.py`. Its generated tables and figures come from the same generator scripts as the report's, written into `arxiv/generated/` so the submission tree is self-contained.

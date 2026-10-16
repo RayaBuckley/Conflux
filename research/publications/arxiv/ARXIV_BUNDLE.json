@@ -1,18 +1,13 @@
 {
   "schema": "conflux-arxiv-bundle/1",
-  "manuscript": "research/publications/manuscript/conflux_fourth_year_2026.tex",
-  "archive_root": "research/publications/manuscript",
+  "manuscript": "research/publications/arxiv/main.tex",
+  "archive_root": "research/publications/arxiv",
   "source": "https://info.arxiv.org/help/submit_tex.html (read 2026-10-10)",
   "notes": [
     "arXiv compiles from the root of the submission directory, so this tree is the archive root.",
     "The manifest digest of every shipped file is checked before packaging."
   ],
   "files": [
-    {
-      "path": "conflux_fourth_year_2026.tex",
-      "bytes": 36982,
-      "sha256": "066da943fa601755c229c6d510655155b48f191f16b005c9eac7b8f473e58e0d"
-    },
     {
       "path": "generated/figures/f1_property_sensitivity.tex",
       "bytes": 3647,
@@ -30,8 +25,8 @@
     },
     {
       "path": "generated/tables/agentdojo_breadth_table.tex",
-      "bytes": 3221,
-      "sha256": "786c35bba04f14dc6550ceba4a1f009142bb329d503a038d7e635e80fc06af72"
+      "bytes": 3128,
+      "sha256": "f8c85a1520303e43d6050a5413395ac3ab1222bf404c6efac213edceb5675f51"
     },
     {
       "path": "generated/tables/agentdojo_fingerprints_table.tex",
@@ -59,9 +54,14 @@
       "sha256": "2fcff77261f2139730e9f1632b501f772935213bee3d5373b1172766b553bbdd"
     },
     {
+      "path": "main.tex",
+      "bytes": 34335,
+      "sha256": "ebef6bf761b567b499c01c85a67d9012e0f2cf2b788af06a58d638ba9a1058aa"
+    },
+    {
       "path": "references.bib",
-      "bytes": 7633,
-      "sha256": "7e59930507acdb769972b13202e604fb2d7e46193545149d10665a3265ef1ef3"
+      "bytes": 9768,
+      "sha256": "a524a9c62fa0a741da36bb02e1d78b04d5443b6154394223e74678c466e4cadb"
     }
   ]
 }
