@@ -164,17 +164,17 @@ def generate() -> dict[str, Any]:
     if EVIDENCE_DIRS["sledv_scaling"].exists():
         bundle = _load_json(EVIDENCE_DIRS["sledv_scaling"] / "result.json")
         tables.append(_table_sledv_scaling(bundle))
-        evidence_sources["sledv_scaling"] = str(EVIDENCE_DIRS["sledv_scaling"].relative_to(ROOT))
+        evidence_sources["sledv_scaling"] = EVIDENCE_DIRS["sledv_scaling"].relative_to(ROOT).as_posix()
 
     if EVIDENCE_DIRS["mutation_benchmark"].exists():
         bundle = _load_json(EVIDENCE_DIRS["mutation_benchmark"] / "result.json")
         tables.append(_table_mutation_benchmark(bundle))
-        evidence_sources["mutation_benchmark"] = str(EVIDENCE_DIRS["mutation_benchmark"].relative_to(ROOT))
+        evidence_sources["mutation_benchmark"] = EVIDENCE_DIRS["mutation_benchmark"].relative_to(ROOT).as_posix()
 
     if EVIDENCE_DIRS["provenance_precision"].exists():
         bundle = _load_json(EVIDENCE_DIRS["provenance_precision"] / "result.json")
         tables.append(_table_provenance_precision(bundle))
-        evidence_sources["provenance_precision"] = str(EVIDENCE_DIRS["provenance_precision"].relative_to(ROOT))
+        evidence_sources["provenance_precision"] = EVIDENCE_DIRS["provenance_precision"].relative_to(ROOT).as_posix()
 
     return {
         "schema_version": "1",

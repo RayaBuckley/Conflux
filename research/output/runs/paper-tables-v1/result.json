@@ -37,9 +37,9 @@
     }
   ],
   "evidence_sources": {
-    "mutation_benchmark": "research\\output\\runs\\mutation-benchmark-v1",
-    "provenance_precision": "research\\output\\runs\\provenance-precision-v1",
-    "sledv_scaling": "research\\output\\runs\\sledv-scaling-v1"
+    "mutation_benchmark": "research/output/runs/mutation-benchmark-v1",
+    "provenance_precision": "research/output/runs/provenance-precision-v1",
+    "sledv_scaling": "research/output/runs/sledv-scaling-v1"
   },
   "id": "paper-tables-v1",
   "schema_version": "1",
