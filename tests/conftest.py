@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from conflux.application import DecisionPipeline
@@ -13,6 +15,12 @@ from conflux.policy import (
     SessionVisibilityPolicy,
     SnapshotReadPolicy,
 )
+
+# pyproject.toml keeps pytest's --basetemp at the relative path .local/pytest and
+# .gitignore ignores .local/, so a fresh checkout has no directory for pytest to create
+# its temporary files in: every test that uses tmp_path errors at setup. pytest resolves
+# a relative basetemp against the invocation directory, so create the parent there.
+Path(".local").mkdir(exist_ok=True)
 
 
 @pytest.fixture
