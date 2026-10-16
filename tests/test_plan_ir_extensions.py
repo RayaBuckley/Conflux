@@ -166,9 +166,12 @@ def test_new_state_variables_exist() -> None:
     var_names = {v.name for v in abstraction.ir.variables}
     assert "delegation_consumed" in var_names
     assert "delegation_authority_gained" in var_names
-    assert "authority_set" in var_names
     assert "revocation_received" in var_names
     assert "terminated" in var_names
+    # `authority_set` and `context_narrowed` were declared but never assigned by any rule, so they backed
+    # invariants the model could not witness. They are gone deliberately, and this pins the deletion.
+    assert "authority_set" not in var_names
+    assert "context_narrowed" not in var_names
 
 
 def test_existing_plan_verification_still_works() -> None:

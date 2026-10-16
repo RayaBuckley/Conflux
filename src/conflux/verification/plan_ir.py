@@ -184,8 +184,6 @@ def abstract_plan(
         "every grounded effect is mediated at action time by the canonical kernel",
         "generated code is abstracted by its declared capability effect summary",
         "arbitrary source-code semantics are not analysed",
-        "context_narrowed models continuation patches that drop principals from context",
-        "authority_set models monotonic confinement per Progent arXiv:2504.11703",
         "revocation_received models mid-plan revocation blocking downstream effects",
         "terminated models bounded liveness per arXiv:2510.14133",
     )
@@ -254,11 +252,9 @@ def abstract_plan(
             StateVariable("step", Sort.INTEGER, 0, 0, None if unbounded_step else bound),
             StateVariable("unauthorised_executed", Sort.BOOLEAN, False),
             StateVariable("capability_violated", Sort.BOOLEAN, False),
-            StateVariable("context_narrowed", Sort.BOOLEAN, False),
             StateVariable("continuation_seen", Sort.BOOLEAN, False),
             StateVariable("delegation_consumed", Sort.BOOLEAN, False),
             StateVariable("delegation_authority_gained", Sort.BOOLEAN, False),
-            StateVariable("authority_set", Sort.INTEGER, 0, 0, bound),
             StateVariable("revocation_received", Sort.BOOLEAN, False),
             StateVariable("terminated", Sort.BOOLEAN, False),
             *endpoint_variables,
@@ -280,25 +276,11 @@ def abstract_plan(
                 ),
             ),
             SafetyInvariant(
-                "principal-context-monotonic",
-                Expression.operator(
-                    ExpressionKind.NOT,
-                    Expression.variable("context_narrowed"),
-                ),
-            ),
-            SafetyInvariant(
                 "delegation-authority-requires-grant",
                 Expression.operator(
                     ExpressionKind.IMPLIES,
                     Expression.variable("delegation_authority_gained"),
                     Expression.variable("delegation_consumed"),
-                ),
-            ),
-            SafetyInvariant(
-                "monotonic-confinement",
-                Expression.operator(
-                    ExpressionKind.NOT,
-                    Expression.variable("unauthorised_executed"),
                 ),
             ),
             SafetyInvariant(

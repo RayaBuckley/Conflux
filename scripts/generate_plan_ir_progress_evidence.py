@@ -58,9 +58,11 @@ BOUNDS = (1, 2, 3, 4)
 SAFE_FAMILY = frozenset({"safe", "bounded_safe"})
 VOLATILE_FIELDS = ("generated_at", "source_commit")
 
-# The shape every retained bounded row already records: seven invariants and ten state variables.
-BASELINE_INVARIANTS = 7
-BASELINE_VARIABLES = 10
+# The shape every retained bounded row records: five invariants and eight state variables. The two
+# declarations no rule could assign (`context_narrowed`, `authority_set`) and the duplicate invariant
+# (`monotonic-confinement`) were removed in the P5 change set, so the baseline moved with them.
+BASELINE_INVARIANTS = 5
+BASELINE_VARIABLES = 8
 
 ROUTES: dict[str, str] = {
     "reference": "the bound is declared; the interpreter walks the reachable states",

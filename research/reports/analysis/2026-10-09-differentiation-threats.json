@@ -323,7 +323,7 @@
    "invalidation_verdict": {
     "level": "none (but the formal equal to beat)",
     "invalidates": "Novelty of proving authorization soundness at the execution boundary with named assumptions, and of pairing an authorized-effect condition with an endorsed-influence condition.",
-    "survives": "The authority source: arXiv:2610.06966 assumes contract fidelity for one trusted task and places LLM semantic binding inside its assumptions (App. B.2.2), while Conflux takes authority from the ACS over the accumulated principal set. Repo evidence: src/conflux/verification/plan_ir.py invariant principal-context-monotonic, docs/decisions/025, SECURITY_MODEL.md TCB table."
+    "survives": "The authority source: arXiv:2610.06966 assumes contract fidelity for one trusted task and places LLM semantic binding inside its assumptions (App. B.2.2), while Conflux takes authority from the ACS over the accumulated principal set. Repo evidence: docs/decisions/025, SECURITY_MODEL.md TCB table. Correction 2026-10-16: the plan-IR invariant principal-context-monotonic cited here was deleted as vacuous (it named a state variable no rule in plan_ir.py could assign), so the evidence for this claim is the ACS authority rule and ADR-025, not the plan IR."
    }
   },
   {

@@ -14,6 +14,9 @@ from pathlib import Path
 
 import pytest
 
+from conflux.domain import Principal, Provenance
+from conflux.planning import OperationCatalogue
+from conflux.verification import abstract_plan
 from scripts import generate_backend_cross_validation as cross
 from scripts import generate_delegation_defect_sweep as sweep
 from scripts import generate_plan_ir_evidence as plan_ir
@@ -129,3 +132,35 @@ def test_check_reports_drift_and_matches_after_a_write(tmp_path: Path) -> None:
     evidence["results"][0]["reference_verdict"] = "unknown"
     (tmp_path / "evidence.json").write_text(json.dumps(evidence, indent=2, sort_keys=True), encoding="utf-8")
     assert plan_ir.check(tmp_path, rows) == 1
+
+
+def test_every_declared_variable_is_written_by_at_least_one_rule() -> None:
+    """A variable no rule can assign backs an invariant the model cannot witness.
+
+    The plan IR used to declare ``context_narrowed`` and ``authority_set``, which no rule assigns, and
+    carried invariants on them (``principal-context-monotonic``). Those invariants held for the trivial
+    reason that nothing could change their variables. This is the general guard against that defect:
+    across the whole grid, every declared variable must be written by some rule, except the ones named
+    here with a reason.
+    """
+    principal = Principal("alice", "Alice")
+    source = Provenance.from_principal(principal, source="evidence")
+    write, code = plan_ir._operations()
+    catalogue = OperationCatalogue((write, code))
+    declared_all: set[str] = set()
+    written_all: set[str] = set()
+    for case in plan_ir.PLAN_CASES:
+        plan = plan_ir._build_plan(case, source, write, code)
+        for effect_case in plan_ir.EFFECT_CASES:
+            abstraction = abstract_plan(
+                plan,
+                catalogue=catalogue,
+                effect_summaries=plan_ir._summaries(case, plan, effect_case),
+                bound=2,
+            )
+            assert abstraction.ir is not None, (case, effect_case, abstraction.unsupported)
+            declared_all |= {variable.name for variable in abstraction.ir.variables}
+            written_all |= {assignment.variable for rule in abstraction.ir.transitions for assignment in rule.assignments}
+    # `continuation_seen` is written only by a ContinuePlanningNode, and none of the evidence plan shapes
+    # contains one, so it is source-live but unexercised by this grid. A second such variable fails here.
+    assert declared_all - written_all == {"continuation_seen"}

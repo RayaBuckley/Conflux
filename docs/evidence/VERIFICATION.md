@@ -2254,6 +2254,11 @@ its `--check` mode:
   controls nothing can refute.
 - The no-endpoint reading keeps the shape every earlier bundle recorded - 7 invariants and 10 state
   variables - so the change is additive, and the retained `plan_ir` grid still matches byte for byte.
+- **Correction (2026-10-16):** the P5 change set (finding F2) removed two plan-IR declarations no rule
+  could assign and one duplicate invariant, so this section's baseline is now 5 invariants and 8 state
+  variables, the progress shape is 8 and 10, and all 36 `plan_ir` rows changed fingerprint. The
+  additive statement above holds for the change it describes, not for the current tree. The 28/28
+  class agreement and the 20 refuted controls are unchanged and re-measured in the retained bundles.
 
 Limits of this section: four bounds of one plan shape family with declared endpoints, and one control per
 way the obligation can fail, are not a claim that a plan in general reaches its goal. The endpoint

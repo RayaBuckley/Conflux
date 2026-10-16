@@ -82,7 +82,10 @@ def test_every_refutation_records_a_trace_and_no_safe_row_does(bundle: dict[str,
     assert len(safe) == 76
     assert all(model["witness_lengths"] for model in unsafe)
     assert all(not model["witness_lengths"] for model in safe)
-    assert sum(len(model["witness_lengths"]) for model in unsafe) == 3204
+    # 3204 until the P5 change set removed the duplicate `monotonic-confinement` invariant from the plan IR.
+    # It mirrored `no-unauthorised-execution`, so every plan-ir row that refutes that property carried two
+    # witness entries for one property; 24 rows lost exactly one entry each and no verdict moved.
+    assert sum(len(model["witness_lengths"]) for model in unsafe) == 3180
 
 
 def test_depth_family_carries_no_unsafe_control(bundle: dict[str, Any]) -> None:

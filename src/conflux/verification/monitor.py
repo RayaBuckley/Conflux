@@ -2,8 +2,9 @@
 
 The design is `writing/proof-plus-monitor-design.md` (E4, 2026-10-11); the emitter is additive
 and changes no existing verification path. The design projection table was written when the plan
-IR carried seven invariants and ten variables; it now carries ten and twelve, so the table below
-is the current one.
+IR carried seven invariants and ten variables; the P5 change set then removed two declarations no
+rule could assign and one duplicate invariant, so the plan IR now carries five invariants and eight
+variables (eight and ten on the progress shape), and the table below is the current one.
 
 A monitor is the tuple (IR fingerprint, invariants, projection, bound). The projection maps
 runtime trace facts to IR variables; the table names the runtime source of each variable and
@@ -111,9 +112,7 @@ DEFAULT_EXERCISE = "any_event"
 # ``not_exercised``: the check ran on a run that did not ask it a question.
 EXERCISE_TABLE: dict[str, str] = {
     "no-unauthorised-execution": "executed_event",
-    "monotonic-confinement": "executed_event",
     "capability-envelope-preserved": "code_effect",
-    "principal-context-monotonic": "continuation_event",
     "delegation-authority-requires-grant": "delegation_event",
     "revocation-propagation": "revocation_event",
     "bounded-progress": "step",
@@ -127,7 +126,6 @@ EXERCISE_REASON: dict[str, str] = {
     "step": "no step was observed",
     "any_event": "no event was observed",
     "code_effect": "the trace carries no effect summary, so a code effect cannot be observed",
-    "continuation_event": "the trace carries no plan node id, so a continuation cannot be observed",
     "delegation_event": "the trace carries no plan node id, so a delegation node cannot be observed",
     "revocation_event": "the trace has no revocation event type",
     "goal_event": "the trace carries no plan node id, so a goal node cannot be observed",
