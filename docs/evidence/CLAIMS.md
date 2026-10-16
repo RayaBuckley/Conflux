@@ -154,3 +154,29 @@ Claim strength is kept separate from implementation status because passing
 code tests can establish behavior without establishing deployment security or
 empirical utility. Every numerical statement therefore points to retained
 evidence, and missing live evidence remains visible rather than inferred.
+
+## The core claim in plain words
+
+The whole argument can be stated without acronyms. Agents act on the outside
+world while using data that different parties control. An action may go ahead
+only if every party whose data influenced it would allow that action. Three
+things together make that rule real rather than aspirational: provenance is
+recorded on every value the agent uses, there is one decision point that fails
+closed when it cannot decide, and the resulting evidence is retained so a third
+party can re-check it.
+
+The claim under test is containment. An input fetched from somewhere else
+cannot acquire authority it was never granted, and no action is dispatched that
+some party influencing the data would refuse.
+
+The counts that support the claim are the bounded ones in the rows above, and
+they are bounded on purpose. Eleven delegation variants are decided by all three
+encodings, ten of them refuted, over ten distinct bodies and nine distinct
+refuted bodies, because two of the variant names carry the same body
+(`research/output/runs/three-way-agreement-v1/`). The nine independent
+delegation defects have 512 subsets, 511 of them refuted
+(`research/output/runs/delegation-defect-sweep-v1/`). Neither count is a success
+rate against an adversary, and neither is a proof of the delegation semantics.
+
+A longer plain-words version of this claim, with the word and acronym checks a
+reader can repeat, is kept outside the repository with the writing artefacts.

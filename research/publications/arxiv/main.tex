@@ -44,7 +44,8 @@
 Large-language-model agents combine information from multiple principals
 while performing externally visible actions. We argue that privilege
 escalation, rather than prompt injection itself, is the appropriate
-system-level security objective. We present Influence Tracking with
+system-level security objective. Stated plainly, an action may proceed only if
+every principal that influenced it would allow that action. We present Influence Tracking with
 Extrapolated Security (ITES), a provenance-based defence that derives the
 effective authority of each execution from the intersection of the
 permissions held by all principals that influence it, and the System-Level
