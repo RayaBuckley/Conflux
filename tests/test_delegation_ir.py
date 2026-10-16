@@ -100,9 +100,12 @@ def test_multi_grant_ir_builds() -> None:
 
     ir = build_multi_grant_ir(2)
     assert "multi-grant-2" in ir.id
-    assert len(ir.variables) == 9
-    assert len(ir.transitions) == 6
-    assert len(ir.invariants) == 6
+    # 2 grants x 4 flags + the symbolic grant_count + step
+    assert len(ir.variables) == 10
+    # 2 issue rules + 2 grants x (consume, revoke, expire)
+    assert len(ir.transitions) == 8
+    # 2 grants x (no_revoked_consume, no_expired_consume, scope_narrowed, respects_count)
+    assert len(ir.invariants) == 8
 
 
 def test_multi_grant_ir_is_safe() -> None:
@@ -122,6 +125,56 @@ def test_multi_grant_ir_scales_exponentially() -> None:
     r2 = reference_safety_check(ir2)
     r3 = reference_safety_check(ir3)
     assert r3.states > r2.states
+
+
+def test_the_grant_count_is_symbolic_over_the_run() -> None:
+    from conflux.verification.delegation_ir import build_multi_grant_ir
+    from conflux.verification.sensitivity import reachable_states
+
+    for n_grants in (2, 3):
+        ir = build_multi_grant_ir(n_grants)
+        counts = sorted({state["grant_count"] for state in reachable_states(ir)})
+        assert counts == list(range(n_grants + 1)), counts
+
+
+def _grant_projection(ir: VerificationIR, count: int) -> set[tuple[object, ...]]:
+    from conflux.verification.sensitivity import reachable_states
+
+    keys = tuple(
+        f"g{i}_{field}" for i in range(count) for field in ("consumed", "revoked", "expired", "scope_match")
+    )
+    return {tuple(state[key] for key in keys) for state in reachable_states(ir)}
+
+
+def test_the_wide_encoding_reproduces_each_narrow_model() -> None:
+    """One encoding shape covers every count.
+
+    The first ``count`` grants of the 4-grant model reach exactly the configurations of the
+    ``count``-grant model, so the family no longer needs one hand-built IR per ``n``.
+    """
+    from conflux.verification.delegation_ir import build_multi_grant_ir
+
+    for count in (1, 2, 3):
+        wide = _grant_projection(build_multi_grant_ir(4), count)
+        narrow = _grant_projection(build_multi_grant_ir(count), count)
+        assert wide == narrow, count
+
+
+def test_the_count_invariant_is_protected_by_a_live_guard() -> None:
+    """The symbolic count is load-bearing, not decorative.
+
+    With a fixed count the same sentence is either trivially true or true by construction.
+    With the count symbolic the index guard is live somewhere in the run, and a mutant that
+    drops it refutes the invariant. Measured, so the claim cannot regress to a vacuous one.
+    """
+    from conflux.verification.delegation_ir import build_multi_grant_ir
+    from conflux.verification.sensitivity import CLASS_CHECKED, classify_ir
+
+    rows = {row.invariant_id: row for row in classify_ir(build_multi_grant_ir(2))}
+    for i in (0, 1):
+        row = rows[f"grant_{i}_respects_count"]
+        assert row.exercise_class == CLASS_CHECKED, row.exercise_class
+        assert any(falsifier.guard_satisfiable_at_reachable_state for falsifier in row.falsifiers), i
 
 
 def test_the_eleven_variants_cover_ten_distinct_bodies() -> None:

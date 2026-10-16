@@ -327,6 +327,19 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
     - No revoked or expired grant is consumed
     - Authority narrowing across all grants (no grant exceeds its scope)
     - Cascade containment (no redelegation chain)
+    - No grant is consumed before it has been issued
+
+    ``grant_count`` is a bounded symbolic state variable (domain ``0..n_grants``): it starts
+    at 0 and an ``issue_grant_c`` rule raises it from ``c`` to ``c + 1``, so one encoding
+    covers every count in ``0..n_grants`` rather than one hand-built IR per ``n``. Each
+    per-grant rule carries its own index guard ``i < grant_count``, so a grant at or above
+    the count is disabled *by the model*.
+
+    The count is what makes ``consumed -> i < grant_count`` a real invariant rather than a
+    restatement of the build: because the guard is live somewhere in the run, the property
+    is protected by an active guard and is refuted by a mutant that drops it. A fixed count
+    would make the same sentence trivially true or structurally true, which is measured in
+    ``writing/proofs/notes/2026-10-16-symbolic-grant-count-design.md``.
 
     Source: G4 multi-grant delegation scenarios from the plan.
     """
@@ -340,6 +353,7 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
                 StateVariable(f"g{i}_scope_match", Sort.BOOLEAN, True),
             ],
         )
+    grant_vars.append(StateVariable("grant_count", Sort.INTEGER, 0, 0, n_grants))
     grant_vars.append(StateVariable("step", Sort.INTEGER, 0, 0, MULTI_GRANT_BOUND))
 
     var = Expression.variable
@@ -349,11 +363,20 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
     step_inc = Assignment("step", Expression.operator(ExpressionKind.ADD, step, const(1)))
 
     transitions: list[TransitionRule] = []
+    for index in range(n_grants):
+        transitions.append(
+            TransitionRule(
+                f"issue_grant_{index}",
+                Expression.operator(ExpressionKind.EQUAL, var("grant_count"), const(index)),
+                (step_inc, Assignment("grant_count", const(index + 1))),
+            ),
+        )
     for i in range(n_grants):
         g_consumed = var(f"g{i}_consumed")
         g_revoked = var(f"g{i}_revoked")
         g_expired = var(f"g{i}_expired")
         g_scope = var(f"g{i}_scope_match")
+        in_range = Expression.operator(ExpressionKind.LESS_THAN, const(i), var("grant_count"))
 
         not_consumed = Expression.operator(ExpressionKind.NOT, g_consumed)
         not_revoked = Expression.operator(ExpressionKind.NOT, g_revoked)
@@ -362,6 +385,7 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
         consume_guard = Expression.operator(
             ExpressionKind.AND,
             step_guard,
+            in_range,
             not_consumed,
             not_revoked,
             not_expired,
@@ -378,6 +402,7 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
         revoke_guard = Expression.operator(
             ExpressionKind.AND,
             step_guard,
+            in_range,
             not_revoked,
             not_consumed,
         )
@@ -392,6 +417,7 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
         expire_guard = Expression.operator(
             ExpressionKind.AND,
             step_guard,
+            in_range,
             not_expired,
             not_consumed,
         )
@@ -431,6 +457,17 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
                 f"Consumed grant {i} respects scope",
             ),
         )
+        invariants.append(
+            SafetyInvariant(
+                f"grant_{i}_respects_count",
+                Expression.operator(
+                    ExpressionKind.IMPLIES,
+                    g_consumed,
+                    Expression.operator(ExpressionKind.LESS_THAN, const(i), var("grant_count")),
+                ),
+                f"Consumed grant {i} must sit below the declared grant count",
+            ),
+        )
 
     return VerificationIR(
         id=f"delegation-ir:multi-grant-{n_grants}",
@@ -440,6 +477,7 @@ def build_multi_grant_ir(n_grants: int = 2) -> VerificationIR:
         bound=MULTI_GRANT_BOUND,
         assumptions=(
             f"{n_grants} concurrent grants from different issuers",
+            "the count starts at 0 and grows by one per issue rule, so one encoding covers every count in 0..n_grants",
             "each grant is single-use with remaining_use_count=1",
             "redelegable=False is hardcoded",
             "consumption is sequential; revocation can interleave",
