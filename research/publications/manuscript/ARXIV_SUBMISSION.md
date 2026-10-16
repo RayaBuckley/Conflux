@@ -20,7 +20,8 @@ Every rule below was read live on 2026-10-10 from
 `--metadata` prints the exact title and abstract the form wants: the title
 without its typeset subtitle line, the abstract without its LaTeX markup. Both
 strings come from the manuscript itself, so the form cannot drift from the
-paper.
+paper. It fails, printing the same problem list as `--check`, when either field
+cannot be submitted as it stands.
 
 `python scripts/build_arxiv_bundle.py` writes a deterministic `.tar.gz` below
 `.local/arxiv-bundle/`, containing exactly the files listed in

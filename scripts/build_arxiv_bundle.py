@@ -474,10 +474,16 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.metadata:
-        title, abstract = metadata_strings(MANUSCRIPT)
+        problems = metadata_problems(MANUSCRIPT)
+        for problem in problems:
+            print(f"[arxiv-bundle] {problem}")
+        try:
+            title, abstract = metadata_strings(MANUSCRIPT)
+        except ValueError:
+            return 1
         print(f"[arxiv-bundle] title ({len(title)} characters)\n{title}\n")
         print(f"[arxiv-bundle] abstract ({len(abstract)} characters)\n{abstract}")
-        return 0
+        return 1 if problems else 0
 
     current, problems = manifest_for(MANUSCRIPT, ROOT)
     if problems:

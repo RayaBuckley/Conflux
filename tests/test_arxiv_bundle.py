@@ -160,6 +160,30 @@ def test_long_abstract_is_refused(tmp_path: Path) -> None:
     assert problems and "1921" in problems[0]
 
 
+def test_metadata_command_refuses_an_over_long_abstract(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The command a submitter runs for the form's fields fails when they cannot be submitted."""
+    manuscript = _fake_manuscript(tmp_path, abstract="x" * 1921)
+    monkeypatch.setattr(bundle, "MANUSCRIPT", manuscript)
+    assert bundle.main(["--metadata"]) == 1
+    assert "1921" in capsys.readouterr().out
+
+
+def test_metadata_command_prints_a_submittable_pair(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A submittable pair is printed and the command succeeds."""
+    manuscript = _fake_manuscript(tmp_path, abstract="An abstract.")
+    monkeypatch.setattr(bundle, "MANUSCRIPT", manuscript)
+    assert bundle.main(["--metadata"]) == 0
+    assert "An abstract." in capsys.readouterr().out
+
+
 def test_non_ascii_metadata_is_refused(tmp_path: Path) -> None:
     """The submission form accepts ASCII metadata only."""
     manuscript = _fake_manuscript(tmp_path, title="Caf\u00e9 study")

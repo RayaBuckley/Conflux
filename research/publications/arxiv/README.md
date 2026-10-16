@@ -68,4 +68,5 @@ repository path before packaging. Run it with `--check`.
 ## arXiv metadata
 
 The submission form needs the title and the abstract as plain ASCII under
-1920 characters; `build_arxiv_bundle.py --metadata` prints both.
+1920 characters; `build_arxiv_bundle.py --metadata` prints both and fails
+when either field cannot be submitted.
