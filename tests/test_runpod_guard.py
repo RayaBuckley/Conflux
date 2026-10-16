@@ -1707,3 +1707,126 @@ def test_refusals_are_audited_in_the_isolated_directory_too(monkeypatch: pytest.
     assert "stop-refused" in text
     assert "pod-tenant-a1" in text  # the log records the selector the user typed...
     assert "tenant-a-h100" not in text  # ...and never the foreign pod's name or env
+
+
+class TestWallClockAccounting:
+    """The vendor start stamp resets on a container restart and can be absent, so the
+    stamps this machine writes itself are the wall clock (RC-2026-10-15-10)."""
+
+    def test_wall_clock_hours_read_our_own_stamps_not_the_vendor_field(self) -> None:
+        now = datetime.now(UTC)
+        item = entry(pod_id="pod-x")
+        item.created_at = (now - timedelta(hours=1.2)).isoformat()
+        item.stopped_at = now.isoformat()
+        item.state = "exited"
+        pod = mk_pod("conflux-pilot-1-x", "pod-x", started_minutes_ago=10)
+        assert item.wall_clock_hours(now) == pytest.approx(1.2, abs=1e-3)
+        assert guard.uptime_hours(pod, now) == pytest.approx(10 / 60, abs=1e-3)
+
+    def test_wall_clock_usd_uses_the_recorded_rate(self) -> None:
+        now = datetime.now(UTC)
+        item = entry(pod_id="pod-x")
+        item.created_at = (now - timedelta(hours=1.0)).isoformat()
+        item.stopped_at = now.isoformat()
+        item.state = "exited"
+        item.actual_rate_usd_per_hr = 3.99
+        assert item.wall_clock_usd(now) == pytest.approx(3.99, abs=1e-3)
+
+    def test_wall_clock_spend_sums_measured_lives(self, state_dir: Path) -> None:
+        now = datetime.now(UTC)
+        ledger = guard.Ledger()
+        finished = entry(pod_id="pod-a")
+        finished.created_at = (now - timedelta(hours=1.0)).isoformat()
+        finished.stopped_at = now.isoformat()
+        finished.state = "exited"
+        finished.actual_rate_usd_per_hr = 2.0
+        live = entry(pod_id="pod-b")
+        live.created_at = (now - timedelta(hours=0.5)).isoformat()
+        live.actual_rate_usd_per_hr = 4.0
+        ledger.entries.extend([finished, live])
+        assert ledger.wall_clock_spend(now) == pytest.approx(4.0, abs=1e-2)
+
+    def test_pod_cost_note_prefers_the_wall_clock_and_shows_a_disagreeing_vendor_stamp(
+        self,
+        state_dir: Path,
+    ) -> None:
+        now = datetime.now(UTC)
+        ledger = guard.Ledger()
+        item = entry(pod_id="pod-x")
+        item.created_at = (now - timedelta(hours=1.2)).isoformat()
+        item.actual_rate_usd_per_hr = 3.99
+        ledger.entries.append(item)
+        pod = mk_pod("conflux-pilot-1-x", "pod-x", started_minutes_ago=10)
+        note = guard.pod_cost_note(pod, now, ledger)
+        assert "uptime=1.20h" in note
+        assert "(wall clock)" in note
+        assert "vendor stamp: 0.17h" in note
+
+    def test_pod_cost_note_omits_the_vendor_stamp_when_the_two_agree(self, state_dir: Path) -> None:
+        now = datetime.now(UTC)
+        ledger = guard.Ledger()
+        item = entry(pod_id="pod-x")
+        item.created_at = (now - timedelta(minutes=30)).isoformat()
+        ledger.entries.append(item)
+        pod = mk_pod("conflux-pilot-1-x", "pod-x", started_minutes_ago=30)
+        assert "vendor stamp" not in guard.pod_cost_note(pod, now, ledger)
+
+    def test_pod_cost_note_labels_a_pod_the_ledger_does_not_know(self, state_dir: Path) -> None:
+        now = datetime.now(UTC)
+        pod = mk_pod("conflux-pilot-1-x", "pod-x", started_minutes_ago=10)
+        note = guard.pod_cost_note(pod, now, guard.Ledger())
+        assert "(vendor stamp)" in note
+
+    def test_pod_cost_note_reports_an_unknown_cost_without_any_recorded_rate(self, state_dir: Path) -> None:
+        now = datetime.now(UTC)
+        ledger = guard.Ledger()
+        item = entry(pod_id="pod-x")
+        item.actual_rate_usd_per_hr = 0.0
+        item.assumed_rate_usd_per_hr = 0.0
+        ledger.entries.append(item)
+        pod = mk_pod("conflux-pilot-1-x", "pod-x", started_minutes_ago=10)
+        assert "est=unknown" in guard.pod_cost_note(pod, now, ledger)
+
+    def test_status_prints_the_wall_clock_when_the_vendor_stamp_undercounts(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        state_dir: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        api = FakeApi([conflux_pod("pilot-1", "pod-conflux1")])
+        wire(monkeypatch, api)
+        ledger = guard.Ledger()
+        item = entry(run_id="pilot-1", pod_id="pod-conflux1")
+        item.created_at = (datetime.now(UTC) - timedelta(hours=1.2)).isoformat()
+        ledger.entries.append(item)
+        ledger.save()
+        assert guard.main(["status"]) == 0
+        output = capsys.readouterr().out
+        assert "uptime=1.20h" in output
+        assert "(wall clock)" in output
+        assert "vendor stamp: 0.50h" in output
+
+    def test_report_prints_the_wall_clock_total(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        state_dir: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        api = BillingRecordsApi(
+            [conflux_pod("pilot-1", "pod-conflux1")],
+            [{"podId": "pod-conflux1", "amount": 0.68, "timeBilledMs": 612_000}],
+        )
+        wire(monkeypatch, api)
+        ledger = guard.Ledger()
+        item = entry(run_id="pilot-1", pod_id="pod-conflux1")
+        item.created_at = (datetime.now(UTC) - timedelta(hours=1.2)).isoformat()
+        item.actual_rate_usd_per_hr = 3.99
+        ledger.entries.append(item)
+        ledger.save()
+        assert guard.main(["report", "--days", "7", "--write"]) == 0
+        output = capsys.readouterr().out
+        assert "Wall-clock spend from our own create/stop stamps" in output
+        assert "$4.79" in output
+        reports = sorted((state_dir / "reports").glob("cost-*.md"))
+        assert len(reports) == 1
+        assert "Wall-clock estimate from our own create/stop stamps" in reports[0].read_text(encoding="utf-8")

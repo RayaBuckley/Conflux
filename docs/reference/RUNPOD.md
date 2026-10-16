@@ -60,6 +60,14 @@ observed rate is stored as 0.0 - an assumed rate is never written as an observed
 so it cannot seed later estimates - and the projected cost uses the rate you passed.
 When a real rate is reported above the per-pod cap, the pod is stopped immediately.
 
+Uptime and cost in `status`, `stop`, `terminate`, `stop-all` and `report` are measured
+from the stamps this machine writes itself when it creates and stops a pod. The vendor's
+start stamp resets on a container restart and can be missing, which understated pod ages
+by hours on 2026-10-15 (RC-2026-10-15-10). Both readings are printed when they disagree
+by more than 0.1 h, and a pod the ledger does not know is labelled `(vendor stamp)`. The
+daily and per-pod caps still use the recorded **planned** figure, so switching them to a
+wall-clock estimate remains a decision for the account owner.
+
 `stop_pod.py` and `run_all.py` no longer act on a pod themselves. Both route every
 stop through `guard.py`, so they refuse a pod that is not Conflux's, and `run_all.py`
 re-reads the account and re-checks identity before it opens the first ssh connection:

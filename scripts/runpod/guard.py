@@ -73,6 +73,10 @@ LIVE_STATES = frozenset({"created", "running"})
 # A ledger entry older than this, or already finished, must not authorise a stop:
 # pod ids can be recycled, and the ledger is a local file.
 TRUST_WINDOW_DAYS = 7
+# Two uptime readings below this difference are treated as the same figure. The vendor's
+# start stamp resets on a container restart and can be missing, so ours is preferred
+# (RC-2026-10-15-10) and a real disagreement is printed rather than hidden.
+VENDOR_STAMP_DISAGREEMENT_HOURS = 0.1
 NAME_PREFIX = "conflux-"
 # Lower-case letters, digits, dots and hyphens only: model slugs such as
 # `qwen2.5-7b-instruct` are allowed, while `conflux-Bad_Name` and anything with
@@ -516,6 +520,25 @@ class LedgerEntry:
     stopped_at: str = ""
     note: str = ""
 
+    def wall_clock_hours(self, now: datetime) -> float:
+        """Hours this pod existed, from the stamps this machine wrote itself.
+
+        The vendor's start stamp resets when a container restarts and can be missing
+        entirely, so it understates a pod's age (RC-2026-10-15-10). ``created_at`` and
+        ``stopped_at`` are written locally at create and stop time, so they are the wall
+        clock; a live entry is measured up to ``now``.
+        """
+        started = parse_time(self.created_at)
+        if started is None:
+            return 0.0
+        ended = parse_time(self.stopped_at) or now
+        return max(0.0, (ended - started).total_seconds() / 3600.0)
+
+    def wall_clock_usd(self, now: datetime) -> float:
+        """Cost of the pod's measured life at the rate this machine recorded."""
+        rate = self.actual_rate_usd_per_hr or self.assumed_rate_usd_per_hr
+        return round(rate * self.wall_clock_hours(now), 4)
+
 
 class Ledger:
     """Local record of every pod this machine created. Gitignored under .local/."""
@@ -596,6 +619,12 @@ class Ledger:
         return {entry.run_id for entry in self.entries if entry.state in LIVE_STATES}
 
     def spend_on(self, day: datetime) -> float:
+        """Planned cost recorded for one day. The caps are checked against this figure.
+
+        It stays plan-based on purpose: switching the caps to the wall-clock figure below
+        changes when a create is refused, which is the owner's call (RC-2026-10-15-10).
+        The undercount it can carry is reported, not silently enforced.
+        """
         total = 0.0
         for entry in self.entries:
             created = parse_time(entry.created_at)
@@ -607,12 +636,37 @@ class Ledger:
                 total += entry.planned_usd
         return round(total, 2)
 
+    def wall_clock_spend(self, now: datetime) -> float:
+        """Cost of every recorded pod's measured life (RC-2026-10-15-10)."""
+        return round(sum(entry.wall_clock_usd(now) for entry in self.entries), 2)
+
     def expired(self, now: datetime) -> list[LedgerEntry]:
         return [
             entry
             for entry in self.entries
             if entry.state in {"created", "running"} and (expiry := parse_time(entry.expires_at)) is not None and expiry <= now
         ]
+
+
+def pod_cost_note(pod: Mapping[str, Any], now: datetime, ledger: Ledger) -> str:
+    """Uptime and cost text for one pod line, preferring this machine's own stamps.
+
+    The vendor's start stamp resets on a container restart and can be absent, so it can
+    understate a pod's age by hours (RC-2026-10-15-10). When the ledger knows the pod,
+    the wall clock is printed and any real disagreement with the vendor stamp is shown
+    beside it; a pod the ledger does not know is labelled with the weaker source.
+    """
+    vendor_hours = uptime_hours(pod, now)
+    entry = next((item for item in ledger.entries if item.pod_id == pod_id(pod)), None)
+    if entry is None:
+        return f"uptime={vendor_hours:.2f}h est=${spend_estimate(pod, now):.2f} (vendor stamp)"
+    wall_hours = entry.wall_clock_hours(now)
+    rate = entry.actual_rate_usd_per_hr or entry.assumed_rate_usd_per_hr
+    cost = f"est=${entry.wall_clock_usd(now):.2f}" if rate > 0 else "est=unknown (no rate recorded)"
+    note = f"uptime={wall_hours:.2f}h {cost} (wall clock)"
+    if abs(wall_hours - vendor_hours) >= VENDOR_STAMP_DISAGREEMENT_HOURS:
+        note += f" [vendor stamp: {vendor_hours:.2f}h]"
+    return note
 
 
 def audit(action: str, target: str, detail: Mapping[str, object], path: Path | None = None) -> None:
@@ -763,7 +817,7 @@ def cmd_status(_args: argparse.Namespace) -> int:
         view = public_view(pod, now)
         print(
             f"  - {view['name']} [{view['id']}] state={view['state']} gpu={view['gpu']} x{view['gpu_count']} "
-            f"${view['usd_per_hr']}/hr uptime={view['uptime_hours']}h est=${view['est_spend_usd']}",
+            f"${view['usd_per_hr']}/hr {pod_cost_note(pod, now, ledger)}",
         )
         if view["state"] == "RUNNING":
             running_cost += float(cast("float", view["usd_per_hr"]))
@@ -956,7 +1010,7 @@ def _stop_targets(args: argparse.Namespace, *, terminate: bool) -> int:
         return EXIT_REFUSED
     action = "terminate" if terminate else "stop"
     for pod in targets:
-        print(f"{action}: {pod_name(pod)} [{pod_id(pod)}] state={pod_state(pod)} uptime={uptime_hours(pod, now):.2f}h")
+        print(f"{action}: {pod_name(pod)} [{pod_id(pod)}] state={pod_state(pod)} {pod_cost_note(pod, now, ledger)}")
     if not args.yes:
         print(f"add --yes to {action}")
         return EXIT_REFUSED
@@ -991,8 +1045,7 @@ def cmd_stop_all(args: argparse.Namespace) -> int:
         print("no Conflux pods to stop")
         return 0
     for pod in mine:
-        print(f"stop: {pod_name(pod)} [{pod_id(pod)}] state={pod_state(pod)} "
-              f"uptime={uptime_hours(pod, now):.2f}h est=${spend_estimate(pod, now):.2f}")
+        print(f"stop: {pod_name(pod)} [{pod_id(pod)}] state={pod_state(pod)} {pod_cost_note(pod, now, ledger)}")
     print(f"{len(running)} running, {len(mine)} total - only Conflux pods appear above")
     if not args.yes:
         print("add --yes to stop them")
@@ -1056,6 +1109,8 @@ def cmd_report(args: argparse.Namespace) -> int:
         print("  (no billing records for Conflux pods in this window)")
     estimated = sum(entry.planned_usd for entry in ledger.entries)
     print(f"Ledger planned spend (all time, local estimate): ${estimated:.2f}")
+    wall = ledger.wall_clock_spend(now)
+    print(f"Wall-clock spend from our own create/stop stamps (authoritative): ${wall:.2f}")
     summary = foreign_summary(api.list_pods(), ledger.trusted_ids())
     print(f"Other users' pods excluded from these figures: {summary['pods_running']} running, "
           f"${summary['hourly_usd_running']}/hr (aggregate only)")
@@ -1068,6 +1123,7 @@ def cmd_report(args: argparse.Namespace) -> int:
             f"- Window: {start.date().isoformat()} to {now.date().isoformat()}",
             f"- Billed to Conflux pods: ${total:.2f}",
             f"- Local estimate from ledger: ${estimated:.2f}",
+            f"- Wall-clock estimate from our own create/stop stamps: ${wall:.2f}",
             "",
             "| run | pod | billed hours | billed usd |",
             "| --- | --- | ---: | ---: |",
