@@ -531,8 +531,8 @@ only where the solver does, and the cross-check command is
   nothing (87 zero-assert items in both).
 - **Every other `z3` mention in `tests/` is environment-independent**: three files force
   `sys.modules["z3"] = None`; `test_verification_ir_sets.py::test_z3_backend_returns_unknown_for_sets`
-  passes in both because `z3_backend.py:16` returns `set_sort_not_supported_by_z3_backend` before
-  `import z3` (line 18); two files use `z3` only as a fixture key and a result label.
+  passes in both because the model declares no universe for its set variable, so `set_encoding`
+  refuses it before `import z3`; two files use `z3` only as a fixture key and a result label.
 - **One residual gap, and it was not the documented one**: `test_z3_all_agree` and
   `test_ref_z3_agree` asserted `bundle["summary"][...] is True` on flags built by
   `scripts/generate_sledv_scaling_evidence.py:432,446` as `all(...)` over rows **filtered by

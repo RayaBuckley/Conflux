@@ -23,9 +23,9 @@ Fragment
 --------
 An IR outside the fragment is refused with ``unsupported_ir:...`` rather than weakened:
 
-- a SET-sorted state variable is refused. The bounded backends expand a set over an explicit
-  finite universe, and that expansion is what makes them bounded; there is no universe here,
-  so there is no faithful translation.
+- a SET-sorted state variable is expanded into Boolean membership variables over its declared
+  universe first (``set_encoding``), so it is handled rather than refused. A set variable with
+  no declared universe is refused, because the expansion would have to guess its elements.
 - a rule guard with a disjunction at the top level is refused. Clause splitting would be an
   encoding change, not a translation detail.
 - an assignment value that is not a variable, an integer constant, an addition or a Boolean
@@ -44,12 +44,14 @@ budget may not be reachable with it. The result records that as an assumption.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Any
 
 from conflux.domain import fingerprint
 
 from .ir import Expression, ExpressionKind, Sort, StateVariable, VerificationIR
 from .results import FormalVerdict, FormalVerificationResult
+from .set_encoding import SetExpansionError, expand_sets
 
 BACKEND = "z3-spacer"
 
@@ -92,6 +94,27 @@ class HornEncodingError(Exception):
 def verify_with_horn(ir: VerificationIR, *, timeout_ms: int = 60_000) -> FormalVerificationResult:
     """Check every invariant of IR with Z3 Spacer, without unrolling.
 
+    A set-sorted IR is expanded into Boolean membership variables over each set's declared
+    universe first, so a set model receives a verdict instead of a refusal. The reported
+    ``ir_hash`` stays the fingerprint of the IR the caller asked about, and the result carries
+    the expansion as an assumption.
+    """
+    try:
+        expanded = expand_sets(ir)
+    except SetExpansionError as error:
+        return _unknown(ir, f"set_universe_undeclared:{error}")
+    if expanded is not ir:
+        return replace(
+            _verify_horn_encoded(expanded, timeout_ms=timeout_ms),
+            ir_hash=ir.fingerprint,
+            assumptions=expanded.assumptions,
+        )
+    return _verify_horn_encoded(ir, timeout_ms=timeout_ms)
+
+
+def _verify_horn_encoded(ir: VerificationIR, *, timeout_ms: int = 60_000) -> FormalVerificationResult:
+    """Check every invariant of IR with Z3 Spacer, without unrolling.
+
     Each invariant is queried on its own. SAFE means every reachable state satisfies every
     invariant; UNSAFE means at least one reachable state refutes one, and the counterexample
     records which invariants were refuted. This encoding returns no concrete violating state,
@@ -100,8 +123,6 @@ def verify_with_horn(ir: VerificationIR, *, timeout_ms: int = 60_000) -> FormalV
     """
     if not ir.invariants:
         return _unknown(ir, "no_safety_invariants")
-    if any(variable.sort == Sort.SET for variable in ir.variables):
-        return _unknown(ir, "set_sort_not_supported_by_horn_backend")
     try:
         import z3
     except ImportError:

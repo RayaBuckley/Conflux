@@ -205,10 +205,12 @@ class TestSetIRModel:
         assert result.verdict == FormalVerdict.UNSAFE
 
     def test_z3_backend_returns_unknown_for_sets(self) -> None:
+        # This model declares no universe for ``pc``, so the expansion would have to guess its
+        # elements; a set model that declares one is encoded and receives a verdict instead.
         ir = self._principal_set_ir()
         result = verify_with_z3(ir)
         assert result.verdict == FormalVerdict.UNKNOWN
-        assert "set_sort_not_supported" in (result.error or "")
+        assert "set_universe_undeclared" in (result.error or "")
 
 
 def _var(name: str) -> Expression:

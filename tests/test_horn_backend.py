@@ -141,7 +141,7 @@ def test_a_boolean_assignment_value_is_translated() -> None:
     assert result.verdict.value == "safe"
 
 
-def test_a_set_sorted_state_variable_is_refused_rather_than_weakened() -> None:
+def test_a_set_variable_without_a_declared_universe_is_refused_rather_than_weakened() -> None:
     granted = StateVariable("granted", Sort.SET, frozenset({"a"}))
     ir = VerificationIR(
         "set-fixture",
@@ -153,7 +153,22 @@ def test_a_set_sorted_state_variable_is_refused_rather_than_weakened() -> None:
     )
     result = verify_with_horn(ir)
     assert result.verdict.value == "unknown"
-    assert result.error == "set_sort_not_supported_by_horn_backend"
+    assert (result.error or "").startswith("set_universe_undeclared:")
+
+
+def test_a_set_variable_with_a_declared_universe_is_encoded_not_refused() -> None:
+    granted = StateVariable("granted", Sort.SET, frozenset(), universe=("a",))
+    ir = VerificationIR(
+        "set-encoded-fixture",
+        (granted,),
+        (),
+        (SafetyInvariant("empty", Expression.constant(True)),),
+        1,
+        (),
+    )
+    result = verify_with_horn(ir)
+    assert result.verdict.value == "safe"
+    assert result.ir_hash == ir.fingerprint
 
 
 def test_an_ir_without_invariants_is_refused() -> None:

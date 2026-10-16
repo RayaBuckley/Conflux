@@ -511,7 +511,28 @@ def test_the_nuxmv_subset_fails_closed_on_unsupported_sorts() -> None:
     )
     refusal = NuXmvBackend(availability=lambda _: True).verify(set_ir)
     assert refusal.verdict == FormalVerdict.UNKNOWN
-    assert refusal.error == "unsupported_ir:nuXmv subset does not support sort set"
+    assert (refusal.error or "").startswith("set_universe_undeclared:")
+
+    declared = VerificationIR(
+        "sets-declared",
+        (StateVariable("holders", Sort.SET, frozenset({"alice"}), universe=("alice", "bob")),),
+        (
+            TransitionRule(
+                "stutter",
+                Expression.constant(True),
+                (Assignment("holders", Expression.variable("holders")),),
+            ),
+        ),
+        (SafetyInvariant("never", Expression.constant(True)),),
+        1,
+    )
+    from conflux.verification.nuxmv_backend import _smv
+    from conflux.verification.set_encoding import expand_sets
+
+    encoded = _smv(expand_sets(declared))
+    assert "holders__member__alice" in encoded
+    assert "holders__member__bob" in encoded
+    assert "  holders :" not in encoded
 
     unbounded = VerificationIR(
         "unbounded",

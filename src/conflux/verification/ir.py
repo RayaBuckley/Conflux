@@ -150,11 +150,19 @@ class StateVariable:
     initial: IRValue
     minimum: int | None = None
     maximum: int | None = None
+    universe: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        """Validate the variable name, sort, initial value, and domain bounds."""
+        """Validate the variable name, sort, initial value, domain bounds, and set universe."""
+        object.__setattr__(self, "universe", tuple(self.universe))
         if not self.name:
             raise ValueError("state variable name must be non-empty")
+        if not all(isinstance(element, str) and element for element in self.universe):
+            raise ValueError("set universe elements must be non-empty strings")
+        if len(set(self.universe)) != len(self.universe):
+            raise ValueError(f"set state variable {self.name} has a repeated universe element")
+        if self.sort != Sort.SET and self.universe:
+            raise ValueError(f"state variable {self.name} declares a universe but is not a set")
         if self.sort == Sort.BOOLEAN and not isinstance(self.initial, bool):
             raise ValueError("Boolean state variable requires a Boolean initial value")
         if self.sort == Sort.INTEGER and (not isinstance(self.initial, int) or isinstance(self.initial, bool)):
@@ -163,6 +171,10 @@ class StateVariable:
             if not isinstance(self.initial, (set, frozenset)):
                 raise ValueError("set state variable requires a set or frozenset initial value")
             object.__setattr__(self, "initial", frozenset(self.initial))
+            if self.universe:
+                outside = sorted(str(element) for element in self.initial if str(element) not in self.universe)
+                if outside:
+                    raise ValueError(f"set state variable {self.name} starts with elements outside its universe: {outside}")
         if self.sort == Sort.BOOLEAN and (self.minimum is not None or self.maximum is not None):
             raise ValueError("Boolean state variables cannot have numeric bounds")
         if self.sort == Sort.SET and (self.minimum is not None or self.maximum is not None):
@@ -191,13 +203,16 @@ class StateVariable:
             initial_value: object = sorted(self.initial)
         else:
             initial_value = self.initial
-        return {
+        payload: dict[str, object] = {
             "name": self.name,
             "sort": self.sort.value,
             "initial": initial_value,
             "minimum": self.minimum,
             "maximum": self.maximum,
         }
+        if self.sort == Sort.SET:
+            payload["universe"] = list(self.universe)
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -430,13 +445,10 @@ def _expression_sort(expression: Expression, sorts: dict[str, Sort]) -> Sort | N
 
 
 def _parse_variable(value: object) -> StateVariable:
-    if not isinstance(value, Mapping) or set(value) != {
-        "name",
-        "sort",
-        "initial",
-        "minimum",
-        "maximum",
-    }:
+    if not isinstance(value, Mapping) or set(value) not in (
+        {"name", "sort", "initial", "minimum", "maximum"},
+        {"name", "sort", "initial", "minimum", "maximum", "universe"},
+    ):
         raise ValueError("malformed state variable")
     sort = Sort(value["sort"])
     initial: Scalar | SetValue
@@ -447,12 +459,16 @@ def _parse_variable(value: object) -> StateVariable:
         initial = frozenset(str(item) for item in initial_list)
     else:
         initial = value["initial"]
+    universe_value = value.get("universe", [])
+    if not isinstance(universe_value, (list, tuple)):
+        raise ValueError("set state variable universe must be an array")
     return StateVariable(
         str(value["name"]),
         sort,
         initial,
         value["minimum"] if isinstance(value["minimum"], int) else None,
         value["maximum"] if isinstance(value["maximum"], int) else None,
+        tuple(str(item) for item in universe_value),
     )
 
 

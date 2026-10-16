@@ -2,18 +2,35 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Any
 
 from conflux.domain import canonical_json, fingerprint
 
 from .ir import Expression, ExpressionKind, Sort, VerificationIR
 from .results import FormalVerdict, FormalVerificationResult
+from .set_encoding import SetExpansionError, expand_sets
 
 
 def verify_with_z3(ir: VerificationIR) -> FormalVerificationResult:
-    """Verify bounded safety of the IR using the optional Z3 bounded-model-checking backend."""
-    if any(v.sort == Sort.SET for v in ir.variables):
-        return _unknown(ir, "set_sort_not_supported_by_z3_backend")
+    """Verify bounded safety of the IR using the optional Z3 bounded-model-checking backend.
+
+    A set-sorted IR is expanded into Boolean membership variables over each set's declared
+    universe first, so a set model receives a verdict instead of a refusal. The reported
+    ``ir_hash`` stays the fingerprint of the IR the caller asked about, and the result carries
+    the expansion as an assumption. An IR whose set variables declare no universe is still
+    refused, because the expansion would have to guess the elements.
+    """
+    try:
+        expanded = expand_sets(ir)
+    except SetExpansionError as error:
+        return _unknown(ir, f"set_universe_undeclared:{error}")
+    if expanded is not ir:
+        return replace(_verify_entry(expanded), ir_hash=ir.fingerprint, assumptions=expanded.assumptions)
+    return _verify_entry(ir)
+
+
+def _verify_entry(ir: VerificationIR) -> FormalVerificationResult:
     try:
         import z3
     except ImportError:

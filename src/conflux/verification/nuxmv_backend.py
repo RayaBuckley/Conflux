@@ -7,7 +7,7 @@ import re
 import shutil
 import subprocess
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Protocol
@@ -16,6 +16,7 @@ from conflux.domain import fingerprint
 
 from .ir import Expression, ExpressionKind, Sort, StateVariable, VerificationIR
 from .results import FormalVerdict, FormalVerificationResult
+from .set_encoding import SetExpansionError, expand_sets
 
 
 @dataclass(frozen=True, slots=True)
@@ -218,12 +219,32 @@ class NuXmvBackend:
     def verify(self, ir: VerificationIR, *, smt: bool = False) -> FormalVerificationResult:
         """Verify IR invariants with nuXmv, returning a formal result.
 
+        A set-sorted IR is expanded into Boolean membership variables over each set's declared
+        universe first, so a set model receives a verdict instead of a refusal. The reported
+        ``ir_hash`` stays the fingerprint of the IR the caller asked about, and the result
+        carries the expansion as an assumption. An IR whose set variables declare no universe
+        is still refused, because the expansion would have to guess the elements.
+
         ``smt=False`` keeps the recorded behaviour: BDD IC3 over a finite-domain model.
         ``smt=True`` renders unbounded integer variables as infinite-precision integers and
         checks the invariants on the SMT route (``go_msat`` then ``msat_check_invar_bmc``),
         which answers for a symbolic bound rather than one recorded bound. A model the SMT
         route cannot settle is UNKNOWN, never safe.
         """
+        backend = "nuxmv-msat" if smt else "nuxmv-ic3"
+        try:
+            expanded = expand_sets(ir)
+        except SetExpansionError as error:
+            return self._unknown(ir, f"set_universe_undeclared:{error}", backend)
+        if expanded is not ir:
+            return replace(
+                self._verify_expanded(expanded, smt=smt),
+                ir_hash=ir.fingerprint,
+                assumptions=expanded.assumptions,
+            )
+        return self._verify_expanded(ir, smt=smt)
+
+    def _verify_expanded(self, ir: VerificationIR, *, smt: bool = False) -> FormalVerificationResult:
         backend = "nuxmv-msat" if smt else "nuxmv-ic3"
         if not ir.invariants:
             return self._unknown(ir, "no_safety_invariants", backend)

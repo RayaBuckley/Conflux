@@ -805,8 +805,8 @@ def ites_with_read_check_ir() -> VerificationIR:
     return VerificationIR(
         "ites-with-read-check",
         (
-            StateVariable("pc", Sort.SET, frozenset()),
-            StateVariable("input_readers", Sort.SET, frozenset({"alice"})),
+            StateVariable("pc", Sort.SET, frozenset(), universe=("alice", "mallory")),
+            StateVariable("input_readers", Sort.SET, frozenset({"alice"}), universe=("alice", "mallory")),
             StateVariable("action_executed", Sort.BOOLEAN, False),
             StateVariable("pe_violation", Sort.BOOLEAN, False),
             StateVariable("attacker_authorised", Sort.BOOLEAN, False),
@@ -1150,8 +1150,8 @@ def fides_native_property_ir() -> VerificationIR:
         (
             StateVariable("context_trusted", Sort.BOOLEAN, True),
             StateVariable("value_trusted", Sort.BOOLEAN, False),
-            StateVariable("readers", Sort.SET, frozenset({"alice"})),
-            StateVariable("released_readers", Sort.SET, frozenset()),
+            StateVariable("readers", Sort.SET, frozenset({"alice"}), universe=("alice", "mallory")),
+            StateVariable("released_readers", Sort.SET, frozenset(), universe=("alice", "mallory")),
             StateVariable("trusted_call_made", Sort.BOOLEAN, False),
             StateVariable("released", Sort.BOOLEAN, False),
         ),
@@ -1361,7 +1361,7 @@ def pace_native_property_ir() -> VerificationIR:
         "pace-native-property",
         (
             StateVariable("graph_built", Sort.BOOLEAN, False),
-            StateVariable("cut_edges", Sort.SET, frozenset()),
+            StateVariable("cut_edges", Sort.SET, frozenset(), universe=("e1", "e2")),
             StateVariable("dispatched", Sort.BOOLEAN, False),
             StateVariable("effect_verified", Sort.BOOLEAN, False),
         ),
