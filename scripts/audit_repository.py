@@ -52,6 +52,7 @@ FORBIDDEN_IMPORTS = tuple(f"conflux.{name}" for name in LEGACY)
 PAPER = ROOT / "research" / "publications" / "paper"
 MANUSCRIPT = ROOT / "research" / "publications" / "manuscript"
 WORKSHOP = ROOT / "research" / "publications" / "workshop"
+PUBLICATIONS = ROOT / "research" / "publications"
 SMOKE = ROOT / "research" / "output" / "runs" / "smoke"
 NATIVE_SLED = ROOT / "research" / "output" / "runs" / "native-sled-reproduction-v1"
 COI_EVIDENCE = ROOT / "research" / "output" / "runs" / "sled-coi-reduction-v1"
@@ -221,6 +222,7 @@ def check_docs(errors: list[str]) -> None:
         ROOT / "README.md",
         ROOT / "AGENTS.md",
         *DOCS.rglob("*.md"),
+        PUBLICATIONS / "README.md",
         *MANUSCRIPT.glob("*.md"),
         *WORKSHOP.glob("*.md"),
         REPORTS / "README.md",

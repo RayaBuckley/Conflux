@@ -27,8 +27,8 @@ def test_manuscript_dependencies_resolve() -> None:
     assert problems == []
 
 
-def test_ship_set_covers_the_tables_and_the_bibliography() -> None:
-    """The bundle carries the manuscript, every generated table and the bibliography."""
+def test_ship_set_covers_the_tables_figures_and_the_bibliography() -> None:
+    """The bundle carries the manuscript, every generated table and figure, and the bibliography."""
     paths, _problems = bundle.dependency_paths(bundle.MANUSCRIPT, bundle.ROOT)
     shipped = {path.name for path in paths}
     assert shipped == {
@@ -39,6 +39,9 @@ def test_ship_set_covers_the_tables_and_the_bibliography() -> None:
         "native_sled_reproduction_table.tex",
         "sledv_scaling_table.tex",
         "provenance_precision_table.tex",
+        "f1_property_sensitivity.tex",
+        "f2_unbounded_routes.tex",
+        "f3_runpod_cells.tex",
         "references.bib",
     }
 

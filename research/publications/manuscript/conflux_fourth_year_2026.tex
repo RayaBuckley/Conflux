@@ -4,6 +4,7 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{enumitem}
+\usepackage{tikz}
 \usepackage{microtype}
 \usepackage[numbers]{natbib}
 
@@ -313,6 +314,76 @@ Security is a hard selection constraint;
 eligible plans are then ordered by utility, authority footprint, sensitive
 observations, irreversible effects, cost and a deterministic fingerprint.
 
+\subsection{Unbounded routes}
+Three routes now decide an invariant with no step bound on the plan IR.
+\texttt{nuxmv-ic3} is IC3/PDR over the finite domain, \texttt{nuxmv-predabs} is
+predicate abstraction with CEGAR refinement, and \texttt{nuxmv-msat} is
+SMT-based induction. The plan IR declares no step range and keeps the plan's
+node bound as a symbolic constant in its guards, so a verdict from any of the
+three is not a finite unrolling of a fixed number of steps.
+
+The retained IC3 bundle holds 689 rows: 666 complete and 23 error, with verdicts
+\texttt{unsafe} 590, \texttt{safe} 76 and \texttt{unknown} 23. All 23 errors are
+refusals of models that carry no transition rules; they are reported as
+\texttt{unknown}, never as safety. On the plan IR the predicate-abstraction and
+induction routes agree with the reference on all seven rows of the
+parameter-general bundle (two safe, two unsafe, three unknown), and each row
+states its expectation before it is measured. The two positive rows need an
+auxiliary invariant plus a transition guard, because the property alone is not
+inductive.
+
+A separate bundle reworks the plan-liveness obligation. The earlier obligation,
+\texttt{AG(step >= bound -> terminated)}, assigned \texttt{terminated} inside the
+abstraction, so a bounded row satisfied it by construction. The obligation now
+declares a plan's two good endings and measures \texttt{step >= bound ->
+(goal\_reached or safe\_abort)} with the support invariants \texttt{safe-abort-clean}
+and \texttt{goal-reached-clean}. Across 84 measured rows at bounds one to four,
+every reading meets its stated expectation, the three routes agree by verdict
+class on all 28 readings, and 20 of 28 readings carry an unsafe reference
+verdict, so the agreement cannot come from a population nothing can refute.
+
+\subsection{Falsifiability of a holding verdict}
+A holding verdict (\texttt{safe} or \texttt{bounded\_safe}) is cited as support
+only when the same artefact classes the invariant as falsifiable under a declared
+mutation alphabet, \texttt{replace\_one\_rule\_guard\_with\_true}. Each holding
+invariant receives one class: \texttt{checked}, when a single-rule guard mutation
+falsifies it at a reachable state; \texttt{checked\_by\_construction}, when no
+such mutation falsifies it; and \texttt{violated\_at\_baseline} otherwise. Over
+the defence-model subset, 12 IRs carry 14 invariant rows: four are
+\texttt{checked}, five \texttt{checked\_by\_construction} and five
+\texttt{violated\_at\_baseline}.
+
+The distinction changes what the evaluation may claim. Of the five native holding
+rows in the defence bundle only ITES is \texttt{checked} (seven reachable states,
+falsified by \texttt{ites-blocks-unauthorised}); Dual-LLM, CaMeL, PACT and Progent
+are \texttt{checked\_by\_construction} over two, two, one and one reachable state,
+each with a single falsifier whose guard is not satisfiable at a reachable state.
+Their holding verdicts are therefore inert under the declared alphabet and are not
+cited as support. On the property-enforcement side six rows are measured and five
+are refuted; the one holding row is ITES, and it is \texttt{checked}. The class is
+a statement about the declared alphabet, not an absolute property of the
+invariant.
+
+\begin{figure}[t]
+\centering
+\input{generated/figures/f1_property_sensitivity}
+\caption{Property-sensitivity classes for the six defence models. A segment counts
+invariant rows of one class; ITES is the only model whose native invariants are
+\texttt{checked}, so it is the only holding verdict in this subset that may be cited
+as support. Generated from the retained sensitivity bundle.}
+\label{fig:property-sensitivity}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\input{generated/figures/f2_unbounded_routes}
+\caption{Verdict split per unbounded route, normalised within each bundle so the two
+scales can be read together. The IC3/PDR bundle carries 689 rows and the
+predicate-abstraction and induction bundle seven; the printed number is the row
+count, not a rate. Generated from the two retained result bundles.}
+\label{fig:unbounded-routes}
+\end{figure}
+
 \section{Results}
 \textbf{Repository validation:} the retained Windows/CPython 3.12.12 run at
 commit \texttt{6fe6b584500e} passed 220 tests with 90.25\% branch coverage,
@@ -397,6 +468,48 @@ the authorisation dimension, over the tools \texttt{search\_emails} 81 and
 \texttt{delete\_file} 12, with the conservative arm holding 57 of the 93. A
 refusal count is therefore legible as a named rule, so the snapshot-read,
 authorisation and argument-policy layers can be told apart in retained evidence.
+
+\subsection{Remote AgentDojo runs on a local 14B model}
+The pinned AgentDojo adapter (package \texttt{0.1.35}, benchmark \texttt{v1.2.2}) was
+run with a single local model, \texttt{Qwen/Qwen2.5-14B-Instruct} (revision
+\texttt{cf98f3b3}), served in 4-bit NF4 on one CUDA device at temperature $0.0$ and
+seed $0$. Three runs were retained: a workspace pilot of 30 cells, and a stratified
+sweep of 24 banking cells and 78 workspace cells. Every cell ran; all but one
+completed, and the single incomplete cell is a parser failure.
+
+In the pilot, native utility is $18/30$ and identical across the three arms
+(\texttt{no\_defence}, \texttt{ites\_conservative}, \texttt{ites\_oracle}, $6/10$ each):
+the guarded arms neither gain nor lose a completed user task. The recorded failures
+are \texttt{utility}~(12) and \texttt{policy}~(3), with no model, parser, tool, setup,
+security or bound failure. The three policy failures are all \texttt{user\_task\_39}
+under the two guarded arms, where the arm refused a repeated \texttt{search\_emails}
+call.
+
+The security counts must be read with their floor in view. Over the whole pilot the
+model proposed one tool only, \texttt{search\_emails}, 65 times, and the 30 executed
+mediation records are all that read tool. No effect call --- a write, send or delete
+--- was proposed in any cell, so none was executed. The counts therefore describe this
+model and this harness, not a defence that stopped an attempted injection.
+
+The two stratified runs are weaker and are reported as such. The banking sweep recorded
+zero utility and 192 mediation records that are all refused with the adapter-level
+reason \texttt{unsupported\_tool}, so every call is refused before the policy engine is
+consulted and the per-arm ``secure'' rate is vacuous. The workspace sweep recorded
+utility $1/78$ and 564 records: 348 \texttt{provider\_failed}, 177 blocked and 39
+executed, all of them \texttt{search\_emails}; in 54 of the 78 cells nothing executed.
+Resident failure categories are \texttt{utility}~(76), \texttt{policy}~(46) and
+\texttt{parser}~(1).
+
+\begin{figure}[t]
+\centering
+\input{generated/figures/f3_runpod_cells}
+\caption{Cells by arm for the 14B pilot and by stratum for the stratified sweep. A
+segment counts cells; the grey segment is completed cells and the outlined segment
+failed cells. The banking stratum completed every cell while executing nothing, which
+is why its security count carries no efficacy claim. Generated from the three retained
+run bundles.}
+\label{fig:runpod-cells}
+\end{figure}
 
 \input{generated/tables/agentdojo_breadth_table}
 

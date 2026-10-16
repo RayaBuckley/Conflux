@@ -10,8 +10,23 @@
   "files": [
     {
       "path": "conflux_fourth_year_2026.tex",
-      "bytes": 30322,
-      "sha256": "f522f768f0aa979fce4320d225ddc82e7a0fd34953fd4145e47d1f06446f40dc"
+      "bytes": 36982,
+      "sha256": "066da943fa601755c229c6d510655155b48f191f16b005c9eac7b8f473e58e0d"
+    },
+    {
+      "path": "generated/figures/f1_property_sensitivity.tex",
+      "bytes": 3647,
+      "sha256": "213ce6cfafa895d9ca5a0064efa230b8c303cfebf2b2be86133256a0890dc42a"
+    },
+    {
+      "path": "generated/figures/f2_unbounded_routes.tex",
+      "bytes": 2598,
+      "sha256": "9180b9018741ffe5bc430beeb26c1512bfad1a01dbab54bff6836b19cf22a85a"
+    },
+    {
+      "path": "generated/figures/f3_runpod_cells.tex",
+      "bytes": 2876,
+      "sha256": "3502a530052b6f5073633b429ac3f4f4e37c3a2c99f69f744f7de79dddca4af0"
     },
     {
       "path": "generated/tables/agentdojo_breadth_table.tex",
