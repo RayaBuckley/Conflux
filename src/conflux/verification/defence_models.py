@@ -737,30 +737,59 @@ def pact_ir() -> VerificationIR:
 def pact_native_property_ir() -> VerificationIR:
     """PACT candidate abstraction: its own property Q (argument provenance preserved).
 
-    Variables:
-        arg_provenance_tracked: argument provenance is tracked (True, unchanged)
-        provenance_lost: argument provenance was lost
-        provenance_gate: the defence is active (starts True; no rule clears it)
+    The property means: a value that carries an untrusted origin cannot complete a
+    cross-step flow without its origins being recorded.  The model holds it by a
+    guard partition - the completion rule requires a recorded origin or no
+    untrusted origin - and records the violation in its own rule, so the property
+    is exercised rather than assumed: guard mutations of ``untrusted-origin-arrives``
+    and ``step-completes-with-recorded-origins`` (both satisfied by reachable
+    states) break it, while the recording rule's own guard is unreachable at
+    baseline by design.
 
-    Q invariant: ``not provenance_lost`` — holds, and is falsifiable by a
-    single-rule mutation of ``provenance-dropped``.
+    Variables:
+        untrusted_origin: an untrusted value arrived at the step (False).
+        origins_recorded: the step recorded the value's origins (False).
+        step_complete: the cross-step flow completed (False).
+        provenance_lost: a completed flow lacks a recorded origin (False; violation).
+
+    Q invariant: ``not provenance_lost`` - holds, and is falsifiable by guard
+    mutations of ``untrusted-origin-arrives`` and
+    ``step-completes-with-recorded-origins``.
     """
     return VerificationIR(
         "pact-native-property",
         (
-            StateVariable("arg_provenance_tracked", Sort.BOOLEAN, True),
+            StateVariable("untrusted_origin", Sort.BOOLEAN, False),
+            StateVariable("origins_recorded", Sort.BOOLEAN, False),
+            StateVariable("step_complete", Sort.BOOLEAN, False),
             StateVariable("provenance_lost", Sort.BOOLEAN, False),
-            StateVariable("provenance_gate", Sort.BOOLEAN, True),
         ),
         (
             TransitionRule(
-                "cross-step-provenance",
-                _const(True),
-                (Assignment("provenance_lost", _const(False)),),
+                "untrusted-origin-arrives",
+                _not(_var("step_complete")),
+                (Assignment("untrusted_origin", _const(True)),),
             ),
             TransitionRule(
-                "provenance-dropped",
-                _not(_var("provenance_gate")),
+                "cross-step-provenance",
+                _and(_not(_var("step_complete")), _var("untrusted_origin")),
+                (Assignment("origins_recorded", _const(True)),),
+            ),
+            TransitionRule(
+                "step-completes-with-recorded-origins",
+                _and(
+                    _not(_var("step_complete")),
+                    _or(_var("origins_recorded"), _not(_var("untrusted_origin"))),
+                ),
+                (Assignment("step_complete", _const(True)),),
+            ),
+            TransitionRule(
+                "provenance-lost-recorded",
+                _and(
+                    _var("step_complete"),
+                    _var("untrusted_origin"),
+                    _not(_var("origins_recorded")),
+                ),
                 (Assignment("provenance_lost", _const(True)),),
             ),
         ),
@@ -771,10 +800,11 @@ def pact_native_property_ir() -> VerificationIR:
                 "Q: argument-level provenance is preserved across steps",
             ),
         ),
-        2,
+        3,
         (
             "PACT candidate abstraction native property: argument provenance preserved",
-            "provenance_gate starts True and no rule clears it: holds by construction",
+            "untrusted_origin starts False; the completion guard needs a recorded origin or no untrusted origin",
+            "a completed flow with an untrusted origin must have recorded origins",
         ),
     )
 

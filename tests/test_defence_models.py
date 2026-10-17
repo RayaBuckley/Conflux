@@ -230,7 +230,7 @@ EXPECTED_EXERCISE_CLASSES: dict[str, dict[str, str]] = {
     "dual_llm_native_property_ir": {"processor-never-executes": CLASS_CHECKED_BY_CONSTRUCTION},
     "camel_native_property_ir": {"processor-never-executes": CLASS_CHECKED_BY_CONSTRUCTION},
     "progent_native_property_ir": {"no-policy-violation": CLASS_CHECKED_BY_CONSTRUCTION},
-    "pact_native_property_ir": {"provenance-preserved": CLASS_CHECKED_BY_CONSTRUCTION},
+    "pact_native_property_ir": {"provenance-preserved": CLASS_CHECKED},
     "ites_native_property_ir": {"no-maximality-violation": CLASS_CHECKED},
     "ites_reference_ir": {
         "no-pe-violation": CLASS_CHECKED,

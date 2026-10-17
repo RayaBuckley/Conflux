@@ -250,21 +250,29 @@
       "reachable_states": 9
     },
     "pact_native_property": {
-      "bound": 2,
+      "bound": 3,
       "invariants": [
         {
-          "exercise_class": "checked_by_construction",
+          "exercise_class": "checked",
           "falsifiers": [
             {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "untrusted-origin-arrives"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "step-completes-with-recorded-origins"
+            },
+            {
               "guard_satisfiable_at_reachable_state": false,
-              "rule_id": "provenance-dropped"
+              "rule_id": "provenance-lost-recorded"
             }
           ],
           "invariant_id": "provenance-preserved"
         }
       ],
       "ir_id": "pact-native-property",
-      "reachable_states": 1
+      "reachable_states": 5
     },
     "pact_pe": {
       "bound": 4,

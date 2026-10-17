@@ -92,7 +92,7 @@
         "error": null,
         "nuxmv_error": null,
         "nuxmv_verdict": "safe",
-        "reference_states": 1,
+        "reference_states": 5,
         "reference_verdict": "safe",
         "verdict": "bounded_safe"
       },
