@@ -365,7 +365,9 @@ class NuXmvBackend:
         expression the route prints: that expression is the *abstracted* one, in which a
         synthesised predicate can stand for part of the statement (``step >= 8`` prints as
         ``_____a_p_0``). A property that receives no verdict makes the whole result UNKNOWN,
-        never safe.
+        never safe. The route also echoes each *spurious* abstract counterexample it refines
+        through as a verdict line, so only the last verdict line of a run is read as the settled
+        one (``_predabs_verdict``).
         """
         backend = "nuxmv-predabs"
         ordered = sorted(ir.invariants, key=lambda item: item.id)
@@ -497,13 +499,22 @@ _PREDABS_VERDICT = re.compile(r"-- invariant .*?  is (true|false)")
 
 
 def _predabs_verdict(output: str) -> str | None:
-    """Return the first verdict the CEGAR route printed, or ``None`` when it printed none.
+    """Return the settled verdict the CEGAR route printed, or ``None`` when it printed none.
 
-    The route echoes its verdict when it prints a counterexample, so the first match is the one
-    that answers the property that was asked about.
+    The route echoes *every* counterexample it refines through as a verdict line, so a single run
+    can print more than one and only the last one is settled::
+
+        -- invariant !maximality_violation  is false
+        Trace Description: AG alpha Counterexample
+        Trace Type: Counterexample
+        -- invariant !maximality_violation  is true
+
+    A refutation is the settled last line too, and its trace is an *abstract* one (the same
+    ``AG alpha Counterexample`` marker), so a refutation is the route's answer and not a lifted
+    witness. A run that prints no verdict line returns ``None`` and the caller reports UNKNOWN.
     """
-    match = _PREDABS_VERDICT.search(output)
-    return match.group(1) if match else None
+    matches = _PREDABS_VERDICT.findall(output)
+    return matches[-1] if matches else None
 
 
 def _domain(variable: StateVariable, *, unbounded: bool = False) -> str:

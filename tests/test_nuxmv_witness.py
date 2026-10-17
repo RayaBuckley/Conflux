@@ -1,4 +1,4 @@
-"""Tests for the witness length a nuXmv refutation now carries.
+"""Tests for the witness length a nuXmv refutation carries, and for the settled CEGAR verdict.
 
 nuXmv's IC3 prints one execution sequence per refuted invariant. The length recorded here is the
 number of states in that sequence. The sample text below is the format nuXmv 2.2.0 actually
@@ -23,7 +23,12 @@ from conflux.verification import (
     TransitionRule,
     VerificationIR,
 )
-from conflux.verification.nuxmv_backend import NuXmvBackend, NuXmvOutcome, _witness_lengths
+from conflux.verification.nuxmv_backend import (
+    NuXmvBackend,
+    NuXmvOutcome,
+    _predabs_verdict,
+    _witness_lengths,
+)
 
 pytestmark = pytest.mark.security
 
@@ -96,3 +101,57 @@ def test_safe_result_carries_no_trace_and_no_length() -> None:
     result = backend.verify(ir)
     assert result.verdict is FormalVerdict.SAFE
     assert result.counterexample == ()
+
+
+# --- predicate-abstraction CEGAR: only the settled verdict counts (2026-10-17) ---
+#
+# The samples are the filtered transcript the O2b diagnostic recorded on 2026-10-17
+# (writing/proofs/notes/2026-10-17-o2b-predabs-diagnostic.json); the marker lines are what the
+# parser reads.
+
+PREDABS_REFINEMENT = """nuXmv > nuXmv > nuXmv > -- invariant !maximality_violation  is false
+Trace Description: AG alpha Counterexample
+Trace Type: Counterexample
+  -> State: 1.1 <-
+    maximality_violation = FALSE
+  -> State: 1.2 <-
+    maximality_violation = TRUE
+-- invariant !maximality_violation  is true
+nuXmv >
+"""
+
+PREDABS_REFUTATION = """nuXmv > nuXmv > nuXmv > -- invariant !pe_violation  is false
+Trace Description: IC3 counterexample
+Trace Type: Counterexample
+  -> State: 1.1 <-
+    pe_violation = FALSE
+  -> State: 1.2 <-
+    pe_violation = TRUE
+nuXmv >
+"""
+
+def test_predabs_verdict_reads_the_settled_line_after_a_spurious_counterexample() -> None:
+    assert _predabs_verdict(PREDABS_REFINEMENT) == "true"
+
+
+def test_predabs_verdict_reads_a_settled_refutation() -> None:
+    assert _predabs_verdict(PREDABS_REFUTATION) == "false"
+
+
+def test_predabs_verdict_is_empty_without_a_verdict_line() -> None:
+    assert _predabs_verdict("nuXmv >\n") is None
+
+
+def test_predabs_route_is_safe_when_the_settled_line_is_true() -> None:
+    """Regression for 2026-10-17: a spurious leading ``is false`` made this route report unsafe."""
+    backend = NuXmvBackend(binary="nuXmv", runner=_StubRunner(PREDABS_REFINEMENT), availability=lambda _binary: True)
+    result = backend.verify(_ir(), predabs=True)
+    assert result.verdict is FormalVerdict.SAFE
+    assert result.backend == "nuxmv-predabs"
+
+
+def test_predabs_route_is_unsafe_for_a_settled_refutation() -> None:
+    backend = NuXmvBackend(binary="nuXmv", runner=_StubRunner(PREDABS_REFUTATION), availability=lambda _binary: True)
+    result = backend.verify(_ir(), predabs=True)
+    assert result.verdict is FormalVerdict.UNSAFE
+    assert result.backend == "nuxmv-predabs"
