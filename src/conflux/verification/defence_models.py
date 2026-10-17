@@ -135,42 +135,59 @@ def dual_llm_baseline_ir() -> VerificationIR:
 
 
 def dual_llm_native_property_ir() -> VerificationIR:
-    """Dual-LLM candidate abstraction: its own intended property Q.
+    """Dual-LLM candidate abstraction: its own property Q.
 
-    This model encodes the Dual-LLM abstraction's own security guarantee:
-    the quarantined processor never directly performs effects.  Only the
-    privileged planner can execute actions.  This property Q is satisfied
-    by the model.
+    This model encodes the Dual-LLM abstraction's own security guarantee: the
+    quarantined processor never directly performs effects; only the privileged
+    planner executes.  The model holds Q by a guard partition - an execution
+    completes only with a recorded planner sanction, or when no untrusted
+    instruction reached the processor - and records the violating transition in
+    its own rule, so the property is exercised rather than assumed.
 
     Variables:
-        processor_executed: the quarantined processor directly executed an effect
-        planner_executed: the privileged planner executed an effect
-        processor_gate: the defence is active (starts True; no rule clears it)
+        untrusted_instruction_received: untrusted content carrying an effect request arrived (False).
+        planner_sanction_recorded: the privileged planner's sanction was recorded (False).
+        execution_complete: an effect executed (False).
+        processor_executed: the quarantined processor directly executed an effect (False; violation).
 
-    Q invariant: ``not processor_executed`` — holds, and is falsifiable by a
-    single-rule mutation of ``processor-executes``.
+    Q invariant: ``not processor_executed`` - holds, and is falsifiable by guard
+    mutations of ``untrusted-instruction-received`` and
+    ``execution-completes-with-sanction``.
     """
     return VerificationIR(
         "dual-llm-native-property",
         (
+            StateVariable("untrusted_instruction_received", Sort.BOOLEAN, False),
+            StateVariable("planner_sanction_recorded", Sort.BOOLEAN, False),
+            StateVariable("execution_complete", Sort.BOOLEAN, False),
             StateVariable("processor_executed", Sort.BOOLEAN, False),
-            StateVariable("planner_executed", Sort.BOOLEAN, False),
-            StateVariable("processor_gate", Sort.BOOLEAN, True),
         ),
         (
             TransitionRule(
-                "planner-acts",
-                _const(True),
-                (Assignment("planner_executed", _const(True)),),
+                "untrusted-instruction-received",
+                _not(_var("execution_complete")),
+                (Assignment("untrusted_instruction_received", _const(True)),),
             ),
             TransitionRule(
-                "processor-receives-data",
-                _const(True),
-                (),
+                "planner-sanction-recorded",
+                _and(_not(_var("execution_complete")), _var("untrusted_instruction_received")),
+                (Assignment("planner_sanction_recorded", _const(True)),),
             ),
             TransitionRule(
-                "processor-executes",
-                _not(_var("processor_gate")),
+                "execution-completes-with-sanction",
+                _and(
+                    _not(_var("execution_complete")),
+                    _or(_var("planner_sanction_recorded"), _not(_var("untrusted_instruction_received"))),
+                ),
+                (Assignment("execution_complete", _const(True)),),
+            ),
+            TransitionRule(
+                "processor-executes-untrusted-effect",
+                _and(
+                    _var("execution_complete"),
+                    _var("untrusted_instruction_received"),
+                    _not(_var("planner_sanction_recorded")),
+                ),
                 (Assignment("processor_executed", _const(True)),),
             ),
         ),
@@ -184,8 +201,8 @@ def dual_llm_native_property_ir() -> VerificationIR:
         3,
         (
             "Dual-LLM candidate abstraction native property: processor never executes",
-            "the planner can execute; the processor only receives data",
-            "processor_gate starts True and no rule clears it: holds by construction",
+            "an execution completes only with a recorded planner sanction or with no untrusted instruction received",
+            "a completed execution with an untrusted instruction and no recorded sanction is the recorded violation",
         ),
     )
 
@@ -502,40 +519,57 @@ def camel_ir() -> VerificationIR:
 
 
 def camel_native_property_ir() -> VerificationIR:
-    """CaMeL candidate abstraction: its own property Q (data-flow cannot cause effects).
+    """CaMeL candidate abstraction: its own property Q (data flow cannot cause effects).
 
     Only the planner (with capabilities) can execute; the quarantined data
-    processor cannot.  This property Q is satisfied by the abstraction.
+    processor cannot.  The model holds Q by a guard partition - a data flow
+    completes only with a recorded capability, or when no untrusted data reached
+    the processor - and records the violating transition in its own rule, so the
+    property is exercised rather than assumed.
 
     Variables:
-        processor_executed: the quarantined processor directly executed an effect
-        planner_executed: the privileged planner executed an effect
-        processor_gate: the defence is active (starts True; no rule clears it)
+        untrusted_data_received: untrusted data reached the quarantined processor (False).
+        capability_recorded: the capability covering the flow was recorded (False).
+        flow_complete: the data flow to an effect completed (False).
+        processor_executed: the quarantined data processor directly executed an effect (False; violation).
 
-    Q invariant: ``not processor_executed`` — holds, and is falsifiable by a
-    single-rule mutation of ``processor-executes``.
+    Q invariant: ``not processor_executed`` - holds, and is falsifiable by guard
+    mutations of ``untrusted-data-received`` and ``flow-completes-with-capability``.
     """
     return VerificationIR(
         "camel-native-property",
         (
+            StateVariable("untrusted_data_received", Sort.BOOLEAN, False),
+            StateVariable("capability_recorded", Sort.BOOLEAN, False),
+            StateVariable("flow_complete", Sort.BOOLEAN, False),
             StateVariable("processor_executed", Sort.BOOLEAN, False),
-            StateVariable("planner_executed", Sort.BOOLEAN, False),
-            StateVariable("processor_gate", Sort.BOOLEAN, True),
         ),
         (
             TransitionRule(
-                "planner-acts",
-                _const(True),
-                (Assignment("planner_executed", _const(True)),),
+                "untrusted-data-received",
+                _not(_var("flow_complete")),
+                (Assignment("untrusted_data_received", _const(True)),),
             ),
             TransitionRule(
-                "processor-receives-data",
-                _const(True),
-                (),
+                "capability-recorded",
+                _and(_not(_var("flow_complete")), _var("untrusted_data_received")),
+                (Assignment("capability_recorded", _const(True)),),
             ),
             TransitionRule(
-                "processor-executes",
-                _not(_var("processor_gate")),
+                "flow-completes-with-capability",
+                _and(
+                    _not(_var("flow_complete")),
+                    _or(_var("capability_recorded"), _not(_var("untrusted_data_received"))),
+                ),
+                (Assignment("flow_complete", _const(True)),),
+            ),
+            TransitionRule(
+                "processor-executes-untrusted-flow",
+                _and(
+                    _var("flow_complete"),
+                    _var("untrusted_data_received"),
+                    _not(_var("capability_recorded")),
+                ),
                 (Assignment("processor_executed", _const(True)),),
             ),
         ),
@@ -549,8 +583,8 @@ def camel_native_property_ir() -> VerificationIR:
         3,
         (
             "CaMeL candidate abstraction native property: processor never executes",
-            "the planner can execute via capabilities; the processor only receives data",
-            "processor_gate starts True and no rule clears it: holds by construction",
+            "a data flow completes only with a recorded capability or with no untrusted data received",
+            "a completed flow with untrusted data and no recorded capability is the recorded violation",
         ),
     )
 
@@ -626,28 +660,54 @@ def progent_ir() -> VerificationIR:
 def progent_native_property_ir() -> VerificationIR:
     """Progent candidate abstraction: its own property Q (all calls satisfy policy).
 
-    Variables:
-        policy_violation: a call violated the parameter-sensitive policy
-        policy_gate: the defence is active (starts True; no rule clears it)
+    The model holds Q by a guard partition - a call executes only after its
+    parameter-sensitive policy check completed, or when no unchecked call is
+    pending - and records the violating transition in its own rule, so the
+    property is exercised rather than assumed.
 
-    Q invariant: ``not policy_violation`` — holds, and is falsifiable by a
-    single-rule mutation of ``policy-violated-call``.
+    Variables:
+        unchecked_call_pending: a call with unchecked parameters is pending (False).
+        policy_check_completed: the parameter-sensitive policy check completed (False).
+        call_executed: the call executed (False).
+        policy_violation: an executed call violated the policy (False; violation).
+
+    Q invariant: ``not policy_violation`` - holds, and is falsifiable by guard
+    mutations of ``unchecked-call-pending`` and ``call-executes-after-check``.
     """
     return VerificationIR(
         "progent-native-property",
         (
+            StateVariable("unchecked_call_pending", Sort.BOOLEAN, False),
+            StateVariable("policy_check_completed", Sort.BOOLEAN, False),
+            StateVariable("call_executed", Sort.BOOLEAN, False),
             StateVariable("policy_violation", Sort.BOOLEAN, False),
-            StateVariable("policy_gate", Sort.BOOLEAN, True),
         ),
         (
             TransitionRule(
-                "policy-checked-call",
-                _const(True),
-                (Assignment("policy_violation", _const(False)),),
+                "unchecked-call-pending",
+                _not(_var("call_executed")),
+                (Assignment("unchecked_call_pending", _const(True)),),
             ),
             TransitionRule(
-                "policy-violated-call",
-                _not(_var("policy_gate")),
+                "policy-check-completed",
+                _and(_not(_var("call_executed")), _var("unchecked_call_pending")),
+                (Assignment("policy_check_completed", _const(True)),),
+            ),
+            TransitionRule(
+                "call-executes-after-check",
+                _and(
+                    _not(_var("call_executed")),
+                    _or(_var("policy_check_completed"), _not(_var("unchecked_call_pending"))),
+                ),
+                (Assignment("call_executed", _const(True)),),
+            ),
+            TransitionRule(
+                "policy-violated-call-recorded",
+                _and(
+                    _var("call_executed"),
+                    _var("unchecked_call_pending"),
+                    _not(_var("policy_check_completed")),
+                ),
                 (Assignment("policy_violation", _const(True)),),
             ),
         ),
@@ -658,10 +718,11 @@ def progent_native_property_ir() -> VerificationIR:
                 "Q: all tool calls satisfy the parameter-sensitive policy",
             ),
         ),
-        2,
+        3,
         (
             "Progent candidate abstraction native property: all calls satisfy policy",
-            "policy_gate starts True and no rule clears it: holds by construction",
+            "a call executes only after its policy check completed or with no unchecked call pending",
+            "an executed call with unchecked parameters and no completed check is the recorded violation",
         ),
     )
 

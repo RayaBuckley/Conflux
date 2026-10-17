@@ -4,18 +4,26 @@
       "bound": 3,
       "invariants": [
         {
-          "exercise_class": "checked_by_construction",
+          "exercise_class": "checked",
           "falsifiers": [
             {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "untrusted-data-received"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "flow-completes-with-capability"
+            },
+            {
               "guard_satisfiable_at_reachable_state": false,
-              "rule_id": "processor-executes"
+              "rule_id": "processor-executes-untrusted-flow"
             }
           ],
           "invariant_id": "processor-never-executes"
         }
       ],
       "ir_id": "camel-native-property",
-      "reachable_states": 2
+      "reachable_states": 5
     },
     "camel_pe": {
       "bound": 4,
@@ -62,18 +70,26 @@
       "bound": 3,
       "invariants": [
         {
-          "exercise_class": "checked_by_construction",
+          "exercise_class": "checked",
           "falsifiers": [
             {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "untrusted-instruction-received"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "execution-completes-with-sanction"
+            },
+            {
               "guard_satisfiable_at_reachable_state": false,
-              "rule_id": "processor-executes"
+              "rule_id": "processor-executes-untrusted-effect"
             }
           ],
           "invariant_id": "processor-never-executes"
         }
       ],
       "ir_id": "dual-llm-native-property",
-      "reachable_states": 2
+      "reachable_states": 5
     },
     "dual_llm_pe": {
       "bound": 4,
@@ -287,21 +303,29 @@
       "reachable_states": 5
     },
     "progent_native_property": {
-      "bound": 2,
+      "bound": 3,
       "invariants": [
         {
-          "exercise_class": "checked_by_construction",
+          "exercise_class": "checked",
           "falsifiers": [
             {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "unchecked-call-pending"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "call-executes-after-check"
+            },
+            {
               "guard_satisfiable_at_reachable_state": false,
-              "rule_id": "policy-violated-call"
+              "rule_id": "policy-violated-call-recorded"
             }
           ],
           "invariant_id": "no-policy-violation"
         }
       ],
       "ir_id": "progent-native-property",
-      "reachable_states": 1
+      "reachable_states": 5
     },
     "progent_pe": {
       "bound": 4,
