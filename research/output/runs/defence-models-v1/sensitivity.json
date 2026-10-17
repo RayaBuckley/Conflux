@@ -265,6 +265,45 @@
       "ir_id": "pace-baseline",
       "reachable_states": 9
     },
+    "pact_contract_role_gate": {
+      "bound": 4,
+      "invariants": [
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "execute-with-role-check"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "safety-violation-recorded"
+            }
+          ],
+          "invariant_id": "no-unchecked-authority-execution"
+        },
+        {
+          "exercise_class": "checked",
+          "falsifiers": [
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "role-check-applied"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": true,
+              "rule_id": "role-gate-blocks-value"
+            },
+            {
+              "guard_satisfiable_at_reachable_state": false,
+              "rule_id": "utility-violation-recorded"
+            }
+          ],
+          "invariant_id": "content-roles-not-blocked"
+        }
+      ],
+      "ir_id": "pact-contract-role-gate",
+      "reachable_states": 12
+    },
     "pact_native_property": {
       "bound": 3,
       "invariants": [

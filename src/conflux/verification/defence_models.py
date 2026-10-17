@@ -870,6 +870,163 @@ def pact_native_property_ir() -> VerificationIR:
     )
 
 
+def pact_contract_role_gate_ir() -> VerificationIR:
+    """PACT contract-role gate: the role check's two directions, safety and utility.
+
+    O3 of Proof 2 (``writing/proofs/02-pact-argument-authority.md``).  An
+    abstraction over the paper's own description (its conditions A1-A3), not an
+    implementation-conformance model.  It separates the two roles the paper's
+    evaluation separates: an authority-role argument must have the provenance
+    check applied before the action executes, and a content-role argument must
+    accept an untrusted value without being blocked.
+
+    Both invariants hold at baseline, and both are exercised by a targeted
+    guard mutation inside the declared alphabet:
+
+    * ``execute-with-role-check`` with its guard replaced by ``True`` is the
+      "remove the role check" mutation - execution without the applied check
+      becomes reachable and ``no-unchecked-authority-execution`` is falsified;
+    * ``role-check-applied`` with its guard replaced by ``True`` is the "close
+      the content roles" mutation - the check reaches a content-role value,
+      ``role-gate-blocks-value`` blocks it, and ``content-roles-not-blocked`` is
+      falsified.
+
+    Each of those two mutations falsifies exactly one of the two invariants.
+    Both invariants classify ``checked`` at ``bound = 4`` (12 reachable states);
+    at bound 3 the safety direction still reads ``checked_by_construction``, so
+    bound 4 is load-bearing.
+
+    Variables:
+        untrusted_arg_present: an untrusted value occupies a tool argument (False).
+        authority_role_case: that argument occupies an authority-carrying role (False).
+        role_check_applied: the gate applied the provenance check (False).
+        content_value_accepted: the content-role value passed through (False).
+        decision_made: the gate settled on this value (False).
+        action_executed: the action executed (False).
+        value_blocked: the gate blocked the value (False).
+        safety_violation: executed with no applied check (False; violation).
+        utility_violation: blocked an untrusted content-role value (False; violation).
+
+    Safety invariant: ``not safety_violation``.  Utility invariant:
+    ``not utility_violation`` - blocking an untrusted authority-role argument is
+    correct behaviour, so only a blocked content-role value counts as a loss.
+    """
+    return VerificationIR(
+        "pact-contract-role-gate",
+        (
+            StateVariable("untrusted_arg_present", Sort.BOOLEAN, False),
+            StateVariable("authority_role_case", Sort.BOOLEAN, False),
+            StateVariable("role_check_applied", Sort.BOOLEAN, False),
+            StateVariable("content_value_accepted", Sort.BOOLEAN, False),
+            StateVariable("decision_made", Sort.BOOLEAN, False),
+            StateVariable("action_executed", Sort.BOOLEAN, False),
+            StateVariable("value_blocked", Sort.BOOLEAN, False),
+            StateVariable("safety_violation", Sort.BOOLEAN, False),
+            StateVariable("utility_violation", Sort.BOOLEAN, False),
+        ),
+        (
+            TransitionRule(
+                "untrusted-arg-present",
+                _not(_var("decision_made")),
+                (Assignment("untrusted_arg_present", _const(True)),),
+            ),
+            TransitionRule(
+                "authority-role-marked",
+                _and(
+                    _not(_var("decision_made")),
+                    _var("untrusted_arg_present"),
+                    _not(_var("authority_role_case")),
+                ),
+                (Assignment("authority_role_case", _const(True)),),
+            ),
+            TransitionRule(
+                "role-check-applied",
+                _and(
+                    _not(_var("decision_made")),
+                    _var("untrusted_arg_present"),
+                    _var("authority_role_case"),
+                ),
+                (Assignment("role_check_applied", _const(True)),),
+            ),
+            TransitionRule(
+                "content-value-accepted",
+                _and(
+                    _not(_var("decision_made")),
+                    _var("untrusted_arg_present"),
+                    _not(_var("authority_role_case")),
+                ),
+                (Assignment("content_value_accepted", _const(True)),),
+            ),
+            TransitionRule(
+                "execute-with-role-check",
+                _and(
+                    _not(_var("decision_made")),
+                    _or(
+                        _and(_var("authority_role_case"), _var("role_check_applied")),
+                        _and(_not(_var("authority_role_case")), _var("content_value_accepted")),
+                        _not(_var("untrusted_arg_present")),
+                    ),
+                ),
+                (
+                    Assignment("decision_made", _const(True)),
+                    Assignment("action_executed", _const(True)),
+                ),
+            ),
+            TransitionRule(
+                "role-gate-blocks-value",
+                _and(
+                    _not(_var("decision_made")),
+                    _or(
+                        _and(_var("authority_role_case"), _not(_var("role_check_applied"))),
+                        _and(_var("role_check_applied"), _not(_var("authority_role_case"))),
+                    ),
+                ),
+                (
+                    Assignment("decision_made", _const(True)),
+                    Assignment("value_blocked", _const(True)),
+                ),
+            ),
+            TransitionRule(
+                "safety-violation-recorded",
+                _and(
+                    _var("action_executed"),
+                    _var("untrusted_arg_present"),
+                    _var("authority_role_case"),
+                    _not(_var("role_check_applied")),
+                ),
+                (Assignment("safety_violation", _const(True)),),
+            ),
+            TransitionRule(
+                "utility-violation-recorded",
+                _and(
+                    _var("value_blocked"),
+                    _var("untrusted_arg_present"),
+                    _not(_var("authority_role_case")),
+                ),
+                (Assignment("utility_violation", _const(True)),),
+            ),
+        ),
+        (
+            SafetyInvariant(
+                "no-unchecked-authority-execution",
+                _not(_var("safety_violation")),
+                "O3 safety: no executed action binds an untrusted authority-role argument without the applied check",
+            ),
+            SafetyInvariant(
+                "content-roles-not-blocked",
+                _not(_var("utility_violation")),
+                "O3 utility: an untrusted content-role argument is never blocked",
+            ),
+        ),
+        4,
+        (
+            "PACT contract-role gate abstraction at argument level (Proof 2 obligation O3)",
+            "untrusted_arg_present starts False; the gate settles once per value",
+            "role separation follows the paper's own security/utility split; not implementation conformance",
+        ),
+    )
+
+
 def ites_with_read_check_ir() -> VerificationIR:
     """ITES with an additional read-check on nested execution inputs.
 
@@ -1560,6 +1717,7 @@ __all__ = [
     "ites_with_read_check_ir",
     "pace_ir",
     "pace_native_property_ir",
+    "pact_contract_role_gate_ir",
     "pact_ir",
     "pact_native_property_ir",
     "progent_ir",
