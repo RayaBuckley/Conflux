@@ -50,22 +50,25 @@ Extrapolated Security (ITES), a provenance-based defence that derives the
 effective authority of each execution from the intersection of the
 permissions held by all principals that influence it, and the System-Level
 Evaluator for Defences (SLED), which evaluates a defence independently of
-language-model behaviour by exhaustively exploring the reachable execution
-space under worst-case assumptions. We then present Conflux, a canonical
-implementation of ITES with independent read, authorisation, visibility and
-consent decisions; argument-aware authorisation; audience-specific
+language-model behaviour by exhaustively exploring the declared finite
+execution space under worst-case assumptions. We then present Conflux, a
+canonical implementation of ITES with independent read, authorisation,
+visibility and consent decisions; argument-aware authorisation;
+audience-specific
 disclosure; structured attribution; authenticated dynamic planning; a
 serialisable verification IR with cone-of-influence reduction and three
-unbounded route backends; and a scoped delegation model that remains disabled
-at runtime. We report bounded evidence from native SLED mutation testing,
-semantic conformance across three independent decision procedures, reduced
+unbounded verification routes; and a scoped delegation model that remains
+disabled at runtime. We report bounded evidence from native SLED mutation
+testing, semantic agreement across three encodings of one IR, reduced
 verification, provenance-rule over-blocking measurements, and pinned
-AgentDojo runs, and we separate that evidence from claims that still require
-gated artefacts. A holding safety verdict is cited as support only when the
-same artefact classifies the underlying invariant as falsifiable under a
-declared mutation alphabet. The core guarantee, that authority can only
+AgentDojo protocol runs reported only as breadth; we separate that evidence
+from claims that remain pending. A holding safety verdict is cited as support
+only when the same artefact classifies the underlying invariant as
+falsifiable under a declared mutation alphabet. The core guarantee, that
+authority can only
 decrease as influence accumulates, follows from the provenance-based
-authorisation rule and holds under arbitrary model behaviour.
+authorisation rule under the stated enforcement and access-control assumptions,
+and is independent of language-model behaviour.
 \end{abstract}
 
 
@@ -93,7 +96,7 @@ provenance-based defence that derives the effective authority of each
 execution from information provenance and an existing access-control system,
 and the System-Level Evaluator for Defences (SLED), which evaluates
 system-level defences under worst-case model behaviour by exhaustively
-exploring the reachable execution space \citep{earlycategorization}. The
+exploring the declared finite execution space \citep{earlycategorization}. The
 historical evaluation explored approximately 1.5 million traces and observed
 no successful privilege escalation while preserving maximal utility for all
 tasks consistent with the access-control system; Section~\ref{sec:eval}
@@ -114,8 +117,8 @@ verification, and benchmark translation. The contributions are:
     \citep{biba1977,lomac}, and prove that authority is monotonically
     non-increasing as influence accumulates.
   \item We introduce SLED, which evaluates defences independently of
-    language-model behaviour by exhaustively exploring the execution state
-    space under worst-case assumptions.
+    language-model behaviour by exhaustively exploring the declared finite
+    execution state space under worst-case assumptions.
   \item We describe the Conflux canonical architecture, which separates
     read, authorisation, visibility, and consent decisions; extends to
     argument-aware policy, audience disclosure, structured attribution,
@@ -149,10 +152,17 @@ CaMeL extends this with capability tracking and developer-defined policies
 enforced by a custom interpreter \citep{camel,designpatterns}. Progent
 mediates tool calls with symbolic privilege control \citep{progent}. PACT
 tracks argument-level provenance \citep{pact}, and FORGE enforces
-history-sensitive Datalog policies \citep{forge}. ITES differs by deriving
-authority directly from the organisation's existing access-control system
-rather than introducing a trusted planning model, binary trust labels, or
-a new policy language.
+history-sensitive Datalog policies \citep{forge}. Effect-time re-authorisation
+is also prior art: Zhu and Wang recheck protected effects at an atomic commit
+boundary for self-generated subgoals under one principal and one authorisation
+root \citep{zhu2026runtime}, and APEX enforces authorised-effect and
+task-endorsed-influence conditions at the execution boundary from a contract
+compiled before untrusted execution \citep{zheng2026apex}. ITES differs in the
+authority source: it derives authority directly from the organisation's
+existing access-control system over the set of influencing principals, rather
+than from a single task contract, and keeps model judgement outside the
+authority TCB. It does not introduce a trusted planning model, binary trust
+labels, or a new policy language.
 
 \subsection{Classical Security Lineage}
 
@@ -385,7 +395,7 @@ differential tests, optional Z3 bounded model checking, and a nuXmv
 Boolean subset. Property-scoped cone-of-influence (COI) reduction closes
 transitively over guards and dependencies. Reduction claims require matching
 reference verdicts and a liftable unsafe witness. Section~\ref{sec:fv}
-reports the unbounded route backends and the falsifiability check that
+reports the unbounded routes and the falsifiability check that
 qualifies every holding verdict.
 
 
@@ -686,9 +696,10 @@ authorisation, controlled disclosure, structured attribution, authenticated
 dynamic planning, serialisable formal verification, and a disabled
 scoped-delegation foundation. The core security guarantee---that authority
 can only decrease as influence accumulates---follows from the
-provenance-based authorisation rule and is independent of language-model
-behaviour. The remaining research contribution is stronger evidence and
-carefully gated activation: real-model, external-benchmark, and formal
+provenance-based authorisation rule given correct enforcement and
+access-control state, and is independent of language-model behaviour. The
+remaining research contribution is stronger evidence and carefully gated
+activation: real-model, external-benchmark, and formal
 artefacts whose claims remain tied to explicit assumptions, models, and
 bounds.
 
