@@ -55,13 +55,13 @@
     },
     {
       "path": "main.tex",
-      "bytes": 39716,
-      "sha256": "2bbba1ab57da034e2e1241e2f650c74acea2d5bd85973b7caa249ff3930d4a90"
+      "bytes": 42583,
+      "sha256": "d80364f03c96b3e009e04d7280490a150c911e9daaf24b544eb28680bcd273b8"
     },
     {
       "path": "references.bib",
-      "bytes": 10472,
-      "sha256": "7b5c967c1892feb7f6a66699e08e7de87926295ed66fdfb7edda22dc4ad78940"
+      "bytes": 11458,
+      "sha256": "1a31a8574e169be84c86aba60ff6cee0654e559ca6661626f7da967039f7dceb"
     }
   ]
 }
