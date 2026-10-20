@@ -606,6 +606,58 @@ result artefacts). No numerical claim is entered manually; tables and
 figures are generated from versioned result JSON, and each generated file
 names its source files and their digests in its header.
 
+\subsection{Benchmark Roles and Claim Boundaries}
+
+We use evaluation instruments for three distinct questions and do not pool
+them into a single score. Table~\ref{tab:benchmark-boundaries} states what
+each can support.
+
+Native SLED is the controlled worst-case instrument. It explores every
+behaviour consistent with a declared finite model, so a holding verdict is
+evidence about that model and a refutation is a concrete trace. It does not
+establish that the implementation conforms to the model, and a finite bound
+is not a deployment guarantee.
+
+AgentDojo \citep{agentdojo} is the external comparability instrument. It
+contributes realistic indirect-injection protocols, utility accounting, and
+targeted attack success. The retained 0.5B, 7B, and 14B runs are pilot and
+breadth evidence: no effect tool was executed in any retained bundle, and
+the 14B pilot proposed only \texttt{search\_emails}. A full effect-bearing
+matrix remains pending and is the pre-submission gate. Until it exists, we
+do not use AgentDojo to support a defence or utility-cost claim.
+
+InjecAgent \citep{injecagent} contributes a second injection channel: the
+attacker can offer a tool alongside the user's tools, and the benchmark
+separates data stealing from direct harm. We retain a no-model
+classification of its cases against the authority model. That classification
+can say whether a case lies inside or outside the model and whether a policy
+decision denies it; it cannot yield a live attack-success or utility number. The 30-case 0.5B run is a plumbing check, not a result.
+
+We do not treat harmfulness-refusal, multi-agent attack-surface, or
+task-utility suites as evidence for authority confinement. Their ground truth
+is harmful-goal refusal, attack success, or task completion rather than an
+authority decision over the set of influencing principals. They may motivate
+the problem or test a different property, but they are not substitutes for
+the three roles above.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}p{0.18\linewidth}p{0.27\linewidth}p{0.27\linewidth}p{0.20\linewidth}@{}}
+\toprule
+Instrument & Question & Retained evidence & Claim boundary \\
+\midrule
+Native SLED & Does a defence enforce its property for every behaviour in a declared finite model? & Finite-model exploration, mutation kills, and shortest counterexamples & Finite models only; not implementation conformance or deployment safety \\
+AgentDojo & Does a defence preserve utility and stop targeted injections in realistic protocols? & Pinned protocol runs at three model scales; all are pilots or breadth evidence & No effect tool executed in retained bundles; full effect-bearing matrix pending \\
+InjecAgent & Which principal authorised an effect when an attacker tool is offered? & No-model classification of the benchmark cases against the authority model & Classification only; no live attack-success or utility result \\
+\bottomrule
+\end{tabular}
+\caption{What each evaluation instrument can support. The table is a claim
+boundary, not a score: no row is treated as a substitute for another, and
+no current AgentDojo pilot is used as defence evidence.}
+\label{tab:benchmark-boundaries}
+\end{table}
+
 \subsection{Native SLED Reproduction}
 
 The retained native reproduction detects all five seeded monitor defects,
