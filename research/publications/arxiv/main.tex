@@ -742,9 +742,12 @@ limit: their five tasks are read-only, their ground truth is
 \texttt{search\_emails} alone, and every retained log made at most that one
 call, so no effect tool was reached at any model size and their security
 counts carry no signal either. Of the 97 user tasks in the four suites, 60
-require an effect call, and a new run is selected from those. Real-model and
-AgentDojo claims stay bounded until a capable model completes the protocols
-on effect-bearing tasks.
+require an effect call. That 60-task subset is a selection frame, not a
+result: no effect call has
+been executed in any retained AgentDojo cell. The retained pilots use one
+repetition and one seed, and a single pass cannot support a utility-cost
+estimate. Real-model and AgentDojo claims stay bounded until a capable model
+completes the protocols on effect-bearing tasks.
 
 \input{generated/tables/agentdojo_breadth_table}
 
