@@ -98,9 +98,10 @@ and the System-Level Evaluator for Defences (SLED), which evaluates
 system-level defences under worst-case model behaviour by exhaustively
 exploring the declared finite execution space \citep{earlycategorization}. The
 historical evaluation explored approximately 1.5 million traces and observed
-no successful privilege escalation while preserving maximal utility for all
-tasks consistent with the access-control system; Section~\ref{sec:eval}
-reproduces its per-environment counts exactly under the recorded depth bound.
+no successful privilege escalation in the explored finite traces;
+Section~\ref{sec:eval} reproduces its per-environment counts exactly under
+the recorded depth bound. We do not claim maximal utility: conservative
+provenance and independent policy dimensions can deny admissible tasks.
 
 This paper unifies the foundational ITES/SLED theory with the Conflux
 canonical implementation, which extends the original design with independent
@@ -197,13 +198,13 @@ security objective under arbitrary model behaviour.
 & Model-level & Dual LLM & CaMeL & ITES \\
 \midrule
 Primary mechanism & Model robustness & Model isolation & Dual LLM + policies & Provenance + ACS \\
-Security depends on model & Yes & Planning model & Planning model & No \\
+Security depends on model & Yes & Planning model & Planning model & Confinement: no; judgement: yes \\
 Requires new policy language & No & No & Yes & No \\
 Tracks & N/A & N/A & Capabilities & Principals \\
 Security objective & Prevent PI & Prevent PI & Prevent PI + policies & Prevent PE \\
 \bottomrule
 \end{tabular}
-\caption{Comparison of representative approaches. PI denotes prompt injection; PE denotes privilege escalation; ACS denotes access-control system.}
+\caption{Comparison of representative approaches. PI denotes prompt injection; PE denotes privilege escalation; ACS denotes access-control system. For ITES, the final row refers to authority confinement; semantic judgement remains empirical.}
 \label{tab:comparison}
 \end{table}
 
@@ -263,27 +264,42 @@ removes it. Under the conservative model, influence is never removed.
 
 \subsection{Authorisation Rule}
 
-Given an execution $e$ with Principal Context $\mathrm{PC}(e)$, ITES permits
-an action $a \in A$ iff:
+Given an execution $e$ and an action $a \in A$, let the \emph{decision
+context} be the merge of the Principal Context with the provenance of the
+action's authority-bearing arguments:
 \[
-\forall u \in \mathrm{PC}(e),\; P(u, a).
+\mathrm{DC}(e,a) = \mathrm{PC}(e) \cup \mathrm{Prov}_{\mathrm{arg}}(a),
 \]
-Equivalently, the effective authority is the intersection of the permission
-sets of all influencing principals. The Conflux extension adds a
-non-empty-context condition: an action is blocked if $\mathrm{PC}(e) =
-\varnothing$, preventing vacuous authority.
+where $\mathrm{Prov}_{\mathrm{arg}}(a)$ is the set of principals recorded
+for the action's authority-bearing arguments. ITES permits $a$ only if
+$\mathrm{DC}(e,a)$ is known and non-empty and
+\[
+\forall u \in \mathrm{DC}(e,a),\; P(u, a),
+\]
+and the independent read, visibility, consent, and argument-policy
+decisions also allow. Equivalently, the effective authority is the
+intersection of the permission sets of all principals in the decision
+context. The known-context condition blocks empty and unknown contexts,
+preventing vacuous authority.
 
-\subsection{Maximal Secure Authorisation}
+\subsection{Maximal Authorisation under the Represented Context}
 
-\begin{theorem}[Maximal Secure Authorisation]
-ITES authorises the maximal set of actions that can be permitted without
-allowing privilege escalation.
+\begin{theorem}[Maximal Authorisation under the Represented Context]
+Relative to the represented decision context $\mathrm{DC}(e,a)$ and the
+action-authorisation relation $P$, ITES authorises exactly
+$\bigcap_{u \in \mathrm{DC}(e,a)} \{a \mid P(u, a)\}$ on that dimension and
+no action outside that intersection. Any strict superset under the same $P$
+includes an action denied by some principal in $\mathrm{DC}(e,a)$.
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-ITES authorises exactly $\bigcap_{u \in \mathrm{PC}(e)} \{a \mid P(u, a)\}$.
-Any strict superset must include an action $a$ for which some influencing
-principal $u$ lacks permission, satisfying Definition~2.
+By the authorisation rule, ITES authorises exactly the intersection. A
+strict superset under the same $P$ must add an action denied by some
+principal in $\mathrm{DC}(e,a)$. This is maximality relative to the
+represented context and the $P$ dimension. Because $\mathrm{DC}(e,a)$ may
+over-approximate the true influencing set, and because read, visibility,
+consent, and argument policy are independent dimensions, the theorem does
+not assert maximality with respect to all non-escalating actions.
 \end{proof}
 
 \subsection{Authority Monotonicity}
@@ -299,17 +315,74 @@ Adding influencing principals introduces additional constraints; the
 intersection can only shrink or remain unchanged.
 \end{proof}
 
-\begin{corollary}[Security Guarantee]
-Under the threat model of Section~3, and assuming correct enforcement of
-influence tracking, provenance, and access-control checks, ITES prevents
-privilege escalation.
-\end{corollary}
+\begin{theorem}[System-Level Authority Confinement]
+Let $e$ be an execution and let $a$ be an effectful action that $e$
+executes. Assume:
+\begin{enumerate}
+  \item[(A1)] every effectful action is mediated by ITES;
+  \item[(A2)] $\mathrm{DC}(e,a)$ contains every principal whose information
+        contributed to $e$ or to the authority-bearing arguments of $a$;
+  \item[(A3)] for every $u \in \mathrm{DC}(e,a)$, $P(u,a)$ reflects the
+        current effective access-control state at execution time;
+  \item[(A4)] the executor executes $a$ only with a certificate issued by
+        the ITES kernel for a decision over $\mathrm{DC}(e,a)$, bound to
+        $a$'s action fingerprint, $\mathrm{DC}(e,a)$'s context fingerprint,
+        the executing branch identity, and the current policy versions, and
+        revalidated at execution time; and
+  \item[(A5)] $\mathrm{DC}(e,a)$ is known and non-empty.
+\end{enumerate}
+Then $e$ does not perform privilege escalation with respect to $a$, for
+arbitrary model behaviour.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By A1 and A4, $a$ is executed only if the ITES kernel accepted it for
+$\mathrm{DC}(e,a)$ and the executor revalidated the matching certificate.
+By A2, every influencing principal is in $\mathrm{DC}(e,a)$. By A3,
+acceptance checked each such principal against the current effective
+access-control state. Hence no influencing principal lacks $P(u,a)$, which
+is the negation of Definition~2. A5 excludes the empty and unknown cases.
+No step depends on the model's proposals.
+\end{proof}
 
 The guarantee is independent of the source of influence. Prompt injection,
-retrieved documents, compromised tools, and arbitrary model behaviour are
-treated uniformly: once information contributes to an execution, the
+retrieved documents, untrusted tool outputs, and arbitrary model behaviour
+are treated uniformly: once information contributes to an execution, the
 authority of that execution is constrained by the permissions of the
-corresponding principals.
+corresponding principals. A compromised executor, provenance adapter, or
+policy port is not a source of influence; it is a bypass of the trusted
+computing base and lies outside A1--A4.
+
+\subsection{Scope of the guarantee}
+
+The theorem is an authority-confinement result, not a claim that every
+permitted action is appropriate. ITES bounds the authority available to a
+semantic decision but does not decide whether the chosen effect is warranted
+by the task or context; that remains empirical. The theorem assumes the
+enforcement path, provenance tracking, access-control state, and
+authentication are correct. It does not cover a bypass of the mediation
+boundary, a provenance error, a stale or incorrect permission, or an
+executor that acts without a matching certificate.
+
+It also does not establish policy adequacy: whether the ACS encodes the
+organisation's intended restrictions is a separate assurance question. It is
+not a non-interference or confidentiality result. Side channels, implicit
+flows, and read-based disclosure are outside A1--A5; read, visibility,
+consent, and argument policy are independent decisions. Authentication is
+part of the trusted computing base: A2 assumes provenance labels correspond
+to actual sources. The result is safety-only. Conservative provenance and
+independent policy dimensions can deny actions that are consistent with the
+ACS, so the theorem does not establish utility or liveness. The relation
+$P(u,a)$ is action-level; coarse permission does not imply safe recipients,
+amounts, destinations, or argument values. Runtime delegation is disabled,
+so $P$ is the explicit ACS; if delegation is activated, $P$ must be the
+effective relation $\mathrm{ACS}_{\mathrm{effective}}(e)$. A3 and A4 close
+the stale-policy and certificate-binding gaps at recheck, but a race between
+recheck and the external effect remains outside the model unless execution
+is atomic or fails closed. The finite-IR verification in
+Section~\ref{sec:fv} is evidence about the reference IR under declared
+bounds, not a proof that the implementation conforms to that IR. These
+limits are part of the claim.
 
 
 \section{SLED: Worst-Case Evaluation}
