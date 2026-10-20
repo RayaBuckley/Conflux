@@ -2285,3 +2285,19 @@ must equal the declared set; a supported plan must declare nothing unsupported; 
 `docs/evidence/CLAIMS.md` must carry the status and reason the module declares. No claim is promoted:
 the unbounded-deployment row stays `Not claimed`, and the test fails if that changes without the code
 changing with it.
+
+## 35. IR model scope and fidelity (2026-10-19)
+
+`docs/evidence/IR_SCOPE.md` states the scope of the 19 defence-model verification IR factories in
+`src/conflux/verification/defence_models.py` and the fidelity boundary of their verdicts. The reason
+is the owner's 2026-10-19 review of claim-register row 37: the ITES reference IR is a
+one-principal, one-action instance of the intersection rule, not a general ITES model and not
+implementation conformance. The file records the same limit for every other defence-model factory,
+including the three factories with a tiny set sort.
+
+The support-level consequence is stated in the register: an IC3 or exact-enumeration result over one
+of these finite IRs is `unbounded-checked`, not `proved`. The separate fidelity axis remains
+`declared-abstraction`, not `implementation-conformant`. The rule-level theorem in the papers is a
+separate deductive result with named assumptions. Implementation conformance is not claimed; it is
+tracked as hub task X25 and requires a formal semantics, a refinement relation, a commuting-diagram
+argument, differential traces, and an independent audit before any row may use that fidelity tag.

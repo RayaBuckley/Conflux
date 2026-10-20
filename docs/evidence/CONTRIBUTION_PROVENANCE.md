@@ -81,7 +81,7 @@ here so that a later submission can disclose its history honestly.
 | Influence is never silently removed by nested execution | Implemented | immutable provenance and monotonic-context tests |
 | Provenance is not a read ACL | Implemented | separate read port and reader/author inversion tests |
 | Branches are isolated alternatives | Implemented | one transition kernel and branch-parent tests |
-| ITES preserves PE | Bounded evidence | `research/output/runs/defence-models-v1/result.json`: ITES reference PE property is bounded\_safe; finite IR model |
+| ITES reference IR preserves PE | Unbounded-checked (finite IR) | `research/output/runs/defence-models-v1/result.json`: ITES reference PE property is safe under IC3 and exact enumeration over a one-principal, one-action finite IR. The check is unbounded in depth, but the model is a declared abstraction, not implementation-conformant. The ledger status `Unbounded-checked (finite IR)` means the check has no depth bound over that declared finite model; it does not mean implementation conformance or a general ITES theorem. The rule-level theorem in the papers is a separate deductive result. See `docs/evidence/IR_SCOPE.md`. |
 
 ### Fourth-year contributions (Part C) (46 claims)
 

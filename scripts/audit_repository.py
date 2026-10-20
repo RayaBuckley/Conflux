@@ -37,6 +37,7 @@ CANONICAL_DOCS = {
     "evidence/AUDIT.md",
     "evidence/BASELINE_2026-07.md",
     "evidence/VERIFICATION.md",
+    "evidence/IR_SCOPE.md",
     "evidence/README.md",
     "evidence/CONTRIBUTION_PROVENANCE.md",
     "evidence/defence-model-fidelity.json",

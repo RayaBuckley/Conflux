@@ -3,7 +3,9 @@
 Each factory returns a :class:`VerificationIR` that represents a small
 finite abstraction intended for hypothesis generation and verifier
 testing.  The models are **not** implementation-conformance evidence for
-the cited external systems.  They are designed for comparative
+any system, including the Conflux ITES reference model and the cited
+external systems.  ``docs/evidence/IR_SCOPE.md`` records the scope of
+every factory.  They are designed for comparative
 verification against the Conflux PE property:
 
     Executed(a) -> forall p in Influencers(a): ACSAllows(p, a)
@@ -215,6 +217,10 @@ def ites_reference_ir() -> VerificationIR:
     invariant holds, and each holding invariant is falsifiable by a
     single-rule guard mutation (the block and allow guards partition the
     state space, and each property has one rule that records it).
+
+    This is a one-principal, one-action instance of the rule.  It is not a
+    model of the general ITES theorem and not implementation conformance;
+    see ``docs/evidence/IR_SCOPE.md``.
 
     Variables:
         planner_consumed_attacker: planner read attacker-controlled data

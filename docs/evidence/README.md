@@ -7,6 +7,7 @@ records.
 |---|---|
 | [Status](STATUS.md) | Current capability summary and what's next. |
 | [Claim ledger](CLAIMS.md) | Claim strength and limitations. |
+| [IR model scope](IR_SCOPE.md) | Scope and fidelity boundary of the 19 defence-model verification IR factories. |
 | [Contribution provenance](CONTRIBUTION_PROVENANCE.md) | Third-year (Part B) and fourth-year (Part C) contributions, generated from the claim ledger. |
 | [Evaluation](EVALUATION.md) | Result and trace evidence. |
 | [Negative controls](NEGATIVE_CONTROLS.md) | Deliberately defective variants for validation. |
