@@ -608,9 +608,9 @@ the row count, not a rate. Generated from the two retained result bundles.}
 We distinguish three statuses: \emph{reproduced} (a historical
 count re-derived from a retained bundle), \emph{bounded current} (the
 reference kernel on finite models), and \emph{pending} (gated on retained
-result artefacts). No numerical claim is entered manually; tables and
-figures are generated from versioned result JSON, and each generated file
-names its source files and their digests in its header.
+result artefacts). No numerical claim in the tables or figures is entered
+manually; they are generated from versioned result JSON, and each generated
+file names its source files and their digests in its header.
 
 \subsection{Benchmark Roles and Claim Boundaries}
 
@@ -635,9 +635,12 @@ do not use AgentDojo to support a defence or utility-cost claim.
 InjecAgent \citep{injecagent} contributes a second injection channel: the
 attacker can offer a tool alongside the user's tools, and the benchmark
 separates data stealing from direct harm. We retain a no-model
-classification of its cases against the authority model. That classification
-can say whether a case lies inside or outside the model and whether a policy
-decision denies it; it cannot yield a live attack-success or utility number. The 30-case 0.5B run is a plumbing check, not a result.
+classification of its cases against the authority model. The retained
+classification covers 1,054 cases: 510 are refused as out of scope because
+the instruction arrives in untrusted tool output and no principal granted the
+effect, and 544 are refused under a standing policy rule that applies even
+with a grant. It is a classification of benchmark cases, not a live
+attack-success or utility number. The 30-case 0.5B run is a plumbing check, not a result.
 
 We do not treat harmfulness-refusal, multi-agent attack-surface, or
 task-utility suites as evidence for authority confinement. Their ground truth
