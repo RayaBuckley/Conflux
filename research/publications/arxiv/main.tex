@@ -856,21 +856,24 @@ defence result. Planning comparisons also remain pending.
 
 \section{Conclusion}
 
-The paper makes four connected claims. First, privilege escalation, not
-prompt injection alone, is the right system-level objective for LLM agents.
-Second, ITES meets that objective by deriving authority from information
-provenance and the organisation's existing access-control system; authority
-can only decrease as influence accumulates, given correct enforcement and
-access-control state, independently of language-model behaviour. Third, SLED
-evaluates declared finite models of a defence under worst-case model
-behaviour, so a holding verdict is evidence about that model rather than about
-deployment. Fourth, Conflux is a reference implementation that separates read,
-authorisation, visibility, and consent, and extends the design to
-argument-aware policy, disclosure, attribution, planning, and finite-IR
-verification. We do not claim
-broad novelty: capability tracking, argument-level provenance,
-history-sensitive policy, and effect-time re-authorisation are prior or
-concurrent work. The evidence is scoped to declared finite models and retained
+The paper makes four connected claims and reports one evidence contribution.
+First, privilege escalation, not prompt injection alone, is the right
+system-level objective for LLM agents. Second, ITES meets that objective by
+deriving authority from information provenance and the organisation's existing
+access-control system; authority can only decrease as influence accumulates,
+given correct enforcement, provenance coverage, and current access-control
+state, independently of language-model behaviour. Third, SLED evaluates
+declared finite models of a defence under worst-case model behaviour, so a
+falsifiable holding verdict is evidence about that model rather than about
+deployment. Fourth, Conflux is a reference
+implementation that separates read, authorisation, visibility, and consent,
+and extends the design to argument-aware policy, disclosure, attribution,
+planning, and finite-IR verification. The fifth contribution is the evidence
+report: reproduced and bounded results across native SLED mutation testing,
+semantic agreement, reduced verification, provenance-rule over-blocking, and
+pinned AgentDojo breadth runs, with remaining claims explicitly pending. We do not claim broad
+novelty: capability tracking, argument-level provenance, history-sensitive
+policy, and effect-time re-authorisation are prior or concurrent work. The evidence is scoped to declared finite models and retained
 bundles; real-model and external-benchmark results remain breadth or pending,
 and delegation remains disabled at runtime. The next step is stronger
 evidence, not a stronger claim.
