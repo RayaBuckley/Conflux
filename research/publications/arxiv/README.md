@@ -8,7 +8,7 @@ research paper that the publications register lists as the arXiv preprint.
 ## Goal
 
 One cohesive research contribution: the ITES provenance-based authority
-model, the SLED worst-case evaluator, and the Conflux canonical
+model, the SLED worst-case evaluator, and the Conflux reference
 implementation with its bounded current evidence. The paper presents the
 work as a single contribution with no year-by-year framing; framing notes
 live in the repository register, not in the paper.
@@ -65,8 +65,24 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 directory and checks every input, bibliography, citation and named
 repository path before packaging. Run it with `--check`.
 
-## arXiv metadata
+## Submission metadata
 
 The submission form needs the title and the abstract as plain ASCII under
 1920 characters; `build_arxiv_bundle.py --metadata` prints both and fails
-when either field cannot be submitted.
+when either field cannot be submitted. The current title is 93 characters and
+the abstract is 1898 characters. The bundle ships 11 files and `--check` is
+clean.
+
+Owner decisions still required for the submission form:
+
+- **Primary category.** Suggested `cs.CR` (Cryptography and Security), with
+  `cs.AI` as a possible cross-list. The paper's lead claim is system-level
+  authority confinement; the owner should confirm the category.
+- **License.** Use the arXiv license selected by the owner. This repository
+  does not set a default.
+- **Comments.** Optional. Do not state code or evidence availability unless a
+  public URL exists.
+
+Pre-submission gate: the full effect-bearing AgentDojo matrix is not yet run.
+Do not submit until the owner decides that the retained breadth pilots and the
+other evidence are enough for the intended claim.
