@@ -24,7 +24,7 @@ It exists because a verifier verdict is only as strong as the model it was compu
 
 ## Inventory
 
-| factory | bound | vars | rules | invariants | sorts | model shape | not represented |
+| factory | bound | variables | rules | invariants | sorts | model shape | not represented |
 | --- | ---: | ---: | ---: | ---: | --- | --- | --- |
 | `camel_ir` | 4 | 5 | 2 | 1 | boolean | 1 attacker-influenced planner, 1 capability-gated action | capability graph, data/control separation, multiple principals, action arguments |
 | `camel_native_property_ir` | 3 | 4 | 4 | 1 | boolean | 1 untrusted flow, 1 capability record, 1 processor execution | capability semantics, multiple flows, principal set |
@@ -86,4 +86,3 @@ Implementation conformance is not claimed today. It is tracked as hub task **X25
 A refinement argument, differential traces, or a traceability record alone is not enough; all five
 conditions are required. Until those exist, the strongest honest fidelity tag for these IRs is `declared-abstraction`
 (when the omissions are stated) or `unvalidated` (when they are not).
-
