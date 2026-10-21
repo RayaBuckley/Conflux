@@ -119,7 +119,7 @@ are:
     agents operating within existing access-control systems.
   \item We present ITES, whose authority-intersection rule is a
     principal-sensitive analogue of low-water-mark integrity
-    \citep{biba1977,lomac}, and prove that authority is monotonically
+    \citep{biba1977,lomac}, and show that authority is monotonically
     non-increasing as influence accumulates.
   \item We introduce SLED, which evaluates declared finite models of a defence
     independently of language-model behaviour by exhaustively exploring that
@@ -839,13 +839,14 @@ We do not claim a new access-control model, a new policy language, or a
 model-level defence. We do not claim that effect-time re-authorisation is new;
 concurrent work enforces authorised effects at execution boundaries
 \citep{zhu2026runtime,zheng2026apex}. We do not claim a proof about the
-implementation or an unbounded deployment: the formal results are scoped to
-declared finite IRs, the stated assumptions, and the retained conformance
-evidence. The claim is the authority source, the architecture, and the scoped
+implementation or an unbounded deployment: the finite-IR verification is scoped
+to declared finite IRs, the stated assumptions, and the retained conformance
+evidence, while the authority-confinement theorem is supported by a proof
+sketch under A1--A5. The claim is the authority source, the architecture, and the scoped
 evidence.
 
 Authorised-read safety is not noninterference: a system can obey local ACL
-checks and still leak information through outputs or control flow. Formal
+checks and still leak information through outputs or control flow. Verification
 results are scoped to their finite model, backend, and conformance
 evidence: a holding verdict is cited only when the same artefact classifies
 the invariant as falsifiable under a declared mutation alphabet, so an
