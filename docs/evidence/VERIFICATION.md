@@ -584,15 +584,15 @@ new `UNAVAILABLE_Z3` constant). Test-only change; `src/` and `scripts/` are unto
   - `scripts/generate_coi_scaling.py:179`: `z3_all_agree` compares the two recorded z3 verdicts with
     **no error filter**, and the rows carry no `error` field. Probe at `8cb46ef`: `.venv` -> 12
     rows, every z3 verdict `unknown`, flag **true**; `.local/venv-z3` -> real verdicts, true. The
-    bundle is cited by `docs/evidence/CLAIMS.md:26` ("Z3 bounded model checking agrees with the
+    bundle is cited by the Z3 bounded-model-checking row in `docs/evidence/CLAIMS.md` ("Z3 bounded model checking agrees with the
     reference interpreter") and read by `scripts/generate_flmsec_tables.py:270`. The committed
     artifact is honest (z3-generated, real verdicts), but a regeneration without the solver
     publishes the vacuous claim.
   - `scripts/generate_defence_evidence.py`: `pe_safe` counts every verdict that is not `unsafe`, and
     `native_satisfied` counts non-null non-unsafe native properties. Probe at `8cb46ef` in `.venv`:
     `{"total_models": 6, "pe_unsafe": 0, "pe_safe": 6, "native_satisfied": 4}` with every
-    pe/native verdict `unknown` — six unproved properties become "safe". `docs/evidence/CLAIMS.md:37-42`
-    cites this bundle for z3 counterexample claims; the committed artifact is z3-generated
+    pe/native verdict `unknown` — six unproved properties become "safe". The finite-IR defence-abstraction and ITES-reference rows in `docs/evidence/CLAIMS.md`
+    cite this bundle for z3 counterexample claims; the committed artifact is z3-generated
     (`pe_safe: 1, pe_unsafe: 5`).
   - Honest siblings, no action: `generate_z3_agreement.py` (`all_agree` also compares with the
     conclusive reference verdict, so it is false without z3),
