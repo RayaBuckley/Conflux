@@ -262,6 +262,13 @@ contributes, directly or indirectly, to the execution that produces the
 action.
 \end{definition}
 
+Influence is causal: it records a contribution, not a permission. Authority
+is normative: it records what the access-control system permits. A role or a
+model attribution may describe why a principal participates, but it cannot
+remove an influencing principal from the decision context or supply an
+approval. This distinction matters because the runtime can observe value
+provenance without observing every control dependence.
+
 \begin{definition}[Privilege Escalation]
 Privilege escalation occurs iff the agent performs an action $a \in A$ for
 which there exists an influencing principal $u \in U$ such that $\neg
@@ -397,7 +404,13 @@ not a non-interference or confidentiality result. Side channels, implicit
 flows, and read-based disclosure are outside A1--A5; read, visibility,
 consent, and argument policy are independent decisions. Authentication is
 part of the trusted computing base: A2 assumes provenance labels correspond
-to actual sources. The result is safety-only. Conservative provenance and
+to actual sources and that every influence that reaches the action is
+represented. The current runtime tracks value provenance for modelled
+arguments; it does not separately represent control influence from tool
+choice, branch choice, recipient selection, or plan-step selection. The
+theorem is therefore conditional on A2, and the richer control-influence and
+multi-principal checker is proposed work, not an implemented property. The
+result is safety-only. Conservative provenance and
 independent policy dimensions can deny actions that are consistent with the
 ACS, so the theorem does not establish utility or liveness. The relation
 $P(u,a)$ is action-level; coarse permission does not imply safe recipients,
@@ -457,6 +470,18 @@ Authorisation, read access, visibility, and consent are separate decisions.
 Consent cannot override authority; visibility cannot override read policy.
 This separation prevents a single policy dimension from manufacturing
 authority for another.
+
+\subsection{Authority and Influence}
+
+The current kernel composes pointwise action, read, visibility, consent, and
+local argument decisions. It does not expose a general multi-principal or
+trace-aware policy interface. We specify a proposed checker that would accept
+an explicit decision context, an exact action fingerprint, per-branch trace
+state, and policy versions, and would return an allow, deny, or pending
+verdict with a replayable justification binding every influencing principal.
+The design keeps model judgement outside the confinement decision and treats
+roles and model attribution as advisory. It is not implemented, and no result
+in this paper depends on it.
 
 \subsection{Argument-Aware Authorisation}
 
