@@ -1,4 +1,4 @@
-"""Provenance overapproximation and precision metrics (SEM-017, SEM-018).
+"""Provenance overapproximation and precision metrics (SEM-026, SEM-018).
 
 This module formalises the three-way distinction identified in the
 related-work analysis:
@@ -13,7 +13,7 @@ related-work analysis:
 3. **Exposure**: empirical measure of information supplied to the
    model (token count, source count, duration in context).
 
-SEM-017 (Overapproximation soundness): If ``actual_influence ⊆
+SEM-026 (Overapproximation soundness): If ``actual_influence ⊆
 security_provenance.principals``, then enforcement based on
 ``security_provenance`` is sound: no action allowed by ITES using
 ``security_provenance`` would be denied by ITES using
@@ -77,7 +77,7 @@ def measure_overapproximation(
 ) -> ProvenanceOverapproximation:
     """Measure the overapproximation of security provenance.
 
-    SEM-017: Enforcement is sound when actual_influence is a subset of
+    SEM-026: Enforcement is sound when actual_influence is a subset of
     security_provenance.principals.  This function checks the subset
     relation and computes the excess principals.
 
@@ -174,7 +174,7 @@ def enforcement_is_sound(
     security_provenance: Provenance,
     actual_influence: frozenset[Principal],
 ) -> bool:
-    """Check SEM-017: enforcement based on security provenance is sound.
+    """Check SEM-026: enforcement based on security provenance is sound.
 
     Soundness: if actual_influence ⊆ security_provenance.principals,
     then any action denied by ITES using security_provenance would also

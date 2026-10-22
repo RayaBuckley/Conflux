@@ -45,6 +45,32 @@ attacks. Conflux provides a complementary system-level authority-confinement
 layer whose core property holds under arbitrary model proposals. The two
 layers defend different failure modes and should normally be combined.
 
+### Influence and authority
+
+**Influence** is causal: it records that a Principal's content contributed to a
+proposal, through either a value or control flow. **Authority** is normative: it
+records what the organisation permits. Influence does not grant authority, and
+authority does not prove non-influence.
+
+The current runtime tracks provenance for the values it models and merges that
+provenance into Principal Context. It does not separately represent control
+influence from tool choice, branch choice, recipient selection, or plan-step
+selection. A policy allow for the visible data therefore does not prove that no
+other Principal influenced the action.
+
+The proposed checker in
+[ADR-029](../decisions/029-authority-influence-and-policy-checker.md) defines
+the conservative fix: every influencing Principal belongs in the decision
+context, `unknown` is absorbing, roles do not reduce the context, and an allow
+must carry an authority-sound justification. That checker is **not implemented
+yet**. In particular, `DecisionEngine.decide` does not receive a branch trace,
+so the current interface cannot express a general trace policy without hidden
+mutable state.
+
+The current policy remains valid for the decisions it represents. It must not be
+described as enforcing the proposed control-influence or multi-principal
+semantics until those are implemented and tested.
+
 ## Explicit and effective authority policy
 
 Conflux distinguishes the organisation's persistent machine-readable authority

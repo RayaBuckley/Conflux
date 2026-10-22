@@ -23,7 +23,7 @@ prioritise different entry points for specific audiences:
   [SLED](reference/SLED.md) →
   [Claim ledger](evidence/CLAIMS.md) →
   [Related work](research/RELATED_WORK.md)
-- **Developer**: [README quick start](../README.md#run-the-offline-system) →
+- **Developer**: [README quick start](../README.md#quick-start) →
   [Architecture](reference/ARCHITECTURE.md) →
   [Concept walkthrough](reference/CONCEPT_WALKTHROUGH.md) →
   [Public API reference](reference/REFERENCE.md) →
@@ -53,14 +53,15 @@ owner; linked documents should reference that owner rather than restating it.
 - [Root quick start](../README.md): install and run the offline vertical slice.
 - [CLI](reference/CLI.md): commands, outputs, failures, and exit codes.
 - [Development](DEVELOPMENT.md): setup, testing ladder, and validation.
-- [Workflow](AI_AGENT_GUIDE.md): change procedure, review checklist, and commit conventions.
-- [AI agent guide](AI_AGENT_GUIDE.md): trust order and drift controls.
+- [AI-agent guide](AI_AGENT_GUIDE.md): change procedure, review checklist, commit conventions, trust order, and drift controls.
 - [Security model](reference/SECURITY_MODEL.md): normative rules, trusted computing base, and operational boundary.
 
 ## Understand the system
 
 - [Architecture](reference/ARCHITECTURE.md): packages, dependencies, and data flow.
 - [Security model](reference/SECURITY_MODEL.md): normative rules and trusted computing base.
+- [Formal semantics](reference/SEMANTICS.md): named invariants, transition rules, and current gaps.
+- [Authority and influence proposal](decisions/029-authority-influence-and-policy-checker.md): proposed multi-principal and stateful checker semantics.
 - [Public API reference](reference/REFERENCE.md): supported Python and CLI surfaces.
 - [Runtime](reference/RUNTIME.md): scenario and provider contracts.
 - [Glossary](reference/GLOSSARY.md): canonical terminology.
@@ -85,7 +86,9 @@ owner; linked documents should reference that owner rather than restating it.
 - [Status](evidence/STATUS.md): concise current capability summary.
 - [Task registry](evidence/task-registry.json): authoritative machine-readable status.
 - [Report sources and analysis](../research/reports/README.md): reconciled historical inputs.
-- [Current manuscript](../research/publications/manuscript/README.md): publication source and evidence policy.
+- [Publication register](../research/publications/README.md): audience and goal of each retained publication.
+- [Fourth-year report](../research/publications/manuscript/README.md): progress report for the fourth-year reviewer.
+- [arXiv preprint](../research/publications/arxiv/README.md): cohesive international preprint.
 
 ## Research context
 
@@ -102,7 +105,7 @@ owner; linked documents should reference that owner rather than restating it.
 | What is implemented? | `evidence/STATUS.md` and `evidence/task-registry.json` | One human summary and one machine registry prevent drift |
 | What may be claimed? | `evidence/CLAIMS.md` and retained evidence | Implementation is not automatically empirical proof |
 | What did reports recommend? | `research/reports/analysis/` | Historical input needs current reconciliation |
-| What does the current paper claim? | `research/publications/manuscript/` | The archived paper is intentionally frozen |
+| Which publication makes which claim? | `research/publications/README.md` and each artifact | Audiences and scopes differ; the archived paper is intentionally frozen |
 
 When sources disagree, record and repair the discrepancy. Do not silently
 promote a report, manuscript statement, or passing test above the normative

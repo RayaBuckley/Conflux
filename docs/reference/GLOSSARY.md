@@ -9,6 +9,15 @@
 | Resource | Stable protected-object reference | `domain.resources` |
 | Action | Declarative proposal that performs no side effect itself | `domain.actions` |
 | Authority intersection | Effective permission is the intersection of all influencing Principals' permissions; additional influence can only reduce authority | `ites`, SEM-009 |
+| Influence | Causal contribution of a Principal's content to a proposed action; includes data and control influence | ADR-029 |
+| Data influence | Influence through a value that reaches an argument or effect field | ADR-029 |
+| Control influence | Influence over which action, branch, plan step, recipient, or parameter is proposed | ADR-029 |
+| Decision context (`DC`) | Principals whose content influenced an action, plus any Principal whose authenticated approval or joint participation is required; `unknown` when influence cannot be established | ADR-029 |
+| Authority-sound | A checker property: every allow carries a justification binding each decision-context Principal and joint role to authenticated evidence, with no unresolved obligation | ADR-029 |
+| Joint policy | One policy predicate over the whole decision context, roles, relationships, and required approvals; it may not drop or invent a Principal | ADR-029 |
+| Trace policy | Stateful policy over event order, counts, time, revocation, or liveness; separate from authority policy | ADR-029 |
+| Pending | Policy outcome that records a missing obligation; never an allow | ADR-029 |
+| Third-party skill | Installed code and instructions that are an untrusted Principal and an authority-granting event; running it is a delegation | ADR-029 |
 | Authorisation | Pointwise organisational policy decision | policy ports |
 | Readability | Independent decision about observing an artifact | read policy port |
 | Visibility | Decision about an action's observation channel | visibility policy port |

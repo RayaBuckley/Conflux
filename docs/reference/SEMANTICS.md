@@ -208,6 +208,8 @@ No action bypasses mediation. The kernel is the sole authority path.
 | Tests | `tests/test_policy_and_ites.py::test_execution_requires_matching_certificate` |
 | ADR | [ADR-006](../decisions/006-canonical-ites-contract.md), [ADR-008](../decisions/008-canonical-security-kernel.md) |
 
+### SEM-009: Additional influence cannot increase authority
+
 Consuming information from an additional Principal can preserve or reduce
 effective authority but cannot increase it. The context is merged with
 action provenance before the decision:
@@ -277,6 +279,8 @@ A certificate from one branch cannot authorise an effect on another.
 | Implementation | `src/conflux/ites/state.py` `DecisionCertificate.issue`, `src/conflux/application/mediate.py` re-authorisation |
 | Tests | `tests/test_policy_and_ites.py::test_execution_requires_matching_certificate` |
 | ADR | [ADR-006](../decisions/006-canonical-ites-contract.md) |
+
+### SEM-013: Execution revalidates the decision context
 
 The context at execution time must match the context at decision time. If
 policy has changed (revocation), the certificate is invalid:
@@ -415,6 +419,131 @@ never asked to work.
 | Bundle reader | `src/conflux/cli.py` `_reconstruct_ites_report` (a bundle without a recorded verdict reads `broken` for `holds: false`) |
 | Tests | `tests/test_assessment_verdicts.py::test_a_run_that_executed_nothing_is_not_exercised`, `test_an_executed_event_with_an_allowing_decision_holds`, `test_an_executed_event_without_a_decision_is_broken`, `test_a_verdict_that_contradicts_the_boolean_flag_is_rejected`, `test_a_report_serialises_the_recomputed_verdict`, `test_a_run_result_records_the_verdict_of_every_assessment` |
 | ADR | [ADR-021](../decisions/021-human-reviewable-evidence-and-visualisation.md) |
+
+### SEM-018: Precision loss measures provenance overapproximation
+
+Security provenance intentionally overapproximates actual influence. Define
+the excess set as `P_security \ P_actual`. An empty excess set means exact
+provenance; a non-empty set means the enforcement context may deny actions
+that an exact-influence controller would allow. The authority loss is the set
+of actions denied under security provenance that would be allowed under actual
+influence.
+
+| Aspect | Location |
+|---|---|
+| Implementation | `src/conflux/verification/provenance_distinction.py` `measure_overapproximation`, `measure_authority_loss` |
+| Tests | `tests/semantics/test_provenance_overapproximation.py` |
+| Scope | A measurement of conservatism, not a security guarantee |
+
+### SEM-026: Security provenance overapproximates actual influence
+
+Enforcement is sound when actual influence is a subset of the principals in
+security provenance:
+
+```text
+actual_influence ⊆ security_provenance.principals
+  → every action allowed under security_provenance is allowed under actual influence
+```
+
+The converse does not hold. A conservative context may deny an action that an
+exact-influence controller would allow; that is the cost of unknown influence,
+not a soundness failure.
+
+| Aspect | Location |
+|---|---|
+| Implementation | `src/conflux/verification/provenance_distinction.py` `enforcement_is_sound` |
+| Tests | `tests/semantics/test_provenance_overapproximation.py` |
+| Scope | The subset relation is assumed, not established at runtime; `unknown` remains absorbing |
+
+## Proposed authority and influence semantics
+
+The entries in this section are design constraints for the checker proposed in
+[ADR-029](../decisions/029-authority-influence-and-policy-checker.md). They are
+**not implemented by the current runtime**. They are recorded here so that a
+future checker can be reviewed against a fixed vocabulary, not because the
+current code enforces them.
+
+### SEM-022: Influence is causal; authority is normative
+
+Influence records a causal contribution to a proposal. Authority records a
+normative permission. Neither implies the other:
+
+```text
+p influences a  ⇏  p is authorised for a
+p is authorised for a  ⇏  p influenced a
+```
+
+A decision context includes every Principal whose content may have influenced
+the action. It is not reduced by a role, a model interpretation, or a label that
+claims some input is "only data".
+
+| Aspect | Location |
+|---|---|
+| Definition | ADR-029; `docs/reference/GLOSSARY.md` |
+| Current implementation | Partial: provenance and Principal Context track data influence; control influence is not separately represented |
+| Future tests | Influence edge cases for tool choice, branch choice, recipient selection, and plan-step selection |
+
+### SEM-023: The conservative decision context is unknown-absorbing
+
+When influence cannot be established, the decision context is `unknown`:
+
+```text
+unknown influence  →  DC = unknown  →  deny effectful action
+```
+
+A policy allow cannot clear `unknown`. A role assignment cannot clear it. A model
+explanation cannot clear it. The only sound ways to narrow `DC` or clear
+`unknown` are a runtime/out-of-band proof of non-influence or a separately
+accepted trusted-declassification mechanism (ADR-029 Section 8).
+
+| Aspect | Location |
+|---|---|
+| Definition | ADR-029 |
+| Current implementation | `PrincipalContext.unknown` is absorbing at the context-merge level; control influence is not yet modelled |
+| Future tests | No dropped Principal; no cleared `unknown`; additive-only ML attribution |
+
+### SEM-024: An authority-sound checker justifies every allow
+
+For an effect `e` and action `a`, an `allow` is valid only with a justification
+that binds every Principal in `DC(e,a)` to an authenticated allow and every
+joint role, relationship, approval, or consent to authenticated evidence:
+
+```text
+allow(a)  →  ∀ p ∈ DC(e,a): authenticated_allow(p, a)
+             ∧ every joint condition has authenticated evidence
+             ∧ no unresolved obligation
+```
+
+The checker returns `allow`, `deny`, or `pending`. `pending` is not `allow`.
+The justification names the policy version and any trace-state fingerprint used.
+
+| Aspect | Location |
+|---|---|
+| Definition | ADR-029 |
+| Current implementation | Pointwise authorisation and local joint-argument rules only; no general multi-principal or joint checker |
+| Future tests | Missing Principal denies; model-supplied role denies; joint approval binds exact action; `pending` never executes |
+
+### SEM-025: Stateful trace policy is per branch and certificate-bound
+
+A trace rule may depend on event order, counts, time, revocation, or liveness.
+Its state is owned by one branch, advances deterministically from events, and is
+bound into the decision certificate:
+
+```text
+state(branch, event) = deterministic_step(state(branch), event)
+certificate.trace_state_fingerprint = fingerprint(state(branch))
+certificate.policy_versions = current versions used at decision time
+```
+
+No mutable policy state is shared across sibling branches. A state or policy
+version change before execution invalidates the certificate and denies the
+effect.
+
+| Aspect | Location |
+|---|---|
+| Definition | ADR-029 |
+| Current implementation | No trace-state argument in `DecisionEngine.decide`; no trace-state field in `DecisionCertificate` |
+| Future tests | Replay determinism; sibling isolation; stale state denies; revocation generation cannot be replayed |
 
 ## SLED property cross-reference
 

@@ -1,4 +1,4 @@
-"""Tests for provenance overapproximation and precision metrics (SEM-017, SEM-018)."""
+"""Tests for provenance overapproximation and precision metrics (SEM-026, SEM-018)."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ mallory = Principal("mallory", "Mallory")
 
 
 class TestOverapproximationSoundness:
-    """SEM-017: enforcement based on security provenance is sound."""
+    """SEM-026: enforcement based on security provenance is sound."""
 
     def test_exact_provenance_is_sound(self) -> None:
         sec_prov = Provenance.from_principals({alice, bob})
