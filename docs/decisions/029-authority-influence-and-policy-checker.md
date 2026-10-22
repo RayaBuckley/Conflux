@@ -198,6 +198,8 @@ For this proposal:
 - the conservative intersection and unknown rules are stated in
   `docs/reference/SEMANTICS.md`;
 - the current interface gap is recorded in `docs/reference/SECURITY_MODEL.md`;
+- the proposed checker interface and fact schema are recorded in
+  `docs/reference/POLICY_CHECKER.md`;
 - no test or result is cited as evidence for an unimplemented checker.
 
 A future implementation must add the tests listed under Consequences and pass

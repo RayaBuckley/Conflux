@@ -62,7 +62,9 @@ The proposed checker in
 [ADR-029](../decisions/029-authority-influence-and-policy-checker.md) defines
 the conservative fix: every influencing Principal belongs in the decision
 context, `unknown` is absorbing, roles do not reduce the context, and an allow
-must carry an authority-sound justification. That checker is **not implemented
+must carry an authority-sound justification. The proposed interface, fact
+schema, and justification format are specified in the
+[policy checker contract](POLICY_CHECKER.md). That checker is **not implemented
 yet**. In particular, `DecisionEngine.decide` does not receive a branch trace,
 so the current interface cannot express a general trace policy without hidden
 mutable state.

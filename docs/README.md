@@ -62,6 +62,7 @@ owner; linked documents should reference that owner rather than restating it.
 - [Security model](reference/SECURITY_MODEL.md): normative rules and trusted computing base.
 - [Formal semantics](reference/SEMANTICS.md): named invariants, transition rules, and current gaps.
 - [Authority and influence proposal](decisions/029-authority-influence-and-policy-checker.md): proposed multi-principal and stateful checker semantics.
+- [Policy checker contract](reference/POLICY_CHECKER.md): proposed checker interface, fact schema, verdicts, and justification format.
 - [Public API reference](reference/REFERENCE.md): supported Python and CLI surfaces.
 - [Runtime](reference/RUNTIME.md): scenario and provider contracts.
 - [Glossary](reference/GLOSSARY.md): canonical terminology.

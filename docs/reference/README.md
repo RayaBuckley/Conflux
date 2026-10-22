@@ -11,6 +11,7 @@ semantics.
 | [Public API reference](REFERENCE.md) | Supported Python and CLI surfaces. |
 | [Glossary](GLOSSARY.md) | Canonical terminology. |
 | [Formal semantics](SEMANTICS.md) | Algebraic structures and security properties (SEM-*). |
+| [Policy checker contract](POLICY_CHECKER.md) | Proposed checker interface, fact schema, verdicts, and justification format. |
 | [Runtime](RUNTIME.md) | Scenario and provider contracts. |
 | [CLI](CLI.md) | Commands, outputs, failures, and exit codes. |
 | [SLED](SLED.md) | Native bounded-checking semantics and verdicts. |
