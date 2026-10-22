@@ -11,6 +11,7 @@ from conflux.domain import (
     DataItem,
     EnvironmentSnapshot,
     NoOpAction,
+    OperationArgumentSchema,
     Principal,
     PrincipalContext,
     ProposalBatch,
@@ -21,6 +22,21 @@ from conflux.domain import (
 )
 
 pytestmark = pytest.mark.security
+
+
+def test_operation_schema_accepts_no_arguments() -> None:
+    """Stage 1 permits tools that take no arguments."""
+    schema = OperationArgumentSchema("get_current_day", "1", {})
+    assert schema.bind({}) == ()
+    with pytest.raises(ValueError, match=r"unknown=\['query'\]"):
+        schema.bind({"query": ("today", Provenance.unknown())})
+
+
+def test_operation_schema_still_requires_identity() -> None:
+    with pytest.raises(ValueError, match="requires identity"):
+        OperationArgumentSchema("", "1", {})
+    with pytest.raises(ValueError, match="requires identity"):
+        OperationArgumentSchema("get_current_day", "", {})
 
 
 def test_principal_is_identity_only(alice: Principal) -> None:

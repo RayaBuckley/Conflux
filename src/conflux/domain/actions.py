@@ -114,8 +114,8 @@ class OperationArgumentSchema:
     roles: Mapping[str, ArgumentRole]
 
     def __post_init__(self) -> None:
-        if not self.operation or not self.version or not self.roles:
-            raise ValueError("operation argument schema requires identity and roles")
+        if not self.operation or not self.version:
+            raise ValueError("operation argument schema requires identity")
         if any(not name for name in self.roles):
             raise ValueError("operation argument names must be non-empty")
         object.__setattr__(self, "roles", MappingProxyType(dict(self.roles)))
