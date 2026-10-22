@@ -6,9 +6,9 @@ Conflux has a working offline security kernel that mediates every agent
 effect through Principal Context authority checks. It can verify security
 properties on finite models, generate authenticated plans, and translate
 external benchmarks. Limited laptop evidence exists for Qwen planning and
-AgentDojo pipeline execution; larger-model evaluation and delegation
-activation remain future work. The detail below is for maintainers and
-reviewers.
+AgentDojo pipeline execution; retained AgentDojo runs are task-selection-limited,
+and larger-model evaluation and delegation activation remain future work. The
+detail below is for maintainers and reviewers.
 
 The canonical migration and P0 security repair are complete. Immutable values
 live in `domain`; ITES has one transition kernel; Principal Context is derived
@@ -64,8 +64,9 @@ differs from the pin in major.minor. Upstream tags suites individually
 (measured 2026-10-09: banking and workspace `(1, 2, 2)`, slack and travel
 `(1, 2, 0)`), so a translated suite records its own tag. Its six-cell local
 runner compares benign/attacked input under no defence, conservative ITES, and
-an explicitly non-deployable oracle profile. Fake-backed conformance passes,
-but an operator has not retained a model result, so efficacy is not claimed.
+an explicitly non-deployable oracle profile. Fake-backed conformance passes.
+Retained model runs exist, but their selected tasks are read-only or fail on
+tool coverage; no general efficacy or defence result is claimed.
 
 Likewise, local model weights and servers, Z3, nuXmv, Docker code execution,
 AgentDojo execution, and scheduler submission are optional capabilities. Their

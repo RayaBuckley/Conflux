@@ -23,9 +23,10 @@ research software, not a production security product.
 - Not a production security product.
 - Not a model-level prompt-injection detector. Model defences are useful, but
   ITES does not rely on model judgement for the confinement decision.
-- Not evidence that the full AgentDojo matrix has been run. The current
-  AgentDojo bundles are breadth and adapter-coverage pilots; full tool coverage
-  and effect-bearing comparisons remain pending.
+- Not evidence that the full AgentDojo matrix has been run. Some retained runs
+  are breadth and adapter-coverage pilots; one selected 30-cell matrix reports
+  task utility on read-only tasks, so its security count is vacuous. Full tool
+  coverage and effect-bearing comparisons remain pending.
 - Not a claim that every authorised action is semantically appropriate.
   Authority confinement and semantic judgement are separate questions.
 
@@ -104,8 +105,9 @@ The current evidence is deliberately bounded:
 
 - The deterministic path and finite-model verification are the strongest
   retained evidence.
-- AgentDojo currently provides breadth and adapter-coverage evidence, not a
-  defence or utility result.
+- AgentDojo currently provides translation, adapter-coverage, and bounded
+  pipeline-execution evidence. It does not establish a general defence or
+  utility result; the full effect-bearing matrix is pending.
 - The arXiv paper distinguishes finite-IR verification from the
   authority-confinement theorem, which is supported by a proof sketch under its
   stated assumptions.
