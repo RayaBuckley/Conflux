@@ -162,8 +162,10 @@ system-level enforcement.
 Several works address prompt injection through system-level enforcement.
 The Dual LLM pattern separates privileged planning from untrusted parsing.
 CaMeL extends this with capability tracking and developer-defined policies
-enforced by a custom interpreter \citep{camel,designpatterns}. Progent
-mediates tool calls with symbolic privilege control \citep{progent}. PACT
+enforced by a custom interpreter \citep{camel,designpatterns}. Wu et al.\
+apply information-flow control to the whole LLM pipeline, disaggregating
+components and filtering untrusted input before planning \citep{ifcdefense}.
+Progent mediates tool calls with symbolic privilege control \citep{progent}. PACT
 tracks argument-level provenance \citep{pact}, and FORGE enforces
 history-sensitive Datalog policies \citep{forge}. Effect-time re-authorisation
 is also prior art: Zhu and Wang recheck protected effects at an atomic commit
