@@ -144,6 +144,8 @@ Start with the path that matches your task:
 - [Decision records](docs/decisions/README.md)
 - [Current arXiv source](research/publications/arxiv/README.md)
 - [AI-agent collaboration guide](docs/AI_AGENT_GUIDE.md)
+- [Documentation policy](docs/DOCUMENTATION_POLICY.md): status labels,
+  ownership, and writing rules.
 
 The archived paper under `research/publications/paper/` and the original
 reports are integrity-protected historical evidence. They do not define current
