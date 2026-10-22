@@ -1,5 +1,8 @@
 # Conflux
 
+> **Status:** living · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** repository entry point and quick start
+
 Conflux is a research framework for **principal-aware security in AI agents**.
 It derives authority from the principals whose information influences an
 action, checks organisation policy at action time, and preserves provenance

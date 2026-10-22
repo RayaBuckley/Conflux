@@ -1,5 +1,8 @@
 # Decision Records
 
+> **Status:** living · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** the decision-record index
+
 Decision records capture choices with lasting effects on security semantics,
 architecture, research methodology, or compatibility. Each record has a
 sequential number and a `Type:` field distinguishing ADRs (architecture

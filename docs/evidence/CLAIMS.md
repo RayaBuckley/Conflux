@@ -1,5 +1,8 @@
 # Claim-to-Evidence Ledger
 
+> **Status:** living · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** claim-to-evidence mapping
+
 | Claim | Status | Origin | Evidence and limits |
 | --- | --- | --- | --- |
 | Empty/unknown context cannot authorise an effect | Implemented | Part B concept, Part C evidence | policy and ITES tests; assumes mediation cannot be bypassed |

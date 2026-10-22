@@ -1,13 +1,16 @@
 # Conflux Status
 
+> **Status:** living · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** current implementation status
+
 ## At a glance
 
 Conflux has a working offline security kernel that mediates every agent
 effect through Principal Context authority checks. It can verify security
 properties on finite models, generate authenticated plans, and translate
-external benchmarks. Limited laptop evidence exists for Qwen planning and
-AgentDojo pipeline execution; retained AgentDojo runs are task-selection-limited,
-and larger-model evaluation and delegation activation remain future work. The
+external benchmarks. Retained laptop and H100 runs cover Qwen planning and
+AgentDojo pipeline execution. The selected AgentDojo tasks are read-only, and
+effect-bearing comparisons and delegation activation remain pending. The
 detail below is for maintainers and reviewers.
 
 The canonical migration and P0 security repair are complete. Immutable values

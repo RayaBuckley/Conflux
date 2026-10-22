@@ -1,5 +1,8 @@
 # arXiv preprint: Preventing Privilege Escalation in LLM Agents
 
+> **Status:** living · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** the current arXiv submission record
+
 ## Audience
 
 The international research community. This is the self-contained +

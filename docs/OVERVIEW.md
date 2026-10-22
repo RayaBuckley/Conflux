@@ -1,5 +1,7 @@
 # Conflux Overview
 
+> **Status:** living · **Owner:** project owner · **Last reviewed:** 2026-10-22
+
 A plain-language explanation of what Conflux is, why it exists, and what it
 does. If you are new to the project, start here.
 

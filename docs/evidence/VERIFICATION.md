@@ -1,5 +1,8 @@
 # Independent verification of the test-related changes (`fca1d4a..5c5c29f`)
 
+> **Status:** historical · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** the 2026-10-09 verification record
+
 Role: independent verifier (read-only on tracked content). Author of this report did not
 write the changes under review.
 

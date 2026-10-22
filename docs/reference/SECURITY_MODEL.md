@@ -1,5 +1,8 @@
 # Security Model
 
+> **Status:** canonical · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** normative security rules and trusted computing base
+
 ## Trusted computing base
 
 | Component | Trusted responsibility |
@@ -9,7 +12,8 @@
 | Policy ports | Return faithful action, argument, read, visibility, and consent decisions |
 | Optional Cedar adapter | Validate its pinned local binary and translate trusted policy, entity, action, resource, and role facts without approximation |
 | Action schemas | Assign trusted roles to operation arguments and identify protected resources |
-| Application service and executor | Recheck and execute only the certificate-matching action |
+| Application service | Revalidate the decision certificate before dispatch; the executor does not receive the certificate |
+| Executor | Execute the action supplied by the application service; treat the provider boundary as an effect sink, not a certificate checker |
 
 ITES stands for **Influence Tracking and Extrapolated Security**: the kernel
 tracks who produced every input a model saw, and extends those influencing

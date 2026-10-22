@@ -1,5 +1,8 @@
 # AI Agent Guide
 
+> **Status:** living · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** AI-assisted change procedure
+
 This file is the operating contract for AI-assisted changes, including review
 checklist, commit conventions, and documentation authority rules.
 

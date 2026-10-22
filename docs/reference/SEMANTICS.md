@@ -1,5 +1,8 @@
 # Conflux Formal Semantics
 
+> **Status:** canonical · **Owner:** project owner · **Last reviewed:** 2026-10-22
+> **Canonical for:** formal invariants and semantics
+
 This document specifies the algebraic structures and security properties
 implemented by the Conflux domain and ITES kernel. Each property carries a
 unique identifier (SEM-*), a formal statement, the code that enforces it, and
@@ -46,17 +49,19 @@ contexts deny all effectful actions.
 | Tests | `tests/test_domain.py::test_empty_principal_context_is_not_authority_bearing`, `test_policy_and_ites.py::test_empty_context_denies_effect` |
 | ADR | [ADR-002](../decisions/002-principal-context-terminology.md) |
 
-### SEM-003: Provenance is a commutative monoid
+### SEM-003: Provenance merge preserves principals and precision
 
-`Provenance` with `merge` forms a commutative monoid. The identity element is
-`Provenance.unknown()`, and merge is:
+`Provenance.merge` is associative and monotone for principals, sources,
+precision, and attestation. It is not commutative for the ordered activity
+tuple: activities are concatenated in argument order, so two semantically
+equivalent provenance values can have different fingerprints.
 
 ```text
-Commutativity:          a.merge(b) == b.merge(a)
 Associativity:          a.merge(b).merge(c) == a.merge(b.merge(c))
-Identity:               a.merge(Provenance.unknown()) has is_unknown == a.is_unknown or True
-Precision monotonicity:  max(precision_rank(a), precision_rank(b))
+Principal union:        a.merge(b).principals == b.merge(a).principals
+Precision monotonicity: max(precision_rank(a), precision_rank(b))
 Attestation conjunction: a.merge(b).attested == a.attested ∧ b.attested
+Activity order:         a.merge(b).activities != b.merge(a).activities in general
 ```
 
 | Aspect | Location |
